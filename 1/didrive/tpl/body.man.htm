@@ -1,0 +1,307 @@
+{% set r2 = random() %}
+
+{# { now_date } #}
+
+
+{% for k, v in jobs[spoint.id] if man.data[k] is defined %} 
+
+    {% set type = '' %}
+
+    {% if man.data[k]['dop']['fulljob_start'] is defined and man.data[k]['dop']['fulljob_start'] <= now_date %}
+        {% set type = 'norm' %}
+    {% elseif man.data[k]['dop']['stagirovka_start'] is defined and man.data[k]['dop']['stagirovka_start'] <= now_date %}
+        {% set type = 'stag' %}
+    {% endif %}
+
+    {% if man.data[k]['dop']['job_end'] is defined and man.data[k]['dop']['job_end'] < now_date %}
+        {% set type = '' %}
+    {% endif %}
+
+
+
+    {% if type == 'stag' or type == 'norm' %}
+
+
+
+        {# { pa(man.data[k]) } #}
+
+        {#
+        чел работает инфа по нему
+        #}
+
+        {% if man.data[k] is defined %}
+
+            {% set man1 = man.data[k] %}
+
+            <a href="#" xclass="job_man_in_graph def" onclick="$('#j{{ r2 }}').toggle('slow');
+                    return false;">
+                <div class="job_man_in_graph">
+                    <nobr>
+                        {{ man1.head }} 
+                        <sup title="{{ dolgn.data[man1['dop']['dolgnost']]['head'] }}">{{ dolgn.data[man1['dop']['dolgnost']]['head'][:3] }}.</sup>
+                    </nobr>
+                </div>
+            </a>
+
+
+
+            {#
+                        <nobr>
+                            <a href="#" class="job_man_in_graph def" onclick="$('#jobman{{ pk }}_{{ r2 }}').toggle('slow');
+                                return false;">
+                                {{ people.data[pk]['head'] }} 
+                                <sup title="{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'][:3] }}.</sup>
+                            </a>
+                        </nobr>
+            #}
+
+            <div id="res{{ spoint.id }}{{ pv.id }}{{ now_date }}" >
+
+                {% if checki[now_date][man1.id] is defined %}
+                    {% for k1, v1 in checki[now_date][man1.id] %} 
+
+                        <div>
+                        {% if v1.start|date("d-m-Y") == v1.fin|date("d-m-Y") %}
+                            {{ v1.start|date("H:i") }} - {{ v1.fin|date("H:i") }}
+                        {% else %}
+                            2 {{ v1.start|date("d-m-Y H:i") }} - {{ v1.fin|date("d-m-Y H:i") }}
+                        {% endif %}
+                        
+                        <a href="#">удалить смену</a>
+                        
+                        </div>
+                        
+                        {#
+                        <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
+                            Отработано {{ v7.hours }} ч.
+                        </abbr>
+                        #}
+
+                    {% endfor %}
+                {% endif %}
+
+
+
+
+
+            </div>
+
+            <div class="act_personal_def" id="j{{ r2 }}">
+                <a href="" class="put_var_in_modal" 
+
+                   data-toggle2="modal" 
+                   data-target2="#add_jobday_for_jobman" 
+
+                   jobman="{{ man1.id }}"
+                   salepoint="{{ spoint.id }}"
+
+                   toform_sp="{{ spoint.id }}"
+                   toform_sp_name="{{ spoint.head }}"
+
+                   toform_jobman="{{ man1.id }}"
+                   toform_jobman_name="{{ man1.head }}"
+
+                   date="{{ nowd }}"
+                   print_res_to_id="res{{ spoint.id }}{{ pv.id }}{{ nowd }}"
+
+                   {% set ss = spoint.id ~ pv.id %}
+                   id2="{{ ss }}"
+                   s2="{{ creatSecret( ss ) }}"
+
+                   ><span class="fa fa-plus" ></span> смену</a>
+                <a href=""><span class="fa fa-minus" ></span> взыскание</a>
+                <a href=""><span class="fa fa-arrow-left" ></span> отправить на работу в другую точку</a>
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {% endif %}
+
+
+
+
+    {% endif %}
+
+
+
+{% endfor %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% if 1 == 2 %}
+
+    {% if list_time1[spoint.id][nowd] is defined %}
+
+        {% for k6, v6 in list_time1[spoint.id][nowd] %} 
+
+            <nobr>
+                <div class="job_man_in_graph">
+                    {{ people.data[k6]['head'] }} 
+                    <sup title="{{ dolgn.data[people['data'][k6]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][k6]['dop']['dolgnost']]['head'][:3] }}.</sup>
+                </div>
+            </nobr>
+
+            {# { pa(v6) } #}
+
+            {% for k7, v7 in v6 %} 
+
+                <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >Отработано {{ v7.hours }} ч.</abbr>
+
+                {# { pa(k7) } #}
+                {{ pa(v7)|raw }}
+
+                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                    <div class="btn-group action" role="group">
+                        <b class="btn btn-xs btn-light" style="font-weight: bold;">
+                            Платим
+                        </b>
+
+                        <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'show' %} btn-success {% else%} btn-light {% endif %} save_edit_item" 
+                           onclick="$('.act{{ k7 }}').removeClass('btn-success');
+                                   $(this).removeClass('btn-light').addClass('btn-success');"
+
+                           act="replace"
+                           table="mitems-dops"
+
+                           where_1_k="id_item" 
+                           where_1_v="{{ k7 }}" 
+
+                           where_2_k="name" 
+                           where_2_v="item1" 
+
+                           set_1_k="value"
+                           set_1_v="item1"
+
+                           s='{{ creatSecret( k7 ) }}' 
+
+                           for_res2="show2s{{ k7 }}" 
+                           for_res2_text="ok" 
+
+                           >
+                            рано
+                        </a>
+
+                        <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'hide' %} btn-success {% else%} btn-light {% endif %} edit_item" 
+                           onclick="$('.act{{ k7 }}').removeClass('btn-success');
+                                   $(this).removeClass('btn-light').addClass('btn-success');"
+
+                           alt="pay_check" 
+                           rev="item2" 
+                           rel="{{ k7 }}" 
+                           s='{{ creatSecret( k7 ) }}' 
+
+                           for_res2="show2s{{ k7 }}" 
+                           for_res2_text="ok" 
+
+                           >
+                            ок
+                        </a>
+                        <b id="show2s{{ k7 }}" class="btn btn-xs btn-light" style="font-weight: bold;"></b>
+
+                    </div>
+                </div>      
+
+            {% endfor %}
+
+
+
+        {% endfor %}
+
+    {% endif %}
+
+
+
+
+    {# добавляем тех кого не было, чтобы добавим им смены, переводы, взыскания #}
+
+    {% for pk, pv in people.data if pv.dop.sale_point == spoint.id %} 
+
+        {# { pa(pv) } #}
+        <nobr>
+            <a href="#" class="job_man_in_graph def" onclick="$('#jobman{{ pk }}_{{ r2 }}').toggle('slow');
+                    return false;">
+                {{ people.data[pk]['head'] }} 
+                <sup title="{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'][:3] }}.</sup>
+            </a>
+        </nobr>
+
+        <div id="res{{ spoint.id }}{{ pv.id }}{{ nowd }}" ></div>
+
+        <div class="act_personal_def" id="jobman{{ pk }}_{{ r2 }}">
+            <a href="" class="put_var_in_modal" 
+
+               data-toggle2="modal" 
+               data-target2="#add_jobday_for_jobman" 
+
+               jobman="{{ pv.id }}"
+               salepoint="{{ spoint.id }}"
+
+               toform_sp="{{ spoint.id }}"
+               toform_sp_name="{{ spoint.head }}"
+
+               toform_jobman="{{ pv.id }}"
+               toform_jobman_name="{{ pv.head }}"
+
+               date="{{ nowd }}"
+               print_res_to_id="res{{ spoint.id }}{{ pv.id }}{{ nowd }}"
+
+               {% set ss = spoint.id ~ pv.id %}
+               id2="{{ ss }}"
+               s2="{{ creatSecret( ss ) }}"
+
+               ><span class="fa fa-plus" ></span> смену</a>
+            <a href=""><span class="fa fa-minus" ></span> взыскание</a>
+            <a href=""><span class="fa fa-arrow-left" ></span> отправить на работу в другую точку</a>
+
+        </div>
+
+    {% endfor %}
+
+    {# % for k1, v1 in job_in.data if v1.dop.sale_point == spoint_id % #} 
+
+    {# { people.data[v1.jobman]['head'] }}
+    {{ pa(v1.dop)|raw }}
+    {{ pa(people.data)|raw } #}
+
+    {# % endfor % #}
+
+{% endif %}

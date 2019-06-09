@@ -1,0 +1,81 @@
+<!-- Button trigger modal -->
+{#
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_jobday_for_jobman">
+#}
+
+{#
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Запустить модальное окно
+</button>
+#}
+
+{# <!-- Modal добавка смены работнику --> #}
+<div class="modal fade" id="add_jobday_for_jobman" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавляем рабочу смену</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="" method="post" id="add_new_smena">
+
+                <div class="modal-body">
+
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Кто</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
+                            <input type="hidden" id="toform_jobman" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
+                            <input type="hidden" id="toform_sp" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Старт работы</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" name="date" id="date" value="" style="width: 120px; display: inline-block;" >
+                            <input type="time" class="form-control -plaintext" name="start_time" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Стоп работы</label>
+                        <div class="col-sm-10">
+                            <input type="time" class="form-control -plaintext" name="fin_time" id="toform_fin_date_time" value="" required="" style="width: 120px;" >
+                            <small>Если время сдачи смены после 12 ночи, ставте 01:00 например</small>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    
+                    {#
+                  <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
+                  #}
+                    
+                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <input type="hidden" name="action" id="action" value="add_new_smena" >
+                    <input type="hidden" name="id2" id="id2" value="" >
+                    <input type="hidden" name="s2" id="s2" value="" >
+                    <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                    <input type="hidden" name="data-target2" id="data-target2" value="" >
+                    <input type="hidden" name="jobman" id="jobman" value="" >
+                    <input type="hidden" name="salepoint" id="salepoint" value="" >
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

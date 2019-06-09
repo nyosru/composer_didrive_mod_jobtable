@@ -1,0 +1,84 @@
+    
+{% set spt = readItems( 'sale_point_job', null )  %}
+{# { pa(spt.data)|raw } #}
+        {% if 1 == 2 %}
+    
+    <table class="table table-sm table-bordered" >
+        <thead>
+            <tr>
+                <th rowspan="2">Дата</th>
+                <th rowspan="2">Выручка</th>
+                <th colspan="2">Оценка работы</th>
+                <th colspan="2">Время ожидания</th>
+            </tr>
+            <tr>
+                <th>Авто</th>
+                <th>Управляющего</th>
+                <th>Норма</th>
+                <th>По факту</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% endif %}
+            
+            {% for k, v in spt.data %}
+            {% if v.dop.sale_point == get.id %}
+                {#
+                <tr><td>
+                {{ pa(v) }}
+                    </td></tr>
+  [date] => 2019-06-06
+            [sale_point] => 11
+            [vuruchka] => 60000
+            [ocenka_auto] => 4
+            [time_wait_norm] => 60
+            [time_wait] => 150                
+                #}
+            <tr>
+                <td>{{ get.id }} - {{ v.dop.date }}</td>
+                <td>{{ v.dop.vuruchka }}</td>
+                <td>{{ v.dop.ocenka_auto }}</td>
+                <td>{{ v.dop.wait }}</td>
+                <td>{{ v.dop.wait_norm }}</td>
+            </tr>
+                {% else %}
+            <tr>
+                <td>-- {{ get.id }} - {{ v.dop.date }}</td>
+                <td>{{ v.dop.vuruchka|number_format(0, '.', '`') }}</td>
+                <td>{{ v.dop.ocenka_auto }}</td>
+                <td>{{ v.dop.ocenka_admin }}</td>
+                {#
+                <td>{{ pa(v) }}</td>
+                #}
+                <td>{{ v.dop.wait }}</td>
+                <td>{{ v.dop.wait_norm }}</td>
+            </tr>
+                
+            {% endif %}
+            {% endfor %}
+
+        {% if 1 == 2 %}
+        </tbody>
+        <form action="" method="POST" id="f{{ get.id }}" >
+        <tfoot>
+            <tr>
+                <td colspan="7">Добавить запись
+                    {# { pa(constant('post')) } #}
+                </td>
+            </tr>
+            <tr>
+                <td><input type="date" value="" name="f[date]"></td>
+                <td><input type="number" value="" name="f[vuruchka]"></td>
+                <td>- авто оценка -</td>
+                <td><input type="number"  name="f[ocenka_admin]" min="1" step="1" max="5"></td>
+                <td>- норма -</td>
+                <td><input type="number"  name="f[time_wait]"  min="10" step="5" max="300"></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: right;"><input type="submit" onclick="$('#f{{ get.id }}').submit();" value="Добавить" class="btn btn-success btn-xs" name="add_option_sp_job"></td>
+            </tr>
+        </tfoot>
+        </form>
+    </table>
+                    {% endif %}
