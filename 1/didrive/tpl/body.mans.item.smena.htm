@@ -1,0 +1,189 @@
+{% spaceless %}
+
+    {#{ pa(v1) }#}
+    
+    <div class="text-center show_down_hiden
+
+         {% set user_smena_status = '' %}
+
+         {% if v1.status == 'hide' %}
+             smena_cancel
+         {% elseif v1.status == 'show' %}
+
+             {# чел начал смену и не закончил #}
+             {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'user' %}
+
+                 {% if v1.dop.error_added is defined and v1.dop.error_added == 'yes' %}
+                     {% set user_smena_status = 'add_error' %}
+                     smena_started_error                                 
+                 {% elseif v1.dop.start is defined and v1.dop.fin is not defined %}
+                     {% set user_smena_status = 'add' %}
+                     smena_started
+                 {% elseif v1.dop.start is defined and v1.dop.fin is defined %}
+                     {% set user_smena_status = 'add_ok' %}
+                     smena_started_ok
+                 {% endif %}
+
+             {% else %}
+
+
+                 {% if v1.dop.pay_check == 'yes' %}
+                     pay_check
+                     {% if v1.dop.pay_check == 'yes' %}
+                         pay_check
+                     {% endif %}
+                 {% else %}
+                     smena_ok
+                 {% endif %}
+
+             {% endif %}
+         {% endif %}
+
+         ">
+        <nobr>
+
+            <div class="point_div text-center" 
+                 onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');" 
+                 onload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();">
+
+                {% if v1.dop.start is defined and v1.dop.fin is not defined %}
+                    {{ v1.dop.start|date("H:i") }} - ...
+                {% elseif v1.dop.start|date("d-m-Y") == v1.dop.fin|date("d-m-Y") %}
+                    {{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}
+                {% else %}
+                    {{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }}
+                {% endif %}
+
+            </div>
+
+            {% if user_smena_status == 'add' %}
+                {#% if user_smena_status == '' or user_smena_status == 'add_error' or user_smena_status == 'add' %#}
+            {% else %}
+
+                {% if v1.status == 'hide' %}
+                    <span class="hide_down" >
+                        удалённая смена
+                    </span>
+
+                {% elseif v1.status == 'show' %}
+
+                    {% if v1.dop.pay_check == 'yes' %}
+
+                        <span class="hide_down" >
+                            отправлено в бух. ожидает оплаты
+                        </span>
+
+                        <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }}" 
+                           style='display:none;'
+                           {# действие после вопроса #}
+                           comit_answer="Отменить разрешение на оплату смены ?"
+
+                           {# замена доп параметра #}
+                           action="edit_dop_item"
+
+                           {# модуль итемов #}
+                           itemsmod="050.chekin_checkout"
+                           {# id итема #}
+                           item_id="{{ k1 }}"
+                           {# название доп параметра #}
+                           dop_name="pay_check"
+                           {# новое значение параметра #}
+                           dop_new_value="no"
+
+                           {# секрет #}
+                           s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-no' ) }}" 
+
+                           {# скрыть ссылку после клика #}
+                           hidethis="da" 
+                           {# сделать видимым блок по id #}
+                           show_id="ares{{ k1 }}" 
+                           {# id куда печатаем результат #}
+                           res_to_id="ares{{ k1 }}" 
+                           {# сообщение печатаем если всё ок #}
+                           msg_to_success="Отменено"
+
+                           {# print_res_to_id="ares{{ k1 }}" #}
+
+                           >Отозвать разрешение на оплату</a>
+
+
+                    {% else %}
+
+                        <a href="#" class="btn3 edit_items_dop_values" 
+
+                           {# действие после вопроса #}
+                           comit_answer="Отправляем на оплату ?"
+
+                           {# замена доп параметра #}
+                           action="edit_dop_item"
+
+                           {# модуль итемов #}
+                           itemsmod="050.chekin_checkout"
+                           {# id итема #}
+                           item_id="{{ k1 }}"
+                           {# название доп параметра #}
+                           dop_name="pay_check"
+                           {# новое значение параметра #}
+                           dop_new_value="yes"
+
+                           {# секрет #}
+                           s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-yes' ) }}" 
+
+                           {# скрыть ссылку после клика #}
+                           hidethis="da" 
+                           {# сделать видимым блок по id #}
+                           show_id="ares{{ k1 }}" 
+                           {# id куда печатаем результат #}
+                           res_to_id="ares{{ k1 }}" 
+                           {# сообщение печатаем если всё ок #}
+                           msg_to_success="Отправили на оплату, спасибо"
+
+                           {# print_res_to_id="ares{{ k1 }}" #}
+
+                           >Отправить на оплату 2</a>
+
+                    {% endif %}
+
+                    {# { pa(v1) } #}
+
+                {% endif %}
+            {% endif %}
+
+            <span class="xhide_down" style="display:none;" id="drop2_{{ k1 }}">
+
+                {% if v1.status == 'hide' %}
+                    <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
+
+                       action="recover_smena" 
+                       go_answer="Хотите восстановить смену ?"
+                       id2="{{ k1 }}" 
+                       s2="{{ creatSecret( k1 ) }}" 
+                       resto="ares{{ k1 }}" 
+                       show_id="ares{{ k1 }}" 
+                       hidethis="da" 
+
+                       >восстановить</a>
+                {% elseif v1.status == 'show' %}
+
+                    <a href="#" class="act act_smena btn3" 
+                       go_answer="Хотите удалить смену ?"
+                       action="delete_smena" id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >удалить смену</a>
+
+                {% endif %}
+
+            </span>
+
+            <div id="ares{{ k1 }}" style="display:none;"></div>
+
+            {# { pa(v1) } #}
+
+        </nobr>
+    </div>
+
+    {#
+    <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
+        Отработано {{ v7.hours }} ч.
+    </abbr>
+    #}
+
+{% endspaceless %}
