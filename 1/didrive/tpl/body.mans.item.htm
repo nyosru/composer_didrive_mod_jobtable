@@ -1,0 +1,127 @@
+{% spaceless %}
+
+    {% set msg = '' %}
+    {% if type_select == 'def' %}
+        {% set jobs2 = jobs %}
+        {# pa(jobs2) } #}  
+        {% for sp3, v01 in jobs2 %}
+            {% for dt, v02 in v01 if dt == now_date %}
+                {% for user7, v03 in v02 if user7 == man1.id %}
+                    {# { pa(v02) } #}
+                    {% set msg = "<abbr title='сегодня работает на точке продаж - "~sp.data[sp3]['head']~"' ><b>"~ sp.data[sp3]['head'] ~"</b></abbr>" %}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    <a href="#" xclass="job_man_in_graph" onclick="$('#j{{ r2 }}_{{ man1.id }}').toggle('slow');
+            return false;">
+        <div class="job_man_in_graph {% if msg == '' %}{{ type }}{% else %}job_other{% endif %}">
+            <nobr>
+                {#{ man1.head }#} 
+                <sup title="{{ dolgn.data[man1['dop']['dolgnost']]['head'] }}">{{ dolgn.data[man1['dop']['dolgnost']]['head'][:3] }}.</sup>
+                {% if msg != '' %}
+                    <br/>
+                    {{ msg|raw }}
+                {% endif %}
+            </nobr>
+        </div>
+    </a>
+
+
+
+
+    {#
+        <nobr>
+            <a href="#" class="job_man_in_graph def" onclick="$('#jobman{{ pk }}_{{ r2 }}').toggle('slow');
+                return false;">
+                {{ people.data[pk]['head'] }} 
+                <sup title="{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'][:3] }}.</sup>
+            </a>
+        </nobr>
+    #}
+
+
+
+    {% set rr = random(9000) %}
+
+    <div id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}" class="list_otrezki" >
+
+        {# { pa(checki) } #}
+        
+        {% if checki[now_date][man1.id] is defined %}
+
+            {% for k1, v1 in checki[now_date][man1.id] if v1.dop.sale_point == spoint.id %} 
+
+            {#% set array_job_people = [] %#}
+            {% set array_job_people = array_job_people|merge([v1.id]) %}
+
+                {# смена #}
+                {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
+                
+            {% endfor %}
+
+        {% endif %}
+        
+        {# взыскания #}
+        {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
+
+    </div>
+
+
+
+    <div class="act_personal_def" id="j{{ r2 }}_{{ man1.id }}">
+        <a href="" class="put_var_in_modal" 
+
+           data-toggle2="modal" 
+           data-target2="#add_jobday_for_jobman" 
+
+           jobman="{{ man1.id }}"
+           salepoint="{{ spoint.id }}"
+
+           toform_sp="{{ spoint.id }}"
+           toform_sp_name="{{ spoint.head }}"
+
+           toform_jobman="{{ man1.id }}"
+           toform_jobman_name="{{ man1.head }}"
+
+           date="{{ now_date }}"
+           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
+
+           {% set ss = spoint.id ~ pv.id %}
+           id2="{{ ss }}"
+           s2="{{ creatSecret( ss ) }}"
+
+           ><span class="fa fa-plus" ></span> смену</a>
+        <a href=""
+
+           class="put_var_in_modal" 
+
+           jobman="{{ man1.id }}"
+           salepoint="{{ spoint.id }}"
+
+           toform_sp="{{ spoint.id }}"
+           toform_sp_name="{{ spoint.head }}"
+
+           toform_jobman="{{ man1.id }}"
+           toform_jobman_name="{{ man1.head }}"
+
+           date="{{ now_date }}"
+           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
+
+           {% set ss = spoint.id ~ pv.id %}
+           id2="{{ ss }}"
+           s2="{{ creatSecret( ss ) }}"
+
+
+           data-target2="#add_minus_for_jobman"
+
+           ><span class="fa fa-minus" ></span> взыскание</a>
+           {#
+        <a href=""><span class="fa fa-arrow-left" ></span> отправить на работу в другую точку</a>
+        #}
+
+    </div>
+
+
+{% endspaceless %}
