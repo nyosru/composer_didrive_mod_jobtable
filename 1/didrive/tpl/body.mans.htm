@@ -1,61 +1,73 @@
 {% spaceless %}
 
     {# { now_date } #}
-    
-    {% set r2 = random() %}
 
+    {% set r2 = random() %}
 
     {#{ pa(checki) }#}
     {#{ pa(checki[now_date]) }#}
     {#{ pa(jobs) } #}
-    {#{ pa(man) }#}
+    {#{ pa(mans) }#}
     {#{ pa(jobs[spoint.id]) }#}
 
     {% set array_job_people = [] %}
 
-    {% for type_select, v0 in jobs[spoint.id] if type_select == 'def' or type_select == now_date %} 
+    {#{ pa(jobs[spoint.id]) }#}
 
-        {% for k, v123 in v0 if man.data[k] is defined %} 
+    {#% for type_select, job_list_mans in jobs[spoint.id] if type_select == 'def' or type_select == now_date %#} 
+    {% for type_select, job_list_mans in jobs[spoint.id] %} 
 
-            {% set type = '' %}
+        {#
+        job_list_mans
+        {{ pa(job_list_mans) }}
+        #}
 
-            {% if type_select == 'def' %}
+        {% for user_id, v123 in job_list_mans if mans.data[user_id] is defined %} 
 
-                {% if man.data[k]['dop']['fulljob_start'] is defined and man.data[k]['dop']['fulljob_start']|length > 1 and man.data[k]['dop']['fulljob_start']|date('U') <= now_date|date('U') %}
-                    {% set type = 'norm' %}
-                {% elseif man.data[k]['dop']['stagirovka_start'] is defined and man.data[k]['dop']['stagirovka_start']|length > 1 and man.data[k]['dop']['stagirovka_start']|date('U') <= now_date|date('U') %}
-                    {% set type = 'stag' %}
-                {% endif %}
+            {#{ pa(user_id) }#}
+            {#{ pa(mans.data[user_id]) }#}
 
-                {% if man.data[k]['dop']['job_end'] is defined and man.data[k]['dop']['job_end']|length > 1  and man.data[k]['dop']['job_end']|date('U') >= now_date|date('U') %}
-                    {% set type = '' %}
-                {% endif %}
+            {% set jobman = mans.data[user_id] %}
 
-            {% elseif type_select == now_date %}
-                {% set type = 'spec' %}
+            {% set nowjob = 0 %}
+
+            {# проверяем работает в этот день или нет #}
+            {% if ( jobman['dop']['stagirovka_start']|date('U') <= now_date|date('U') or jobman['dop']['fulljob_start']|date('U') <= now_date|date('U') ) and ( jobman['dop']['job_end']|date('U') >= now_date|date('U') or jobman['dop']['job_end'] == '' ) %}
+
+                {% set nowjob = 1 %}
+
             {% endif %}
 
-            {# { type } #}
+            {# если работает в этот день #}
 
-            {% if type == 'stag' or type == 'norm' or type == 'spec' %}
+            {% if nowjob == 1 %}
 
+                {#{ jobman['head'] }#}
+                {#{ pa(jobman) }#}
 
+                {% set array_job_people = array_job_people|merge([man1.id]) %}
 
+                {% set type = '' %}
 
-                {# { pa(man.data[k]) } #}
+                {% if type_select == now_date %}
 
-                {#
-                чел работает инфа по нему
-                #}
+                    {% set type = 'spec' %}
+                    
+                {% elseif jobman['dop']['job_end'] is defined and jobman['dop']['job_end']|length > 1  and now_date|date('U') > jobman['dop']['job_end']|date('U') %}
 
-                {% if man.data[k] is defined %}
+                {% elseif jobman['dop']['fulljob_start'] is defined and jobman['dop']['fulljob_start']|length > 1 and jobman['dop']['fulljob_start']|date('U') <= now_date|date('U') %}
 
-                    {% set man1 = man.data[k] %}
-                    {% set array_job_people = array_job_people|merge([man1.id]) %}
+                    {% set type = 'norm' %}
 
-                    {% include dir_mod_now_mod_ditpl~'body.mans.item.htm' %}
+                {% elseif jobman['dop']['stagirovka_start'] is defined and jobman['dop']['stagirovka_start']|length > 1 and now_date|date('U') >= jobman['dop']['stagirovka_start']|date('U') %}
+
+                    {% set type = 'stag' %}
 
                 {% endif %}
+
+                [{{ type }}]
+                
+                {% include dir_mod_now_mod_ditpl~'body.mans.item.htm' %}
 
             {% endif %}
 
@@ -113,7 +125,7 @@
                     {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
 
                 {% endif %} 
-                
+
             {% endfor %} 
         {% endfor %} 
 

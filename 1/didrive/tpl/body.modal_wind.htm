@@ -58,13 +58,27 @@
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Оценка</label>
+                        <div class="col-sm-10">
+                            <select class="form-control -plaintext" name="ocenka" id="toform_ocenka" style="width: 120px;" >
+                                <option value="">оценка</option>
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                            </select>
+                            <small>от 5 до 2</small>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
-                    
+
                     {#
                   <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
                   #}
-                    
+
                     <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
                     <input type="hidden" name="action" id="action" value="add_new_smena" >
                     <input type="hidden" name="id2" id="id2" value="" >
@@ -73,13 +87,99 @@
                     <input type="hidden" name="data-target2" id="data-target2" value="" >
                     <input type="hidden" name="jobman" id="jobman" value="" >
                     <input type="hidden" name="salepoint" id="salepoint" value="" >
-                    
+
                 </div>
             </form>
         </div>
     </div>
 </div>
-                    
+
+
+{# <!-- Modal отправляем работника на другую точку в этот день --> #}
+<div class="modal fade" id="add_perenos_jobman" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Отправляем на работу в другую точку</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="" method="post" id="goto_other_sp">
+
+                <div class="modal-body">
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Дата</label>
+                        <div class="col-sm-10">
+                            <input type="date" name="date" readonly class="form-control -plaintext" id="toform_date" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Кто</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
+                            <input type="hidden" id="toform_jobman" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
+                        <div class="col-sm-10">
+                            <select name='toform_sp' class="form-control" >
+                                {% for k,sp4 in sp.data if sp4.head != 'default' and sp4.status == 'show' %}
+                                    <option value='{{ sp4.id }}'>{{ sp4.id }} {{ sp4.head }}</option>
+                                {% endfor %}
+                            </select>
+                            {#
+                            <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
+                            <input type="hidden" id="toform_sp" value="">
+                            #}
+                        </div>
+                    </div>
+
+                    {#
+                <div class="form-group row">
+                    <label for="staticEmail" class="col-sm-2 col-form-label">Старт работы</label>
+                    <div class="col-sm-10">
+                        <input type="text" readonly class="form-control -plaintext" name="date" id="date" value="" style="width: 120px; display: inline-block;" >
+                        <input type="time" class="form-control -plaintext" name="start_time" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Стоп работы</label>
+                    <div class="col-sm-10">
+                        <input type="time" class="form-control -plaintext" name="fin_time" id="toform_fin_date_time" value="" required="" style="width: 120px;" >
+                        <small>Если время сдачи смены после 12 ночи, ставте 01:00 например</small>
+                    </div>
+                </div>
+#}
+                </div>
+                <div class="modal-footer">
+
+                    {#
+                  <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
+                  #}
+
+                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <input type="hidden" name="action" id="action" value="goto_other_sp" >
+                    <input type="hidden" name="id2" id="id2" value="" >
+                    <input type="hidden" name="s2" id="s2" value="" >
+                    <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                    <input type="hidden" name="data-target2" id="data-target2" value="" >
+                    <input type="hidden" name="jobman" id="jobman" value="" >
+                    <input type="hidden" name="salepoint" id="salepoint" value="" >
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 {# <!-- Modal добавить взыскание --> #}
 <div class="modal fade add_values" id="add_minus_for_jobman" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -113,7 +213,7 @@
                             <input type="hidden" id="toform_sp" value="">
                         </div>
                     </div>
-                    
+
                     <div class="form-group row">
                         <label for="staticEmail" class="col-sm-2 col-form-label">Когда</label>
                         <div class="col-sm-10">
@@ -139,11 +239,11 @@
 
                 </div>
                 <div class="modal-footer">
-                    
+
                     {#
                   <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
                   #}
-                    
+
                     <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
                     <input type="hidden" name="action" id="action" value="add_new_minus" >
                     <input type="hidden" name="id2" id="id2" value="" >
@@ -152,11 +252,89 @@
                     <input type="hidden" name="data-target2" id="data-target2" value="" >
                     <input type="hidden" name="jobman" id="jobman" value="" >
                     <input type="hidden" name="salepoint" id="salepoint" value="" >
-                    
+
                 </div>
             </form>
         </div>
     </div>
 </div>
-                    
-                    
+
+
+{# <!-- Modal добавить премию --> #}
+<div class="modal fade add_values" id="add_plus_for_jobman" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить премию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="" method="post" id="add_minus">
+
+                <div class="modal-body">
+
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Кто</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
+                            <input type="hidden" id="toform_jobman" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
+                            <input type="hidden" id="toform_sp" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Когда</label>
+                        <div class="col-sm-10">
+                            <input type="date" readonly class="form-control" name="date" id="date" value="" xstyle="width: 120px; display: inline-block;" >
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Сумма премии</label>
+                        <div class="col-sm-10">
+                            <input type="number" max="100000" min="0" step="1" class="form-control -plaintext" name="summa" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
+                            <br/>
+                            <small>например 700р</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Комментарий</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="text" ></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    {#
+                  <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
+                  #}
+
+                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <input type="hidden" name="action" id="action" value="add_new_plus" >
+                    <input type="hidden" name="id2" id="id2" value="" >
+                    <input type="hidden" name="s2" id="s2" value="" >
+                    <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                    <input type="hidden" name="data-target2" id="data-target2" value="" >
+                    <input type="hidden" name="jobman" id="jobman" value="" >
+                    <input type="hidden" name="salepoint" id="salepoint" value="" >
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

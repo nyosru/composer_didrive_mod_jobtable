@@ -1,0 +1,47 @@
+{% spaceless %}
+
+    {#
+    {{ pa(spoint) }}
+    {{ pa(date) }}
+    {{ pa(man) }}
+    #}
+
+    {% if checki[date][man.id] is defined %}
+        {% for k1, v1 in checki[date][man.id] %} 
+
+            {#{ pa(v1) }#}
+
+            {# смена #}
+            {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
+
+        {% endfor %}
+    {% endif %}
+
+    <a href="" class="put_var_in_modal" 
+
+       data-toggle2="modal" 
+       data-target2="#add_jobday_for_jobman" 
+
+       jobman="{{ man.id }}"
+       salepoint="{{ spoint.id }}"
+
+       toform_sp="{{ spoint.id }}"
+       toform_sp_name="{{ spoint.head }}"
+
+       toform_jobman="{{ man.id }}"
+       toform_jobman_name="{{ man.head }}"
+
+       date="{{ date }}"
+       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}"
+
+       {% set ss = spoint.id ~ man.id %}
+       id2="{{ ss }}"
+       s2="{{ creatSecret( ss ) }}"
+
+       ><nobr><span class="fa fa-plus" ></span> смену</nobr></a>
+
+       
+    <div id="res{{ spoint.id }}{{ man.id }}{{ date }}" ></div>
+
+
+{% endspaceless %}
