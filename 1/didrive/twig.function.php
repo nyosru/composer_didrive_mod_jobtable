@@ -574,6 +574,48 @@ $function = new Twig_SimpleFunction('get_minusa', function ( $db, string $date_s
 $twig->addFunction($function);
 
 
+$function = new Twig_SimpleFunction('getComments', function ( $db, string $date_start, string $date_finish, $sp = null , $jobman = null ) {
+
+    \Nyos\mod\items::$sql_itemsdop_add_where = '
+        ( midop.name != \'date\' OR
+            ( 
+                midop.name = \'date\' AND 
+                midop.value >= date(\'' . $date_start . '\') AND 
+                midop.value <= date(\'' . $date_finish . '\') 
+            )
+        )
+        ';
+    
+    if( !empty($sp) ){
+    \Nyos\mod\items::$sql_itemsdop_add_where .= '
+        AND ( midop.name != \'sale_point\' OR
+            ( 
+                midop.name = \'sale_point\' AND 
+                midop.value = \'' . addslashes($sp) . '\'
+            )
+        )
+        ';
+    }
+    
+    if( !empty($jobman) ){
+    \Nyos\mod\items::$sql_itemsdop_add_where .= '
+        AND ( midop.name != \'jobman\' OR
+            ( 
+                midop.name = \'jobman\' AND 
+                midop.value = \'' . addslashes($jobman) . '\'
+            )
+        )
+        ';
+    }
+    
+    $vv['comments'] = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '073.comments', '', null);
+    // \f\pa($vv['checks']);
+
+    return $vv['comments'];
+});
+$twig->addFunction($function);
+
+
 
 $function = new Twig_SimpleFunction('get_plusa', function ( $db, string $date_start, string $date_finish ) {
 

@@ -2,7 +2,7 @@
     "name": "didrive_mod/jobdesc",
     "description": "Реестр работ связка модулей отделы + работники + выход на работу",
     
-    "version": "0.0.7",
+    "version": "0.0.8",
     
     "keywords": [
         "didrive", "module", "nyos", "uralweb.info"
