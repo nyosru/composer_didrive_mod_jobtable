@@ -103,6 +103,7 @@ class JobDesc {
         $d = array('jobs' => []);
 
         foreach ($jobs['data'] as $k => $v) {
+            $v['dop']['d'] = $v;
             $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
         }
 

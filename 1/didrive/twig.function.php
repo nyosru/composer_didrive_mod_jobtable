@@ -506,9 +506,9 @@ $function = new Twig_SimpleFunction('get_checki', function ( string $date_start,
     $ud_fin = strtotime($date_finish);
 
     \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
-                ( midop.name != \'start\' OR ( midop.name = \'start\' AND midop.value >= date(\'' . $date_start . '\') ) )
+                ( midop.name != \'start\' OR ( midop.name = \'start\' AND midop.value_DATE >= date(\'' . $date_start . '\') ) )
                     OR
-                ( midop.name != \'fin\' OR ( midop.name = \'fin\' AND midop.value <= date(\'' . date('Y-m-d', $ud_fin + 3600 * 24) . '\') ) )
+                ( midop.name != \'fin\' OR ( midop.name = \'fin\' AND midop.value_date <= date(\'' . date('Y-m-d', $ud_fin + 3600 * 24) . '\') ) )
         )
         ';
     //$checks = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '050.chekin_checkout', 'show', null);
@@ -535,7 +535,7 @@ $function = new Twig_SimpleFunction('get_checki', function ( string $date_start,
                 if (isset($check['dop']['fin'])) {
 
                     $check['dop']['time_on_job'] = ( ceil(strtotime($check['dop']['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['dop']['start']) / 1800) * 1800 );
-                    $check['dop']['hour_on_job'] = ceil($check['dop']['time_on_job'] / 1800) * 1800;
+                    $check['dop']['hour_on_job'] = ceil($check['dop']['time_on_job'] / 1800) / 2 ;
                     // $check['dop']['polhour'] = ceil($check['dop']['time_on_job'] / 1800)*1800;
                     // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
                 }

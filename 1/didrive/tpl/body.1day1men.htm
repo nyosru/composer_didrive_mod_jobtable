@@ -7,7 +7,7 @@
     #}
 
     {% if checki[date][man.id] is defined %}
-        {% for k1, v1 in checki[date][man.id] %} 
+        {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
 
             {#{ pa(v1) }#}
 

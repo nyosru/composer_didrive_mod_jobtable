@@ -1,5 +1,8 @@
 {% spaceless %}
 
+    
+    <script src="/js/numberformat.js" ></script>
+    
     {% set sp = readItems( 'sale_point', null )  %}
     {# { pa(sp.data)|raw } #}
 
@@ -292,6 +295,16 @@
                         <div class="tcell" {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
                             {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
                             {{ nd|date("d.m") }}
+                            
+                            {% if nd|date("N") == 1 %}Пн
+                            {% elseif nd|date("N") == 2 %}Вт
+                            {% elseif nd|date("N") == 3 %}Ср
+                            {% elseif nd|date("N") == 4 %}Чт
+                            {% elseif nd|date("N") == 5 %}Пт
+                            {% elseif nd|date("N") == 6 %}Сб
+                            {% elseif nd|date("N") == 7 %}Вс
+                            {% endif %}
+                            
                             {#
                             <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
                                                 return false;">
@@ -344,19 +357,25 @@
 
                     <div class="trow">
                         <div class="tcell stick-left bg-white">
+
                             {#
                             user #{{ user5 }} 
                             #}
 
                             {% set man = mans['data'][user5] %}
-                            
+
+                            {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
+                            {#{ pa(now_job.dolgnost) }#}
+
                             <nobr>
+
+                                {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
+                                <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
                                 
                                 {{ man['dop']['lastName'] }}
                                 {{ man['dop']['firstName'] }}
                                 {#{ pa(man_now) }#}
                                 {#% set man1 = man['data'][v1.dop.jobman] %#}
-                                <sup title="{{ dolgn.data[man['dop']['dolgnost']]['head'] }}">{{ dolgn.data[man['dop']['dolgnost']]['head'][:6] }}</sup>
 
                                 {% if type_job == 'spec' %}
                                     <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
@@ -386,7 +405,7 @@
                                     {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
 
                                     {#{ pa(now_job) }#}
-                                    
+
                                     {% if now_job == false %}
                                     {% else %}
 
@@ -434,11 +453,13 @@
                         {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                             <div class="tcell">
-
+                                
+                                <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
+                                
                                 {% if hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] is defined %}
                                     отработанных часов {{ hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] }}
                                 {% endif %}
-
+                                
                                 {#
                                 0+
                                 {{ pa(show_date_total( db, now_date2 )) }}
