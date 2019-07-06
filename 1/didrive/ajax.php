@@ -67,7 +67,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
 }
 //
 elseif (
-        isset($_POST['action']) && ( $_POST['action'] == 'add_new_smena' || $_POST['action'] == 'confirm_smena')
+        isset($_POST['action']) && ( $_POST['action'] == 'add_new_smena' || $_POST['action'] == 'confirm_smena' || $_POST['action'] == 'goto_other_sp')
 ) {
     // action=add_new_smena
 
@@ -75,7 +75,54 @@ elseif (
 
         require_once DR . '/all/ajax.start.php';
 
-        if ($_POST['action'] == 'add_new_smena') {
+        // action=add_new_smena
+        // \f\pa($_POST);
+        // [date] => 2019-06-27
+        // [toform_sp] => 2611
+        // [action] => goto_other_sp
+        // [id2] => 10    
+        // [jobman] => 1886        
+        /**
+         * отправляем сотрудника на другую точку
+         */
+        if ($_POST['action'] == 'goto_other_sp') {
+
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+                require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+
+            // если старт часов меньше часов сдачи
+            if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
+                //$b .= '<br/>'.__LINE__;
+                $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
+                $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']) + 3600 * 24;
+            }
+            // если старт часов больше часов сдачи
+            else {
+                //$b .= '<br/>'.__LINE__;
+                $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
+                $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']);
+            }
+
+            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], array(
+                'head' => rand(100, 100000),
+                'jobman' => $_REQUEST['jobman'],
+                'sale_point' => $_REQUEST['salepoint'],
+                'start' => date('Y-m-d H:i', $start_time),
+                'fin' => date('Y-m-d H:i', $fin_time)
+            ));
+
+            \f\end2('<div>'
+                    . '<nobr><b class="warn" >смена добавлена</b>'
+                    . '<br/>'
+                    . date('d.m.y H:i', $start_time) . ' - ' . date('d.m.y H:i', $fin_time)
+                    . '</nobr>'
+                    . '</div>', true);
+        }
+        //
+        elseif ($_POST['action'] == 'add_new_smena') {
 
             if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
                 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
@@ -123,11 +170,11 @@ elseif (
             $ff = $db->prepare('INSERT INTO `mitems-dops` ( `id_item`, `name`, `value` ) values ( :id, \'pay_check\', \'yes\' ) ');
             $ff->execute(array(':id' => (int) $_POST['id2']));
 
-            \f\end2( '<div>'
-                        . '<nobr>'
-                            . '<b class="warn" >отправлено на оплату</b>'
-                        . '</nobr>'
-                    . '</div>', true );
+            \f\end2('<div>'
+                    . '<nobr>'
+                    . '<b class="warn" >отправлено на оплату</b>'
+                    . '</nobr>'
+                    . '</div>', true);
         }
         //
         elseif ($_POST['action'] == 'edit_items_dop') {
@@ -141,13 +188,12 @@ elseif (
             $ff = $db->prepare('INSERT INTO `mitems-dops` ( `id_item`, `name`, `value` ) values ( :id, \'pay_check\', \'yes\' ) ');
             $ff->execute(array(':id' => (int) $_POST['id2']));
 
-            \f\end2( '<div>'
-                        . '<nobr>'
-                            . '<b class="warn" >отправлено на оплату</b>'
-                        . '</nobr>'
-                    . '</div>', true );
+            \f\end2('<div>'
+                    . '<nobr>'
+                    . '<b class="warn" >отправлено на оплату</b>'
+                    . '</nobr>'
+                    . '</div>', true);
         }
-        
     } catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
@@ -168,6 +214,7 @@ elseif (
         \f\end2($e, true);
     }
 }
+
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
     // action=add_new_smena
@@ -207,6 +254,77 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
                 . $_REQUEST['summa']
                 . '<br/>'
                 . '<small>' . $_REQUEST['text'] . '</small>'
+//                . (
+//                $dd === true ?
+//                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
+//                )
+                // .'окей '.$b
+//                . '</br>'
+//                . $b
+//                . '</br>'
+//                . $r
+                . '</nobr>'
+                . '</div>', true);
+    } catch (\Exception $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    } catch (\PDOException $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    }
+}
+//
+elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
+    // action=add_new_smena
+
+    try {
+
+        require_once DR . '/all/ajax.start.php';
+
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+
+        \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.plus'], array(
+            // 'head' => rand(100, 100000),
+            'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
+            'jobman' => $_REQUEST['jobman'],
+            'sale_point' => $_REQUEST['salepoint'],
+            'summa' => $_REQUEST['summa'],
+            'text' => $_REQUEST['text']
+        ));
+
+
+//        if (date('Y-m-d', $start_time) == date('Y-m-d', $fin_time)) {
+//            $dd = true;
+//        } else {
+//            $dd = false;
+//        }
+//        $r = ob_get_contents();
+//        ob_end_clean();
+
+
+        \f\end2('<div>'
+                . '<nobr><b class="warn" >премия добавлена'
+                . '<br/>'
+                . $_REQUEST['summa']
+                . '<br/>'
+                . '<small>' . $_REQUEST['text'] . '</small>'
+                . '</b>'
 //                . (
 //                $dd === true ?
 //                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)

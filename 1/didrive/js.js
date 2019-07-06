@@ -13,6 +13,95 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //  }
 //}
 
+
+
+//alert('123');
+
+
+
+//alert('123');
+    function calculate_summ_day($sp, $date) {
+
+        $('.price_hour_' + $date + '_' + $sp).each(function (i, elem) {
+
+//            if ($(this).hasClass("stop")) {
+//                alert("Остановлено на " + i + "-м пункте списка.");
+//                return false;
+//            } else {
+            console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
+//            }
+
+        });
+    }
+
+// onload="calculate_summ_day( {{ sp_now }}, {{ date }} );" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $('body .show_summ_hour_day').each(function (i, elem) {
+
+        var $date = $(elem).attr('data');
+        var $sp = $(elem).attr('sp');
+        //console.log('блок для расчёта дня ', $date, $sp);
+
+        //$('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+
+        //console.log('body .price_hour_' + $date + '_' + $sp);
+
+        var $summa = 0;
+        var $summa_hours = 0;
+        var $error = '';
+
+        $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+
+            var $e1 = $(elem2).text();
+            var $e2 = $(elem2).val();
+
+            $kolvo_hour = Number($(elem2).attr('kolvo_hour'));
+            //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
+
+            $summa += $e2 * $kolvo_hour;
+            $summa_hours += $kolvo_hour;
+
+        });
+
+        $('body .price_hour_' + $date + '_' + $sp + '_select' ).each(function (i3, elem3) {
+
+            $th = $(elem3).find('option:selected');
+            //var $e1 = $(elem2).text();
+            var $price = Number($th.attr('price'));
+            
+            if( $price == 0 ){
+                $error = 'Не все оценки выставлены';
+            }
+            
+            $kolvo_hour = Number($th.attr('kolvo_hour'));
+            
+            //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
+
+            $summa += $price * $kolvo_hour;
+            $summa_hours += $kolvo_hour;
+
+        });
+
+        if( $error == '' ){
+            $(elem).html('<nobr>часов: ' + $summa_hours + ' <br/>начислений: ' + number_format( $summa, 0, '', '`' ) + ' р</nobr>');
+        }else{
+            $(elem).html($error);
+        }
+
+    });
     $('body').on('click', '.show_job_tab2', function (event) {
 
         $.each(this.attributes, function () {
@@ -27,15 +116,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         });
     });
-
     $('body').on('click', '.show_job_tab', function (event) {
 
-        // alert('2323');
+// alert('2323');
         $(this).removeClass("show_job_tab");
         $(this).addClass("show_job_tab2");
         var $uri_query = '';
         var $vars = [];
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -55,13 +142,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         console.log($vars['resto']);
-
         console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             xurl: "/sites/yadom_admin/module/000.index/ajax.php",
@@ -70,7 +154,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
                 /*
                  if (typeof $div_hide !== 'undefined') {
@@ -82,13 +165,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $("#ok_but").hide();
             }
             ,
-
             success: function ($j) {
 
                 // $($res_to).html($j.data);
                 // $($vars['resto']).html($j.data);
                 $($vars['resto']).append($j.data);
-
                 // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
                 // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
                 // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
@@ -113,8 +194,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
         //return false;
 
     });
@@ -125,20 +204,19 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     $('body').on('click', '.act_smena', function (event) {
 
-        // alert('2323');
+// alert('2323');
 //        $(this).removeClass("show_job_tab");
 //        $(this).addClass("show_job_tab2");
 //        var $uri_query = '';
 //        var $vars = [];
-        // var $vars = serialize(this.attributes);
-        // var $vars =  JSON.stringify(this.attributes);
+// var $vars = serialize(this.attributes);
+// var $vars =  JSON.stringify(this.attributes);
         var resto = '';
         var $vars = new Array();
         var $uri_query = '';
         var hidethis = 0;
         var showid = 0;
         var answer = 0;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -169,7 +247,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         if (answer != 0) {
 
             if (!confirm(answer)) {
@@ -181,12 +258,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //        alert($uri_query);
 //        return false;
 
-        // console.log($vars['resto']);
+// console.log($vars['resto']);
 
-        // console.log($uri_query);
-        //$(this).html("тут список");
+// console.log($uri_query);
+//$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             xurl: "/sites/yadom_admin/module/000.index/ajax.php",
@@ -195,7 +271,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
                 /*
                  if (typeof $div_hide !== 'undefined') {
@@ -207,7 +282,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $("#ok_but").hide();
             }
             ,
-
             success: function ($j) {
 
                 //alert(resto);
@@ -215,7 +289,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 // $($res_to).html($j.data);
                 // $($vars['resto']).html($j.data);
                 $(resto).html($j.html);
-
                 if (showid != 0) {
                     $(showid).show('slow');
                 }
@@ -248,10 +321,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
         return false;
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -260,20 +330,19 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     $('body').on('click', '.send_ajax_values', function (event) {
 
-        // alert('2323');
+// alert('2323');
 //        $(this).removeClass("show_job_tab");
 //        $(this).addClass("show_job_tab2");
 //        var $uri_query = '';
 //        var $vars = [];
-        // var $vars = serialize(this.attributes);
-        // var $vars =  JSON.stringify(this.attributes);
+// var $vars = serialize(this.attributes);
+// var $vars =  JSON.stringify(this.attributes);
         var resto = '';
         var $vars = new Array();
         var $uri_query = '';
         var hidethis = 0;
         var showid = 0;
         var answer = 0;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -304,7 +373,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         if (answer != 0) {
 
             if (!confirm(answer)) {
@@ -316,12 +384,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //        alert($uri_query);
 //        return false;
 
-        // console.log($vars['resto']);
+// console.log($vars['resto']);
 
-        // console.log($uri_query);
-        //$(this).html("тут список");
+// console.log($uri_query);
+//$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             xurl: "/sites/yadom_admin/module/000.index/ajax.php",
@@ -330,7 +397,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
                 /*
                  if (typeof $div_hide !== 'undefined') {
@@ -342,7 +408,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $("#ok_but").hide();
             }
             ,
-
             success: function ($j) {
 
                 //alert(resto);
@@ -350,7 +415,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 // $($res_to).html($j.data);
                 // $($vars['resto']).html($j.data);
                 $(resto).html($j.html);
-
                 if (showid != 0) {
                     $(showid).show('slow');
                 }
@@ -383,10 +447,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
         return false;
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -397,16 +458,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     $('body').on('submit', '#add_new_smena', function (event) {
 
         event.preventDefault();
-
         // создание массива объектов из данных формы
         var data1 = $(this).serializeArray();
-
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
         console.log('Входящие данные');
         $.each(data1, function () {
 
             console.log(this.name + '=' + this.value);
-
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -416,7 +474,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         // alert('123');
         // return false;
 
@@ -427,13 +484,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
             dataType: 'json',
             data: data1,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                 // $this.css({"border": "2px solid orange"});
             },
-
             // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
             success: function ($data) {
 
@@ -447,7 +502,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $this.css({"border": "2px solid red"});
 
                     $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -456,12 +510,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $this.css({"border": "2px solid green"});
 
                     $($print_res_to).append($data['html']);
-
                 }
 
                 //$($modal_id).modal('hide');
                 $('.modal').modal('hide');
-
             }
             ,
             // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
@@ -480,22 +532,95 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
         return false;
-
     });
+    $('body').on('submit', '#goto_other_sp', function (event) {
 
+        event.preventDefault();
+        // создание массива объектов из данных формы
+        var data1 = $(this).serializeArray();
+        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
+        console.log('Входящие данные');
+        $.each(data1, function () {
+
+            console.log(this.name + '=' + this.value);
+            if (this.name == 'print_res_to_id') {
+                $print_res_to = $('#' + this.value);
+            }
+
+            if (this.name == 'data-target2') {
+                $modal_id = this.value;
+            }
+
+        });
+        // alert('123');
+        // return false;
+
+        $.ajax({
+
+            type: 'POST',
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            dataType: 'json',
+            data: data1,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($data['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    $($print_res_to).append($data['html']);
+                }
+
+                //$($modal_id).modal('hide');
+                $('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+
+
+        return false;
+    });
     $('body').on('submit', '#add_minus', function (event) {
 
         event.preventDefault();
-
         // создание массива объектов из данных формы
         var data1 = $(this).serializeArray();
-
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
         console.log('Входящие данные');
         $.each(data1, function () {
 
             console.log(this.name + '=' + this.value);
-
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -505,7 +630,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         // alert('123');
         // return false;
 
@@ -516,13 +640,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
             dataType: 'json',
             data: data1,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                 // $this.css({"border": "2px solid orange"});
             },
-
             // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
             success: function ($data) {
 
@@ -536,7 +658,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $this.css({"border": "2px solid red"});
 
                     $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
-
                 }
                 // eсли всe прoшлo oк
                 else
@@ -545,12 +666,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $this.css({"border": "2px solid green"});
 
                     $($print_res_to).append($data['html']);
-
                 }
 
                 //$($modal_id).modal('hide');
                 $('.modal').modal('hide');
-
             }
             ,
             // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
@@ -569,10 +688,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
         return false;
-
     });
-
-
     $('body').on('click', '.put_var_in_modal', function (event) {
 
         $.each(this.attributes, function () {
@@ -595,11 +711,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
             }
         });
-
-
-
         return false;
-
         if ($(this).prop('data-target2').length()) {
             console.log($(this).prop('data-target2'));
         }
@@ -609,7 +721,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             if (this.specified) {
 
                 console.log(this.name, this.value);
-
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -625,11 +736,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         return false;
-
     });
-
     $('body').on('click', '.delete_smena', function (event) {
 
         $.each(this.attributes, function () {
@@ -652,11 +760,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
             }
         });
-
-
-
         return false;
-
         if ($(this).prop('data-target2').length()) {
             console.log($(this).prop('data-target2'));
         }
@@ -666,7 +770,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             if (this.specified) {
 
                 console.log(this.name, this.value);
-
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -682,19 +785,15 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         return false;
-
     });
-
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
-        // alert('2323');
+// alert('2323');
         $(this).removeClass("show_job_tab");
         $(this).addClass("show_job_tab2");
         var $uri_query = '';
         var $vars = [];
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -714,13 +813,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         console.log($vars['resto']);
-
         console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             xurl: "/sites/yadom_admin/module/000.index/ajax.php",
@@ -729,7 +825,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
                 /*
                  if (typeof $div_hide !== 'undefined') {
@@ -741,13 +836,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $("#ok_but").hide();
             }
             ,
-
             success: function ($j) {
 
                 // $($res_to).html($j.data);
                 // $($vars['resto']).html($j.data);
                 $($vars['resto']).append($j.data);
-
                 // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
                 // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
                 // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
@@ -772,8 +865,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
         //return false;
 
     });

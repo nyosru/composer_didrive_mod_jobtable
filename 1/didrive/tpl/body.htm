@@ -1,20 +1,30 @@
 {% spaceless %}
 
     
+    <script src="/js/numberformat.js" ></script>
+    
     {% set sp = readItems( 'sale_point', null )  %}
     {# { pa(sp.data)|raw } #}
 
     {% set job_in = readItems( '050.job_in_sp', null )  %}
     {# { pa(sp.data)|raw } #}
 
-    {% set man = readItems( '070.jobman', null )  %}
-    man
+    {% set mans = readItems( '070.jobman', null )  %}
+
+    {#
+     mans
     <div style="max-height: 250px; border: 1px solid green; padding:10px; margin: 10px; overflow: auto;" >
-    {{ pa(man) }}
+    {{ pa(mans) }}
     </div>
+    #}
 
     {% set dolgn = readItems( '061.dolgnost', null )  %}
     {# { pa(sp.data)|raw } #}
+
+    {% set salarys = get_salarys( db ) %}
+    {#{ pa(salarys) }#}
+
+
 
     <div class="container-fluid">
 
@@ -58,6 +68,7 @@
             </div>
         {% endif %}
 
+        {#
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
                 <Br/>
@@ -67,24 +78,31 @@
                 <br/>
             </div>
         </div>
+        #}
 
-        <div class="row" style="background-color:rgba(0,0,0,0.05);padding: 15px 0; ">
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-center">
+        <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
                 {% if get.date is defined %}
 
                     {% set date_start = get.date|date("Y-m-d") %}
                     {% set date_finish = date_start|date_modify("+30 day")|date("Y-m-d") %}
 
+                {% elseif get.year is defined and get.month is defined %}
+
+                    {% set date_start = (get.year~'-'~get.month~'-01')|date("Y-m-d") %}
+                    {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
+
                 {% else %}
 
-                    {% set date_start = now|date_modify("-3 day")|date("Y-m-d") %}
-                    {% set date_finish = date_start|date_modify("+30 day")|date("Y-m-d") %}
+                    {% set date_start = now|date("Y-m-01") %}
+                    {#% set date_start = now|date_modify("-3 day")|date("Y-m-d") %#}
+                    {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
 
                 {% endif %}
 
 
-                {% if 1 == 1 %}
+                {% if 1 == 2 %}
                     Указать дату начала просмотра даных
                     <form action="" method=get" >
                         <input type="date" name="date" >
@@ -102,15 +120,75 @@
                     <Br/>
                 {% endif %}
 
+                {% if 1 == 1 %}
 
+                    {# 2019 #}
+                    {% set year = 2019 %}
+
+                    {% for i in range(low=5, high=8, step=1) %}
+
+                        {% if i < 10 %}
+                            {% set i2 = '0'~i %}
+                        {% else %}
+                            {% set i2 = i %}
+                        {% endif %}
+
+                        <a href="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year=2019&month={{ i2 }}"  
+                           style="margin-right:5px;"
+                           class="btn btn-xs 
+                           {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
+                               btn-success
+                           {% elseif get.year is not defined and get.month is not defined  and year == now|date('Y') and i2 == now|date('m') %}
+                               btn-success
+                           {% else %}
+                               btn-light
+                           {% endif %}
+                           " >
+
+                            {% if i2 == 01 %}
+                                январь
+                            {% elseif i2 == 02 %}
+                                февраль
+                            {% elseif i2 == 03 %}
+                                март
+                            {% elseif i2 == 04 %}
+                                апрель
+                            {% elseif i2 == 05 %}
+                                май
+                            {% elseif i2 == 06 %}
+                                июнь
+                            {% elseif i2 == 07 %}
+                                июль
+                            {% elseif i2 == 08 %}
+                                август
+                            {% elseif i2 == 09 %}
+                                сентябрь
+                            {% elseif i2 == 10 %}
+                                октябрь
+                            {% elseif i2 == 11 %}
+                                ноябрь
+                            {% elseif i2 == 12 %}
+                                декабрь
+                            {% endif %}
+                            2019</a>
+
+                    {% endfor %}
+
+                {% endif %}
+
+                {#
                 <p><b> Показ данных с {{ date_start|date("d.m.Y") }} по {{ date_finish|date("d.m.Y") }} </b></p>
+                #}
 
+                <a href="#" style="float:right;" onclick="$('#leg').toggle('slow');
+                        return false;">Легенда <sup>показать/скрыть</sup></a>
 
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+        </div>
+        <div class="row" xstyle="background-color:rgba(0,0,0,0.05);padding: 15px 0; " id='leg' style="display:none;"  >
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
-                <p><a href="#" onclick="$('#leg').toggle('slow'); return false;">Легенда <sup>показать/скрыть</sup></a></p>
-                <span id='leg' style="display:none;" >
+                <span >
                     <br/>
                     <b>+Сотрудники:</b>
                     <Br/>
@@ -131,6 +209,7 @@
                         <div class="pay_check" style="display:inline-block;margin: 2px 5px;">Смена отработана, отправлена на оплату</div>
                         <div class="buh_ok" style="display:inline-block;margin: 2px 5px;">Смена отработана, оплата выдана</div>
                         <div class="minus" style="display:inline-block;margin: 2px 5px;">Взыскание</div>
+                        <div class="plus" style="display:inline-block;margin: 2px 5px;">Премия</div>
                     </span>
                 </span>
 
@@ -140,12 +219,39 @@
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
+                <br/>
+                <br/>
+                <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть время старт смены и стоп</button> &nbsp;
+                <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
+
+
                 {# заготовка модальных окошек #}
                 {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
 
                 {% set jobs = get_smena_jobs( date_start, date_finish ) %}
-                jobs
-                {{ pa( jobs ) }}
+                {#
+                 pa(jobs) 
+                {{ pa(jobs) }}
+                #}
+
+                {% set jobs_on_sp = jobmans_job_on_sp( db, null, date_start, date_finish ) %}
+                {#
+                <br/>11
+                <br/> pa(jobs_on_sp) 
+                {{ pa(jobs_on_sp) }}
+                #}
+
+
+                {% set listjobmans = get_list_jobmans( db, date_start, date_finish ) %}
+                {#
+                 pa(listjobmans) 
+                {{ pa(listjobmans) }}
+                #}
+
+                {# listjobmans #}
+
+                {#jobs
+                {{ pa( jobs ) }#}
 
                 {% set checki = get_checki( date_start, date_finish ) %}
                 {# { pa(checki) } #}
@@ -153,87 +259,317 @@
                 {% set minusa = get_minusa( db, date_start, date_finish ) %}
                 {# { pa(minusa) } #}
 
+                {% set plusa = get_plusa( db, date_start, date_finish ) %}
+                {#{ pa(plusa) }#}
+
+
                 <Br/>
                 <Br/>
 
-                <ul class="list_sp">
 
-                    {# перебор точек продаж #}
-                    {% for spoint_id, spoint in sp.data if spoint.head != 'default' and spoint.status == 'show' %} 
-
-                        <li style="list-style: none;">
-
-                            <h4 style="padding: 2px; background-color: rgba(0,0,0,0.1);">
-                                {{ spoint.head }} <span style="float:right; color:rgba(0,0,0,0.3); font-size:10px;" >id:{{ spoint.id }}</span>
-                            </h4> {# <a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }} #}
-
-                            {# $re[$sp['id']]['def_man'] #}
-                            {% include dir_mod_now_mod_ditpl~'body.stistic.point.adm.htm' %}
-
-                            {% set r = random() %}
-
-                            {#                        
-                            <a class="btn btn-info btn-xs" href="#" onclick="$('#a1s{{ r }}').toggle('slow');
-                                    return false;" >График работы (скрыть/показать)</a>
-                            #}
-
-                            <table class="table table-bordered table_list_sp_job" id="a1s{{ r }}" >
-                                <thead>
-                                    <tr>
-                                        {% for i in range(low=0, high=7, step=1) %}  
-                                            <th
-
-                                                {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %}
-                                                    style="background-color:rgba(255,0,0,0.1);"
-                                                {% endif%}
-
-                                                >
-
-                                                {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
-                                                {{ date_start|date_modify("+"~i~" day")|date("d.m") }}
-
-                                                <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
-                                                        return false;">
-                                                    +оценка
-                                                </a>
-
-                                    <center>
-                                        <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
-                                            <button class="btn btn-xs btn-light">3</button>
-                                            <button class="btn btn-xs btn-warning">4</button>
-                                            <button class="btn btn-xs btn-success">5</button>
-                                        </div>
-                                    </center>
-
-                                    </th>
-                                {% endfor %}
-                                </tr>
-                                </thead>                        
-                                <tbody>
-                                    <tr>
-
-                                        {% for i in range(low=0, high=7, step=1) %}  
-                                            <td class="list_stat_job_sp">
-
-                                                {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-
-                                                {{ pa(now_date) }}
-                                                
-                                                {% include dir_mod_now_mod_ditpl~'body.mans.htm' %}
-
-                                            </td>
-                                        {% endfor %}
-
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </li>
-
-                    {% endfor %}
-                </ul>
             </div>
         </div>
     </div>
+
+
+    <div style="display:inline-block;padding-right:100px;margin-right:100px;">
+        <div class="ttable cell-padding5 list_otrezki2 cell-border">
+            <div class="trow stick-top" style="background-color: rgba(255,255,255,0.9);">
+                <div class="tcell"></div>
+
+
+                {% for i in range(low=0, high=35, step=1) %}  
+
+                    {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                    {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                        {#
+                        <div class="tcell" >
+                            {{ date_finish }} +
+                            {{ date_finish|date("d.m.Y")|date("U") }}
+                            {{ nd }} +
+                            {{ nd|date("d.m.Y")|date("U") }}
+                        </div>
+                        #}
+
+                        <div class="tcell" {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
+                            {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
+                            {{ nd|date("d.m") }}
+                            
+                            {% if nd|date("N") == 1 %}Пн
+                            {% elseif nd|date("N") == 2 %}Вт
+                            {% elseif nd|date("N") == 3 %}Ср
+                            {% elseif nd|date("N") == 4 %}Чт
+                            {% elseif nd|date("N") == 5 %}Пт
+                            {% elseif nd|date("N") == 6 %}Сб
+                            {% elseif nd|date("N") == 7 %}Вс
+                            {% endif %}
+                            
+                            {#
+                            <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
+                                                return false;">
+                                +оценка
+                            </a>
+        
+                            <center>
+                                <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
+                                    <button class="btn btn-xs btn-light">3</button>
+                                    <button class="btn btn-xs btn-warning">4</button>
+                                    <button class="btn btn-xs btn-success">5</button>
+                                </div>
+                            </center>
+                            #}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+
+            </div>
+
+            {#{ pa(jobs_on_sp.jobs_on_sp) }#}
+            
+            {% for sp_now, list12 in jobs_on_sp.jobs_on_sp %}
+
+                {% set spoint = sp.data[sp_now] %}
+                {#{ pa(spoint) }#}
+
+                <div class="trow alert-warning"  >
+                    <div class="tcell alert-warning stick-left" >
+                        <b>
+                            {{ sp['data'][sp_now]['head'] }}
+                            <sup>#{{ sp_now }}</sup>
+                        </b>
+                    </div>
+                    <div class="tcell alert-warning" >
+                    </div>
+                    <div class="tcell alert-warning" >
+                    </div>
+                    <div class="tcell alert-warning" >
+                    </div>
+                    <div class="tcell alert-warning" >
+                    </div>
+
+                </div>
+
+                {% set hour_summ = [] %}
+
+                {% for user5, type_user_now in list12 if type_user_now != 'hide' %}
+
+                    <div class="trow">
+                        <div class="tcell stick-left bg-white">
+
+                            {#
+                            user #{{ user5 }} 
+                            #}
+
+                            {% set man = mans['data'][user5] %}
+
+                            {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
+                            {#{ pa(now_job.dolgnost) }#}
+
+                            <nobr>
+
+                                {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
+                                <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
+                                
+                                {{ man['dop']['lastName'] }}
+                                {{ man['dop']['firstName'] }}
+                                {#{ pa(man_now) }#}
+                                {#% set man1 = man['data'][v1.dop.jobman] %#}
+
+                                {% if type_job == 'spec' %}
+                                    <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
+                                {% endif %}
+
+                            </nobr>
+
+                            {#{ pa(v75) }#}
+
+                        </div>
+
+                        {# проход по датам по человеку #}
+
+
+                        {% for i in range(low=0, high=35, step=1) %}  
+
+                            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                            {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                                {# текущая дата #}
+                                {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                                {# текущий чел #}
+                                {#{ man }#}
+
+                                <div class="tcell c{{ man.id }}_{{sp_now}}_{{ date }}">
+
+                                    {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
+
+                                    {#{ pa(now_job) }#}
+
+                                    {% if now_job == false %}
+                                    {% else %}
+
+                                        {#                                        
+                                        <br/><nobr>{{ date }}</nobr>
+                                        #}
+                                        
+                                        {% if now_job.date == date %}
+                                            {% if now_job.stagirovka == 'da' %}
+                                                <div class="alert-danger" >старт стажировки</div>
+                                            {% else %}
+                                                <div class="alert-info" >старт норм работы</div>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+                                        {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
+                                        {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
+
+                                        {#{ pa(now_job) }#}
+
+                                        <div class="option_img" ><i onclick='$(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow"); return false;' class="fa fa-cog"></i></div>
+
+                                    {% endif %}
+
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="trow" >
+                    <div class="tcell" >
+                        Итого за день
+                    </div>         
+
+
+                    {% for i in range(low=0, high=35, step=1) %}  
+
+                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                            <div class="tcell">
+                                
+                                <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
+                                
+                                {% if hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] is defined %}
+                                    отработанных часов {{ hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] }}
+                                {% endif %}
+                                
+                                {#
+                                0+
+                                {{ pa(show_date_total( db, now_date2 )) }}
+                                +0
+                                #}
+
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>                        
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+    {% if 1 == 2 %}
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+
+
+                    <Br/>
+                    <Br/>
+
+                    <ul class="list_sp">
+
+                        {# перебор точек продаж #}
+                        {% for spoint_id, spoint in sp.data if spoint.head != 'default' and spoint.status == 'show' %} 
+
+                            <li style="list-style: none;">
+
+                                <h4 style="padding: 2px; background-color: rgba(0,0,0,0.1);">
+                                    {{ spoint.head }} <span style="float:right; color:rgba(0,0,0,0.3); font-size:10px;" >id:{{ spoint.id }}</span>
+                                </h4> {# <a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }} #}
+
+                                {# $re[$sp['id']]['def_man'] #}
+                                {% include dir_mod_now_mod_ditpl~'body.stistic.point.adm.htm' %}
+
+                                {% set r = random() %}
+
+                                {#                        
+                                <a class="btn btn-info btn-xs" href="#" onclick="$('#a1s{{ r }}').toggle('slow');
+                                        return false;" >График работы (скрыть/показать)</a>
+                                #}
+
+                                <table class="table table-bordered table_list_sp_job" id="a1s{{ r }}" >
+                                    <thead>
+                                        <tr>
+                                            {% for i in range(low=0, high=7, step=1) %}  
+                                                <th
+
+                                                    {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %}
+                                                        style="background-color:rgba(255,0,0,0.1);"
+                                                    {% endif%}
+
+                                                    >
+
+                                                    {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
+                                                    {{ date_start|date_modify("+"~i~" day")|date("d.m") }}
+
+                                                    <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
+                                                            return false;">
+                                                        +оценка
+                                                    </a>
+
+                                        <center>
+                                            <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
+                                                <button class="btn btn-xs btn-light">3</button>
+                                                <button class="btn btn-xs btn-warning">4</button>
+                                                <button class="btn btn-xs btn-success">5</button>
+                                            </div>
+                                        </center>
+
+                                        </th>
+                                    {% endfor %}
+                                    </tr>
+                                    </thead>                        
+                                    <tbody>
+                                        <tr>
+
+                                            {% for i in range(low=0, high=7, step=1) %}  
+                                                <td class="list_stat_job_sp">
+
+                                                    {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+                                                    {#{ pa(now_date) }#}
+
+                                                    {% include dir_mod_now_mod_ditpl~'body.mans.htm' %}
+
+                                                </td>
+                                            {% endfor %}
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </li>
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
 
 {% endspaceless %}

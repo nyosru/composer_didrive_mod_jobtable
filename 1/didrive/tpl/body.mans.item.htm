@@ -1,25 +1,33 @@
 {% spaceless %}
 
+    {# текущий работник #}
+    {#{ pa(jobman) }#}
+
     {% set msg = '' %}
+    
     {% if type_select == 'def' %}
+        
         {% set jobs2 = jobs %}
+        
         {# pa(jobs2) } #}  
         {% for sp3, v01 in jobs2 %}
             {% for dt, v02 in v01 if dt == now_date %}
-                {% for user7, v03 in v02 if user7 == man1.id %}
+                {% for user7, v03 in v02 if user7 == jobman.id %}
                     {# { pa(v02) } #}
                     {% set msg = "<abbr title='сегодня работает на точке продаж - "~sp.data[sp3]['head']~"' ><b>"~ sp.data[sp3]['head'] ~"</b></abbr>" %}
                 {% endfor %}
             {% endfor %}
         {% endfor %}
+        
     {% endif %}
 
-    <a href="#" xclass="job_man_in_graph" onclick="$('#j{{ r2 }}_{{ man1.id }}').toggle('slow');
+    <a href="#" xclass="job_man_in_graph" onclick="$('#j{{ r2 }}_{{ jobman.id }}').toggle('slow');
             return false;">
+        {#[{{ msg|raw }}][{{ type|raw }}]#}
         <div class="job_man_in_graph {% if msg == '' %}{{ type }}{% else %}job_other{% endif %}">
             <nobr>
-                {#{ man1.head }#} 
-                <sup title="{{ dolgn.data[man1['dop']['dolgnost']]['head'] }}">{{ dolgn.data[man1['dop']['dolgnost']]['head'][:3] }}.</sup>
+                {{ jobman.dop.lastName }} {{ jobman.dop.firstName }} 
+                <sup title="{{ dolgn.data[jobman['dop']['dolgnost']]['head'] }}">{{ dolgn.data[jobman['dop']['dolgnost']]['head'][:6] }}</sup>
                 {% if msg != '' %}
                     <br/>
                     {{ msg|raw }}
@@ -49,9 +57,9 @@
 
         {# { pa(checki) } #}
         
-        {% if checki[now_date][man1.id] is defined %}
+        {% if checki[now_date][jobman.id] is defined %}
 
-            {% for k1, v1 in checki[now_date][man1.id] if v1.dop.sale_point == spoint.id %} 
+            {% for k1, v1 in checki[now_date][jobman.id] if v1.dop.sale_point == spoint.id %} 
 
             {#% set array_job_people = [] %#}
             {% set array_job_people = array_job_people|merge([v1.id]) %}
@@ -70,20 +78,21 @@
 
 
 
-    <div class="act_personal_def" id="j{{ r2 }}_{{ man1.id }}">
-        <a href="" class="put_var_in_modal" 
+    <div class="act_personal_def" id="j{{ r2 }}_{{ jobman.id }}">
+        <a 
+            href="" class="put_var_in_modal" 
 
            data-toggle2="modal" 
            data-target2="#add_jobday_for_jobman" 
 
-           jobman="{{ man1.id }}"
+           jobman="{{ jobman.id }}"
            salepoint="{{ spoint.id }}"
 
            toform_sp="{{ spoint.id }}"
            toform_sp_name="{{ spoint.head }}"
 
-           toform_jobman="{{ man1.id }}"
-           toform_jobman_name="{{ man1.head }}"
+           toform_jobman="{{ jobman.id }}"
+           toform_jobman_name="{{ jobman.head }}"
 
            date="{{ now_date }}"
            print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
@@ -97,14 +106,14 @@
 
            class="put_var_in_modal" 
 
-           jobman="{{ man1.id }}"
+           jobman="{{ jobman.id }}"
            salepoint="{{ spoint.id }}"
 
            toform_sp="{{ spoint.id }}"
            toform_sp_name="{{ spoint.head }}"
 
-           toform_jobman="{{ man1.id }}"
-           toform_jobman_name="{{ man1.head }}"
+           toform_jobman="{{ jobman.id }}"
+           toform_jobman_name="{{ jobman.head }}"
 
            date="{{ now_date }}"
            print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
@@ -117,9 +126,32 @@
            data-target2="#add_minus_for_jobman"
 
            ><span class="fa fa-minus" ></span> взыскание</a>
-           {#
-        <a href=""><span class="fa fa-arrow-left" ></span> отправить на работу в другую точку</a>
-        #}
+        
+        <a 
+            href="" class="put_var_in_modal" 
+
+           data-toggle2="modal" 
+           data-target2="#add_perenos_jobman" 
+
+           jobman="{{ jobman.id }}"
+           salepoint="{{ spoint.id }}"
+
+           toform_sp="{{ spoint.id }}"
+           toform_sp_name="{{ spoint.head }}"
+
+           toform_jobman="{{ jobman.id }}"
+           toform_jobman_name="{{ jobman.head }}"
+
+           toform_date="{{ now_date }}"
+           date="{{ now_date }}"
+           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
+
+           {% set ss = spoint.id ~ pv.id %}
+           id2="{{ ss }}"
+           s2="{{ creatSecret( ss ) }}"
+            
+            ><span class="fa fa-arrow-left" ></span> отправить на работу в другую точку</a>
+        
 
     </div>
 
