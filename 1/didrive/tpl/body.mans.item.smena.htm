@@ -60,84 +60,154 @@
 
             {#{ pa(v1) }#}
 
-            <div xstyle="display:inline-block;" class="point_div text-center" 
-                 onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');" 
-                 onload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();">
+            <div xstyle="display:inline-block;" class="point_div text-center" >
 
                 {% if v1.dop.start is defined and v1.dop.fin is not defined %}
                     {{ v1.dop.start|date("H:i") }} - ...
                 {% else %}
 
                     {% set kolvo_hour = v1.dop.time_on_job/3600 %}
-                    
-                    <abbr class="job_timer" >{{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}<br/></abbr>
+
+                    <abbr class="job_timer" >
+                        {{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}
+                        <br/>
+                    </abbr>
+
+                    {#
                     <abbr class="job_hour" title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов:{{ v1.dop.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
+                    #}
+
+                    <abbr class="job_hour" >
+                        <nobr>
+
+                            <i class="fa fa-minus ajax_hour_action" 
+                               type_action="-" 
+                               hour_id="{{ v1.id }}" 
+                               block="hour_{{ v1.id }}" 
+                               s="{{ creatSecret('hour_'~v1.id) }}" 
+                               ></i> 
+                            <span id="hour_{{ v1.id }}" 
+                                  title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job_calc }}"
+                                  {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
+                                  >
+
+                                {% if v1.dop.hour_on_job_hand is defined %}
+                                    {{ v1.dop.hour_on_job_hand }}
+                                {% else %}
+                                    {{ v1.dop.hour_on_job_calc }}
+                                {% endif %}
+
+                            </span>
+                            <i class="fa fa-plus ajax_hour_action" 
+                               type_action="+" 
+                               hour_id="{{ v1.id }}" 
+                               block="hour_{{ v1.id }}" 
+                               s="{{ creatSecret('hour_'~v1.id) }}" 
+                               ></i> 
+
+                            <a href="#"  class="but_show_option" 
+                               onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
+                                       return false;" 
+                               xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
+                                <span class="fa fa-caret-down" ></span>
+                            </a>
+
+
+                        </nobr>
+
+                        <br/>
+                    </abbr>
 
                     {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + v1.dop.time_on_job/3600 %#}
 
                 {% endif %}
-            </div>
 
-            {% if v1.status == 'show' %}
+                {% if v1.status == 'show' %}
 
-                {% if salar['ocenka-hour-base'] is defined %}
+                    <input type="hidden" 
+                           class="hours_kolvo" 
+                           value="{% if v1.dop.hour_on_job_hand is defined %}{{ v1.dop.hour_on_job_hand }}{% else %}{{ v1.dop.hour_on_job_calc }}{% endif %}" >
 
-                    {% if now_job.smoke is defined and now_job.smoke == 'da' %}
-                        {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
-                    {% else %}
-                        {% set price_hour = salar['ocenka-hour-base'] %}
-                    {% endif %}
+                    <center>
 
-                    
-                    <input type="hidden" class="price_hour_{{ date }}_{{ sp_now }}" kolvo_hour="{{ kolvo_hour }}" value="{{ price_hour }}" >
-                    {{ price_hour }}р/ч
+                        {% if salar['ocenka-hour-base'] is defined %}
 
-                {% else %}
-                    {#{ pa(salar) }#}
-                    <select name="ocenka" 
-                            class="select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select" 
-                            action="edit_dop_pole"
-                            folder="{{ folder }}"
-                            module="050.chekin_checkout"
-                            dop_name="ocenka"
-                            item_id="{{ v1.id }}"
-                            s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
-                            >
-                        <option kolvo_hour="{{ kolvo_hour }}" price="0" value="">Оценка</option>
-
-                        {#{ pa(salar) }#}
-
-                        {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
-                            
-                            {% set price_hour = 0 %}
-                            
-                            {% if salar['ocenka-hour-'~i] is defined %}> 
-                                {% if now_job.smoke is defined and now_job.smoke == 'da' %}
-                                    {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
-                                {% else %}
-                                    {% set price_hour = salar['ocenka-hour-'~i] %}
-                                {% endif %}
+                            {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
+                            {% else %}
+                                {% set price_hour = salar['ocenka-hour-base'] %}
                             {% endif %}
 
-                            <option value="{{ i }}" price="{{price_hour}}" kolvo_hour="{{ kolvo_hour }}" {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}selected="selected"{% endif %} price="{{price_hour}}" >
-                                {{ i }} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
-                            </option>
-                            
-                        {% endfor %}
+                            <input 
+                                type="hidden" 
+                                class="price_hour_{{ date }}_{{ sp_now }}" 
+                                value="{{ price_hour }}" 
+                                >
 
-                        {#
-                        <option value="4" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
-                        <option value="3" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
-                        <option value="2" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
-                        #}
+                            {{ price_hour }}р/ч
 
-                    </select>
+                        {% else %}
+
+                            {#                    <input 
+                                                    type="text" 
+                                                    class="now_kolvo_hour" 
+                                                    value="{{ kolvo_hour }}" 
+                                                    >
+                            #}                    
+
+                            {#{ pa(salar) }#}
+                            <select name="ocenka" 
+                                    class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select" 
+                                    action="edit_dop_pole"
+                                    folder="{{ folder }}"
+                                    module="050.chekin_checkout"
+                                    dop_name="ocenka"
+                                    item_id="{{ v1.id }}"
+                                    s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
+                                    >
+                                <option price="0" value="">Оценка</option>
+
+                                {#{ pa(salar) }#}
+
+                                {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
+
+                                    {% set price_hour = 0 %}
+
+                                    {% if salar['ocenka-hour-'~i] is defined %}> 
+                                        {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                            {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
+                                        {% else %}
+                                            {% set price_hour = salar['ocenka-hour-'~i] %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <option value="{{ i }}" 
+                                            price="{{price_hour}}" 
+                                            {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}selected="selected"{% endif %} 
+                                            price="{{price_hour}}" >
+                                        {{ i }} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                    </option>
+
+                                {% endfor %}
+
+                                {#
+                                <option value="4" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
+                                <option value="3" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
+                                <option value="2" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
+                                #}
+
+                            </select>
+                        {% endif %}
+
+                    </center>
+
                 {% endif %}
-                <br/>
-            {% endif %}
-            {#
-            <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
-            #}
+
+                {#
+                <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
+                #}
+
+            </div>
 
 
             {% if user_smena_status == 'add' %}
