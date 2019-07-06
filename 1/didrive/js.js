@@ -13,11 +13,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //  }
 //}
 
-
-
-//alert('123');
-
-
+// alert('123');
 
 //alert('123');
     function calculate_summ_day($sp, $date) {
@@ -37,71 +33,213 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // onload="calculate_summ_day( {{ sp_now }}, {{ date }} );" 
 
 
+    /**
+     * кликаем по кнопам плюс минус час
+     */
+    $('body').on('click', '.ajax_hour_action', function (event) {
 
+        clearTdSummAllGraph();
 
+        $th = $(this);
 
+        $znak = $th.attr('type_action'); // - || +
+        // console.log($znak); // - || +
 
+        $hour_id = $th.attr('hour_id'); // - || +
+        // console.log($hour_id); // - || +
 
+        $textblock_id = $th.attr('block');
+        // console.log($textblock_id);
 
+        $s = $th.attr('s');
+        // console.log($textblock_id);
 
+        $cifra = parseFloat($('span#' + $textblock_id).text());
 
+        console.log($('span#' + $textblock_id).text());
+        console.log($cifra);
 
-
-
-
-    $('body .show_summ_hour_day').each(function (i, elem) {
-
-        var $date = $(elem).attr('data');
-        var $sp = $(elem).attr('sp');
-        //console.log('блок для расчёта дня ', $date, $sp);
-
-        //$('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
-
-        //console.log('body .price_hour_' + $date + '_' + $sp);
-
-        var $summa = 0;
-        var $summa_hours = 0;
-        var $error = '';
-
-        $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
-
-            var $e1 = $(elem2).text();
-            var $e2 = $(elem2).val();
-
-            $kolvo_hour = Number($(elem2).attr('kolvo_hour'));
-            //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
-
-            $summa += $e2 * $kolvo_hour;
-            $summa_hours += $kolvo_hour;
-
-        });
-
-        $('body .price_hour_' + $date + '_' + $sp + '_select' ).each(function (i3, elem3) {
-
-            $th = $(elem3).find('option:selected');
-            //var $e1 = $(elem2).text();
-            var $price = Number($th.attr('price'));
-            
-            if( $price == 0 ){
-                $error = 'Не все оценки выставлены';
-            }
-            
-            $kolvo_hour = Number($th.attr('kolvo_hour'));
-            
-            //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
-
-            $summa += $price * $kolvo_hour;
-            $summa_hours += $kolvo_hour;
-
-        });
-
-        if( $error == '' ){
-            $(elem).html('<nobr>часов: ' + $summa_hours + ' <br/>начислений: ' + number_format( $summa, 0, '', '`' ) + ' р</nobr>');
-        }else{
-            $(elem).html($error);
+        if ($znak == '-') {
+            $new_val = $cifra - 0.5;
+        }
+        //
+        else if ($znak == '+') {
+            $new_val = $cifra + 0.5;
         }
 
+        $('span#' + $textblock_id).text($new_val);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/items/1/ajax.php",
+            data: "action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
+
+                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
+                $('span#' + $textblock_id).css('font-weight', 'bold');
+
+                //if (typeof $div_hide !== 'undefined') {
+                //$('#' + $div_hide).hide();
+                //}
+
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+                //                $("#ok_but_stat").show('slow');
+                //                $("#ok_but").hide();
+            }
+            ,
+            success: function ($j) {
+
+                // alert($j.status);
+
+                if ($j.status == 'error') {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
+                    // $('span#' + $textblock_id).css('color', 'darkred');
+
+                } else {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
+                    // $('span#' + $textblock_id).css('color', 'darkgreen');
+
+                    // console.log($new_val);
+                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
+                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+
+                    setTimeout(function () {
+                        calculateSummAllGraph();
+                    }, 100);
+
+                    //$(document).one( calculateSummAllGraph );
+
+                }
+
+
+            }
+
+        });
+
+        return false;
     });
+    // else {
+    // alert(i + ': ' + $(elem).text());
+    // }
+
+
+
+    $('body').on('change', '.select_edit_item_dop2', function () {
+
+        console.log(2);
+        setTimeout(function () {
+            calculateSummAllGraph();
+        }, 100);
+        console.log(3);
+
+    });
+
+
+
+    /*
+     * считаем все суммы всех точек
+     * @returns {undefined}
+     */
+    function calculateSummAllGraph( ) {
+
+        $('body .show_summ_hour_day').each(function (i, elem) {
+
+            var $date = $(elem).attr('data');
+            var $sp = $(elem).attr('sp');
+            //console.log('блок для расчёта дня ', $date, $sp);
+
+            //$('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+
+            //console.log('body .price_hour_' + $date + '_' + $sp);
+
+            var $summa = 0;
+            var $summa_hours = 0;
+            var $error = '';
+
+            $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+
+                var $e1 = $(elem2).text();
+                var $e2 = $(elem2).val();
+
+                //$kolvo_hour = Number($(elem2).attr('kolvo_hour'));
+                $kolvo_hour = Number($(elem2).closest('.smena1').find('.hours_kolvo').val());
+                //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
+
+                $summa += $e2 * $kolvo_hour;
+                $summa_hours += $kolvo_hour;
+
+            });
+
+            $('body .price_hour_' + $date + '_' + $sp + '_select').each(function (i3, elem3) {
+
+                $th = $(elem3).find('option:selected');
+                //var $e1 = $(elem2).text();
+
+                var $price = Number($th.attr('price'));
+
+                if ($price == 0) {
+                    $error = 'Не все оценки выставлены';
+                }
+
+                // $kolvo_hour = Number($th.attr('kolvo_hour'));
+                $kolvo_hour = Number($(elem3).closest('.smena1').find('.hours_kolvo').prop('value'));
+                console.log('select ', $kolvo_hour);
+                //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
+
+                $summa += $price * $kolvo_hour;
+                $summa_hours += $kolvo_hour;
+                console.log('summa ', $summa);
+                console.log('$summa_hours', $summa_hours);
+            });
+
+
+
+            if ($error == '') {
+                $(elem).html('<nobr>' + number_format($summa_hours, 1, '.', '`') + ' ч<br/>' + number_format($summa, 0, '.', '`') + ' р</nobr>');
+            } else {
+                $(elem).html($error);
+            }
+
+
+        });
+
+    }
+
+    /* затираем данные в строчках с результатом работы */
+
+    function clearTdSummAllGraph( ) {
+
+        $('body .show_summ_hour_day').each(function (i, elem) {
+
+            $(elem).html('...');
+
+        });
+
+    }
+
+    calculateSummAllGraph();
+
+    /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
+
+    $('body').on('change', 'select.select_edit_item_dop', function () {
+
+        clearTdSummAllGraph();
+        // alert('123');
+        setTimeout(function () {
+            calculateSummAllGraph();
+        }, 2000);
+
+    })
+
+
+
+
     $('body').on('click', '.show_job_tab2', function (event) {
 
         $.each(this.attributes, function () {

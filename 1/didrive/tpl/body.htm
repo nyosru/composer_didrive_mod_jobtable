@@ -439,12 +439,10 @@
 
                 {% endfor %}
 
-
                 <div class="trow" >
-                    <div class="tcell" >
-                        Итого за день
+                    <div class="tcell stick-left bg-white" >
+                        <b>Итого за день</b>
                     </div>         
-
 
                     {% for i in range(low=0, high=35, step=1) %}  
 
@@ -452,124 +450,20 @@
                         {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
                         {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
-                            <div class="tcell">
-                                
-                                <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
-                                
-                                {% if hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] is defined %}
-                                    отработанных часов {{ hour_summ[date_start|date_modify("+"~i~" day")|date("d-m-Y")] }}
-                                {% endif %}
-                                
-                                {#
-                                0+
-                                {{ pa(show_date_total( db, now_date2 )) }}
-                                +0
-                                #}
-
+                            <div class="tcell" >
+                                <div style="min-width:120px; padding: 5px;">
+                                    <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
+                                </div>
                             </div>
                         {% endif %}
                     {% endfor %}
 
-                </div>                        
+                </div>
 
             {% endfor %}
 
         </div>
     </div>
 
-
-    {% if 1 == 2 %}
-
-        <div class="container-fluid">
-
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-
-
-
-                    <Br/>
-                    <Br/>
-
-                    <ul class="list_sp">
-
-                        {# перебор точек продаж #}
-                        {% for spoint_id, spoint in sp.data if spoint.head != 'default' and spoint.status == 'show' %} 
-
-                            <li style="list-style: none;">
-
-                                <h4 style="padding: 2px; background-color: rgba(0,0,0,0.1);">
-                                    {{ spoint.head }} <span style="float:right; color:rgba(0,0,0,0.3); font-size:10px;" >id:{{ spoint.id }}</span>
-                                </h4> {# <a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }} #}
-
-                                {# $re[$sp['id']]['def_man'] #}
-                                {% include dir_mod_now_mod_ditpl~'body.stistic.point.adm.htm' %}
-
-                                {% set r = random() %}
-
-                                {#                        
-                                <a class="btn btn-info btn-xs" href="#" onclick="$('#a1s{{ r }}').toggle('slow');
-                                        return false;" >График работы (скрыть/показать)</a>
-                                #}
-
-                                <table class="table table-bordered table_list_sp_job" id="a1s{{ r }}" >
-                                    <thead>
-                                        <tr>
-                                            {% for i in range(low=0, high=7, step=1) %}  
-                                                <th
-
-                                                    {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %}
-                                                        style="background-color:rgba(255,0,0,0.1);"
-                                                    {% endif%}
-
-                                                    >
-
-                                                    {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
-                                                    {{ date_start|date_modify("+"~i~" day")|date("d.m") }}
-
-                                                    <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
-                                                            return false;">
-                                                        +оценка
-                                                    </a>
-
-                                        <center>
-                                            <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
-                                                <button class="btn btn-xs btn-light">3</button>
-                                                <button class="btn btn-xs btn-warning">4</button>
-                                                <button class="btn btn-xs btn-success">5</button>
-                                            </div>
-                                        </center>
-
-                                        </th>
-                                    {% endfor %}
-                                    </tr>
-                                    </thead>                        
-                                    <tbody>
-                                        <tr>
-
-                                            {% for i in range(low=0, high=7, step=1) %}  
-                                                <td class="list_stat_job_sp">
-
-                                                    {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-
-                                                    {#{ pa(now_date) }#}
-
-                                                    {% include dir_mod_now_mod_ditpl~'body.mans.htm' %}
-
-                                                </td>
-                                            {% endfor %}
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                            </li>
-
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-    {% endif %}
 
 {% endspaceless %}
