@@ -338,3 +338,74 @@
     </div>
 </div>
 
+
+{# <!-- Modal добавить комментарий --> #}
+<div class="modal fade add_values" id="add_comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить комментарий</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="" method="post" id="add_minus">
+
+                <div class="modal-body">
+
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Кто</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
+                            <input type="hidden" id="toform_jobman" name="jobman" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
+                            <input type="hidden" id="toform_sp" name="sale_point" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Когда</label>
+                        <div class="col-sm-10">
+                            <input type="date" readonly class="form-control" name="date_to" id="date_to" value="" xstyle="width: 120px; display: inline-block;" >
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Комментарий</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="comment" ></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    {#
+                  <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
+                  #}
+
+                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <input type="hidden" name="action" id="action" value="add_comment" >
+                    <input type="hidden" name="id2" id="id2" value="" >
+                    <input type="hidden" name="s2" id="s2" value="" >
+                    <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                    <input type="hidden" name="data-target2" id="data-target2" value="" >
+                    <input type="hidden" name="jobman" id="jobman" value="" >
+                    <input type="hidden" name="salepoint" id="salepoint" value="" >
+                    <input type="hidden" name="creator" id="creator" value="" >
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

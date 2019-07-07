@@ -46,14 +46,14 @@ else {
 //require( $_SERVER['DOCUMENT_ROOT'] . DS . '0.all' . DS . 'class' . DS . 'mysql.php' );
 //require( $_SERVER['DOCUMENT_ROOT'] . DS . '0.all' . DS . 'db.connector.php' );
 // добавляем смену сотруднику
-if (isset($_POST['action']) && $_POST['action'] == 'delete_smena') {
+if (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment') ) {
 
-    require_once DR . '/all/ajax.start.php';
+    // require_once DR . '/all/ajax.start.php';
 
     $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
     $ff->execute(array(':id' => (int) $_POST['id2']));
 
-    \f\end2('смена удалена');
+    \f\end2('удалено');
 }
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
@@ -67,13 +67,18 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
 }
 //
 elseif (
-        isset($_POST['action']) && ( $_POST['action'] == 'add_new_smena' || $_POST['action'] == 'confirm_smena' || $_POST['action'] == 'goto_other_sp')
+        isset($_POST['action']) && ( 
+        $_POST['action'] == 'add_new_smena' || 
+        $_POST['action'] == 'add_comment' || 
+        $_POST['action'] == 'confirm_smena' || 
+        $_POST['action'] == 'goto_other_sp'
+        )
 ) {
     // action=add_new_smena
 
     try {
 
-        require_once DR . '/all/ajax.start.php';
+        //require_once DR . '/all/ajax.start.php';
 
         // action=add_new_smena
         // \f\pa($_POST);
@@ -87,11 +92,11 @@ elseif (
          */
         if ($_POST['action'] == 'goto_other_sp') {
 
-            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-                require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//                require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
             // если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
@@ -124,11 +129,11 @@ elseif (
         //
         elseif ($_POST['action'] == 'add_new_smena') {
 
-            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-                require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//                require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
             // если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
@@ -156,6 +161,27 @@ elseif (
                     . '<br/>'
                     . date('d.m.y H:i', $start_time) . ' - ' . date('d.m.y H:i', $fin_time)
                     . '</nobr>'
+                    . '</div>', true);
+        }
+        elseif ($_POST['action'] == 'add_comment') {
+
+            $indb = $_REQUEST;
+
+//array(
+//                // 'head' => rand(100, 100000),
+//                'jobman' => $_REQUEST['jobman'],
+//                'sale_point' => $_REQUEST['salepoint'],
+//                'start' => date('Y-m-d H:i', $start_time),
+//                'fin' => date('Y-m-d H:i', $fin_time)
+//            )
+
+            //\f\pa( $indb );
+            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['073.comments'], $indb );
+
+            \f\end2('<div style="background-color: gray; padding:5px;" >'
+                    . '<b class="warn" >добавили комментарий</b>'
+                    . '<br/>'
+                    . $_REQUEST['comment']
                     . '</div>', true);
         }
         //
@@ -221,13 +247,13 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 
     try {
 
-        require_once DR . '/all/ajax.start.php';
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+//        require_once DR . '/all/ajax.start.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
         \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.vzuscaniya'], array(
             // 'head' => rand(100, 100000),

@@ -261,7 +261,7 @@
 
                 {% set plusa = get_plusa( db, date_start, date_finish ) %}
                 {#{ pa(plusa) }#}
-
+                
 
                 <Br/>
                 <Br/>
@@ -329,6 +329,9 @@
             {#{ pa(jobs_on_sp.jobs_on_sp) }#}
             
             {% for sp_now, list12 in jobs_on_sp.jobs_on_sp %}
+
+                {% set comments = getComments( db, date_start, date_finish, sp_now ) %}
+                {#{ pa(comments) }#}
 
                 {% set spoint = sp.data[sp_now] %}
                 {#{ pa(spoint) }#}

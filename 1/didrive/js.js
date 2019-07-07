@@ -227,9 +227,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
 
+
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
         clearTdSummAllGraph();
+        
         // alert('123');
         setTimeout(function () {
             calculateSummAllGraph();
