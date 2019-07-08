@@ -151,7 +151,7 @@
            toform_jobman_name="{{ man.head }}"
 
            date="{{ date }}"
-           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
+           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
 
            {% set ss = spoint.id ~ pv.id %}
            id2="{{ ss }}"
@@ -162,5 +162,5 @@
 
            ><span class="fa fa-plus" ></span> премия</a>        
         </div>
-           
+           <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
 {% endspaceless %}

@@ -237,6 +237,7 @@ $function = new Twig_SimpleFunction('where_now_dolgn', function ( $array, $sp, $
 });
 $twig->addFunction($function);
 
+
 $function = new Twig_SimpleFunction('jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {
 
     // echo $date_start.' , '.$date_finish ;
@@ -353,8 +354,6 @@ $function = new Twig_SimpleFunction('jobmans_job_on_sp', function ( $db, $folder
 });
 $twig->addFunction($function);
 
-
-
 /**
  * показываем результат по дню
  */
@@ -414,9 +413,6 @@ $function = new Twig_SimpleFunction('show_date_total', function ( $db, string $d
     return $re;
 });
 $twig->addFunction($function);
-
-
-
 
 /**
  * получение зарплат дефаулт точка и точки в модуле
