@@ -148,13 +148,21 @@ elseif (
                 $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']);
             }
 
-            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], array(
+            $indb = array(
                 'head' => rand(100, 100000),
                 'jobman' => $_REQUEST['jobman'],
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
-                'fin' => date('Y-m-d H:i', $fin_time)
-            ));
+                'fin' => date('Y-m-d H:i', $fin_time),
+                'hour_on_job_calc' => \Nyos\mod\IikoChecks::calculateHoursInRange( $start_time , $fin_time ),
+                'who_add_item' => 'admin',
+                'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
+                'ocenka' => $_REQUEST['ocenka']
+            );
+
+
+            
+            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], $indb);
 
             \f\end2('<div>'
                     . '<nobr><b class="warn" >смена добавлена</b>'
@@ -220,7 +228,9 @@ elseif (
                     . '</nobr>'
                     . '</div>', true);
         }
-    } catch (\Exception $ex) {
+    } 
+    //
+    catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
                 . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -291,7 +301,8 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 //                . $r
                 . '</nobr>'
                 . '</div>', true);
-    } catch (\Exception $ex) {
+    } 
+    catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
                 . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -317,13 +328,13 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 
     try {
 
-        require_once DR . '/all/ajax.start.php';
+        //require_once DR . '/all/ajax.start.php';
 
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
         \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.plus'], array(
             // 'head' => rand(100, 100000),
@@ -362,7 +373,8 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 //                . $r
                 . '</nobr>'
                 . '</div>', true);
-    } catch (\Exception $ex) {
+    } 
+    catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
                 . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -385,13 +397,13 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 ///
 elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
 
-    require_once DR . '/all/ajax.start.php';
-
-    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-        require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex'))
-        require $_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex';
+//    require_once DR . '/all/ajax.start.php';
+//
+//    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//        require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex'))
+//        require $_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex';
 
     // require_once DR.'/vendor/didrive_mod/items/class.php';
     // \Nyos\mod\items::getItems( $db, $folder )

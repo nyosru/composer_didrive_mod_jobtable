@@ -18,7 +18,7 @@
     <div class="xtext-center show_down_hiden minus {{ minus.status }}" >
 
 
-        <b>-{{ minus.dop.summa }}</b> &nbsp;
+        <b>{{ minus.dop.summa }}</b> &nbsp;
         <small>{{ minus.dop.text }}</small>
 
         {% if minus.status == 'hide' %}
@@ -149,7 +149,7 @@
            toform_jobman_name="{{ man.head }}"
 
            date="{{ date }}"
-           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ now_date }}{{ rr }}"
+           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
 
            {% set ss = spoint.id ~ pv.id %}
            id2="{{ ss }}"
@@ -160,4 +160,6 @@
 
            ><span class="fa fa-minus" ></span> взыскание</a>        
         
+           <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
+           
 {% endspaceless %}

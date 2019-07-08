@@ -80,12 +80,14 @@
                     <abbr class="job_hour" >
                         <nobr>
 
-                            <i class="fa fa-minus ajax_hour_action" 
-                               type_action="-" 
-                               hour_id="{{ v1.id }}" 
-                               block="hour_{{ v1.id }}" 
-                               s="{{ creatSecret('hour_'~v1.id) }}" 
-                               ></i> 
+                            {% if v1.status == 'show' %}
+                                <i class="fa fa-minus ajax_hour_action" 
+                                   type_action="-" 
+                                   hour_id="{{ v1.id }}" 
+                                   block="hour_{{ v1.id }}" 
+                                   s="{{ creatSecret('hour_'~v1.id) }}" 
+                                   ></i> 
+                            {% endif %}
                             <span id="hour_{{ v1.id }}" 
                                   title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job_calc }}"
                                   {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
@@ -98,20 +100,22 @@
                                 {% endif %}
 
                             </span>
-                            <i class="fa fa-plus ajax_hour_action" 
-                               type_action="+" 
-                               hour_id="{{ v1.id }}" 
-                               block="hour_{{ v1.id }}" 
-                               s="{{ creatSecret('hour_'~v1.id) }}" 
-                               ></i> 
+                            {% if v1.status == 'show' %}
 
-                            <a href="#"  class="but_show_option" 
-                               onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
-                                       return false;" 
-                               xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
-                                <span class="fa fa-caret-down" ></span>
-                            </a>
+                                <i class="fa fa-plus ajax_hour_action" 
+                                   type_action="+" 
+                                   hour_id="{{ v1.id }}" 
+                                   block="hour_{{ v1.id }}" 
+                                   s="{{ creatSecret('hour_'~v1.id) }}" 
+                                   ></i> 
 
+                                <a href="#"  class="but_show_option" 
+                                   onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
+                                           return false;" 
+                                   xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
+                                    <span class="fa fa-caret-down" ></span>
+                                </a>
+                            {% endif %}
 
                         </nobr>
 
