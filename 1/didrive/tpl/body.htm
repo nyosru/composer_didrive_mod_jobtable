@@ -1,8 +1,8 @@
 {% spaceless %}
 
-    
+
     <script src="/js/numberformat.js" ></script>
-    
+
     {% set sp = readItems( 'sale_point', null )  %}
     {# { pa(sp.data)|raw } #}
 
@@ -261,7 +261,7 @@
 
                 {% set plusa = get_plusa( db, date_start, date_finish ) %}
                 {#{ pa(plusa) }#}
-                
+
 
                 <Br/>
                 <Br/>
@@ -271,7 +271,7 @@
         </div>
     </div>
 
-                {#{ pa(session) }#}
+    {#{ pa(session) }#}
 
     <div style="display:inline-block;padding-right:100px;margin-right:100px;">
         <div class="ttable cell-padding5 list_otrezki2 cell-border">
@@ -296,7 +296,7 @@
                         <div class="tcell" {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
                             {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
                             {{ nd|date("d.m") }}
-                            
+
                             {% if nd|date("N") == 1 %}Пн
                             {% elseif nd|date("N") == 2 %}Вт
                             {% elseif nd|date("N") == 3 %}Ср
@@ -305,7 +305,7 @@
                             {% elseif nd|date("N") == 6 %}Сб
                             {% elseif nd|date("N") == 7 %}Вс
                             {% endif %}
-                            
+
                             {#
                             <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
                                                 return false;">
@@ -328,7 +328,7 @@
             </div>
 
             {#{ pa(jobs_on_sp.jobs_on_sp) }#}
-            
+
             {% for sp_now, list12 in jobs_on_sp.jobs_on_sp %}
 
                 {% set comments = getComments( db, date_start, date_finish, sp_now ) %}
@@ -337,11 +337,14 @@
                 {% set spoint = sp.data[sp_now] %}
                 {#{ pa(spoint) }#}
 
+
+
                 <div class="trow alert-warning"  >
                     <div class="tcell alert-warning stick-left" >
                         <b>
                             {{ sp['data'][sp_now]['head'] }}
                             <sup>#{{ sp_now }}</sup>
+
                         </b>
                     </div>
                     <div class="tcell alert-warning" >
@@ -375,7 +378,7 @@
 
                                 {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
                                 <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
-                                
+
                                 {{ man['dop']['lastName'] }}
                                 {{ man['dop']['firstName'] }}
                                 {#{ pa(man_now) }#}
@@ -416,7 +419,7 @@
                                         {#                                        
                                         <br/><nobr>{{ date }}</nobr>
                                         #}
-                                        
+
                                         {% if now_job.date == date %}
                                             {% if now_job.stagirovka == 'da' %}
                                                 <div class="alert-danger" >старт стажировки</div>
@@ -431,7 +434,8 @@
 
                                         {#{ pa(now_job) }#}
 
-                                        <div class="option_img" ><i onclick='$(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow"); return false;' class="fa fa-cog"></i></div>
+                                        <div class="option_img" ><i onclick='$(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
+                                                return false;' class="fa fa-cog"></i></div>
 
                                     {% endif %}
 
@@ -444,6 +448,7 @@
                 {% endfor %}
 
                 <div class="trow" >
+
                     <div class="tcell stick-left bg-white" >
                         <b>Итого за день</b>
                     </div>         
@@ -457,6 +462,56 @@
                             <div class="tcell" >
                                 <div style="min-width:120px; padding: 5px;">
                                     <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+
+                    
+                    
+                    
+                <div class="trow" >
+
+                    <div class="tcell stick-left bg-white" >
+                        <b>Время ожидания</b>
+
+                            {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
+                            {# time_ex
+                            {{ pa(time_ex) }}
+                            #}
+                        
+                    </div>         
+                </div>         
+
+                <div class="trow" >
+
+                    <div class="tcell stick-left bg-white" >
+                        Холодный цех
+                        <br/>
+                        Горячий цех
+                        <br/>
+                        Доставка
+                    </div>         
+
+                    {% for i in range(low=0, high=35, step=1) %}  
+
+                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                            <div class="tcell" >
+                                <div class='text-center'>
+                                    {% if time_ex[now_date2]['cold'] > 0 %}
+                                    {{ time_ex[now_date2]['cold'] }}
+                                    {% else %}-{% endif %}
+                                    <Br/>
+                                    {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}{% else %}-{% endif %}
+                                    <Br/>
+                                    {% if time_ex[now_date2]['delivery'] > 0 %}
+                                    {{ time_ex[now_date2]['delivery'] }}
+                                    {% else %}-{% endif %}
                                 </div>
                             </div>
                         {% endif %}
