@@ -719,6 +719,24 @@ $twig->addFunction($function);
 
 
 
+$function = new Twig_SimpleFunction('get_raschet', function ( $db, string $sp, string $date_start, string $date_finish ) {
+//
+//    $oborots = \Nyos\mod\items::getItemsSimple($db, 'sale_point_oborot');
+//    // \f\pa($oborots);
+//    
+    $re = [];
+//    
+//    foreach( $oborots['data'] as $k => $v ){
+//        $re[$v['dop']['date']] = $v['dop'];
+//        $re[$v['dop']['date']]['id'] = $v['id'];
+//    }
+
+    return $re;
+});
+$twig->addFunction($function);
+
+
+
 
 
 

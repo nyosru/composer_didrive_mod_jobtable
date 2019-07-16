@@ -374,21 +374,48 @@
                             {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
                             {#{ pa(now_job.dolgnost) }#}
 
-                            <nobr>
 
-                                {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
-                                <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
+                            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");
+                                    return false;' class="fa fa-cog"></i></div>
+
+
+                            {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
+                            <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
+
+                            <nobr>
 
                                 {{ man['dop']['lastName'] }}
                                 {{ man['dop']['firstName'] }}
                                 {#{ pa(man_now) }#}
                                 {#% set man1 = man['data'][v1.dop.jobman] %#}
 
-                                {% if type_job == 'spec' %}
-                                    <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
-                                {% endif %}
-
                             </nobr>
+
+                            {% if type_job == 'spec' %}
+                                <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
+                            {% endif %}
+
+                            <div class="user_{{ sp_now }}_{{ man.id }}" >
+                                <div class="show_2div" style="display:none;" >
+
+                                    <a href="#" class="user_{{ sp_now }}_{{ man.id }} get_checks" 
+
+                                       forajax_action="load_checks_for_1jobman" 
+                                       forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                                       forajax_show_timer="da" 
+
+                                       forajax_sp="{{ sp_now }}" 
+                                       forajax_jobman="{{ man.id }}" 
+                                       forajax_datestart="{{ date_start }}"  
+                                       forajax_datefin="{{ date_finish }}" 
+                                       res_to_id="resto_{{ sp_now }}_{{ man.id }}"
+                                       answer="Грузим check-in и check-out сотрудника за месяц (все имеющиеся чеки добавленные с сервера ИИКО будут удалены, в добавленных периодах не будет оценок если стоят)"
+                                       >загрузить чекины за месяц</a>
+
+                                    <div id="resto_{{ sp_now }}_{{ man.id }}" ></div>
+
+                                </div>
+                            </div>
 
                             {#{ pa(v75) }#}
 
@@ -447,291 +474,8 @@
 
                 {% endfor %}
 
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <b>Итого за день</b>
-                    </div>         
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div style="min-width:120px; padding: 5px;">
-                                    <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-
-
-
-
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <nobr>
-                            <b>Время ожидания</b>
-                            <br/>
-                            <a href="#" onclick="$('#tr{{sp_now}}times').toggle('slow');
-                                    return false;" >
-                                скрыть/показать</a>
-                        </nobr>
-
-                        {% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %}
-                        {#
-                        time_ex
-                        {{ pa(time_ex) }}
-                        #}
-                        {% set time_ex_default = get_timers_on_sp_default( db ) %}
-                        {#
-                        time_ex_default
-                        {{ pa(time_ex_default) }}
-                        #}
-
-                    </div>         
-                </div>         
-
-                <div class="trow" id="tr{{sp_now}}times" style="xdisplay:none;">
-
-                    <div class="tcell stick-left bg-white" >
-                        Холодный цех
-                        <br/>
-                        Горячий цех
-                        <br/>
-                        Доставка
-                    </div>         
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div class='text-center'>
-                                    {% if time_ex[now_date2]['cold'] > 0 %}
-                                        {{ time_ex[now_date2]['cold'] }}
-                                    {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
-                                    {% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}
-                                    {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
-                                    {% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['delivery'] > 0 %}
-                                        {{ time_ex[now_date2]['delivery'] }}
-                                    {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
-                                    {% else %}-{% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-
-
-
-
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <nobr>
-                            <b>Параметры нормы дня</b>
-                            <br/>
-                            <a href="#" onclick="$('#tr{{sp_now}}norms').toggle('slow');
-                                    return false;" >
-                                скрыть/показать</a>
-                        </nobr>
-
-                        {% set norms_day = get_norms( db, sp_now, date_start, date_finish ) %}
-                        {#
-                                                norms_day
-                                                {{ pa(norms_day) }}
-                        #}
-
-
-                    </div>         
-                </div>         
-
-                <div class="trow" id="tr{{sp_now}}norms" style="xdisplay:none;">
-
-                    <div class="tcell stick-left bg-white" >
-                        <nobr>
-                            выручка
-                            <br/>
-                            время ожидания хол. цех
-                            <br/>
-                            время ожидания гор. цех
-                            <br/>
-                            время ожидания доставка
-                            <br/>
-                            % в ЗП от оборота
-                            <br/>
-                            кол-во час. в 1 смене
-                        </nobr>
-                    </div>         
-
-                    {% set last_v = 0 %}
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div class='text-center'>
-
-                                    {% set show_data = 0 %}
-
-                                    {% for k4, v4 in norms_day.data if v4.dop.date == now_date2 %}  
-
-                                        {% set show_data = 1 %}
-
-                                        {% set last_v = v4 %}
-
-                                        {#{ pa( v4 ) }#}
-                                        <nobr>
-                                            {{ v4.dop.vuruchka|number_format(0, '.', '`') }} р
-                                            <br/>
-                                            {{ v4.dop.time_wait_norm_cold }}
-                                            <br/>
-                                            {{ v4.dop.time_wait_norm_hot }}
-                                            <br/>
-                                            {{ v4.dop.time_wait_norm_delivery }}
-                                            <br/>
-                                            {{ v4.dop.procent_oplata_truda_on_oborota }} %
-                                            <br/>
-                                            {{ v4.dop.kolvo_hour_in1smena }}
-                                        </nobr>
-
-                                    {% endfor %}
-
-                                    {% if show_data == 0 %}
-                                        {% if last_v != 0 %}
-                                            <nobr>
-                                                {{ last_v.dop.vuruchka|number_format(0, '.', '`') }} р
-                                                <br/>
-                                                {{ last_v.dop.time_wait_norm_cold }}
-                                                <br/>
-                                                {{ last_v.dop.time_wait_norm_hot }}
-                                                <br/>
-                                                {{ last_v.dop.time_wait_norm_delivery }}
-                                                <br/>
-                                                {{ last_v.dop.procent_oplata_truda_on_oborota }} %
-                                                <br/>
-                                                {{ last_v.dop.kolvo_hour_in1smena }}
-                                                <br/>
-                                                <small style="color:gray;" >копия</small>
-                                            </nobr>
-
-                                        {% else %}
-                                            -
-                                            <br/>
-                                            -
-                                            <br/>
-                                            -
-                                            <br/>
-                                            -
-                                            <br/>
-                                            -
-                                            <br/>
-                                            -
-                                        {% endif %}
-                                    {% endif %}
-
-                                    {#% if time_ex[now_date2]['cold'] > 0 %}
-                                    {{ time_ex[now_date2]['cold'] }}
-                                    {% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}{% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['delivery'] > 0 %}
-                                    {{ time_ex[now_date2]['delivery'] }}
-                                    {% else %}-{% endif %#}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-
-
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <nobr>
-                            <b>Оборот</b>
-                            <br/>
-                            <a href="#" onclick="$('#tr{{sp_now}}obr').toggle('slow');
-                                    return false;" >
-                                скрыть/показать</a>
-                        </nobr>
-
-                        {% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %}
-
-                        {#
-                        oborots
-                        {{ pa(oborots) }}
-                        #}
-
-
-                    </div>
-                </div>         
-
-                <div class="trow" id="tr{{sp_now}}obr" style="xdisplay:none;">
-
-                    <div class="tcell stick-left bg-white" >
-                        <nobr>
-                            руб
-                        </nobr>
-                    </div>         
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div class='text-center'>
-
-                                    {% if oborots[now_date2]['oborot_server'] is defined %}
-                                        {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                                    {% elseif oborots[now_date2]['oborot_hand'] is defined %}
-                                        {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
-                                    {% else %}
-                                        нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');
-                                                return false;">++</a></sup>
-
-                                        <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
-                                            <input type="number" value="" min="0" max="900000" step="1" />
-                                            <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
-                                        </form>
-
-                                    {% endif %}
-
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-
-
-
-
-
-
-
-
-
+                {# итого за день строчки #}
+                {% include dir_mod_now_mod_ditpl~'body.sp.down.htm' %}
 
             {% endfor %}
 
