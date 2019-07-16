@@ -147,14 +147,32 @@ $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $
 //                AND midop3.value_date <= \'' . $date_finish . '\' 
 //        ';
     $points = \Nyos\mod\items::getItemsSimple($db, '074.time_expectations_list', 'show');
-    // \f\pa($sp0,2);
+    // \f\pa($points,2);
 
     $ee = [];
 
     foreach ($points['data'] as $k => $v) {
-        if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['minut'])) {
+        if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp ) {
 
-            $ee[$v['dop']['date']][( $v['dop']['otdel'] == 1 ? 'cold' : ( $v['dop']['otdel'] == 2 ? 'hot' : ( $v['dop']['otdel'] == 3 ? 'delivery' : '' ) ) )] = $v['dop']['minut'];
+            $ee[$v['dop']['date']] = $v['dop'];
+        }
+    }
+
+    return $ee;
+});
+$twig->addFunction($function);
+
+$function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, string $mod_default = '074.time_expectations_default' ) {
+
+    $def = \Nyos\mod\items::getItemsSimple($db, $mod_default, 'show');
+    // \f\pa($def,2);
+    $ee = [];
+
+    foreach ($def['data'] as $k => $v) {
+        if ( isset($v['dop']['otdel']) ){
+            if( $v['dop']['otdel'] == 1 ) { $ee['cold'] = $v['dop']['default']; }
+            elseif( $v['dop']['otdel'] == 2 ) { $ee['hot'] = $v['dop']['default']; }
+            elseif( $v['dop']['otdel'] == 3 ) { $ee['delivery'] = $v['dop']['default']; }
         }
     }
 
