@@ -483,23 +483,19 @@
                                 скрыть/показать</a>
                         </nobr>
 
-                        {% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %}
                         {#
-                        time_ex
-                        {{ pa(time_ex) }}
-                        #}
-                        {% set time_ex_default = get_timers_on_sp_default( db ) %}
-                        
-                        {#
-                        time_ex_default
-                        {{ pa(time_ex_default) }}
-                        #}
-
+            {% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %}
+            time_ex
+            {{ pa(time_ex) }}
+            {% set time_ex_default = get_timers_on_sp_default( db ) %}
+            time_ex_default
+            {{ pa(time_ex_default) }}
+#}
 
                     </div>         
                 </div>         
 
-                <div class="trow" id="tr{{sp_now}}times" style="display:none;">
+                <div class="trow" id="tr{{sp_now}}times" style="xdisplay:none;">
 
                     <div class="tcell stick-left bg-white" >
                         Холодный цех
@@ -552,16 +548,16 @@
                         </nobr>
 
                         {% set norms_day = get_norms( db, sp_now, date_start, date_finish ) %}
-                        
+{#
                         norms_day
                         {{ pa(norms_day) }}
-                        
+#}
 
 
                     </div>         
                 </div>         
 
-                <div class="trow" id="tr{{sp_now}}norms" style="display:none;">
+                <div class="trow" id="tr{{sp_now}}norms" style="xdisplay:none;">
 
                     <div class="tcell stick-left bg-white" >
                         <nobr>
@@ -676,11 +672,13 @@
                                 скрыть/показать</a>
                         </nobr>
 
-                        {#% set norms_day = get_norms( db, sp_now, date_start, date_finish ) %#}
+                        {% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %}
+
                         {#
-                        norms_day
-                        {{ pa(norms_day) }}
+                        oborots
+                        {{ pa(oborots) }}
                         #}
+
 
                     </div>
                 </div>         
@@ -702,78 +700,20 @@
                             <div class="tcell" >
                                 <div class='text-center'>
 
-                                    -
-
-                                    {% if 1 == 2  %}
-                                        {% set show_data = 0 %}
-
-                                        {% for k4, v4 in norms_day.data if v4.dop.date == now_date2 %}  
-
-                                            {% set show_data = 1 %}
-
-                                            {% set last_v = v4 %}
-
-                                            {#{ pa( v4 ) }#}
-                                            <nobr>
-                                                {{ v4.dop.vuruchka|number_format(0, '.', '`') }} р
-                                                <br/>
-                                                {{ v4.dop.time_wait_norm_cold }}
-                                                <br/>
-                                                {{ v4.dop.time_wait_norm_hot }}
-                                                <br/>
-                                                {{ v4.dop.time_wait_norm_delivery }}
-                                                <br/>
-                                                {{ v4.dop.procent_oplata_truda_on_oborota }} %
-                                                <br/>
-                                                {{ v4.dop.kolvo_hour_in1smena }}
-                                            </nobr>
-
-                                        {% endfor %}
-
-                                        {% if show_data == 0 %}
-                                            {% if last_v != 0 %}
-                                                <nobr>
-                                                    {{ last_v.dop.vuruchka|number_format(0, '.', '`') }} р
-                                                    <br/>
-                                                    {{ last_v.dop.time_wait_norm_cold }}
-                                                    <br/>
-                                                    {{ last_v.dop.time_wait_norm_hot }}
-                                                    <br/>
-                                                    {{ last_v.dop.time_wait_norm_delivery }}
-                                                    <br/>
-                                                    {{ last_v.dop.procent_oplata_truda_on_oborota }} %
-                                                    <br/>
-                                                    {{ last_v.dop.kolvo_hour_in1smena }}
-                                                    <br/>
-                                                    <small style="color:gray;" >копия</small>
-                                                </nobr>
-
-                                            {% else %}
-                                                -
-                                                <br/>
-                                                -
-                                                <br/>
-                                                -
-                                                <br/>
-                                                -
-                                                <br/>
-                                                -
-                                                <br/>
-                                                -
-                                            {% endif %}
-                                        {% endif %}
-
+                                    {% if oborots[now_date2]['oborot_server'] is defined %}
+                                        {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
+                                    {% elseif oborots[now_date2]['oborot_hand'] is defined %}
+                                        {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
+                                    {% else %}
+                                        нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');return false;">++</a></sup>
+                                        
+                                        <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
+                                        <input type="number" value="" min="0" max="900000" step="1" />
+                                        <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
+                                        </form>
+                                        
                                     {% endif %}
 
-                                    {#% if time_ex[now_date2]['cold'] > 0 %}
-                                    {{ time_ex[now_date2]['cold'] }}
-                                    {% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}{% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['delivery'] > 0 %}
-                                    {{ time_ex[now_date2]['delivery'] }}
-                                    {% else %}-{% endif %#}
                                 </div>
                             </div>
                         {% endif %}
