@@ -483,14 +483,16 @@
                                 скрыть/показать</a>
                         </nobr>
 
+                        {% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %}
                         {#
-            {% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %}
-            time_ex
-            {{ pa(time_ex) }}
-            {% set time_ex_default = get_timers_on_sp_default( db ) %}
-            time_ex_default
-            {{ pa(time_ex_default) }}
-#}
+                        time_ex
+                        {{ pa(time_ex) }}
+                        #}
+                        {% set time_ex_default = get_timers_on_sp_default( db ) %}
+                        {#
+                        time_ex_default
+                        {{ pa(time_ex_default) }}
+                        #}
 
                     </div>         
                 </div>         
@@ -548,10 +550,10 @@
                         </nobr>
 
                         {% set norms_day = get_norms( db, sp_now, date_start, date_finish ) %}
-{#
-                        norms_day
-                        {{ pa(norms_day) }}
-#}
+                        {#
+                                                norms_day
+                                                {{ pa(norms_day) }}
+                        #}
 
 
                     </div>         
@@ -705,13 +707,14 @@
                                     {% elseif oborots[now_date2]['oborot_hand'] is defined %}
                                         {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
                                     {% else %}
-                                        нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');return false;">++</a></sup>
-                                        
+                                        нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');
+                                                return false;">++</a></sup>
+
                                         <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
-                                        <input type="number" value="" min="0" max="900000" step="1" />
-                                        <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
+                                            <input type="number" value="" min="0" max="900000" step="1" />
+                                            <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
                                         </form>
-                                        
+
                                     {% endif %}
 
                                 </div>
