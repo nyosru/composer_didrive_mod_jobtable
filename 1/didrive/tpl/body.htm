@@ -374,21 +374,48 @@
                             {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
                             {#{ pa(now_job.dolgnost) }#}
 
-                            <nobr>
 
-                                {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
-                                <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
+                            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");
+                                    return false;' class="fa fa-cog"></i></div>
+
+
+                            {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
+                            <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
+
+                            <nobr>
 
                                 {{ man['dop']['lastName'] }}
                                 {{ man['dop']['firstName'] }}
                                 {#{ pa(man_now) }#}
                                 {#% set man1 = man['data'][v1.dop.jobman] %#}
 
-                                {% if type_job == 'spec' %}
-                                    <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
-                                {% endif %}
-
                             </nobr>
+
+                            {% if type_job == 'spec' %}
+                                <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
+                            {% endif %}
+
+                            <div class="user_{{ sp_now }}_{{ man.id }}" >
+                                <div class="show_2div" style="display:none;" >
+
+                                    <a href="#" class="user_{{ sp_now }}_{{ man.id }} get_checks" 
+
+                                       forajax_action="load_checks_for_1jobman" 
+                                       forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                                       forajax_show_timer="da" 
+
+                                       forajax_sp="{{ sp_now }}" 
+                                       forajax_jobman="{{ man.id }}" 
+                                       forajax_datestart="{{ date_start }}"  
+                                       forajax_datefin="{{ date_finish }}" 
+                                       res_to_id="resto_{{ sp_now }}_{{ man.id }}"
+                                       answer="Грузим check-in и check-out сотрудника за месяц (все имеющиеся чеки добавленные с сервера ИИКО будут удалены, в добавленных периодах не будет оценок если стоят)"
+                                       >загрузить чекины за месяц</a>
+
+                                    <div id="resto_{{ sp_now }}_{{ man.id }}" ></div>
+
+                                </div>
+                            </div>
 
                             {#{ pa(v75) }#}
 
@@ -447,77 +474,8 @@
 
                 {% endfor %}
 
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <b>Итого за день</b>
-                    </div>         
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div style="min-width:120px; padding: 5px;">
-                                    <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-
-                    
-                    
-                    
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        <b>Время ожидания</b>
-
-                            {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
-                            {# time_ex
-                            {{ pa(time_ex) }}
-                            #}
-                        
-                    </div>         
-                </div>         
-
-                <div class="trow" >
-
-                    <div class="tcell stick-left bg-white" >
-                        Холодный цех
-                        <br/>
-                        Горячий цех
-                        <br/>
-                        Доставка
-                    </div>         
-
-                    {% for i in range(low=0, high=35, step=1) %}  
-
-                        {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            <div class="tcell" >
-                                <div class='text-center'>
-                                    {% if time_ex[now_date2]['cold'] > 0 %}
-                                    {{ time_ex[now_date2]['cold'] }}
-                                    {% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}{% else %}-{% endif %}
-                                    <Br/>
-                                    {% if time_ex[now_date2]['delivery'] > 0 %}
-                                    {{ time_ex[now_date2]['delivery'] }}
-                                    {% else %}-{% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
+                {# итого за день строчки #}
+                {% include dir_mod_now_mod_ditpl~'body.sp.down.htm' %}
 
             {% endfor %}
 
