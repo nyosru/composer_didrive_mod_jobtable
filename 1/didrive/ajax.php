@@ -45,8 +45,53 @@ else {
 //require( $_SERVER['DOCUMENT_ROOT'] . '/0.site/0.cfg.start.php');
 //require( $_SERVER['DOCUMENT_ROOT'] . DS . '0.all' . DS . 'class' . DS . 'mysql.php' );
 //require( $_SERVER['DOCUMENT_ROOT'] . DS . '0.all' . DS . 'db.connector.php' );
-// добавляем смену сотруднику
-if (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment') ) {
+
+
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
+
+    // require_once DR . '/all/ajax.start.php';
+    // $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
+    // $ff->execute(array(':id' => (int) $_POST['id2']));
+
+
+    /**
+     * достаём чеки за день
+     */
+    \Nyos\mod\items::$sql_itemsdop_add_where_array = array(
+        ':dt1' => date('Y-m-d 05:00:01', strtotime($_REQUEST['date']))
+        ,
+        ':dt2' => date('Y-m-d 23:50:01', strtotime($_REQUEST['date']))
+    );
+    \Nyos\mod\items::$sql_itemsdop2_add_where = '
+        INNER JOIN `mitems-dops` md1 
+            ON 
+                md1.id_item = mi.id 
+                AND md1.name = \'start\'
+                AND md1.value_datetime >= :dt1
+                AND md1.value_datetime <= :dt2
+        ';
+    $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout', 'show');
+    \f\pa($checki,2,'','$checki');
+
+
+    /**
+     * достаём нормы на день
+     */
+    $now_norm = \Nyos\mod\JobDesc::whatNormToDay($db, $_REQUEST['sp'], $_REQUEST['date']);
+    \f\pa($now_norm,2,'','$now_norm');
+
+
+
+
+
+
+
+
+
+    \f\end2('ок');
+}
+//
+elseif (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 
     // require_once DR . '/all/ajax.start.php';
 
@@ -67,10 +112,10 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
 }
 //
 elseif (
-        isset($_POST['action']) && ( 
-        $_POST['action'] == 'add_new_smena' || 
-        $_POST['action'] == 'add_comment' || 
-        $_POST['action'] == 'confirm_smena' || 
+        isset($_POST['action']) && (
+        $_POST['action'] == 'add_new_smena' ||
+        $_POST['action'] == 'add_comment' ||
+        $_POST['action'] == 'confirm_smena' ||
         $_POST['action'] == 'goto_other_sp'
         )
 ) {
@@ -79,7 +124,6 @@ elseif (
     try {
 
         //require_once DR . '/all/ajax.start.php';
-
         // action=add_new_smena
         // \f\pa($_POST);
         // [date] => 2019-06-27
@@ -97,7 +141,6 @@ elseif (
 //
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
 //                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-
             // если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
                 //$b .= '<br/>'.__LINE__;
@@ -134,7 +177,6 @@ elseif (
 //
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
 //                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-
             // если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
                 //$b .= '<br/>'.__LINE__;
@@ -154,14 +196,14 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-                'hour_on_job_calc' => \Nyos\mod\IikoChecks::calculateHoursInRange( $start_time , $fin_time ),
+                'hour_on_job_calc' => \Nyos\mod\IikoChecks::calculateHoursInRange($start_time, $fin_time),
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
                 'ocenka' => $_REQUEST['ocenka']
             );
 
 
-            
+
             \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], $indb);
 
             \f\end2('<div>'
@@ -170,8 +212,7 @@ elseif (
                     . date('d.m.y H:i', $start_time) . ' - ' . date('d.m.y H:i', $fin_time)
                     . '</nobr>'
                     . '</div>', true);
-        }
-        elseif ($_POST['action'] == 'add_comment') {
+        } elseif ($_POST['action'] == 'add_comment') {
 
             $indb = $_REQUEST;
 
@@ -182,9 +223,8 @@ elseif (
 //                'start' => date('Y-m-d H:i', $start_time),
 //                'fin' => date('Y-m-d H:i', $fin_time)
 //            )
-
             //\f\pa( $indb );
-            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['073.comments'], $indb );
+            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['073.comments'], $indb);
 
             \f\end2('<div style="background-color: gray; padding:5px;" >'
                     . '<b class="warn" >добавили комментарий</b>'
@@ -228,7 +268,7 @@ elseif (
                     . '</nobr>'
                     . '</div>', true);
         }
-    } 
+    }
     //
     catch (\Exception $ex) {
 
@@ -301,8 +341,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 //                . $r
                 . '</nobr>'
                 . '</div>', true);
-    } 
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
                 . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -329,7 +368,6 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
     try {
 
         //require_once DR . '/all/ajax.start.php';
-
 //        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
 //            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 //
@@ -373,8 +411,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 //                . $r
                 . '</nobr>'
                 . '</div>', true);
-    } 
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
                 . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -404,7 +441,6 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
 //
 //    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex'))
 //        require $_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex';
-
     // require_once DR.'/vendor/didrive_mod/items/class.php';
     // \Nyos\mod\items::getItems( $db, $folder )
     // echo DR ;

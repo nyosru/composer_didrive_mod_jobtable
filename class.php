@@ -148,6 +148,37 @@ class JobDesc {
         return $ret2;
     }
 
+/**
+ * какие нормы на день сегодня в сп
+ * @param type $array
+ * @param type $sp
+ * @param type $man
+ * @param string $date
+ * @return type
+ */
+    public static function whatNormToDay($db, int $sp, string $date) {
+
+   \Nyos\mod\items::$sql_itemsdop_add_where_array = array(
+        ':dt1' => date('Y-m-d 05:00:01', strtotime($_REQUEST['date']) )
+        ,
+        ':dt2' => date('Y-m-d 23:50:01', strtotime($_REQUEST['date']) )
+    );
+    \Nyos\mod\items::$sql_itemsdop2_add_where = '
+        INNER JOIN `mitems-dops` md1 
+            ON 
+                md1.id_item = mi.id 
+                AND md1.name = \'start\'
+                AND md1.value_datetime >= :dt1
+                AND md1.value_datetime <= :dt2
+        ';
+    $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout', 'show' );
+    \f\pa($checki);
+         
+        
+        
+        return $ret2;
+    }
+
     /**
      * сейчас работает человек на этой сп или нет
      * @param type $array

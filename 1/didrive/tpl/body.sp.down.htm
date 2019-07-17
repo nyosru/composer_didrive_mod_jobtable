@@ -10,7 +10,7 @@
 
             {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-            
+
             {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                 <div class="tcell" >
@@ -53,11 +53,36 @@
     <div class="trow" id="tr{{sp_now}}times" style="xdisplay:none;">
 
         <div class="tcell stick-left bg-white" >
+
+            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
+                    return false;' class="fa fa-cog"></i></div>
+
             Холодный цех
             <br/>
             Горячий цех
             <br/>
             Доставка
+
+
+            <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
+                <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
+                   style="display:block;"
+
+                   forajax_action="load_data_from_server" 
+                   forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                   forajax_show_timer="da" 
+
+                   forajax_sp="{{ sp_now }}" 
+                   {#forajax_jobman="{{ man.id }}" #}
+                   forajax_date_start="{{ date_start }}"  
+                   forajax_date_fin="{{ date_finish }}" 
+                   res_to_id="timeo_{{ sp_now }}"
+                   answer="Грузим данные времени ожидания ?"
+                   >загрузить время ожидания</a>
+            </div>
+
+            <div id="timeo_{{ sp_now }}" ></div>
+
         </div>         
 
         {% for i in range(low=0, high=35, step=1) %}  
@@ -115,7 +140,9 @@
     <div class="trow" id="tr{{sp_now}}norms" style="xdisplay:none;">
 
         <div class="tcell stick-left bg-white" >
+
             <nobr>
+
                 выручка
                 <br/>
                 время ожидания хол. цех
@@ -128,6 +155,7 @@
                 <br/>
                 кол-во час. в 1 смене
             </nobr>
+
         </div>         
 
         {% set last_v = 0 %}
@@ -315,9 +343,31 @@
 
                 <div class="tcell" >
                     <div class='text-center'>
+                        
+                <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block;"
 
-                        ++
+                   forajax_action="calc_full_ocenka_day" 
+                   
+                   forajax_id="{{ sp_now }}_{{ i }}" 
+                   forajax_s="{{ creatSecret(  sp_now ~ '_' ~ i ) }}" 
+                   
+                   forajax_show_timer="da" 
 
+                   forajax_sp="{{ sp_now }}" 
+                   
+                   forajaxx_jobman="{{ man.id }}" 
+                   forajaxx_date_start="{{ date_start }}"  
+                   forajaxx_date_fin="{{ date_finish }}" 
+                   
+                   forajax_date="{{ now_date2 }}" 
+                   res_to_id="ocenka_{{ sp_now }}"
+                   
+                   xanswer="Грузим данные времени ожидания ?"
+                   >расчитать оценку и соотношение парметров</a>
+
+            <div id="ocenka_{{ sp_now }}" ></div>
+
+            
                         {#
                         {% if oborots[now_date2]['oborot_server'] is defined %}
                             {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>

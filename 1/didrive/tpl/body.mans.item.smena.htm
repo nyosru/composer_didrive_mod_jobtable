@@ -58,6 +58,12 @@
          ">
         <nobr>
 
+            {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' %}
+                <abbr title="загружено с сервера ИИКО" ><small style="float:left;">iiko</small></abbr><br clear="all" />
+            {% elseif v1.dop.who_add_item is defined and v1.dop.who_add_item == 'admin' %}
+                <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
+            {% endif %}
+            
             {#{ pa(v1) }#}
 
             <div xstyle="display:inline-block;" class="point_div text-center" >
