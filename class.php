@@ -6,6 +6,7 @@
 
 namespace Nyos\mod;
 
+
 if (!defined('IN_NYOS_PROJECT'))
     throw new \Exception('Сработала защита от розовых хакеров, обратитесь к администрратору');
 
@@ -21,7 +22,7 @@ class JobDesc {
      * @param type $module_slary
      * @return type
      */
-    public static function configGetJobmansSmenas($db, $folder = null, $module_sp, $module_slary) {
+    public static function configGetJobmansSmenas($db, $folder = null, $module_sp = 'sale_point', $module_slary = '071.set_oplata' ) {
 
         if ($folder === null)
             $folder = \Nyos\nyos::$folder_now;
@@ -39,7 +40,8 @@ class JobDesc {
         /**
          * 
          */
-        $salary = \Nyos\mod\items::getItems($db, $folder, $module_slary, 'show', null);
+        // $salary = \Nyos\mod\items::getItems($db, $folder, $module_slary, 'show', null);
+        $salary = \Nyos\mod\items::getItemsSimple($db, $module_slary, 'show' );
         // \f\pa($salary, 2);
 
         $re = [];
@@ -56,18 +58,24 @@ class JobDesc {
             }
 
             if (isset($v['dop']['sale_point']) && isset($sps['data'][$v['dop']['sale_point']])) {
+                
                 if (isset($sps['data'][$v['dop']['sale_point']]['head']) && $sps['data'][$v['dop']['sale_point']]['head'] == 'default') {
+                    
                     $re['default'][$v['dop']['dolgnost']][$v['dop']['date']] = $v['dop'];
+                    
                 } else {
+                    
                     $re[$v['dop']['sale_point']][$v['dop']['dolgnost']][$v['dop']['date']] = $v['dop'];
+                    
                 }
+                
             }
         }
 
         $re2 = [];
         foreach ($re as $point => $v1) {
             foreach ($v1 as $dolg => $v2) {
-                sort($v2);
+                ksort($v2);
                 $re2[$point][$dolg] = $v2;
             }
         }
@@ -148,35 +156,37 @@ class JobDesc {
         return $ret2;
     }
 
-/**
- * какие нормы на день сегодня в сп
- * @param type $array
- * @param type $sp
- * @param type $man
- * @param string $date
- * @return type
- */
+    /**
+     * какие нормы на день сегодня в сп
+     * @param type $array
+     * @param type $sp
+     * @param type $man
+     * @param string $date
+     * @return type
+     */
     public static function whatNormToDay($db, int $sp, string $date) {
 
-   \Nyos\mod\items::$sql_itemsdop_add_where_array = array(
-        ':dt1' => date('Y-m-d 05:00:01', strtotime($_REQUEST['date']) )
-        ,
-        ':dt2' => date('Y-m-d 23:50:01', strtotime($_REQUEST['date']) )
-    );
-    \Nyos\mod\items::$sql_itemsdop2_add_where = '
+        \Nyos\mod\items::$sql_itemsdop_add_where_array = array(
+            ':date' => date('Y-m-d', strtotime($_REQUEST['date']))
+        );
+        \Nyos\mod\items::$sql_itemsdop2_add_where = '
         INNER JOIN `mitems-dops` md1 
             ON 
                 md1.id_item = mi.id 
-                AND md1.name = \'start\'
-                AND md1.value_datetime >= :dt1
-                AND md1.value_datetime <= :dt2
+                AND md1.name = \'date\'
+                AND md1.value_date <= :date
         ';
-    $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout', 'show' );
-    \f\pa($checki);
-         
+        \Nyos\mod\items::$sql_order = 'ORDER BY md1.value_date DESC';
+        // \Nyos\mod\items::$sql_limit = 'LIMIT 1';
         
-        
-        return $ret2;
+        $norms = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr', 'show');
+        //\f\pa($checki);
+
+        foreach( $norms['data'] as $k => $v ){
+            return $v['dop'];
+        }
+
+        return false;
     }
 
     /**

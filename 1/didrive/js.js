@@ -231,7 +231,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
         clearTdSummAllGraph();
-        
+
         // alert('123');
         setTimeout(function () {
             calculateSummAllGraph();
@@ -1028,7 +1028,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
 
-
+// alert('123');
 
     $('body').on('click', '.jobdesc__calc_full_ocenka_day', function (event) {
 
@@ -1042,44 +1042,42 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var resto = '';
         var $vars = new Array();
         var $uri_query = '';
-        
+
         var showid = 0;
-        
-        
+
+
         var hidethis = 0;
         var answer = 0;
-        var resto = '';
-        var showid = '';
+        var resto = 0;
+        var showid = 0;
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
                 if (this.name.indexOf("forajax_") != -1) {
-                    $uri_query = $uri_query + '&' + this.name.replace('forajax_','') + '=' + this.value;
+                    $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
                     console.log(this.name, this.value);
                 }
 
-                
+
                 // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-                
+
 //                forajax_sp="{{ sp_now }}" 
 //                forajax_jobman="{{ man.id }}" 
 //                forajax_datestart="{{ date_start }}"  
 //                forajax_datefin="{{ date_finish }}" 
-                
+
 //
-                if (this.name == 'hidethis' ) {
+                if (this.name == 'hidethis') {
                     hidethis = 1;
                 }
-                
+
                 if (this.name == 'show_id') {
                     showid = '#' + this.value;
-                }
-                else if (this.name == 'res_to_id') {
+                } else if (this.name == 'res_to_id') {
                     resto = '#' + this.value;
-                }
-                else if (this.name == 'answer') {
+                } else if (this.name == 'answer') {
                     answer = this.value;
                 }
 //                if (this.name == 'resto') {
@@ -1122,9 +1120,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             type: "post",
 
             beforeSend: function () {
-                
-                $( resto ).html('<img src="/img/load.gif" alt="" border=0 />');
-                
+
+                $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
+
                 /*
                  if (typeof $div_hide !== 'undefined') {
                  $('#' + $div_hide).hide();
@@ -1146,7 +1144,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $th.hide();
                 }
 
-                $( resto ).html('<div style="background-color:yellow;color:red;padding:5px;">'+$j.html+'</div>');
+                $string = '';
+//                $.each($j, function (name, value) {
+//                $string += '<br/>'+name + ': ' + value;
+//                });
+
+                $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>'+$string);
 
                 //alert(resto);
 

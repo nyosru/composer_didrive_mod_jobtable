@@ -699,8 +699,6 @@ $function = new Twig_SimpleFunction('get_plusa', function ( $db, string $date_st
 $twig->addFunction($function);
 
 
-
-
 $function = new Twig_SimpleFunction('get_oborots', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
     $oborots = \Nyos\mod\items::getItemsSimple($db, 'sale_point_oborot');

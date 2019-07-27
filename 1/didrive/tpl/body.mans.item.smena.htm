@@ -99,10 +99,14 @@
                                   {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
                                   >
 
-                                {% if v1.dop.hour_on_job_hand is defined %}
+                                {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
                                     {{ v1.dop.hour_on_job_hand }}
-                                {% else %}
+                                {% elseif v1.dop.hour_on_job_calc is defined and v1.dop.hour_on_job_calc > 0 %}
                                     {{ v1.dop.hour_on_job_calc }}
+                                {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
+                                    {{ v1.dop.hour_on_job }}
+                                {% else %}
+                                    0
                                 {% endif %}
 
                             </span>
@@ -193,9 +197,15 @@
 
                                     <option value="{{ i }}" 
                                             price="{{price_hour}}" 
-                                            {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}selected="selected"{% endif %} 
+                                            
+                                            {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
+                                                selected="selected"
+                                            {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
+                                                selected="selected"
+                                            {% endif %} 
+                                            
                                             price="{{price_hour}}" >
-                                        {{ i }} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                        {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
                                     </option>
 
                                 {% endfor %}
