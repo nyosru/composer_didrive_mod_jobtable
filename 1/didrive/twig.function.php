@@ -112,23 +112,9 @@ $function = new Twig_SimpleFunction('get_smena_jobs', function ( string $date_st
 $twig->addFunction($function);
 
 
-$function = new Twig_SimpleFunction('get_norms', function ( $db, string $sp, string $date_start, string $date_finish ) {
+$function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    // \f\pa( \Nyos\nyos::$folder_now );
-
-    /**
-     * точки продаж
-     */
-    \Nyos\mod\items::$sql_itemsdop2_add_where = '
-            INNER JOIN `mitems-dops` midop2 ON midop2.id_item = mi.id AND midop2.name = \'sale_point\' AND midop2.value = ' . $sp . ' 
-            INNER JOIN `mitems-dops` midop3 ON midop3.id_item = mi.id AND midop3.name = \'date\' 
-                AND midop3.value_date >= \'' . $date_start . '\' 
-                AND midop3.value_date <= \'' . $date_finish . '\' 
-        ';
-    $points = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr', 'show');
-    // \f\pa($sp0,2);
-
-    return $points;
+    return \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date_start, $date_finish );
 });
 $twig->addFunction($function);
 
@@ -152,7 +138,7 @@ $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $
     $ee = [];
 
     foreach ($points['data'] as $k => $v) {
-        if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp ) {
+        if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp) {
 
             $ee[$v['dop']['date']] = $v['dop'];
         }
@@ -169,10 +155,14 @@ $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, 
     $ee = [];
 
     foreach ($def['data'] as $k => $v) {
-        if ( isset($v['dop']['otdel']) ){
-            if( $v['dop']['otdel'] == 1 ) { $ee['cold'] = $v['dop']['default']; }
-            elseif( $v['dop']['otdel'] == 2 ) { $ee['hot'] = $v['dop']['default']; }
-            elseif( $v['dop']['otdel'] == 3 ) { $ee['delivery'] = $v['dop']['default']; }
+        if (isset($v['dop']['otdel'])) {
+            if ($v['dop']['otdel'] == 1) {
+                $ee['cold'] = $v['dop']['default'];
+            } elseif ($v['dop']['otdel'] == 2) {
+                $ee['hot'] = $v['dop']['default'];
+            } elseif ($v['dop']['otdel'] == 3) {
+                $ee['delivery'] = $v['dop']['default'];
+            }
         }
     }
 
@@ -558,7 +548,21 @@ $twig->addFunction($function);
 
 
 
-$function = new Twig_SimpleFunction('get_checki', function ( string $date_start, string $date_finish, array $get_points = [] ) {
+
+
+
+/**
+ * ищем в массиве оплат, нужные цифры по должности в сп
+ */
+$function = new Twig_SimpleFunction('jobdesc__getSalaryJobman', function ( $db, $sp, $dolgn, $date ) {
+
+    return \Nyos\mod\JobDesc::getSalaryJobman( $db, $sp, $dolgn, $date );
+});
+$twig->addFunction($function);
+
+
+
+$function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $date_start, string $date_finish, array $get_points = [] ) {
 
     global $db;
 
@@ -575,10 +579,18 @@ $function = new Twig_SimpleFunction('get_checki', function ( string $date_start,
         )
         ';
     //$checks = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '050.chekin_checkout', 'show', null);
-    $checks = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '050.chekin_checkout', '', null);
+    $checks = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout');
     //\f\pa($checks, 2, null, '$checks');
 // \f\pa($points);
 
+    $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats' );
+    // \f\pa($payeds);
+    foreach( $payeds0['data'] as $k => $v ){
+        $payeds[$v['dop']['checkin']] = $v['dop'];
+    }
+    
+    
+    
     /**
      * работник - дата - время вх и вых
      */
@@ -595,6 +607,11 @@ $function = new Twig_SimpleFunction('get_checki', function ( string $date_start,
 
                 $da = date('Y-m-d', strtotime($check['dop']['start']));
 
+                if ( isset( $payeds[$check['id']]) ) {
+                    
+                    $check['payed'] = $payeds[$check['id']];
+                    
+                }
                 if (isset($check['dop']['fin'])) {
 
                     $check['dop']['time_on_job'] = ( ceil(strtotime($check['dop']['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['dop']['start']) / 1800) * 1800 );
@@ -633,6 +650,41 @@ $function = new Twig_SimpleFunction('get_minusa', function ( $db, string $date_s
     // \f\pa($vv['checks']);
 
     return $vv['checks'];
+});
+$twig->addFunction($function);
+
+$function = new Twig_SimpleFunction('jobdesc__get_ocenka_day', function ( $db, string $date_start, string $date_finish ) {
+
+
+    $dt1 = date('Y-m-d', strtotime($date_start));
+    $dt2 = date('Y-m-d', strtotime($date_finish));
+
+//    \Nyos\mod\items::$sql_itemsdop_add_where_array = array(
+//        ':dt1' => date('Y-m-d', strtotime($date_start) )
+//        ,
+//        ':dt2' => date('Y-m-d', strtotime($date_finish) )
+//    );
+//    \Nyos\mod\items::$sql_itemsdop2_add_where = '
+//        INNER JOIN `mitems-dops` md1 
+//            ON 
+//                md1.id_item = mi.id 
+//                AND md1.name = \'date\'
+//                AND md1.value_date >= :dt1
+//                AND md1.value_date <= :dt2
+//        ';
+
+    $oc = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
+    //\f\pa($oc);
+
+    $r = [];
+
+    foreach ($oc['data'] as $k => $v) {
+        if ($v['dop']['date'] <= $dt1 && $v['dop']['date'] >= $dt2) {
+            $r[$v['dop']['sale_point']][$v['dop']['date']] = $v['dop'];
+        }
+    }
+
+    return $r;
 });
 $twig->addFunction($function);
 
@@ -701,35 +753,20 @@ $twig->addFunction($function);
 
 
 
-$function = new Twig_SimpleFunction('get_oborots', function ( $db, string $sp, string $date_start, string $date_finish ) {
+$function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    $oborots = \Nyos\mod\items::getItemsSimple($db, 'sale_point_oborot');
-    // \f\pa($oborots);
-    
+    $ocenki = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
+    //\f\pa($ocenki);
+
     $re = [];
-    
-    foreach( $oborots['data'] as $k => $v ){
-        $re[$v['dop']['date']] = $v['dop'];
-        $re[$v['dop']['date']]['id'] = $v['id'];
+
+    foreach ($ocenki['data'] as $k => $v) {
+
+        if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+            $re[$v['dop']['date']] = $v['dop'];
+            $re[$v['dop']['date']]['id'] = $v['id'];
+        }
     }
-
-    return $re;
-});
-$twig->addFunction($function);
-
-
-
-$function = new Twig_SimpleFunction('get_raschet', function ( $db, string $sp, string $date_start, string $date_finish ) {
-//
-//    $oborots = \Nyos\mod\items::getItemsSimple($db, 'sale_point_oborot');
-//    // \f\pa($oborots);
-//    
-    $re = [];
-//    
-//    foreach( $oborots['data'] as $k => $v ){
-//        $re[$v['dop']['date']] = $v['dop'];
-//        $re[$v['dop']['date']]['id'] = $v['id'];
-//    }
 
     return $re;
 });
