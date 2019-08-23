@@ -15,8 +15,13 @@
     {#{ pa(man) }#}
 
 
-    {% set salar = get_1salary( salarys, sp_now, now_job.dolgnost, date ) %}
+    {#% set salar = 1 %#}
+    {#% set salar = get_1salary( salarys, sp_now, now_job.dolgnost, date ) %#}
     {#{ pa(salar) }#}
+
+    {% set salar = jobdesc__getSalaryJobman( db, sp_now, now_job.dolgnost, date ) %}
+    {#{ pa(salar) }#}
+
 
     <div class="text-center show_down_hiden smena1
 
@@ -63,7 +68,7 @@
             {% elseif v1.dop.who_add_item is defined and v1.dop.who_add_item == 'admin' %}
                 <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
             {% endif %}
-            
+
             {#{ pa(v1) }#}
 
             <div xstyle="display:inline-block;" class="point_div text-center" >
@@ -71,6 +76,17 @@
                 {% if v1.dop.start is defined and v1.dop.fin is not defined %}
                     {{ v1.dop.start|date("H:i") }} - ...
                 {% else %}
+
+
+
+                    {#   v1 [payed] => Array
+        (
+            [checkin] => 20974
+            [summa] => 1552
+            [pay_buh] => da
+            [pay_buh_who] => 2
+            [pay_buh_start] => 2019-08-20 15:47:22
+        )#}
 
                     {% set kolvo_hour = v1.dop.time_on_job/3600 %}
 
@@ -86,7 +102,15 @@
                     <abbr class="job_hour" >
                         <nobr>
 
-                            {% if v1.status == 'show' %}
+                            {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
+                                {% set hours_on_job = v1.dop.hour_on_job_hand %}
+                            {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
+                                {% set hours_on_job = v1.dop.hour_on_job %}
+                            {% else %}
+                                {% set hours_on_job = 0 %}
+                            {% endif %}
+
+                            {% if v1.status == 'show' and v1.payed is not defined %}
                                 <i class="fa fa-minus ajax_hour_action" 
                                    type_action="-" 
                                    hour_id="{{ v1.id }}" 
@@ -94,23 +118,16 @@
                                    s="{{ creatSecret('hour_'~v1.id) }}" 
                                    ></i> 
                             {% endif %}
+
                             <span id="hour_{{ v1.id }}" 
-                                  title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job_calc }}"
+                                  title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job }}"
                                   {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
                                   >
 
-                                {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
-                                    {{ v1.dop.hour_on_job_hand }}
-                                {% elseif v1.dop.hour_on_job_calc is defined and v1.dop.hour_on_job_calc > 0 %}
-                                    {{ v1.dop.hour_on_job_calc }}
-                                {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
-                                    {{ v1.dop.hour_on_job }}
-                                {% else %}
-                                    0
-                                {% endif %}
+                                {{ hours_on_job }}
 
                             </span>
-                            {% if v1.status == 'show' %}
+                            {% if v1.status == 'show' and v1.payed is not defined %}
 
                                 <i class="fa fa-plus ajax_hour_action" 
                                    type_action="+" 
@@ -138,6 +155,9 @@
 
                 {% if v1.status == 'show' %}
 
+                    {#{ pa(v1) }#}
+
+                    
                     <input type="hidden" 
                            class="hours_kolvo" 
                            value="{% if v1.dop.hour_on_job_hand is defined %}{{ v1.dop.hour_on_job_hand }}{% else %}{{ v1.dop.hour_on_job_calc }}{% endif %}" >
@@ -178,6 +198,7 @@
                                     dop_name="ocenka"
                                     item_id="{{ v1.id }}"
                                     s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
+                                    {% if v1.payed is defined %} disabled="disabled" {% endif %}
                                     >
                                 <option price="0" value="">Оценка</option>
 
@@ -195,18 +216,20 @@
                                         {% endif %}
                                     {% endif %}
 
-                                    <option value="{{ i }}" 
-                                            price="{{price_hour}}" 
-                                            
-                                            {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
-                                                selected="selected"
-                                            {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
-                                                selected="selected"
-                                            {% endif %} 
-                                            
-                                            price="{{price_hour}}" >
-                                        {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
-                                    </option>
+                                    {% if price_hour > 0 %}
+                                        <option value="{{ i }}" 
+                                                price="{{price_hour}}" 
+
+                                                {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
+                                                    selected="selected"
+                                                {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
+                                                    selected="selected"
+                                                {% endif %} 
+
+                                                price="{{price_hour}}" >
+                                            {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                        </option>
+                                    {% endif %}
 
                                 {% endfor %}
 
@@ -386,7 +409,31 @@
 
             <div id="ares{{ k1 }}" style="display:none;"></div>
 
+
+
+
+            {% if v1.payed is defined %}
+                <div class="btn btn-xs btn-info" >
+                оплачено {{ v1.payed.summa|number_format(0, '.', '`') }}р
+                </div>
+            {% endif %}
+
+
+
+
+
+
+
+
             {# { pa(v1) } #}
+
+
+
+
+
+
+
+
 
         </nobr>
     </div>

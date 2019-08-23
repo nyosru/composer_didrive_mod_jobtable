@@ -162,43 +162,48 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             var $summa_hours = 0;
             var $error = '';
 
-            $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+//            $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+//
+//                var $e1 = $(elem2).text();
+//                var $e2 = $(elem2).val();
+//
+//                //$kolvo_hour = Number($(elem2).attr('kolvo_hour'));
+//                $kolvo_hour = Number($(elem2).closest('.smena1').find('.hours_kolvo').val());
+//                //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
+//
+//                $summa += $e2 * $kolvo_hour;
+//                $summa_hours += $kolvo_hour;
+//
+//            });
 
-                var $e1 = $(elem2).text();
-                var $e2 = $(elem2).val();
+            // console.log('summa_m ', $summa);
+            // console.log('summa_h ', $summa_hours);
 
-                //$kolvo_hour = Number($(elem2).attr('kolvo_hour'));
-                $kolvo_hour = Number($(elem2).closest('.smena1').find('.hours_kolvo').val());
-                //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
-
-                $summa += $e2 * $kolvo_hour;
-                $summa_hours += $kolvo_hour;
-
-            });
+            $price = 0;
 
             $('body .price_hour_' + $date + '_' + $sp + '_select').each(function (i3, elem3) {
 
                 $th = $(elem3).find('option:selected');
                 //var $e1 = $(elem2).text();
 
-                var $price = Number($th.attr('price'));
+                $price = Number($th.attr('price'));
 
-                if ($price == 0) {
-                    $error = 'Не все оценки выставлены';
-                }
-
+                $error = 'Не все оценки выставлены';
                 // $kolvo_hour = Number($th.attr('kolvo_hour'));
                 $kolvo_hour = Number($(elem3).closest('.smena1').find('.hours_kolvo').prop('value'));
-                console.log('select ', $kolvo_hour);
+                //console.log('select ', $kolvo_hour);
                 //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
+                $summa_hours += $kolvo_hour;
+                //console.log('$summa_hours', $summa_hours);
 
                 $summa += $price * $kolvo_hour;
-                $summa_hours += $kolvo_hour;
-                console.log('summa ', $summa);
-                console.log('$summa_hours', $summa_hours);
+                //console.log('summa ', $summa);
+
             });
 
-
+            if ($price == 0) {
+                $error = $summa_hours + ' ч.'
+            }
 
             if ($error == '') {
                 $(elem).html('<nobr>' + number_format($summa_hours, 1, '.', '`') + ' ч<br/>' + number_format($summa, 0, '.', '`') + ' р</nobr>');
@@ -226,8 +231,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     calculateSummAllGraph();
 
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
-
-
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
         clearTdSummAllGraph();
@@ -605,6 +608,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.each(data1, function () {
 
             console.log(this.name + '=' + this.value);
+            
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -673,6 +677,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
+    
+    
+    
+    
+    
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1149,7 +1158,36 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $string += '<br/>'+name + ': ' + value;
 //                });
 
-                $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>'+$string);
+                if( $j.status == 'ok' ){
+                
+                $html = '';
+                    
+                    if( $j.ocenka == 5 ){
+                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 5</div>';
+                    }else{
+                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 3</div>';
+                        
+                    }
+
+                    if( $j.ocenka_time == 5 ){
+                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка времени ожидания: 5</div>';
+                    }else if( $j.ocenka_time == 3 ){
+                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка  времени ожидания: 3</div>';
+                    }
+                    
+                    if( $j.ocenka_oborot == 5 ){
+                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
+                    }else if( $j.ocenka_oborot == 3 ){
+                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
+                    }
+                    
+                    
+                    // $(resto).html( $html + $j.txt );
+                    $(resto).html( $html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>' );
+                    
+            }else{
+                $(resto).html( '<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
+            }
 
                 //alert(resto);
 

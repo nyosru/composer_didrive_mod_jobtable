@@ -1,16 +1,36 @@
 {% spaceless %}
 
+    {# считаем общее время #}
+    {% set t = didrive_f__timer_start(99) %}
 
     <script src="/js/numberformat.js" ></script>
 
+    {#    {% set t = didrive_f__timer_start() %}
+    #}
     {% set sp = readItems( 'sale_point', null )  %}
     {# { pa(sp.data)|raw } #}
 
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>sale_point {{ t }}
+    #}
+
+    {#    {% set t = didrive_f__timer_start() %}
+    #}
     {% set job_in = readItems( '050.job_in_sp', null )  %}
     {# { pa(sp.data)|raw } #}
 
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>job_in_sp {{ t }}
+    #}
+
+    {#    {% set t = didrive_f__timer_start() %}
+    #}
     {% set mans = readItems( '070.jobman', null )  %}
 
+
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>mans {{ t }}
+    #}
     {#
      mans
     <div style="max-height: 250px; border: 1px solid green; padding:10px; margin: 10px; overflow: auto;" >
@@ -18,14 +38,24 @@
     </div>
     #}
 
+    {#    {% set t = didrive_f__timer_start() %}
+    #}
     {% set dolgn = readItems( '061.dolgnost', null )  %}
     {# { pa(sp.data)|raw } #}
 
-    {% set salarys = get_salarys( db ) %}
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>dolgn {{ t }}
+    #}
+
+    {#    {% set t = didrive_f__timer_start() %}
+    #}
+    {#% set salarys = get_salarys( db ) %#}
     {#{ pa(salarys) }#}
 
-
-
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>salarys {{ t }}
+    #}
+    
     <div class="container-fluid">
 
         {% if 1 == 2 %}
@@ -81,7 +111,7 @@
         #}
 
         <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 2vh; margin-bottom: 2vh;" >
 
                 {% if get.date is defined %}
 
@@ -100,6 +130,20 @@
                     {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
 
                 {% endif %}
+
+
+
+                {#                {% set t = didrive_f__timer_stop() %}
+                #}
+                {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
+                {#{ pa(ocenki_day) }#}
+
+                {#                {% set t = didrive_f__timer_stop() %}
+                                <br/>ocenki_day {{ t }}
+                #}
+
+
+
 
 
                 {% if 1 == 2 %}
@@ -122,6 +166,13 @@
 
                 {% if 1 == 1 %}
 
+                    <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> время смен</button> 
+                {#
+                &nbsp;
+                <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
+                #}
+                    
+                    
                     {# 2019 #}
                     {% set year = 2019 %}
 
@@ -179,61 +230,73 @@
                 {#
                 <p><b> Показ данных с {{ date_start|date("d.m.Y") }} по {{ date_finish|date("d.m.Y") }} </b></p>
                 #}
-
-                <a href="#" style="float:right;" onclick="$('#leg').toggle('slow');
-                        return false;">Легенда <sup>показать/скрыть</sup></a>
-
+                {#
+                                <a href="#" style="float:right;" onclick="$('#leg').toggle('slow');
+                                        return false;">Легенда <sup>показать/скрыть</sup></a>
+                #}
             </div>
-        </div>
-        <div class="row" xstyle="background-color:rgba(0,0,0,0.05);padding: 15px 0; " id='leg' style="display:none;"  >
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
-                <span >
-                    <br/>
-                    <b>+Сотрудники:</b>
-                    <Br/>
-                    <span class="job_man_in_graph stag" style="display:inline-block;margin: 2px 5px;">Стажировка</span>
-                    <span class="job_man_in_graph norm" style="display:inline-block;margin: 2px 5px;" >Норм работа</span>
-                    <span class="job_man_in_graph spec" style="display:inline-block;margin: 2px 5px;" >Спец назначение</span>
-                    <span class="job_man_in_graph job_other" style="display:inline-block;margin: 2px 5px;" >Работает на другой точке</span>
-                    <Br/>
-                    <Br/>
-                    <b>+Записи к смене сотрудника:</b>
-                    <Br/>
-                    <span class='list_otrezki' >
-                        <div class="smena_started" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и ещё не отмечена как законченая</div>
-                        <div class="smena_started_error" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и отмечена как ошибка</div>
-                        <div class="smena_started_ok" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и отмечена как законченная</div>
-                        <div class="smena_ok" style="display:inline-block;margin: 2px 5px;">Смена добавлена</div>
-                        <div class="smena_cancel" style="display:inline-block;margin: 2px 5px;">Смена отменена</div>
-                        <div class="pay_check" style="display:inline-block;margin: 2px 5px;">Смена отработана, отправлена на оплату</div>
-                        <div class="buh_ok" style="display:inline-block;margin: 2px 5px;">Смена отработана, оплата выдана</div>
-                        <div class="minus" style="display:inline-block;margin: 2px 5px;">Взыскание</div>
-                        <div class="plus" style="display:inline-block;margin: 2px 5px;">Премия</div>
-                    </span>
-                </span>
-
-            </div>
         </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        {% if 1 == 2 %}
 
-                <br/>
-                <br/>
-                <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть время старт смены и стоп</button> &nbsp;
-                <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
+            <div class="row" xstyle="background-color:rgba(0,0,0,0.05);padding: 15px 0; " id='leg' style="display:none;"  >
+
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+                    {#
+                                    <span >
+                                        <br/>
+                                        <b>+Сотрудники:</b>
+                                        <Br/>
+                                        <span class="job_man_in_graph stag" style="display:inline-block;margin: 2px 5px;">Стажировка</span>
+                                        <span class="job_man_in_graph norm" style="display:inline-block;margin: 2px 5px;" >Норм работа</span>
+                                        <span class="job_man_in_graph spec" style="display:inline-block;margin: 2px 5px;" >Спец назначение</span>
+                                        <span class="job_man_in_graph job_other" style="display:inline-block;margin: 2px 5px;" >Работает на другой точке</span>
+                                        <Br/>
+                                        <Br/>
+                                        <b>+Записи к смене сотрудника:</b>
+                                        <Br/>
+                                        <span class='list_otrezki' >
+                                            <div class="smena_started" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и ещё не отмечена как законченая</div>
+                                            <div class="smena_started_error" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и отмечена как ошибка</div>
+                                            <div class="smena_started_ok" style="display:inline-block;margin: 2px 5px;">Смена начата сотрудником и отмечена как законченная</div>
+                                            <div class="smena_ok" style="display:inline-block;margin: 2px 5px;">Смена добавлена</div>
+                                            <div class="smena_cancel" style="display:inline-block;margin: 2px 5px;">Смена отменена</div>
+                                            <div class="pay_check" style="display:inline-block;margin: 2px 5px;">Смена отработана, отправлена на оплату</div>
+                                            <div class="buh_ok" style="display:inline-block;margin: 2px 5px;">Смена отработана, оплата выдана</div>
+                                            <div class="minus" style="display:inline-block;margin: 2px 5px;">Взыскание</div>
+                                            <div class="plus" style="display:inline-block;margin: 2px 5px;">Премия</div>
+                                        </span>
+                                    </span>
+                    #}
+
+                </div>
+
+            </div>
+        {% endif %}
+
+
 
 
                 {# заготовка модальных окошек #}
                 {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
 
+
+                {#                {% set t = didrive_f__timer_start() %}
+                #}
                 {% set jobs = get_smena_jobs( date_start, date_finish ) %}
                 {#
                  pa(jobs) 
                 {{ pa(jobs) }}
                 #}
 
+                {#                {% set t = didrive_f__timer_stop() %}
+                                <br/>jobs {{ t }}
+                #}
+
+                {#                {% set t = didrive_f__timer_start() %}
+                #}
                 {% set jobs_on_sp = jobmans_job_on_sp( db, null, date_start, date_finish ) %}
                 {#
                 <br/>11
@@ -241,7 +304,12 @@
                 {{ pa(jobs_on_sp) }}
                 #}
 
+                {#                {% set t = didrive_f__timer_stop() %}
+                                <br/>jobs_on_sp {{ t }}
+                #}
 
+                {#                {% set t = didrive_f__timer_start() %}
+                #}
                 {% set listjobmans = get_list_jobmans( db, date_start, date_finish ) %}
                 {#
                  pa(listjobmans) 
@@ -250,27 +318,36 @@
 
                 {# listjobmans #}
 
+                {#                {% set t = didrive_f__timer_stop() %}
+                                <br/>listjobmans {{ t }}
+                #}
+
+
+
+
+
                 {#jobs
                 {{ pa( jobs ) }#}
-
-                {% set checki = get_checki( date_start, date_finish ) %}
+                {#                {% set t = didrive_f__timer_start() %}
+                #}
+                {% set checki = jobdesc__get_checki( date_start, date_finish ) %}
                 {#{ pa(checki) }#}
 
-                {% set minusa = get_minusa( db, date_start, date_finish ) %}
-                {# { pa(minusa) } #}
+                {#                {% set t = didrive_f__timer_stop() %}
+                                <br/>checki {{ t }}
+                #}
+                {% if 1 == 2 %}
+                    {% set minusa = get_minusa( db, date_start, date_finish ) %}
+                    {# { pa(minusa) } #}
 
-                {% set plusa = get_plusa( db, date_start, date_finish ) %}
-                {#{ pa(plusa) }#}
+                    {% set plusa = get_plusa( db, date_start, date_finish ) %}
+                    {#{ pa(plusa) }#}
+                {% endif %}
 
-
-                <Br/>
-                <Br/>
-
-
-            </div>
-        </div>
-    </div>
-
+                
+                {#% set payed = job_buh__get_payed(db,date_start,date_finish) %#}
+                {#{ pa(payed) }#}
+                
     {#{ pa(session) }#}
 
     <div style="display:inline-block;padding-right:100px;margin-right:100px;">
@@ -294,32 +371,38 @@
                         #}
 
                         <div class="tcell" {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
-                            {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
-                            {{ nd|date("d.m") }}
 
-                            {% if nd|date("N") == 1 %}Пн
-                            {% elseif nd|date("N") == 2 %}Вт
-                            {% elseif nd|date("N") == 3 %}Ср
-                            {% elseif nd|date("N") == 4 %}Чт
-                            {% elseif nd|date("N") == 5 %}Пт
-                            {% elseif nd|date("N") == 6 %}Сб
-                            {% elseif nd|date("N") == 7 %}Вс
-                            {% endif %}
+                            <nobr>
 
-                            {#
-                            <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
-                                                return false;">
-                                +оценка
-                            </a>
-        
-                            <center>
-                                <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
-                                    <button class="btn btn-xs btn-light">3</button>
-                                    <button class="btn btn-xs btn-warning">4</button>
-                                    <button class="btn btn-xs btn-success">5</button>
-                                </div>
-                            </center>
-                            #}
+                                {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
+                                {{ nd|date("d.m") }}
+
+                                {% if nd|date("N") == 1 %}Пн
+                                {% elseif nd|date("N") == 2 %}Вт
+                                {% elseif nd|date("N") == 3 %}Ср
+                                {% elseif nd|date("N") == 4 %}Чт
+                                {% elseif nd|date("N") == 5 %}Пт
+                                {% elseif nd|date("N") == 6 %}Сб
+                                {% elseif nd|date("N") == 7 %}Вс
+                                {% endif %}
+
+                                {#
+                                <a href="#" class='ocenka_dnya' onclick="$('#ocneka_{{ spoint_id }}_{{ loop.index }}').toggle();
+                                                    return false;">
+                                    +оценка
+                                </a>
+            
+                                <center>
+                                    <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
+                                        <button class="btn btn-xs btn-light">3</button>
+                                        <button class="btn btn-xs btn-warning">4</button>
+                                        <button class="btn btn-xs btn-success">5</button>
+                                    </div>
+                                </center>
+                                #}
+
+                            </nobr>
+
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -340,7 +423,7 @@
 
 
                 <div class="trow alert-warning"  >
-                    <div class="tcell alert-warning stick-left" >
+                    <div class="tcell alert-warning stick-left-up" >
                         <b>
                             {{ sp['data'][sp_now]['head'] }}
                             <sup>#{{ sp_now }}</sup>
@@ -434,38 +517,44 @@
                                 {# текущий чел #}
                                 {#{ man }#}
 
+
+
                                 <div class="tcell c{{ man.id }}_{{sp_now}}_{{ date }}">
 
-                                    {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
+                                    {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
+                                    {% if date|date("U") < "now"|date("U") %}                    
 
-                                    {#{ pa(now_job) }#}
-
-                                    {% if now_job == false %}
-                                    {% else %}
-
-                                        {#                                        
-                                        <br/><nobr>{{ date }}</nobr>
-                                        #}
-
-                                        {% if now_job.date == date %}
-                                            {% if now_job.stagirovka == 'da' %}
-                                                <div class="alert-danger" >старт стажировки</div>
-                                            {% else %}
-                                                <div class="alert-info" >старт норм работы</div>
-                                            {% endif %}
-                                        {% endif %}
-
-                                        {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
-                                        {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
-                                        {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
+                                        {% set now_job = where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
 
                                         {#{ pa(now_job) }#}
 
-                                        <div class="option_img" ><i onclick='$(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
-                                                return false;' class="fa fa-cog"></i></div>
+                                        {% if now_job == false %}
+                                        {% else %}
+
+                                            <div class="option_img" ><i onclick='$(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
+                                                    return false;' class="fa fa-cog"></i></div>
+
+                                            {#                                        
+                                            <br/><nobr>{{ date }}</nobr>
+                                            #}
+
+                                            {% if now_job.date == date %}
+                                                {% if now_job.stagirovka == 'da' %}
+                                                    <div class="alert-danger" >старт стажировки</div>
+                                                {% else %}
+                                                    <div class="alert-info" >старт норм работы</div>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+                                            {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
+                                            {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
+
+                                            {#{ pa(now_job) }#}
+
+                                        {% endif %}
 
                                     {% endif %}
-
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -481,6 +570,10 @@
 
         </div>
     </div>
+
+    {# общее время #}
+    {% set t = didrive_f__timer_stop(99) %}
+    <div class="alert-warning" style="position: fixed; bottom: 10px; right: 10px; padding: 3px 10px;">обработка {{ t }} сек</div>
 
 
 {% endspaceless %}
