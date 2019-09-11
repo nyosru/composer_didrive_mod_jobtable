@@ -18,12 +18,15 @@
                 {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                     <div class="tcell" >
+
                         {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
                             <div style="min-width:120px; padding: 5px;">
                                 <div class="show_summ_hour_day" data="{{ now_date2 }}" sp="{{ sp_now }}" ></div>
                             </div>
                         {% endif %}
+
                     </div>
+
                 {% endif %}
 
 
@@ -157,7 +160,7 @@
 
 
 
-    {# оборот #}
+    {# нормы на день #}
     {% if 1 == 1 %}
         <div class="trow" >
 
@@ -199,7 +202,11 @@
 
                 <nobr>
 
+                    {#
                     выручка
+                    <br/>
+                    #}
+                    выручка на 1 руки
                     <br/>
                     время ожидания хол. цех
                     <br/>
@@ -249,12 +256,26 @@
                                         <input type="hidden" name="id" value="{{ sp_now }}{{ now_date }}" >
                                         <input type="hidden" name="s" value="{{ creatSecret(sp_now~now_date) }}" >
 
+                                        {#
                                         <input class="input-norms on_change_show_block" 
                                                on_change_show_block="#form{{sp_now}}{{ now_date }}"
                                                type="number" min="1" max="200000" step="1"
                                                name="vuruchka"
                                                {% if norms_day[now_date]['vuruchka'] is defined %}
                                                    value="{{ norms_day[now_date]['vuruchka'] }}" 
+                                               {% else %}
+                                               {% endif %}
+                                               >
+
+                                        <br/>
+                                        #}
+
+                                        <input class="input-norms on_change_show_block" 
+                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                               type="number" min="1" max="200000" step="1"
+                                               name="vuruchka_on_1_hand"
+                                               {% if norms_day[now_date]['vuruchka_on_1_hand'] is defined %}
+                                                   value="{{ norms_day[now_date]['vuruchka_on_1_hand'] }}" 
                                                {% else %}
                                                {% endif %}
                                                >
@@ -310,7 +331,7 @@
                                         {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                             <br/>
                                             <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
                                                    type="number" min="1" max="24" step="0.5"
                                                    name="kolvo_hour_in1smena"
                                                    value="{{ norms_day[now_date]['kolvo_hour_in1smena'] }}"
@@ -383,219 +404,229 @@
 
 
 
+    {# оборот #}
+    {% if 1 == 1 %}
+        <div class="trow" >
 
-    <div class="trow" >
+            <div class="tcell stick-left bg-white" >
 
-        <div class="tcell stick-left bg-white" >
-            <nobr>
+                <nobr>
 
-                <a href="#" onclick="$('#tr{{sp_now}}obr').toggle('slow');
-                        return false;" >
-                    <b>Оборот</b>
-                    {#скрыть/показать#}</a>
-            </nobr>
+                    <a href="#" onclick="$('#tr{{sp_now}}obr').toggle('slow');
+                            return false;" >
+                        <b>Оборот</b>
+                        {#скрыть/показать#}</a>
+                </nobr>
 
-            {#            {% set t = didrive_f__timer_start() %}
-            #}
-            {#% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %#}
-            {% set oborots = iiko_oborot__get_oborots_on_sp( db, sp_now, date_start, date_finish ) %}
+                {# 
+                {% set t = didrive_f__timer_start() %} 
+                #}
+                {#% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %#}
+                {#{ sp_now }#}
+                
+                {% set oborots = iiko_oborot__get_oborots_on_sp( db, sp_now, date_start, date_finish ) %}
 
-            {#{ sp_now }}
-            {{ pa(oborots) }#}
+                {#{ sp_now }#}
+                {#{ pa(oborots) }#}
 
-            {#            {% set t = didrive_f__timer_stop() %}
-                        <br/>oborot {{ t }}
-            #}
-        </div>
-    </div>         
-
-    <div class="trow" id="tr{{sp_now}}obr" style="xdisplay:none;">
-
-        <div class="tcell stick-left bg-white" >
-            <nobr>
-                руб
-            </nobr>
+                {#            {% set t = didrive_f__timer_stop() %}
+                            <br/>oborot {{ t }}
+                #}
+            </div>
         </div>         
 
-        {% for i in range(low=0, high=35, step=1) %}  
+        <div class="trow" id="tr{{sp_now}}obr" style="xdisplay:none;">
 
-            {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-            {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+            <div class="tcell stick-left bg-white" >
+                <nobr>
+                    руб
+                </nobr>
+            </div>         
+
+            {% for i in range(low=0, high=35, step=1) %}  
+
+                {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                    {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
+
+                        <div class="tcell" >
+                            <div class='text-center'>
+
+                                {% if oborots[now_date2]['oborot_server'] is defined %}
+                                    {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
+                                {% elseif oborots[now_date2]['oborot_hand'] is defined %}
+                                    {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
+
+                                    <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
+                                            vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
+                                            res_to="{{ sp_now }}_{{ i }}_res_ob2"
+                                            xtarget="_blank"
+                                            class="load_ajaxjson_to_id"
+                                            >загрузить с ИИКО</a></sup>                        
+
+                                    <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
+
+
+                                {% else %}
+                                    нет данных <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
+                                                       vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
+                                                       res_to="{{ sp_now }}_{{ i }}_res_ob"
+                                                       xtarget="_blank"
+                                                       class="load_ajaxjson_to_id"
+                                                       >загрузить</a></sup>                        
+
+                                    <div id="{{ sp_now }}_{{ i }}_res_ob" ></div>
+
+
+
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endif %}
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+
+    {# оценка дня #}
+    {% if 1 == 1 %}
+        <div class="trow" >
+
+            <div class="tcell stick-left bg-white" >
+                <nobr>
+
+                    <br/>
+                    <a href="#" onclick="$('#tr{{sp_now}}ras').toggle('slow');
+                            return false;" >
+                        <b>Расчёт оценки дня</b>
+                        {# скрыть/показать #}
+                    </a>
+                </nobr>
+
+                {#            {% set t = didrive_f__timer_start() %}
+                #}
+                {% set ocenki_day = jobdesc__get_ocenki_days( db, sp_now, date_start, date_finish ) %}
+                {#{ pa(ocenki_day) }#}
+
+                {#            {% set t = didrive_f__timer_stop() %}
+                            <br/>ocenki_day {{ t }}
+                #}
+                {#
+                oborots
+                {{ pa(oborots) }}
+                #}
+
+            </div>
+        </div>
+
+        <div class="trow" id="tr{{sp_now}}ras" style="xdisplay:none;">
+
+            <div class="tcell stick-left bg-white" >
+                <nobr>
+                    &nbsp;
+                </nobr>
+            </div>         
+
+            {% for i in range(low=0, high=35, step=1) %}  
+
+                {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+                {# получаем массив в стартовом body - ocenki_day #}
+
+                {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
 
                 {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
-
                     <div class="tcell" >
-                        <div class='text-center'>
 
-                            {% if oborots[now_date2]['oborot_server'] is defined %}
-                                {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                            {% elseif oborots[now_date2]['oborot_hand'] is defined %}
-                                {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
-
-                                <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
-                                        vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
-                                        res_to="{{ sp_now }}_{{ i }}_res_ob2"
-                                        xtarget="_blank"
-                                        class="load_ajaxjson_to_id"
-                                        >загрузить с ИИКО</a></sup>                        
-
-                                <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
-
-
-                            {% else %}
-                                нет данных <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
-                                                   vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
-                                                   res_to="{{ sp_now }}_{{ i }}_res_ob"
-                                                   xtarget="_blank"
-                                                   class="load_ajaxjson_to_id"
-                                                   >загрузить</a></sup>                        
-
-                                <div id="{{ sp_now }}_{{ i }}_res_ob" ></div>
-
-
-
-                            {% endif %}
-
-                        </div>
-                    </div>
-                {% endif %}
-
-            {% endif %}
-        {% endfor %}
-
-    </div>
-
-    <div class="trow" >
-
-        <div class="tcell stick-left bg-white" >
-            <nobr>
-
-                <br/>
-                <a href="#" onclick="$('#tr{{sp_now}}ras').toggle('slow');
-                        return false;" >
-                    <b>Расчёт оценки дня</b>
-                    {# скрыть/показать #}
-                </a>
-            </nobr>
-
-            {#            {% set t = didrive_f__timer_start() %}
-            #}
-            {% set ocenki_day = jobdesc__get_ocenki_days( db, sp_now, date_start, date_finish ) %}
-            {#{ pa(ocenki_day) }#}
-
-            {#            {% set t = didrive_f__timer_stop() %}
-                        <br/>ocenki_day {{ t }}
-            #}
-            {#
-            oborots
-            {{ pa(oborots) }}
-            #}
-
-        </div>
-    </div>
-
-    <div class="trow" id="tr{{sp_now}}ras" style="xdisplay:none;">
-
-        <div class="tcell stick-left bg-white" >
-            <nobr>
-                &nbsp;
-            </nobr>
-        </div>         
-
-        {% for i in range(low=0, high=35, step=1) %}  
-
-            {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-
-            {# получаем массив в стартовом body - ocenki_day #}
-
-            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-
-            {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
-                <div class="tcell" >
-
-                    {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                        {#
-                        {{ i }} - {{ now_date2 }} <Br/>
-                        #}
-
-
-
-                        <div class='text-center'>
-                            <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block;"
-
-                               forajax_action="calc_full_ocenka_day" 
-
-                               forajax_id="{{ sp_now }}_{{ i }}" 
-                               forajax_s="{{ creatSecret(  sp_now ~ '_' ~ i ) }}" 
-
-                               forajax_show_timer="da" 
-
-                               forajax_sp="{{ sp_now }}" 
-
-                               forajaxx_jobman="{{ man.id }}" 
-                               forajaxx_date_start="{{ date_start }}"  
-                               forajaxx_date_fin="{{ date_finish }}" 
-
-                               forajax_date="{{ now_date2 }}" 
-                               res_to_id="ocenka_{{ sp_now }}_{{ i }}"
-
-                               xanswer="Грузим данные времени ожидания ?"
-                               >расчитать оценку</a>
-
-                            <div id="ocenka_{{ sp_now }}_{{ i }}" style="text-align:left;"></div>
-
+                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                             {#
-                            {% if oborots[now_date2]['oborot_server'] is defined %}
-                                {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                            {% elseif oborots[now_date2]['oborot_hand'] is defined %}
-                                {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
-                            {% else %}
-                                нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');
-                                        return false;">++</a></sup>
-    
-                                <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
-                                    <input type="number" value="" min="0" max="900000" step="1" />
-                                    <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
-                                </form>
-    
-                            {% endif %}
+                            {{ i }} - {{ now_date2 }} <Br/>
                             #}
 
-                        </div>
 
 
+                            <div class='text-center'>
+                                <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block;"
+
+                                   forajax_action="calc_full_ocenka_day" 
+
+                                   forajax_id="{{ sp_now }}_{{ i }}" 
+                                   forajax_s="{{ creatSecret(  sp_now ~ '_' ~ i ) }}" 
+
+                                   forajax_show_timer="da" 
+
+                                   forajax_sp="{{ sp_now }}" 
+
+                                   forajaxx_jobman="{{ man.id }}" 
+                                   forajaxx_date_start="{{ date_start }}"  
+                                   forajaxx_date_fin="{{ date_finish }}" 
+
+                                   forajax_date="{{ now_date2 }}" 
+                                   res_to_id="ocenka_{{ sp_now }}_{{ i }}"
+
+                                   xanswer="Грузим данные времени ожидания ?"
+                                   >расчитать оценку</a>
+
+                                <div id="ocenka_{{ sp_now }}_{{ i }}" style="text-align:left;"></div>
 
 
-                        {% if ocenki_day[now_date2] is defined %}
-                            {#{ pa(ocenki_day[sp_now][now_date2]) }#}
+                                {#
+                                {% if oborots[now_date2]['oborot_server'] is defined %}
+                                    {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
+                                {% elseif oborots[now_date2]['oborot_hand'] is defined %}
+                                    {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
+                                {% else %}
+                                    нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');
+                                            return false;">++</a></sup>
+        
+                                    <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
+                                        <input type="number" value="" min="0" max="900000" step="1" />
+                                        <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
+                                    </form>
+        
+                                {% endif %}
+                                #}
 
-                            {% set now_ocenka = ocenki_day[now_date2] %}
-
-                            <div class="text-center">
-                                <nobr>
-                                    <div class="ocenka_show all{{ now_ocenka['ocenka'] }}" >
-                                        Оценка дня: {{ now_ocenka['ocenka'] }}
-                                    </div>
-                                    <br/>
-                                    <abbr title="Оценка по обороту" class="ocenka_show ob{{ now_ocenka['ocenka_oborot'] }}">{{ now_ocenka['ocenka_oborot'] }}</abbr>
-                                    <abbr title="Оценка по времени ожидания" class="ocenka_show time{{ now_ocenka['ocenka_time'] }}">{{ now_ocenka['ocenka_time'] }}</abbr>
-                                    <abbr title="На 1 руки" class="ocenka_show naruki{{ now_ocenka['ocenka_naruki'] }}">{{ now_ocenka['ocenka_naruki'] }}</abbr>
-                                </nobr>
                             </div>
+
+
+
+
+                            {% if ocenki_day[now_date2] is defined %}
+                                {#{ pa(ocenki_day[sp_now][now_date2]) }#}
+
+                                {% set now_ocenka = ocenki_day[now_date2] %}
+
+                                <div class="text-center">
+                                    <nobr>
+                                        <div class="ocenka_show all{{ now_ocenka['ocenka'] }}" >
+                                            Оценка дня: {{ now_ocenka['ocenka'] }}
+                                        </div>
+                                        <br/>
+                                        <abbr title="Оценка по обороту" class="ocenka_show ob{{ now_ocenka['ocenka_oborot'] }}">{{ now_ocenka['ocenka_oborot'] }}</abbr>
+                                        <abbr title="Оценка по времени ожидания" class="ocenka_show time{{ now_ocenka['ocenka_time'] }}">{{ now_ocenka['ocenka_time'] }}</abbr>
+                                        <abbr title="На 1 руки" class="ocenka_show naruki{{ now_ocenka['ocenka_naruki'] }}">{{ now_ocenka['ocenka_naruki'] }}</abbr>
+                                    </nobr>
+                                </div>
+                            {% endif %}
+
+
+
                         {% endif %}
+                    </div>
 
+                {% endif %}
 
+            {% endfor %}
 
-                    {% endif %}
-                </div>
-
-            {% endif %}
-
-        {% endfor %}
-
-    </div>
+        </div>
+    {% endif %}
 
 {% endspaceless %}

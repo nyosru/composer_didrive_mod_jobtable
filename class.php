@@ -486,7 +486,10 @@ class JobDesc {
      * @param type $module_man_job_on_sp
      * @return type
      */
-    public static function whereJobmansOnSp($db, $folder = null, $date_start = null, $date_fin = null, $module_man_job_on_sp = 'jobman_send_on_sp') {
+    public static function whereJobmansOnSp($db, $folder = null, $date_start = null, $date_fin = null
+            , $module_man_job_on_sp = 'jobman_send_on_sp'
+            , $module_spec_naznach_on_sp = '050.job_in_sp'
+            ) {
 
 //whereJobmansOnSp( $db, $folder, $date_start, $date_finish );
 
@@ -499,7 +502,8 @@ class JobDesc {
         /**
          * назначения сорудников на сп
          */
-        $jobs = \Nyos\mod\items::getItems($db, $folder, $module_man_job_on_sp, 'show', null);
+        // $jobs = \Nyos\mod\items::getItems($db, $folder, $module_man_job_on_sp, 'show', null);
+        $jobs = \Nyos\mod\items::getItemsSimple($db, $module_man_job_on_sp);
 //\f\pa($jobs, 2);
 
         $d = array('jobs' => []);
@@ -509,9 +513,20 @@ class JobDesc {
             $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
         }
 
+        //\f\pa($d['jobs'], 2,'','jobs');
+
+        $spec = \Nyos\mod\items::getItemsSimple($db, $module_spec_naznach_on_sp);
+        //\f\pa($spec, 2,'','$spec');
+        
+        foreach ($spec['data'] as $k => $v) {
+            $v['dop']['d'] = $v;
+            $v['dop']['type2'] = 'spec';
+            $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
+        }
+
         krsort($d['jobs']);
 
-// \f\pa($d['jobs'], 2);
+        //\f\pa($d['jobs'], 2,'','jobs');
 
         $re2 = [];
         $ret = [];
@@ -528,11 +543,11 @@ class JobDesc {
 
             $u_date_start = strtotime($v['date']);
 
-            if (strtotime($date_start) >= $u_date_start) {
-                $ret2['jobs_on_sp'][$v['sale_point']][$v['jobman']] = 1;
-            } else {
-                $ret2['jobs_on_sp'][$v['sale_point']][$v['jobman']] = 'hide';
-            }
+//                if (strtotime($date_start) <= $u_date_start) {
+            $ret2['jobs_on_sp'][$v['sale_point']][$v['jobman']] = 1;
+//            } else {
+//                $ret2['jobs_on_sp'][$v['sale_point']][$v['jobman']] = 'hide';
+//            }
 
             $re2['jobs'][$v['sale_point']][$v['jobman']][$v['date']] = $v;
 
@@ -828,7 +843,7 @@ class JobDesc {
         foreach ($norms['data'] as $k => $v) {
 
             //if( $v['dop']['date'] == $d && $v['dop']['sale_point'] == $sp )
-            if ( isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp) {
+            if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp) {
                 //\f\pa($v);
                 $a[] = $v['dop'];
                 // $dates[] = $v['dop']['date'];
@@ -840,7 +855,7 @@ class JobDesc {
         $d_start = date('Y-m-d', strtotime($date));
 
         $last = false;
-        
+
         foreach ($a as $k => $v) {
             if ($d_start >= $v['date']) {
                 $last = $v;
@@ -862,7 +877,7 @@ class JobDesc {
                 $now_date = date('Y-m-d', strtotime($d_start) + (3600 * 24 * $i));
 
                 $copy = true;
-                
+
                 /**
                  * ищем новое значение параметров
                  */
@@ -874,25 +889,22 @@ class JobDesc {
                     }
                 }
 
-                if( $copy === true )
+                if ($copy === true)
                     $last['type'] = 'copy';
-                
+
                 $return[$now_date] = $last;
 
                 if ($now_date == $d_fin)
                     break;
-
             }
 
             return $return;
-        } 
+        }
         // если ищем одну дату
         else {
 
             return $last;
-            
         }
-
     }
 
     /**
@@ -915,16 +927,34 @@ class JobDesc {
         $nowutime = strtotime($date . ' 00:00');
 
         foreach ($array['jobs'][$sp][$man] as $k => $v) {
-
 // \f\pa($v['date']);
 
-            if (isset($v['date']) && $nowutime >= strtotime($v['date'] . ' 00:00')) {
+            if (isset($v['date']) && $nowutime == strtotime($v['date'])) {
 
                 $v['d1'] = $date;
                 $v['d2'] = $v['date'];
 
                 return $v;
             }
+        }
+
+        $now = [];
+
+        foreach ($array['jobs'][$sp][$man] as $k => $v) {
+
+// \f\pa($v['date']);
+
+            if (isset($v['date']) && $nowutime > strtotime($v['date'] . ' 00:00')) {
+
+                $v['d1'] = $date;
+                $v['d2'] = $v['date'];
+
+                $now = $v;
+            }
+        }
+
+        if (!empty($now)) {
+            return $now;
         }
 
         return false;

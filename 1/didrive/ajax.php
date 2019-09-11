@@ -25,6 +25,9 @@ if (
         ) || (
         isset($_REQUEST['id2']{0}) && isset($_REQUEST['s2']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
+        ) || (
+        isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{5}) &&
+        \Nyos\nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true
         )
 ) {
     
@@ -55,13 +58,14 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     ob_start('ob_gzhandler');
 
     echo '<br/>для показа обновлённых значений <a href="" >обновите страницу</a><br/>';
-    
+
     $now_month = ceil(date('m', strtotime($_REQUEST['date'])));
 
     // \f\pa($_REQUEST);
 
     $new_data = array(
-        'vuruchka' => $_REQUEST['vuruchka'],
+        // 'vuruchka' => $_REQUEST['vuruchka'],
+        'vuruchka_on_1_hand' => $_REQUEST['vuruchka_on_1_hand'],
         'time_wait_norm_cold' => $_REQUEST['time_wait_norm_cold'],
         'time_wait_norm_hot' => $_REQUEST['time_wait_norm_hot'],
         'time_wait_norm_delivery' => $_REQUEST['time_wait_norm_delivery'],
@@ -90,7 +94,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     $save_day[$_REQUEST['date']] = 1;
 
     $for_sql = '';
-    
+
     $norms = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr');
 
     foreach ($norms['data'] as $k1 => $v1) {
@@ -112,7 +116,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
             // \Nyos\mod\items::deleteItems($db, $e, $module_name, $data_dops);
         }
     }
-    
+
     if (!empty($for_sql)) {
         $sql = 'UPDATE `mitems` SET `status` = \'delete\' WHERE ( `module` = \'sale_point_parametr\' OR `module` = \'sp_ocenki_job_day\' ) AND ( ' . $for_sql . ' ) ';
         //\f\pa($sql);
@@ -121,21 +125,21 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     }
 
 
-    
-    
-    
-    
+
+
+
+
     $indbs = [];
 
     echo 'Записали нормы по датам:';
-    
+
     foreach ($save_day as $k => $v) {
 
         $in = $new_data;
         $in['date'] = $k;
-        
-        echo ' '.$k;
-        
+
+        echo ' ' . $k;
+
         $in['sale_point'] = $_REQUEST['sp'];
 
         //$indbs[] = $in;
@@ -149,9 +153,11 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     $r = ob_get_contents();
     ob_end_clean();
 
-    \f\end2( $r, true);
-    
-} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
+    \f\end2($r, true);
+}
+
+//
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
 
     //echo '<br/>'. __FILE__.' '.__LINE__;
 
@@ -235,7 +241,10 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
             if (empty($return['norm_date'])) {
                 // $error .= PHP_EOL . 'Нет плановых данных (дата)';
                 throw new \Exception('Нет плановых данных (дата)', 12);
-            } elseif (empty($return['norm_vuruchka']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])) {
+            } elseif (
+            // empty($return['norm_vuruchka']) 
+                    empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])
+            ) {
                 throw new \Exception('Не все плановые данные по ТП указаны', 13);
                 //$error .= PHP_EOL . 'Не все плановые данные по ТП указаны';
             }
@@ -260,7 +269,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
             // $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
             $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $_REQUEST['sp'], $_REQUEST['date']);
             // \f\pa($return);
-
+            // echo
             $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop()
                     . PHP_EOL . $return['oborot'];
         }
@@ -340,30 +349,35 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
             /**
              * сравниваем объём выручки
              */
-            if (!empty($return['norm_vuruchka']) && !empty($return['oborot'])) {
+            if (1 == 2) {
+                if (!empty($return['norm_vuruchka']) && !empty($return['oborot'])) {
 
-                $return['txt'] .= '<br/><br/>-------------------';
-                $return['txt'] .= '<br/>норма выручки';
-                $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka'] . ' и значение в ТП ' . $return['oborot'];
+                    $return['txt'] .= '<br/><br/>-------------------';
+                    $return['txt'] .= '<br/>норма выручки';
+                    $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka'] . ' и значение в ТП ' . $return['oborot'];
 
-                if ($return['oborot'] >= $return['norm_vuruchka']) {
-                    $return['oborot_bolee_norm'] = 1;
-                    $return['ocenka_oborot'] = 5;
-                    $return['txt'] .= '<br/>норм, оценка 5';
-                } else {
-                    $return['oborot_bolee_norm'] = 0;
-                    $return['ocenka_oborot'] = 3;
-                    $return['ocenka'] = 3;
-                    $return['txt'] .= '<br/>не норм, оценка 3';
+                    if ($return['oborot'] >= $return['norm_vuruchka']) {
+                        $return['oborot_bolee_norm'] = 1;
+                        $return['ocenka_oborot'] = 5;
+                        $return['txt'] .= '<br/>норм, оценка 5';
+                    } else {
+                        $return['oborot_bolee_norm'] = 0;
+                        $return['ocenka_oborot'] = 3;
+                        $return['ocenka'] = 3;
+                        $return['txt'] .= '<br/>не норм, оценка 3';
+                    }
                 }
-            } else {
-                throw new \Exception('Вычисляем оценку дня, прервано, не хватает данных по обороту за сутки', 18);
+                //
+                else {
+                    throw new \Exception('Вычисляем оценку дня, прервано, не хватает данных по обороту за сутки', 18);
+                }
             }
 
             /**
              * считаем норму выручки на руки
              */
-            if (!empty($return['norm_kolvo_hour_in1smena'])) {
+            // if (!empty($return['norm_kolvo_hour_in1smena'])) {
+            if (!empty($return['norm_kolvo_hour_in1smena']) && !empty($return['norm_vuruchka_on_1_hand'])) {
 
                 $return['txt'] .= '<br/><br/>-------------------';
                 $return['txt'] .= '<br/>норма выручки (на руки)';
@@ -372,11 +386,11 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
                 $return['txt'] .= '<br/>Кол-во поваров: ' . $return['smen_in_day'];
 
                 $return['on_hand_fakt'] = ceil($return['oborot'] / $return['smen_in_day']);
-                $return['summa_na_ruki_norm'] = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
+                // $return['summa_na_ruki_norm'] = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
+                //$return['txt'] .= '<br/>по плану: ' . $return['summa_na_ruki_norm'] . ' и значение в ТП ' . $return['on_hand_fakt'];
+                $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka_on_1_hand'] . ' и значение в ТП ' . $return['on_hand_fakt'];
 
-                $return['txt'] .= '<br/>по плану: ' . $return['summa_na_ruki_norm'] . ' и значение в ТП ' . $return['on_hand_fakt'];
-
-                if ($return['on_hand_fakt'] < $return['summa_na_ruki_norm']) {
+                if ($return['on_hand_fakt'] < $return['norm_vuruchka_on_1_hand']) {
                     $return['ocenka'] = 3;
                     $return['ocenka_naruki'] = 3;
                     $return['ocenka'] = 3;
@@ -469,6 +483,191 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
                     , true, $return);
         }
 
+        //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
+    }
+    //
+    catch (\Exception $ex) {
+
+        if (!isset($_REQUEST['no_send_msg'])) {
+
+            $text = $ex->getMessage()
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+                    . '</pre>';
+
+            if (class_exists('\nyos\Msg'))
+                \nyos\Msg::sendTelegramm($text, null);
+        }
+        /*
+
+          require_once DR . dir_site . 'config.php';
+
+          $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
+          // \f\pa($sp);
+
+          $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
+
+          if (class_exists('\nyos\Msg'))
+          \nyos\Msg::sendTelegramm($txt_to_tele, null, 1);
+
+          if (isset($vv['admin_ajax_job'])) {
+          foreach ($vv['admin_ajax_job'] as $k => $v) {
+          \nyos\Msg::sendTelegramm($txt_to_tele, $v);
+          //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+          }
+          }
+         */
+        return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+    }
+}
+
+// удаление смены персонала
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_smena') {
+
+    //echo '<br/>'. __FILE__.' '.__LINE__;
+
+    try {
+
+        // \f\pa($_REQUEST);
+
+        $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE `id` = :id ');
+        $ff->execute(array(':id' => $_REQUEST['id']));
+
+        \f\end2('назначение отменено', true);
+    }
+    //
+    catch (\Exception $ex) {
+
+        if (!isset($_REQUEST['no_send_msg'])) {
+
+            $text = $ex->getMessage()
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+                    . '</pre>';
+
+            if (class_exists('\nyos\Msg'))
+                \nyos\Msg::sendTelegramm($text, null);
+        }
+        /*
+
+          require_once DR . dir_site . 'config.php';
+
+          $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
+          // \f\pa($sp);
+
+          $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
+
+          if (class_exists('\nyos\Msg'))
+          \nyos\Msg::sendTelegramm($txt_to_tele, null, 1);
+
+          if (isset($vv['admin_ajax_job'])) {
+          foreach ($vv['admin_ajax_job'] as $k => $v) {
+          \nyos\Msg::sendTelegramm($txt_to_tele, $v);
+          //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+          }
+          }
+         */
+        return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+    }
+}
+
+// удаление назначения сотрудника
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_from_sp') {
+
+    //echo '<br/>'. __FILE__.' '.__LINE__;
+
+    try {
+        // \f\pa($_REQUEST);
+
+        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
+            'jobman' => $_REQUEST['workman'],
+            'sale_point' => $_REQUEST['sp']
+        ));
+
+        \f\end2('ок', true);
+    }
+    //
+    catch (\Exception $ex) {
+
+        if (!isset($_REQUEST['no_send_msg'])) {
+
+            $text = $ex->getMessage()
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+                    . '</pre>';
+
+            if (class_exists('\nyos\Msg'))
+                \nyos\Msg::sendTelegramm($text, null);
+        }
+
+        return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+    }
+}
+
+// action=put_workman_on_sp
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp') {
+
+    //echo '<br/>'. __FILE__.' '.__LINE__;
+    try {
+
+        if (isset($_REQUEST['sp']) && isset($_REQUEST['sp_s']) && \Nyos\Nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true) {
+            
+        } else {
+            throw new \Exception('Произошла неописуемая ситуация #' . __LINE__, 107);
+        }
+
+        if (
+                empty($_REQUEST['dolgn']) ||
+                empty($_REQUEST['date']) ||
+                empty($_REQUEST['sp']) ||
+                empty($_REQUEST['user'])) {
+            throw new \Exception('Произошла неописуемая ситуация #' . __LINE__, 108);
+        }
+
+        $d = [];
+        $d['jobman'] = $_REQUEST['user'];
+        $d['sale_point'] = $_REQUEST['sp'];
+        $d['dolgnost'] = $_REQUEST['dolgn'];
+        $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
+
+        if (!empty($d['smoke']))
+            $d['smoke'] = 'da';
+
+        if (isset($_REQUEST['type2']) && $_REQUEST['type2'] == 'spec_naznach') {
+            
+            if (!empty($_REQUEST['sp_from']))
+                $d['sale_point_from'] = $_REQUEST['sp_from'];
+
+            if (!empty($_REQUEST['dolgnost_from']))
+                $d['dolgnost_from'] = $_REQUEST['dolgnost_from'];
+
+            \Nyos\mod\items::addNewSimple($db, '050.job_in_sp', $d);
+        } else {
+            \Nyos\mod\items::addNewSimple($db, 'jobman_send_on_sp', $d);
+        }
+
+        \f\end2('добавили', true);
         //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
     }
     //

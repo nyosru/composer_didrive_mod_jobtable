@@ -23,291 +23,369 @@
     {#{ pa(salar) }#}
 
 
-    <div class="text-center show_down_hiden smena1
+    
+    {#{ pa(now_job) }#}
 
-         {% set user_smena_status = '' %}
+    {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
+    {% if 
+        v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' and now_spec_nazn == true
+    %}
 
-         {% if v1.status == 'hide' %}
-             smena_cancel
-         {% elseif v1.status == 'show' %}
+    {% elseif v1.dop.sale_point is not defined or v1.dop.sale_point == sp_now %}
 
-             {# чел начал смену и не закончил #}
-             {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'user' %}
+        <div class="text-center show_down_hiden smena1
 
-                 {% if v1.dop.error_added is defined and v1.dop.error_added == 'yes' %}
-                     {% set user_smena_status = 'add_error' %}
-                     smena_started_error                                 
-                 {% elseif v1.dop.start is defined and v1.dop.fin is not defined %}
-                     {% set user_smena_status = 'add' %}
-                     smena_started
-                 {% elseif v1.dop.start is defined and v1.dop.fin is defined %}
-                     {% set user_smena_status = 'add_ok' %}
-                     smena_started_ok
-                 {% endif %}
+             {% set user_smena_status = '' %}
 
-             {% else %}
+             {% if v1.status == 'hide' %}
+                 smena_cancel
+             {% elseif v1.status == 'show' %}
+
+                 {# чел начал смену и не закончил #}
+                 {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'user' %}
+
+                     {% if v1.dop.error_added is defined and v1.dop.error_added == 'yes' %}
+                         {% set user_smena_status = 'add_error' %}
+                         smena_started_error                                 
+                     {% elseif v1.dop.start is defined and v1.dop.fin is not defined %}
+                         {% set user_smena_status = 'add' %}
+                         smena_started
+                     {% elseif v1.dop.start is defined and v1.dop.fin is defined %}
+                         {% set user_smena_status = 'add_ok' %}
+                         smena_started_ok
+                     {% endif %}
+
+                 {% else %}
 
 
-                 {% if v1.dop.pay_check == 'yes' %}
-                     pay_check
                      {% if v1.dop.pay_check == 'yes' %}
                          pay_check
+                         {% if v1.dop.pay_check == 'yes' %}
+                             pay_check
+                         {% endif %}
+                     {% else %}
+                         smena_ok
                      {% endif %}
-                 {% else %}
-                     smena_ok
+
                  {% endif %}
-
              {% endif %}
-         {% endif %}
 
-         ">
-        <nobr>
+             ">
+            
+{#{ pa(v1) }#}
 
-            {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' %}
-                <abbr title="загружено с сервера ИИКО" ><small style="float:left;">iiko</small></abbr><br clear="all" />
-            {% elseif v1.dop.who_add_item is defined and v1.dop.who_add_item == 'admin' %}
-                <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
-            {% endif %}
+            <nobr>
 
-            {#{ pa(v1) }#}
-
-            <div xstyle="display:inline-block;" class="point_div text-center" >
-
-                {% if v1.dop.start is defined and v1.dop.fin is not defined %}
-                    {{ v1.dop.start|date("H:i") }} - ...
-                {% else %}
-
-
-
-                    {#   v1 [payed] => Array
-        (
-            [checkin] => 20974
-            [summa] => 1552
-            [pay_buh] => da
-            [pay_buh_who] => 2
-            [pay_buh_start] => 2019-08-20 15:47:22
-        )#}
-
-                    {% set kolvo_hour = v1.dop.time_on_job/3600 %}
-
-                    <abbr class="job_timer" >
-                        {{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}
-                        <br/>
-                    </abbr>
-
-                    {#
-                    <abbr class="job_hour" title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов:{{ v1.dop.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
-                    #}
-
-                    <abbr class="job_hour" >
-                        <nobr>
-
-                            {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
-                                {% set hours_on_job = v1.dop.hour_on_job_hand %}
-                            {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
-                                {% set hours_on_job = v1.dop.hour_on_job %}
-                            {% else %}
-                                {% set hours_on_job = 0 %}
-                            {% endif %}
-
-                            {% if v1.status == 'show' and v1.payed is not defined %}
-                                <i class="fa fa-minus ajax_hour_action" 
-                                   type_action="-" 
-                                   hour_id="{{ v1.id }}" 
-                                   block="hour_{{ v1.id }}" 
-                                   s="{{ creatSecret('hour_'~v1.id) }}" 
-                                   ></i> 
-                            {% endif %}
-
-                            <span id="hour_{{ v1.id }}" 
-                                  title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job }}"
-                                  {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
-                                  >
-
-                                {{ hours_on_job }}
-
-                            </span>
-                            {% if v1.status == 'show' and v1.payed is not defined %}
-
-                                <i class="fa fa-plus ajax_hour_action" 
-                                   type_action="+" 
-                                   hour_id="{{ v1.id }}" 
-                                   block="hour_{{ v1.id }}" 
-                                   s="{{ creatSecret('hour_'~v1.id) }}" 
-                                   ></i> 
-
-                                <a href="#"  class="but_show_option" 
-                                   onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
-                                           return false;" 
-                                   xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
-                                    <span class="fa fa-caret-down" ></span>
-                                </a>
-                            {% endif %}
-
-                        </nobr>
-
-                        <br/>
-                    </abbr>
-
-                    {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + v1.dop.time_on_job/3600 %#}
-
+                {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' %}
+                    <abbr title="загружено с сервера ИИКО" ><small style="float:left;">iiko</small></abbr><br clear="all" />
+                {% elseif v1.dop.who_add_item is defined and v1.dop.who_add_item == 'admin' %}
+                    <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
                 {% endif %}
 
-                {% if v1.status == 'show' %}
+                {#{ pa(v1) }#}
 
-                    {#{ pa(v1) }#}
+                <div xstyle="display:inline-block;" class="point_div text-center" >
 
-                    
-                    <input type="hidden" 
-                           class="hours_kolvo" 
-                           value="{% if v1.dop.hour_on_job_hand is defined %}{{ v1.dop.hour_on_job_hand }}{% else %}{{ v1.dop.hour_on_job_calc }}{% endif %}" >
+                    {% if v1.dop.start is defined and v1.dop.fin is not defined %}
+                        {{ v1.dop.start|date("H:i") }} - ...
+                    {% else %}
 
-                    <center>
 
-                        {% if salar['ocenka-hour-base'] is defined %}
 
-                            {% if now_job.smoke is defined and now_job.smoke == 'da' %}
-                                {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
+                        {#   v1 [payed] => Array
+            (
+                [checkin] => 20974
+                [summa] => 1552
+                [pay_buh] => da
+                [pay_buh_who] => 2
+                [pay_buh_start] => 2019-08-20 15:47:22
+            )#}
+
+                        {% set kolvo_hour = v1.dop.time_on_job/3600 %}
+
+                        <abbr class="job_timer" >
+                            {{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}
+                            <br/>
+                        </abbr>
+
+                        {#
+                        <abbr class="job_hour" title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов:{{ v1.dop.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
+                        #}
+
+                        <abbr class="job_hour" >
+                            <nobr>
+
+                                {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
+                                    {% set hours_on_job = v1.dop.hour_on_job_hand %}
+                                {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
+                                    {% set hours_on_job = v1.dop.hour_on_job %}
+                                {% else %}
+                                    {% set hours_on_job = 0 %}
+                                {% endif %}
+
+                                {% if v1.status == 'show' and v1.payed is not defined %}
+                                    <i class="fa fa-minus ajax_hour_action" 
+                                       type_action="-" 
+                                       hour_id="{{ v1.id }}" 
+                                       block="hour_{{ v1.id }}" 
+                                       s="{{ creatSecret('hour_'~v1.id) }}" 
+                                       ></i> 
+                                {% endif %}
+
+                                <span id="hour_{{ v1.id }}" 
+                                      title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job }}"
+                                      {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
+                                      >
+
+                                    {{ hours_on_job }}
+
+                                </span>
+                                {% if v1.status == 'show' and v1.payed is not defined %}
+
+                                    <i class="fa fa-plus ajax_hour_action" 
+                                       type_action="+" 
+                                       hour_id="{{ v1.id }}" 
+                                       block="hour_{{ v1.id }}" 
+                                       s="{{ creatSecret('hour_'~v1.id) }}" 
+                                       ></i> 
+
+                                    <a href="#"  class="but_show_option" 
+                                       onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
+                                                   return false;" 
+                                       xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
+                                        <span class="fa fa-caret-down" ></span>
+                                    </a>
+                                {% endif %}
+
+                            </nobr>
+
+                            <br/>
+                        </abbr>
+
+                        {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + v1.dop.time_on_job/3600 %#}
+
+                    {% endif %}
+
+                    {% if v1.status == 'show' %}
+
+                        {#{ pa(v1) }#}
+
+
+                        <input type="hidden" 
+                               class="hours_kolvo" 
+                               value="{% if v1.dop.hour_on_job_hand is defined %}{{ v1.dop.hour_on_job_hand }}{% else %}{{ v1.dop.hour_on_job_calc }}{% endif %}" >
+
+                        <center>
+
+                            {% if salar['ocenka-hour-base'] is defined %}
+
+                                {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                    {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
+                                {% else %}
+                                    {% set price_hour = salar['ocenka-hour-base'] %}
+                                {% endif %}
+
+                                <input 
+                                    type="hidden" 
+                                    class="price_hour_{{ date }}_{{ sp_now }}" 
+                                    value="{{ price_hour }}" 
+                                    >
+
+                                {{ price_hour }}р/ч
+
                             {% else %}
-                                {% set price_hour = salar['ocenka-hour-base'] %}
+
+                                {#                    <input 
+                                                        type="text" 
+                                                        class="now_kolvo_hour" 
+                                                        value="{{ kolvo_hour }}" 
+                                                        >
+                                #}                    
+
+                                {#{ pa(salar) }#}
+                                <select name="ocenka" 
+                                        class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select" 
+                                        action="edit_dop_pole"
+                                        folder="{{ folder }}"
+                                        module="050.chekin_checkout"
+                                        dop_name="ocenka"
+                                        item_id="{{ v1.id }}"
+                                        s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
+                                        {% if v1.payed is defined %} disabled="disabled" {% endif %}
+                                        >
+                                    <option price="0" value="">Оценка</option>
+
+                                    {#{ pa(salar) }#}
+
+                                    {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
+
+                                        {% set price_hour = 0 %}
+
+                                        {% if salar['ocenka-hour-'~i] is defined %}> 
+                                            {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                                {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
+                                            {% else %}
+                                                {% set price_hour = salar['ocenka-hour-'~i] %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if price_hour > 0 %}
+                                            <option value="{{ i }}" 
+                                                    price="{{price_hour}}" 
+
+                                                    {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
+                                                        selected="selected"
+                                                    {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
+                                                        selected="selected"
+                                                    {% endif %} 
+
+                                                    price="{{price_hour}}" >
+                                                {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                            </option>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                    {#
+                                    <option value="4" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
+                                    <option value="3" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
+                                    <option value="2" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
+                                    #}
+
+                                </select>
                             {% endif %}
 
-                            <input 
-                                type="hidden" 
-                                class="price_hour_{{ date }}_{{ sp_now }}" 
-                                value="{{ price_hour }}" 
-                                >
+                        </center>
 
-                            {{ price_hour }}р/ч
+                    {% endif %}
+
+                    {#
+                    <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
+                    #}
+
+                </div>
+
+
+                {% if user_smena_status == 'add' %}
+                    {#% if user_smena_status == '' or user_smena_status == 'add_error' or user_smena_status == 'add' %#}
+                {% else %}
+
+                    {% if v1.status == 'hide' %}
+                        <span class="hide_down" >
+                            удалённая смена
+                        </span>
+
+                    {% elseif v1.status == 'show' %}
+
+                        {% if v1.dop.pay_check == 'yes' %}
+
+                            <span class="hide_down" >
+                                отправлено в бух. ожидает оплаты
+                            </span>
+
+                            <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }}" 
+                               style='display:none;'
+                               {# действие после вопроса #}
+                               comit_answer="Отменить разрешение на оплату смены ?"
+
+                               {# замена доп параметра #}
+                               action="edit_dop_item"
+
+                               {# модуль итемов #}
+                               itemsmod="050.chekin_checkout"
+                               {# id итема #}
+                               item_id="{{ k1 }}"
+                               {# название доп параметра #}
+                               dop_name="pay_check"
+                               {# новое значение параметра #}
+                               dop_new_value="no"
+
+                               {# секрет #}
+                               s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-no' ) }}" 
+
+                               {# скрыть ссылку после клика #}
+                               hidethis="da" 
+                               {# сделать видимым блок по id #}
+                               show_id="ares{{ k1 }}" 
+                               {# id куда печатаем результат #}
+                               res_to_id="ares{{ k1 }}" 
+                               {# сообщение печатаем если всё ок #}
+                               msg_to_success="Отменено"
+
+                               {# print_res_to_id="ares{{ k1 }}" #}
+
+                               >Отозвать разрешение на оплату</a>
+
 
                         {% else %}
 
-                            {#                    <input 
-                                                    type="text" 
-                                                    class="now_kolvo_hour" 
-                                                    value="{{ kolvo_hour }}" 
-                                                    >
-                            #}                    
+                            {% if 1 == 2 %}
+                                <a href="#" class="btn3 edit_items_dop_values" 
 
-                            {#{ pa(salar) }#}
-                            <select name="ocenka" 
-                                    class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select" 
-                                    action="edit_dop_pole"
-                                    folder="{{ folder }}"
-                                    module="050.chekin_checkout"
-                                    dop_name="ocenka"
-                                    item_id="{{ v1.id }}"
-                                    s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
-                                    {% if v1.payed is defined %} disabled="disabled" {% endif %}
-                                    >
-                                <option price="0" value="">Оценка</option>
+                                   {# действие после вопроса #}
+                                   comit_answer="Отправляем на оплату ?"
 
-                                {#{ pa(salar) }#}
+                                   {# замена доп параметра #}
+                                   action="edit_dop_item"
 
-                                {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
+                                   {# модуль итемов #}
+                                   itemsmod="050.chekin_checkout"
+                                   {# id итема #}
+                                   item_id="{{ k1 }}"
+                                   {# название доп параметра #}
+                                   dop_name="pay_check"
+                                   {# новое значение параметра #}
+                                   dop_new_value="yes"
 
-                                    {% set price_hour = 0 %}
+                                   {# секрет #}
+                                   s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-yes' ) }}" 
 
-                                    {% if salar['ocenka-hour-'~i] is defined %}> 
-                                        {% if now_job.smoke is defined and now_job.smoke == 'da' %}
-                                            {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
-                                        {% else %}
-                                            {% set price_hour = salar['ocenka-hour-'~i] %}
-                                        {% endif %}
-                                    {% endif %}
+                                   {# скрыть ссылку после клика #}
+                                   hidethis="da" 
+                                   {# сделать видимым блок по id #}
+                                   show_id="ares{{ k1 }}" 
+                                   {# id куда печатаем результат #}
+                                   res_to_id="ares{{ k1 }}" 
+                                   {# сообщение печатаем если всё ок #}
+                                   msg_to_success="Отправили на оплату, спасибо"
 
-                                    {% if price_hour > 0 %}
-                                        <option value="{{ i }}" 
-                                                price="{{price_hour}}" 
+                                   {# print_res_to_id="ares{{ k1 }}" #}
 
-                                                {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
-                                                    selected="selected"
-                                                {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
-                                                    selected="selected"
-                                                {% endif %} 
-
-                                                price="{{price_hour}}" >
-                                            {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
-                                        </option>
-                                    {% endif %}
-
-                                {% endfor %}
-
-                                {#
-                                <option value="4" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
-                                <option value="3" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
-                                <option value="2" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
-                                #}
-
-                            </select>
+                                   >Отправить на оплату 2</a>
+                            {% endif %}
                         {% endif %}
 
-                    </center>
+                        {# { pa(v1) } #}
 
+                    {% endif %}
                 {% endif %}
 
-                {#
-                <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
-                #}
+                <span class="xhide_down" style="display:none;" id="drop2_{{ k1 }}">
 
-            </div>
+                    {% if v1.status == 'hide' %}
 
-
-            {% if user_smena_status == 'add' %}
-                {#% if user_smena_status == '' or user_smena_status == 'add_error' or user_smena_status == 'add' %#}
-            {% else %}
-
-                {% if v1.status == 'hide' %}
-                    <span class="hide_down" >
-                        удалённая смена
-                    </span>
-
-                {% elseif v1.status == 'show' %}
-
-                    {% if v1.dop.pay_check == 'yes' %}
-
-                        <span class="hide_down" >
-                            отправлено в бух. ожидает оплаты
-                        </span>
-
-                        <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }}" 
-                           style='display:none;'
-                           {# действие после вопроса #}
-                           comit_answer="Отменить разрешение на оплату смены ?"
-
-                           {# замена доп параметра #}
-                           action="edit_dop_item"
-
-                           {# модуль итемов #}
-                           itemsmod="050.chekin_checkout"
-                           {# id итема #}
-                           item_id="{{ k1 }}"
-                           {# название доп параметра #}
-                           dop_name="pay_check"
-                           {# новое значение параметра #}
-                           dop_new_value="no"
-
-                           {# секрет #}
-                           s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-no' ) }}" 
-
-                           {# скрыть ссылку после клика #}
-                           hidethis="da" 
-                           {# сделать видимым блок по id #}
+                        {#
+                        <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
+    
+                           action="recover_smena" 
+                           go_answer="Хотите восстановить смену ?"
+                           id2="{{ k1 }}" 
+                           s2="{{ creatSecret( k1 ) }}" 
+                           resto="ares{{ k1 }}" 
                            show_id="ares{{ k1 }}" 
-                           {# id куда печатаем результат #}
-                           res_to_id="ares{{ k1 }}" 
-                           {# сообщение печатаем если всё ок #}
-                           msg_to_success="Отменено"
+                           hidethis="da" 
+    
+                           >восстановить</a>
+                        #}
 
-                           {# print_res_to_id="ares{{ k1 }}" #}
+                    {% elseif v1.status == 'show' %}
 
-                           >Отозвать разрешение на оплату</a>
-
-
-                    {% else %}
-
+                        <a href="#" class="act act_smena btn3" 
+                           go_answer="Хотите удалить смену ?"
+                           action="delete_smena" id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >удалить смену</a>
                         {% if 1 == 2 %}
-                            <a href="#" class="btn3 edit_items_dop_values" 
+                            <a href="#" class="act act_smena btn3" 
+
 
                                {# действие после вопроса #}
                                comit_answer="Отправляем на оплату ?"
@@ -336,87 +414,23 @@
                                {# сообщение печатаем если всё ок #}
                                msg_to_success="Отправили на оплату, спасибо"
 
-                               {# print_res_to_id="ares{{ k1 }}" #}
-
-                               >Отправить на оплату 2</a>
+                               >редактировать смену</a>
                         {% endif %}
                     {% endif %}
 
-                    {# { pa(v1) } #}
+                </span>
 
-                {% endif %}
-            {% endif %}
-
-            <span class="xhide_down" style="display:none;" id="drop2_{{ k1 }}">
-
-                {% if v1.status == 'hide' %}
-
-                    {#
-                    <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
-
-                       action="recover_smena" 
-                       go_answer="Хотите восстановить смену ?"
-                       id2="{{ k1 }}" 
-                       s2="{{ creatSecret( k1 ) }}" 
-                       resto="ares{{ k1 }}" 
-                       show_id="ares{{ k1 }}" 
-                       hidethis="da" 
-
-                       >восстановить</a>
-                    #}
-
-                {% elseif v1.status == 'show' %}
-
-                    <a href="#" class="act act_smena btn3" 
-                       go_answer="Хотите удалить смену ?"
-                       action="delete_smena" id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >удалить смену</a>
-                    {% if 1 == 2 %}
-                        <a href="#" class="act act_smena btn3" 
+                <div id="ares{{ k1 }}" style="display:none;"></div>
 
 
-                           {# действие после вопроса #}
-                           comit_answer="Отправляем на оплату ?"
 
-                           {# замена доп параметра #}
-                           action="edit_dop_item"
 
-                           {# модуль итемов #}
-                           itemsmod="050.chekin_checkout"
-                           {# id итема #}
-                           item_id="{{ k1 }}"
-                           {# название доп параметра #}
-                           dop_name="pay_check"
-                           {# новое значение параметра #}
-                           dop_new_value="yes"
-
-                           {# секрет #}
-                           s3="{{ creatSecret( '050.chekin_checkout-'~k1~'-pay_check-yes' ) }}" 
-
-                           {# скрыть ссылку после клика #}
-                           hidethis="da" 
-                           {# сделать видимым блок по id #}
-                           show_id="ares{{ k1 }}" 
-                           {# id куда печатаем результат #}
-                           res_to_id="ares{{ k1 }}" 
-                           {# сообщение печатаем если всё ок #}
-                           msg_to_success="Отправили на оплату, спасибо"
-
-                           >редактировать смену</a>
-                    {% endif %}
+                {% if v1.payed is defined %}
+                    <div class="btn btn-xs btn-info" >
+                        оплачено {{ v1.payed.summa|number_format(0, '.', '`') }}р
+                    </div>
                 {% endif %}
 
-            </span>
-
-            <div id="ares{{ k1 }}" style="display:none;"></div>
-
-
-
-
-            {% if v1.payed is defined %}
-                <div class="btn btn-xs btn-info" >
-                оплачено {{ v1.payed.summa|number_format(0, '.', '`') }}р
-                </div>
-            {% endif %}
 
 
 
@@ -424,8 +438,7 @@
 
 
 
-
-            {# { pa(v1) } #}
+                {# { pa(v1) } #}
 
 
 
@@ -435,9 +448,9 @@
 
 
 
-        </nobr>
-    </div>
-
+            </nobr>
+        </div>
+    {% endif %}
     {#
     <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
         Отработано {{ v7.hours }} ч.
