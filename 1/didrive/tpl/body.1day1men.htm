@@ -5,8 +5,31 @@
     {{ pa(date) }}
     {{ pa(man) }}
     #}
+    
+    {% set now_spec_nazn = false %}
 
+    {% if 
+        spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] is defined 
+        and spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] != now_job.sale_point %}
+
+        {#{ pa(spec_jobs_on_sp[now_job.jobman][now_job.d1]) }#}
+        {#{ pa(now_job) }#}
+        {#{ pa(sps) }#}
+
+        <div class="alert-warning text-center" style="padding: 5px 2px;" >
+            спец.назначение Отправлен на работу в {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point']]['head'] }}
+        </div>
+        {% set now_spec_nazn = true %}
+
+    {% endif %}
+
+    
+    
+    
+    
+    
     {% if checki[date][man.id] is defined %}
+        
         {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
 
             {#{ pa(v1) }#}
@@ -39,7 +62,7 @@
         {% endfor %}
     {% endif %}
     
-    <a href="" class="put_var_in_modal" 
+    <a href="" class="put_var_in_modal btn btn-xs btn-light" 
 
        data-toggle2="modal" 
        data-target2="#add_jobday_for_jobman" 
@@ -66,7 +89,7 @@
 
     <div id="res{{ spoint.id }}{{ man.id }}{{ date }}" ></div>
 
-    <a href="" class="put_var_in_modal" 
+    <a href="" class="put_var_in_modal btn btn-xs btn-light"
 
        data-toggle2="modal" 
        data-target2="#add_comment" 

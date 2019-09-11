@@ -274,3 +274,52 @@
     {% endif %}
 
 {% endspaceless %}
+
+
+
+
+
+
+
+
+
+{#
+
+
+        if (1 == 2) {
+
+
+// alert('2323');
+            $(this).removeClass("show_job_tab");
+            $(this).addClass("show_job_tab2");
+            var $uri_query = '';
+            var $vars = [];
+            $.each(this.attributes, function () {
+
+                if (this.specified) {
+                    // console.log(this.name, this.value);
+                    $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+
+                    if (this.name == 'res_to') {
+                        $vars['resto'] = '#' + this.value + ' tbody';
+                        console.log($vars['resto']);
+                        // alert($res_to);
+                    }
+
+                    if (this.name == 'show_on_click') {
+                        $('#' + this.value).show('slow');
+                    }
+
+                }
+
+            });
+            console.log($vars['resto']);
+            console.log($uri_query);
+            //$(this).html("тут список");
+            var $th = $(this);
+            
+            //return false;
+        }
+
+
+#}

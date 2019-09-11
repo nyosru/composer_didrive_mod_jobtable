@@ -5,9 +5,9 @@
     {{ pa(date) }}
     {{ pa(man) }}
     #}
-    
+
     {# spoint.id #}
-    
+
     {# % for k1, v1 in plusa['data'] if v1.dop.sale_point == spoint.id % #} 
     {% for mk, plus in plusa['data'] 
         if 
@@ -39,7 +39,7 @@
                                        id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
                 #}
 
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }}" 
+                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
                    xstyle='display:none;'
                    {# действие после вопроса #}
                    comit_answer="Отменить премию ?"
@@ -81,7 +81,7 @@
                 #}
 
 
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }}" 
+                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
                    xstyle='display:none;'
                    {# действие после вопроса #}
                    comit_answer="Отменить премию ?"
@@ -137,30 +137,29 @@
     {% endfor %}
 
         <div>
-        <a href=""
+            <a href=""
 
-           class="put_var_in_modal" 
+               class="put_var_in_modal btn btn-xs btn-light" 
 
-           jobman="{{ man.id }}"
-           salepoint="{{ sp_now }}"
+               jobman="{{ man.id }}"
+               salepoint="{{ sp_now }}"
 
-           toform_sp="{{ sp_now }}"
-           toform_sp_name="{{ spoint.head }}"
+               toform_sp="{{ sp_now }}"
+               toform_sp_name="{{ spoint.head }}"
 
-           toform_jobman="{{ man.id }}"
-           toform_jobman_name="{{ man.head }}"
+               toform_jobman="{{ man.id }}"
+               toform_jobman_name="{{ man.head }}"
 
-           date="{{ date }}"
-           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+               date="{{ date }}"
+               print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
 
-           {% set ss = spoint.id ~ pv.id %}
-           id2="{{ ss }}"
-           s2="{{ creatSecret( ss ) }}"
+               {% set ss = spoint.id ~ pv.id %}
+               id2="{{ ss }}"
+               s2="{{ creatSecret( ss ) }}"
 
+               data-target2="#add_plus_for_jobman"
 
-           data-target2="#add_plus_for_jobman"
-
-           ><span class="fa fa-plus" ></span> премия</a>        
+               ><span class="fa fa-plus" ></span> премия</a>        
         </div>
-           <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
-{% endspaceless %}
+        <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
+        {% endspaceless %}

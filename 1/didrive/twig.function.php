@@ -3,7 +3,7 @@
 /**
   определение функций для TWIG
  */
-$function = new Twig_SimpleFunction('get_smena_jobs', function ( string $date_start, string $date_finish, array $get_points = [] ) {
+$function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string $date_start, string $date_finish, array $get_points = [] ) {
 
     global $db;
 
@@ -12,14 +12,16 @@ $function = new Twig_SimpleFunction('get_smena_jobs', function ( string $date_st
     /**
      * точки продаж
      */
-    $points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
+    //$points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
+    $points = \Nyos\mod\items::getItemsSimple($db, 'sale_point');
     // \f\pa($sp0,2);
 
     /**
      * работники
      */
 //    \Nyos\mod\items::$sql_itemsdop_add_where_array = array();
-    \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
+    if (1 == 1) {
+        \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
             ( 
                 midop.name != \'stagirovka_start\' 
                 OR
@@ -39,8 +41,59 @@ $function = new Twig_SimpleFunction('get_smena_jobs', function ( string $date_st
             )
         )
         ';
-    $jobmans = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '070.jobman', 'show', null);
-    // \f\pa($jobman,2,'','$jobman');
+        $jobmans = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '070.jobman', 'show', null);
+
+        //\f\pa($jobmans,2,'','$jobmans');
+    }
+
+
+    /*
+      $jobmans0 = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
+      // \f\pa($jobmans,2,'','$jobmans');
+
+      $ds = strtotime($date_start);
+      $df = strtotime($date_finish);
+
+      $jobmans = [];
+
+      foreach ($jobmans0['data'] as $k => $v) {
+
+      if (
+      !isset($v['dop']['job_end'])
+      || ( isset($v['dop']['job_end']) && strtotime($v['dop']['job_end']) <= $df )
+      ) {
+      //
+      if (isset($v['dop']['stagirovka_start'])) {
+      if (strtotime($v['dop']['stagirovka_start']) >= $ds) {
+      $jobmans['data'][$k] = $v;
+      }
+      }
+      //
+      elseif (isset($v['dop']['fulljob_start'])) {
+      if (strtotime($v['dop']['fulljob_start']) >= $ds) {
+      $jobmans['data'][$k] = $v;
+      }
+      }
+      }
+      }
+
+      \f\pa($jobmans,2,'','$jobmans');
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * спец назначения
@@ -114,7 +167,7 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    return \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date_start, $date_finish );
+    return \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date_start, $date_finish);
 });
 $twig->addFunction($function);
 
@@ -147,6 +200,9 @@ $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $
     return $ee;
 });
 $twig->addFunction($function);
+
+
+
 
 $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, string $mod_default = '074.time_expectations_default' ) {
 
@@ -186,28 +242,30 @@ $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $
      * работники
      */
 //    \Nyos\mod\items::$sql_itemsdop_add_where_array = array();
-    \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
-            ( 
-                midop.name != \'stagirovka_start\' 
-                OR
-                ( midop.name = \'stagirovka_start\' AND midop.value <= date(\'' . $date_finish . '\') )
-            )
-            OR
-            ( 
-                midop.name != \'fulljob_start\' 
-                OR
-                ( midop.name = \'fulljob_start\' AND midop.value <= date(\'' . $date_finish . '\') )
-            )
-            OR
-            ( 
-                midop.name != \'job_end\' 
-                OR
-                ( midop.name = \'job_end\' AND midop.value >= date(\'' . $date_start . '\') )
-            )
-        )
-        ';
-    $jobmans = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '070.jobman', 'show', null);
-    // \f\pa($jobman,2,'','$jobman');
+//    \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
+//            ( 
+//                midop.name != \'stagirovka_start\' 
+//                OR
+//                ( midop.name = \'stagirovka_start\' AND midop.value <= date(\'' . $date_finish . '\') )
+//            )
+//            OR
+//            ( 
+//                midop.name != \'fulljob_start\' 
+//                OR
+//                ( midop.name = \'fulljob_start\' AND midop.value <= date(\'' . $date_finish . '\') )
+//            )
+//            OR
+//            ( 
+//                midop.name != \'job_end\' 
+//                OR
+//                ( midop.name = \'job_end\' AND midop.value >= date(\'' . $date_start . '\') )
+//            )
+//        )
+//        ';
+    // $jobmans = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '070.jobman', 'show', null);
+
+    $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
+    // \f\pa($jobmans,2,'','$jobmans');
 
     /**
      * спец назначения
@@ -286,8 +344,97 @@ $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $
 $twig->addFunction($function);
 
 
+/**
+ * список сотрудников для добавления в точки продаж (показываем тех у кого нет назначения на другие точки)
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_addlist_jobmans', function ( $db ) {
 
-$function = new Twig_SimpleFunction('where_now_dolgn', function ( $array, $sp, $man, string $date ) {
+
+    $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
+    // \f\pa($jobmans, 2);
+
+    $job_on_sp = \Nyos\mod\items::getItemsSimple($db, 'jobman_send_on_sp');
+    // \f\pa($jobmans);
+
+    $jobs = [];
+    foreach ($job_on_sp['data'] as $k => $v) {
+        $jobs[$v['dop']['jobman']] = 1;
+    }
+
+    $free_jobmans = [];
+    foreach ($jobmans['data'] as $k => $v) {
+        if (!isset($jobs[$k])) {
+            $free_jobmans[] = ['id' => $k, 'head' => $v['head'], 'bd' => $v['dop']['birthday'] ?? ''];
+        }
+    }
+
+    usort($free_jobmans, "\\f\\sort_ar_head");
+
+    return $free_jobmans;
+});
+$twig->addFunction($function);
+
+/**
+ * достаём список сотрудников кто уже работает на точках, кроме текущей точки
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_list_for_specnaznach_jobmans', function ( $db ) {
+
+
+    $sps = \Nyos\mod\items::getItemsSimple($db, 'sale_point');
+    // \f\pa($job_on_sp);
+
+    $d = \Nyos\mod\items::getItemsSimple($db, '061.dolgnost');
+    // \f\pa($job_on_sp);
+
+    $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
+    // \f\pa($jobmans, 2);
+
+    $job_on_sp = \Nyos\mod\items::getItemsSimple($db, 'jobman_send_on_sp');
+    // \f\pa($job_on_sp);
+
+    $jon = [];
+    foreach ($job_on_sp['data'] as $k => $v) {
+        $jon[] = $v['dop'];
+    }
+
+    usort($jon, "\\f\\sort_ar_date_desc");
+    //\f\pa($jon);
+
+    $jobs = [];
+    foreach ($jon as $k => $v) {
+        if (isset($v['sale_point']) && isset($v['dolgnost']) && isset($v['jobman']) && !isset($jobs[$v['jobman']])) {
+            $jobs[$v['jobman']] = array(
+                'sp' => $v['sale_point']
+                , 'dolgnost' => $v['dolgnost']
+            );
+        }
+    }
+    //\f\pa($jobs);
+
+
+    $nofree_jobmans = [];
+    foreach ($jobmans['data'] as $k => $v) {
+        if (isset($jobs[$k])) {
+            $nofree_jobmans[] = [
+                'id' => $k
+                , 'head' => $v['head']
+                , 'sp_id' => ( $jobs[$k]['sp'] ?? '' )
+                , 'sp' => ( $sps['data'][$jobs[$k]['sp']]['head'] ?? '' )
+                , 'dolgnost' => $d['data'][$jobs[$k]['dolgnost']]['head']
+                , 'bd' => ( $v['dop']['birthday'] ?? '' )
+            ];
+        }
+    }
+
+    usort($nofree_jobmans, "\\f\\sort_ar_head");
+    // \f\pa($nofree_jobmans);
+
+    return $nofree_jobmans;
+});
+$twig->addFunction($function);
+
+
+$function = new Twig_SimpleFunction('jobdesc__where_now_dolgn', function ( $array, $sp, $man, string $date ) {
 
     // echo $date_start.' , '.$date_finish ;
     return \Nyos\mod\JobDesc::where_now_job_man($array, $sp, $man, $date);
@@ -296,8 +443,29 @@ $function = new Twig_SimpleFunction('where_now_dolgn', function ( $array, $sp, $
 });
 $twig->addFunction($function);
 
+/**
+ * получаем список спец назначнеий в периоде
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_spec_job_on_sp', function ( $db, string $date_start, string $date_finish, $moduleSpec = '050.job_in_sp' ) {
 
-$function = new Twig_SimpleFunction('jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {
+    $d = \Nyos\mod\items::getItemsSimple($db, $moduleSpec);
+
+    $return = [];
+
+    foreach ($d['data'] as $k => $v) {
+        if ( isset($v['dop']['jobman']) && isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+            $return[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+        }
+    }
+
+    return $return;
+
+    // \f\pa( \Nyos\nyos::$folder_now );
+});
+$twig->addFunction($function);
+
+
+$function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {
 
     // echo $date_start.' , '.$date_finish ;
     return \Nyos\mod\JobDesc::whereJobmansOnSp($db, $folder, $date_start, $date_finish);
@@ -307,7 +475,8 @@ $function = new Twig_SimpleFunction('jobmans_job_on_sp', function ( $db, $folder
     /**
      * точки продаж
      */
-    $points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
+    // $points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
+    $points = \Nyos\mod\items::getItemsSimple($db, 'sale_point');
     // \f\pa($sp0,2);
 
     /**
@@ -556,7 +725,7 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__getSalaryJobman', function ( $db, $sp, $dolgn, $date ) {
 
-    return \Nyos\mod\JobDesc::getSalaryJobman( $db, $sp, $dolgn, $date );
+    return \Nyos\mod\JobDesc::getSalaryJobman($db, $sp, $dolgn, $date);
 });
 $twig->addFunction($function);
 
@@ -583,14 +752,14 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
     //\f\pa($checks, 2, null, '$checks');
 // \f\pa($points);
 
-    $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats' );
+    $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats');
     // \f\pa($payeds);
-    foreach( $payeds0['data'] as $k => $v ){
+    foreach ($payeds0['data'] as $k => $v) {
         $payeds[$v['dop']['checkin']] = $v['dop'];
     }
-    
-    
-    
+
+
+
     /**
      * работник - дата - время вх и вых
      */
@@ -607,10 +776,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
 
                 $da = date('Y-m-d', strtotime($check['dop']['start']));
 
-                if ( isset( $payeds[$check['id']]) ) {
-                    
+                if (isset($payeds[$check['id']])) {
+
                     $check['payed'] = $payeds[$check['id']];
-                    
                 }
                 if (isset($check['dop']['fin'])) {
 

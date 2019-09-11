@@ -1,5 +1,134 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
+
+    /**
+     * обработка назначения сотрудника на точку продаж
+     * @param {type} $sp
+     * @param {type} $workman
+     * @param {type} $dolgnost
+     * @param {type} $date_start
+     * @returns {undefined}
+     */
+    function put_workman_on_sp($th) {
+
+        // console.log('function put_workman_on_sp( ' + $sp + ', ' + $workman + ', ' + $dolgnost + ', ' + $date_start + ' )');
+        var data = $($th).serialize();
+        // console.log('111 '+data);
+
+        dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
+        sp_from = $('#add_person1day__user option:selected').attr('sp');
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=put_workman_on_sp&" + data + '&sp_from='+sp_from + '&dolgnost_from='+dolgn_from,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
+
+                /*
+                 if (typeof $div_hide !== 'undefined') {
+                 $('#' + $div_hide).hide();
+                 }
+                 */
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                $("#ok_but_stat").show('slow');
+//                $("#ok_but").hide();
+
+            }
+            ,
+            success: function ($j) {
+
+                if ($j['status'] == 'ok') {
+                    alert('назначение проведено, обновляю страницу, пару секунд пожалуйста');
+                    $('.put_workman_on_sp').html('<div style="padding:20px;" >обновляю страницу, секунду</div>');
+                    //$('.put_workman_on_sp').hide('slow');
+                    location.reload();
+                } else {
+                    alert('произошла неописуемая ситуация #109');
+                }
+
+                //$($vars['resto']).append($j.data);
+
+                // $($res_to).html($j.data);
+                // $($vars['resto']).html($j.data);
+                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
+                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
+                // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
+                // $($res_to_id).html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
+
+                // return true;
+
+                /*
+                 // alert($j.html);
+                 if (typeof $div_show !== 'undefined') {
+                 $('#' + $div_show).show();
+                 }
+                 */
+//                $('#form_ok').hide();
+//                $('#form_ok').html($j.html + '<br/><A href="">Сделать ещё заявку</a>');
+//                $('#form_ok').show('slow');
+//                $('#form_new').hide();
+//
+//                $('.list_mag').hide();
+//                $('.list_mag_ok').show('slow');
+
+            }
+
+        });
+
+
+    }
+
+    function delete_workman_from_sp($sp, $workman, $wm_s, $res_to ) {
+
+        console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
+
+        // var data = $($th).serialize();
+        // console.log('111 '+data);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=delete_workman_from_sp&sp=" + $sp + "&workman=" + $workman + "&id=" + $workman + "&s=" + $wm_s,
+
+            cache: false,
+            dataType: "json",
+
+            type: "post",
+            beforeSend: function () {
+
+                /*
+                 if (typeof $div_hide !== 'undefined') {
+                 $('#' + $div_hide).hide();
+                 }
+                 */
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                $("#ok_but_stat").show('slow');
+//                $("#ok_but").hide();
+
+            }
+            ,
+            success: function ($j) {
+
+                if ($j['status'] == 'ok') {
+                    alert('окей, удалили назначение');
+                    $('#user_tr_' + $sp + '_' + $workman ).hide('slow');
+                }
+                //
+                else {
+                    alert($j['html']);
+                    //alert('2');
+                }
+
+            }
+
+        });
+
+
+    }
+
 // перебор div
 //function hidePosts(){ 
 //  var hideText = "текст";
@@ -33,15 +162,95 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // onload="calculate_summ_day( {{ sp_now }}, {{ date }} );" 
 
 
+
+    /*
+     * считаем все суммы всех точек
+     * @returns {undefined}
+     */
+    function calculateSummAllGraph() {
+
+        $('body .show_summ_hour_day').each(function (i, elem) {
+
+            var $date = $(elem).attr('data');
+            var $sp = $(elem).attr('sp');
+            //console.log('блок для расчёта дня ', $date, $sp);
+
+            //$('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+
+            //console.log('body .price_hour_' + $date + '_' + $sp);
+
+            var $summa = 0;
+            var $summa_hours = 0;
+            var $error = '';
+//            $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
+//
+//                var $e1 = $(elem2).text();
+//                var $e2 = $(elem2).val();
+//
+//                //$kolvo_hour = Number($(elem2).attr('kolvo_hour'));
+//                $kolvo_hour = Number($(elem2).closest('.smena1').find('.hours_kolvo').val());
+//                //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
+//
+//                $summa += $e2 * $kolvo_hour;
+//                $summa_hours += $kolvo_hour;
+//
+//            });
+
+            // console.log('summa_m ', $summa);
+            // console.log('summa_h ', $summa_hours);
+
+            $price = 0;
+            $('body .price_hour_' + $date + '_' + $sp + '_select').each(function (i3, elem3) {
+
+                $th = $(elem3).find('option:selected');
+                //var $e1 = $(elem2).text();
+
+                $price = Number($th.attr('price'));
+                $error = 'Не все оценки выставлены';
+                // $kolvo_hour = Number($th.attr('kolvo_hour'));
+                $kolvo_hour = Number($(elem3).closest('.smena1').find('.hours_kolvo').prop('value'));
+                //console.log('select ', $kolvo_hour);
+                //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
+                $summa_hours += $kolvo_hour;
+                //console.log('$summa_hours', $summa_hours);
+
+                $summa += $price * $kolvo_hour;
+                //console.log('summa ', $summa);
+
+            });
+            if ($price == 0) {
+                $error = $summa_hours + ' ч.'
+            }
+
+            if ($error == '') {
+                $(elem).html('<nobr>' + number_format($summa_hours, 1, '.', '`') + ' ч<br/>' + number_format($summa, 0, '.', '`') + ' р</nobr>');
+            } else {
+                $(elem).html($error);
+            }
+
+
+        });
+    }
+
+    /* затираем данные в строчках с результатом работы */
+    function clearTdSummAllGraph() {
+
+        $('body .show_summ_hour_day').each(function (i, elem) {
+
+            $(elem).html('...');
+        });
+    }
+
+    calculateSummAllGraph();
+
+
     /**
      * кликаем по кнопам плюс минус час
      */
     $('body').on('click', '.ajax_hour_action', function (event) {
 
         clearTdSummAllGraph();
-
         $th = $(this);
-
         $znak = $th.attr('type_action'); // - || +
         // console.log($znak); // - || +
 
@@ -55,20 +264,17 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // console.log($textblock_id);
 
         $cifra = parseFloat($('span#' + $textblock_id).text());
-
         console.log($('span#' + $textblock_id).text());
         console.log($cifra);
-
         if ($znak == '-') {
             $new_val = $cifra - 0.5;
         }
-        //
+//
         else if ($znak == '+') {
             $new_val = $cifra + 0.5;
         }
 
         $('span#' + $textblock_id).text($new_val);
-
         $.ajax({
 
             url: "/vendor/didrive_mod/items/1/ajax.php",
@@ -80,7 +286,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
                 $('span#' + $textblock_id).css('font-weight', 'bold');
-
                 //if (typeof $div_hide !== 'undefined') {
                 //$('#' + $div_hide).hide();
                 //}
@@ -112,7 +317,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     setTimeout(function () {
                         calculateSummAllGraph();
                     }, 100);
-
                     //$(document).one( calculateSummAllGraph );
 
                 }
@@ -121,7 +325,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         return false;
     });
     // else {
@@ -137,109 +340,17 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             calculateSummAllGraph();
         }, 100);
         console.log(3);
-
     });
 
-
-
-    /*
-     * считаем все суммы всех точек
-     * @returns {undefined}
-     */
-    function calculateSummAllGraph( ) {
-
-        $('body .show_summ_hour_day').each(function (i, elem) {
-
-            var $date = $(elem).attr('data');
-            var $sp = $(elem).attr('sp');
-            //console.log('блок для расчёта дня ', $date, $sp);
-
-            //$('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
-
-            //console.log('body .price_hour_' + $date + '_' + $sp);
-
-            var $summa = 0;
-            var $summa_hours = 0;
-            var $error = '';
-
-//            $('body .price_hour_' + $date + '_' + $sp).each(function (i2, elem2) {
-//
-//                var $e1 = $(elem2).text();
-//                var $e2 = $(elem2).val();
-//
-//                //$kolvo_hour = Number($(elem2).attr('kolvo_hour'));
-//                $kolvo_hour = Number($(elem2).closest('.smena1').find('.hours_kolvo').val());
-//                //console.log('второго уровня блок ', i2, $e1, $e2, $kolvo_hour);
-//
-//                $summa += $e2 * $kolvo_hour;
-//                $summa_hours += $kolvo_hour;
-//
-//            });
-
-            // console.log('summa_m ', $summa);
-            // console.log('summa_h ', $summa_hours);
-
-            $price = 0;
-
-            $('body .price_hour_' + $date + '_' + $sp + '_select').each(function (i3, elem3) {
-
-                $th = $(elem3).find('option:selected');
-                //var $e1 = $(elem2).text();
-
-                $price = Number($th.attr('price'));
-
-                $error = 'Не все оценки выставлены';
-                // $kolvo_hour = Number($th.attr('kolvo_hour'));
-                $kolvo_hour = Number($(elem3).closest('.smena1').find('.hours_kolvo').prop('value'));
-                //console.log('select ', $kolvo_hour);
-                //console.log('второго уровня 2 блок ', i3, $price, $kolvo_hour);
-                $summa_hours += $kolvo_hour;
-                //console.log('$summa_hours', $summa_hours);
-
-                $summa += $price * $kolvo_hour;
-                //console.log('summa ', $summa);
-
-            });
-
-            if ($price == 0) {
-                $error = $summa_hours + ' ч.'
-            }
-
-            if ($error == '') {
-                $(elem).html('<nobr>' + number_format($summa_hours, 1, '.', '`') + ' ч<br/>' + number_format($summa, 0, '.', '`') + ' р</nobr>');
-            } else {
-                $(elem).html($error);
-            }
-
-
-        });
-
-    }
-
-    /* затираем данные в строчках с результатом работы */
-
-    function clearTdSummAllGraph( ) {
-
-        $('body .show_summ_hour_day').each(function (i, elem) {
-
-            $(elem).html('...');
-
-        });
-
-    }
-
-    calculateSummAllGraph();
 
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
         clearTdSummAllGraph();
-
         // alert('123');
         setTimeout(function () {
             calculateSummAllGraph();
         }, 2000);
-
     })
 
 
@@ -338,6 +449,63 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         });
         //return false;
+
+    });
+    // else {
+    // alert(i + ': ' + $(elem).text());
+    // }
+
+
+
+    /**
+     * назначение сотрудника на точку продаж
+     */
+    $('body').on('submit', '.put_workman_on_sp', function (event) {
+
+        event.preventDefault();
+
+        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+        put_workman_on_sp(this);
+
+        return false;
+
+    });
+    // else {
+    // alert(i + ': ' + $(elem).text());
+    // }
+
+    /**
+     * удаление сотрудника с точки продаж
+     */
+    $('body').on('click', '.delete_workman_from_sp', function (event) {
+
+        // event.preventDefault();
+        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+        // put_workman_on_sp( this );
+        console.log('delete_workman_from_sp');
+        $answer = '';
+
+        $.each(this.attributes, function () {
+            //console.log(this.name, this.value);
+
+            if (this.name == 'sp') {
+                $sp = this.value;
+            } else if (this.name == 'workman') {
+                $workman = this.value;
+            } else if (this.name == 'wm_s') {
+                $wm_s = this.value;
+            } else if (this.name == 'answer') {
+                $answer = this.value;
+            }
+        });
+
+        if ($answer != '') {
+            if (!confirm($answer)) {
+                return false;
+            }
+        }
+
+        $res = delete_workman_from_sp($sp, $workman, $wm_s);
 
     });
     // else {
@@ -608,7 +776,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.each(data1, function () {
 
             console.log(this.name + '=' + this.value);
-            
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -677,9 +844,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-    
-    
-    
     
     
     $('body').on('submit', '#goto_other_sp', function (event) {
@@ -1051,15 +1215,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var resto = '';
         var $vars = new Array();
         var $uri_query = '';
-
         var showid = 0;
-
-
         var hidethis = 0;
         var answer = 0;
         var resto = 0;
         var showid = 0;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -1102,7 +1262,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         if (answer != 0) {
 
             if (!confirm(answer)) {
@@ -1119,7 +1278,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
-
         $.ajax({
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -1127,11 +1285,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             cache: false,
             dataType: "json",
             type: "post",
-
             beforeSend: function () {
 
                 $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
-
                 /*
                  if (typeof $div_hide !== 'undefined') {
                  $('#' + $div_hide).hide();
@@ -1141,7 +1297,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $("#ok_but").hide();
             }
             ,
-
             success: function ($j) {
 
 
@@ -1158,36 +1313,33 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $string += '<br/>'+name + ': ' + value;
 //                });
 
-                if( $j.status == 'ok' ){
-                
-                $html = '';
-                    
-                    if( $j.ocenka == 5 ){
+                if ($j.status == 'ok') {
+
+                    $html = '';
+                    if ($j.ocenka == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 5</div>';
-                    }else{
+                    } else {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 3</div>';
-                        
                     }
 
-                    if( $j.ocenka_time == 5 ){
+                    if ($j.ocenka_time == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка времени ожидания: 5</div>';
-                    }else if( $j.ocenka_time == 3 ){
+                    } else if ($j.ocenka_time == 3) {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка  времени ожидания: 3</div>';
                     }
-                    
-                    if( $j.ocenka_oborot == 5 ){
+
+                    if ($j.ocenka_oborot == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
-                    }else if( $j.ocenka_oborot == 3 ){
+                    } else if ($j.ocenka_oborot == 3) {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
                     }
-                    
-                    
+
+
                     // $(resto).html( $html + $j.txt );
-                    $(resto).html( $html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>' );
-                    
-            }else{
-                $(resto).html( '<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
-            }
+                    $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
+                } else {
+                    $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
+                }
 
                 //alert(resto);
 
@@ -1219,14 +1371,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
         return false;
-
     });
-
-
-
 
 
 
