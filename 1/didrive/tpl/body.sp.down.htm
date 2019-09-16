@@ -189,10 +189,10 @@
                     {{ pa(norms_day) }}
                 {% endif %}
 
-
                 {#            {% set t = didrive_f__timer_stop() %}
                             <br/>norms_day {{ t }}
                 #}
+
             </div>         
         </div>         
 
@@ -217,8 +217,8 @@
                     % в ЗП от оборота
                     <br/>
                     кол-во час. в 1 смене
-                </nobr>
 
+                </nobr>
             </div>         
 
             {% for i in range(low=0, high=35, step=1) %}  
@@ -236,143 +236,201 @@
 
                                 <nobr1>
 
-                                    <form action="" method="POST" class="send_form_to_ajax" 
+                                    {#{ session.now_user_di.access }#}
 
-                                          {# показываем блок после отправки запроса #}
-                                          after_send_show="#res{{sp_now}}{{ now_date }}"
-
-                                          {# результат сюда #}
-                                          resto="#res{{sp_now}}{{ now_date }}"
-
-                                          {# что скрыть после успешного выполнения #}
-                                          hide_before_job_ok="#form{{sp_now}}{{ now_date }}"
-
-                                          ajax_action="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php"
-                                          >
-
-                                        <input type="hidden" name="action" value="edit_norms" >
-                                        <input type="hidden" name="sp" value="{{ sp_now }}" >
-                                        <input type="hidden" name="date" value="{{ now_date }}" >
-                                        <input type="hidden" name="id" value="{{ sp_now }}{{ now_date }}" >
-                                        <input type="hidden" name="s" value="{{ creatSecret(sp_now~now_date) }}" >
-
-                                        {#
-                                        <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="200000" step="1"
-                                               name="vuruchka"
-                                               {% if norms_day[now_date]['vuruchka'] is defined %}
-                                                   value="{{ norms_day[now_date]['vuruchka'] }}" 
-                                               {% else %}
-                                               {% endif %}
-                                               >
-
-                                        <br/>
-                                        #}
+                                    {% if session.now_user_di.access == 'moder' %}
 
                                         <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="200000" step="1"
-                                               name="vuruchka_on_1_hand"
                                                {% if norms_day[now_date]['vuruchka_on_1_hand'] is defined %}
                                                    value="{{ norms_day[now_date]['vuruchka_on_1_hand'] }}" 
-                                               {% else %}
                                                {% endif %}
+                                               readonly="readonly"
                                                >
 
                                         <br/>
 
                                         <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="200" step="1"
-                                               name="time_wait_norm_cold"
                                                {% if norms_day[now_date]['time_wait_norm_cold'] is defined %}
                                                    value="{{ norms_day[now_date]['time_wait_norm_cold'] }}"
-                                               {% else %}
                                                {% endif %}
+                                               readonly="readonly"
                                                >
 
                                         <br/>
 
                                         <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}" 
-                                               type="number" min="1" max="200" step="1"
-                                               name="time_wait_norm_hot"
                                                {% if norms_day[now_date]['time_wait_norm_hot'] is defined %}
                                                    value="{{ norms_day[now_date]['time_wait_norm_hot'] }}"
-                                               {% else %}
                                                {% endif %}
+                                               readonly="readonly"
                                                >
 
                                         <br/>
 
                                         <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="200" step="1"
-                                               name="time_wait_norm_delivery"
                                                {% if norms_day[now_date]['time_wait_norm_delivery'] is defined %}
                                                    value="{{ norms_day[now_date]['time_wait_norm_delivery'] }}"
-                                               {% else %}
                                                {% endif %}
+                                               readonly="readonly"
                                                >
 
                                         <br/>
 
                                         <input class="input-norms on_change_show_block" 
-                                               on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="50" step="0.5"
-                                               name="procent_oplata_truda_on_oborota"
                                                {% if norms_day[now_date]['procent_oplata_truda_on_oborota'] is defined %}
                                                    value="{{ norms_day[now_date]['procent_oplata_truda_on_oborota'] }}"
-                                               {% else %}
                                                {% endif %}
+                                               readonly="readonly"
                                                >
 
                                         {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                             <br/>
                                             <input class="input-norms on_change_show_block" 
-                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                                   type="number" min="1" max="24" step="0.5"
-                                                   name="kolvo_hour_in1smena"
                                                    value="{{ norms_day[now_date]['kolvo_hour_in1smena'] }}"
+                                                   readonly="readonly"
                                                    >
-
-                                            {% if norms_day[now_date]['type'] is defined and norms_day[now_date]['type'] == 'copy' %}
-                                                <br/>
-                                                <abbr style="color:gray" title="значения от дня с лева, от {{ norms_day[now_date]['date'] }}">copy</abbr>
-                                            {% endif %}
 
                                         {% endif %}
 
 
-                                        <span id="form{{sp_now}}{{ now_date }}" style="display:none;">
+                                    {% elseif session.now_user_di.access == 'admin' %}
+                                        <form action="" method="POST" class="send_form_to_ajax" 
 
-                                            </br>
-                                            </br>
+                                              {# показываем блок после отправки запроса #}
+                                              after_send_show="#res{{sp_now}}{{ now_date }}"
 
-                                            скопировать на <abbr title=" в этом месяце " >дни недели</abbr>
+                                              {# результат сюда #}
+                                              resto="#res{{sp_now}}{{ now_date }}"
 
-                                            <div class="list_day_ned" >
-                                                <label><input type="checkbox" name="copyto[1]" value="1" >Пн</label> 
-                                                <label><input type="checkbox" name="copyto[2]" value="1" >Вт</label> 
-                                                <label><input type="checkbox" name="copyto[3]" value="1" >Ср</label> 
-                                                <label><input type="checkbox" name="copyto[4]" value="1" >Чт</label> 
-                                                <label><input type="checkbox" name="copyto[5]" value="1" >Пт</label> 
-                                                <label><input type="checkbox" name="copyto[6]" value="1" >Сб</label> 
-                                                <label><input type="checkbox" name="copyto[0]" value="1" >Вс</label> 
+                                              {# что скрыть после успешного выполнения #}
+                                              hide_before_job_ok="#form{{sp_now}}{{ now_date }}"
+
+                                              ajax_action="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php"
+                                              >
+
+                                            <input type="hidden" name="action" value="edit_norms" >
+                                            <input type="hidden" name="sp" value="{{ sp_now }}" >
+                                            <input type="hidden" name="date" value="{{ now_date }}" >
+                                            <input type="hidden" name="id" value="{{ sp_now }}{{ now_date }}" >
+                                            <input type="hidden" name="s" value="{{ creatSecret(sp_now~now_date) }}" >
+
+                                            {#
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   type="number" min="1" max="200000" step="1"
+                                                   name="vuruchka"
+                                                   {% if norms_day[now_date]['vuruchka'] is defined %}
+                                                       value="{{ norms_day[now_date]['vuruchka'] }}" 
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+    
+                                            <br/>
+                                            #}
+
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   type="number" min="1" max="200000" step="1"
+                                                   name="vuruchka_on_1_hand"
+                                                   {% if norms_day[now_date]['vuruchka_on_1_hand'] is defined %}
+                                                       value="{{ norms_day[now_date]['vuruchka_on_1_hand'] }}" 
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+
+                                            <br/>
+
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   type="number" min="1" max="200" step="1"
+                                                   name="time_wait_norm_cold"
+                                                   {% if norms_day[now_date]['time_wait_norm_cold'] is defined %}
+                                                       value="{{ norms_day[now_date]['time_wait_norm_cold'] }}"
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+
+                                            <br/>
+
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}" 
+                                                   type="number" min="1" max="200" step="1"
+                                                   name="time_wait_norm_hot"
+                                                   {% if norms_day[now_date]['time_wait_norm_hot'] is defined %}
+                                                       value="{{ norms_day[now_date]['time_wait_norm_hot'] }}"
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+
+                                            <br/>
+
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   type="number" min="1" max="200" step="1"
+                                                   name="time_wait_norm_delivery"
+                                                   {% if norms_day[now_date]['time_wait_norm_delivery'] is defined %}
+                                                       value="{{ norms_day[now_date]['time_wait_norm_delivery'] }}"
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+
+                                            <br/>
+
+                                            <input class="input-norms on_change_show_block" 
+                                                   on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                   type="number" min="1" max="50" step="0.5"
+                                                   name="procent_oplata_truda_on_oborota"
+                                                   {% if norms_day[now_date]['procent_oplata_truda_on_oborota'] is defined %}
+                                                       value="{{ norms_day[now_date]['procent_oplata_truda_on_oborota'] }}"
+                                                   {% else %}
+                                                   {% endif %}
+                                                   >
+
+                                            {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
+                                                <br/>
+                                                <input class="input-norms on_change_show_block" 
+                                                       on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                                       type="number" min="1" max="24" step="0.5"
+                                                       name="kolvo_hour_in1smena"
+                                                       value="{{ norms_day[now_date]['kolvo_hour_in1smena'] }}"
+                                                       >
+
+                                                {% if norms_day[now_date]['type'] is defined and norms_day[now_date]['type'] == 'copy' %}
+                                                    <br/>
+                                                    <abbr style="color:gray" title="значения от дня с лева, от {{ norms_day[now_date]['date'] }}">copy</abbr>
+                                                {% endif %}
+
+                                            {% endif %}
+
+
+                                            <span id="form{{sp_now}}{{ now_date }}" style="display:none;">
+
+                                                </br>
+                                                </br>
+
+                                                скопировать на <abbr title=" в этом месяце " >дни недели</abbr>
+
+                                                <div class="list_day_ned" >
+                                                    <label><input type="checkbox" name="copyto[1]" value="1" >Пн</label> 
+                                                    <label><input type="checkbox" name="copyto[2]" value="1" >Вт</label> 
+                                                    <label><input type="checkbox" name="copyto[3]" value="1" >Ср</label> 
+                                                    <label><input type="checkbox" name="copyto[4]" value="1" >Чт</label> 
+                                                    <label><input type="checkbox" name="copyto[5]" value="1" >Пт</label> 
+                                                    <label><input type="checkbox" name="copyto[6]" value="1" >Сб</label> 
+                                                    <label><input type="checkbox" name="copyto[0]" value="1" >Вс</label> 
+                                                </div>
+
+                                                <input type="submit" class="btn btn-xs btn-success" value="сохранить" style="margin-bottom:2px;">
+                                                <input type="button" class="btn btn-xs btn-light" value="скрыть форму" onclick="$('#form{{sp_now}}{{ now_date }}').hide('slow');" >
+
+                                            </span>
+
+                                            <div id="res{{sp_now}}{{ now_date }}" style="display:none;padding:5px; background-color: yellow; text-align: left;"  >
+                                                <img src="/img/load.gif" alt="" border="" style="width: 80%;" />
                                             </div>
 
-                                            <input type="submit" class="btn btn-xs btn-success" value="сохранить" style="margin-bottom:2px;">
-                                            <input type="button" class="btn btn-xs btn-light" value="скрыть форму" onclick="$('#form{{sp_now}}{{ now_date }}').hide('slow');" >
-
-                                        </span>
-
-                                        <div id="res{{sp_now}}{{ now_date }}" style="display:none;padding:5px; background-color: yellow; text-align: left;"  >
-                                            <img src="/img/load.gif" alt="" border="" style="width: 80%;" />
-                                        </div>
-
-                                    </form>
-
+                                        </form>
+                                    {% endif %}
                                 </nobr1>
 
                             {% else %}
@@ -423,7 +481,7 @@
                 #}
                 {#% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %#}
                 {#{ sp_now }#}
-                
+
                 {% set oborots = iiko_oborot__get_oborots_on_sp( db, sp_now, date_start, date_finish ) %}
 
                 {#{ sp_now }#}
