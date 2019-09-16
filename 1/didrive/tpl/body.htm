@@ -50,6 +50,19 @@
         <br/>dolgn {{ t }}
     #}
 
+    {% if session.now_user_di.access == 'moder' %}
+    {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
+    {% else %}
+    {% set access_to_sp = false %}
+    {% endif %}
+
+    {#{ pa(access_to_sp) }#}
+    
+    
+    {#    {% set t = didrive_f__timer_stop() %}
+        <br/>dolgn {{ t }}
+    #}
+
     {#    {% set t = didrive_f__timer_start() %}
     #}
     {#% set salarys = get_salarys( db ) %#}
@@ -312,6 +325,7 @@
         {#                {% set t = didrive_f__timer_start() %}
         #}
         {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
+        
         {% if 1 == 2 %}
             <div style="max-height: 250px; overflow: auto;" >
                 <br/> pa(spec_jobs_on_sp)
@@ -445,7 +459,7 @@
 
                 {# проходим по списку точки продаж - сотрудники #}                
                 {#{ pa(jobs_on_sp.jobs_on_sp) }#}
-                {% for sp_now, list12 in jobs_on_sp.jobs_on_sp %}
+                {% for sp_now, list12 in jobs_on_sp.jobs_on_sp if access_to_sp == false or access_to_sp[sp_now] is defined %}
 
                     {#{ pa(list12) }#}
 
@@ -717,7 +731,6 @@
                                                     <abbr title="произведён перевод сотрудника с указанной точка продаж " >
                                                     {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point_from']]['head'] }}
                                                     </abbr>
-                                                    
                                                 </div>
 
                                                 {#{ pa(now_job) }#}

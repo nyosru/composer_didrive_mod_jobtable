@@ -465,6 +465,32 @@ $function = new Twig_SimpleFunction('jobdesc__get_spec_job_on_sp', function ( $d
 $twig->addFunction($function);
 
 
+/**
+ * получаем точки к которым открыт доступ для модера
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_access_for_moder', function ( $db, $moduleAccess = 'sale_point_access_moder' ) {
+
+    $d = \Nyos\mod\items::getItemsSimple($db, $moduleAccess);
+
+    $return = [];
+
+    foreach ($d['data'] as $k => $v) {
+        if ( isset($v['dop']['sale_point']) 
+                && isset($v['dop']['user_id']) 
+                && isset($_SESSION['now_user_di']['id'])
+                && $_SESSION['now_user_di']['id'] == $v['dop']['user_id']
+            ) {
+            $return[$v['dop']['sale_point']] = true;
+        }
+    }
+
+    return $return;
+
+    // \f\pa( \Nyos\nyos::$folder_now );
+});
+$twig->addFunction($function);
+
+
 $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {
 
     // echo $date_start.' , '.$date_finish ;
