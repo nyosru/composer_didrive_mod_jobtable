@@ -135,31 +135,4 @@
     {% endfor %}
 
         
-        <a href=""
-
-           class="put_var_in_modal btn btn-xs btn-light" 
-
-           jobman="{{ man.id }}"
-           salepoint="{{ spoint.id }}"
-
-           toform_sp="{{ spoint.id }}"
-           toform_sp_name="{{ spoint.head }}"
-
-           toform_jobman="{{ man.id }}"
-           toform_jobman_name="{{ man.head }}"
-
-           date="{{ date }}"
-           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
-
-           {% set ss = spoint.id ~ pv.id %}
-           id2="{{ ss }}"
-           s2="{{ creatSecret( ss ) }}"
-
-
-           data-target2="#add_minus_for_jobman"
-
-           ><span class="fa fa-minus" ></span> взыскание</a>        
-        
-           <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
-           
 {% endspaceless %}
