@@ -43,9 +43,13 @@
         {% endfor %}
     {% endif %}
 
+    
+    
+    
     {% if comments.data is defined %}
         
     {#{ pa(comments.data ) }#}
+    
         {% for k1, v1 in comments.data if v1.dop.sale_point == sp_now and v1.dop.date_to == date and v1.dop.jobman == man.id and v1.status == 'show' %} 
 
             <div class="show_1comment" >
@@ -60,62 +64,10 @@
             {#{ pa(v1) }#}
 
         {% endfor %}
+        
     {% endif %}
     
-    <a href="" class="put_var_in_modal btn btn-xs btn-light" 
-
-       data-toggle2="modal" 
-       data-target2="#add_jobday_for_jobman" 
-
-       jobman="{{ man.id }}"
-       salepoint="{{ spoint.id }}"
-
-       toform_sp="{{ spoint.id }}"
-       toform_sp_name="{{ spoint.head }}"
-
-       toform_jobman="{{ man.id }}"
-       toform_jobman_name="{{ man.head }}"
-
-       date="{{ date }}"
-       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}"
-
-       {% set ss = spoint.id ~ man.id %}
-       id2="{{ ss }}"
-       s2="{{ creatSecret( ss ) }}"
-
-       ><nobr><span class="fa fa-plus" ></span> смену</nobr></a>
-
-       
-
-    <div id="res{{ spoint.id }}{{ man.id }}{{ date }}" ></div>
-
-    <a href="" class="put_var_in_modal btn btn-xs btn-light"
-
-       data-toggle2="modal" 
-       data-target2="#add_comment" 
-
-       jobman="{{ man.id }}"
-       sale_point="{{ spoint.id }}"
-
-       date_to="{{ date }}"
-       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}comment"
-
-       creator="{{ session.now_user_di.id }}"
-       
-       toform_sp="{{ spoint.id }}"
-       toform_sp_name="{{ spoint.head }}"
-
-       toform_jobman="{{ man.id }}"
-       toform_jobman_name="{{ man.head }}"
-
-
-       {% set ss = spoint.id ~ man.id %}
-       id2="{{ ss }}"
-       s2="{{ creatSecret( ss ) }}"
-
-       ><nobr><span class="fa fa-plus" ></span> комментарий</nobr></a>
-
-    <div id="res{{ spoint.id }}{{ man.id }}{{ date }}comment" ></div>    
-    
+    {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
+    {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
 
 {% endspaceless %}

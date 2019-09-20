@@ -129,6 +129,66 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     }
 
+
+/**
+ * определяем конец рабочего периода
+ * @param {type} $sp
+ * @param {type} $work_id
+ * @param {type} $wm_s
+ * @param {type} $date_end
+ * @returns {undefined}
+ */
+    function set_end_now_jobs( $work_id, $wm_s, $date_end ) {
+
+        console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+
+        // return false;
+
+        // var data = $($th).serialize();
+        // console.log('111 '+data);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=set_end_now_jobs&id=" + $work_id +"&s=" + $wm_s + "&work_id=" + $work_id +"&wm_s=" + $wm_s + "&date_end=" + $date_end,
+
+            cache: false,
+            dataType: "json",
+
+            type: "post",
+            beforeSend: function () {
+
+                /*
+                 if (typeof $div_hide !== 'undefined') {
+                 $('#' + $div_hide).hide();
+                 }
+                 */
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                $("#ok_but_stat").show('slow');
+//                $("#ok_but").hide();
+
+            }
+            ,
+            success: function ($j) {
+
+                if ($j['status'] == 'ok') {
+                    alert('окей, рабочий период закрыт, со следующего дня сотрудник уволен, после "ок" перезагрузка страницы, пару секунд пожалуйста');
+                    location.reload();
+                    // $('#user_tr_' + $sp + '_' + $workman ).hide('slow');
+                }
+                //
+                else {
+                    alert($j['html']);
+                    //alert('2');
+                }
+
+            }
+
+        });
+
+
+    }
+
 // перебор div
 //function hidePosts(){ 
 //  var hideText = "текст";
@@ -332,7 +392,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     // }
 
 
-
     $('body').on('change', '.select_edit_item_dop2', function () {
 
         console.log(2);
@@ -475,7 +534,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     // }
 
     /**
-     * удаление сотрудника с точки продаж
+     * удаление сотрудника с точки продаж (старая версия)
      */
     $('body').on('click', '.delete_workman_from_sp', function (event) {
 
@@ -484,16 +543,19 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // put_workman_on_sp( this );
         console.log('delete_workman_from_sp');
         $answer = '';
+        $wm_s = '';
 
         $.each(this.attributes, function () {
             //console.log(this.name, this.value);
 
             if (this.name == 'sp') {
                 $sp = this.value;
-            } else if (this.name == 'workman') {
-                $workman = this.value;
+            } else if (this.name == 'work_id') {
+                $work_id = this.value;
             } else if (this.name == 'wm_s') {
                 $wm_s = this.value;
+            } else if (this.name == 'date_end') {
+                $date_end = this.value;
             } else if (this.name == 'answer') {
                 $answer = this.value;
             }
@@ -505,7 +567,57 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
         }
 
-        $res = delete_workman_from_sp($sp, $workman, $wm_s);
+        $res = delete_workman_from_sp( $sp, $work_id, $wm_s, $date_end );
+        
+    });
+    // else {
+    // alert(i + ': ' + $(elem).text());
+    // }
+
+
+    /**
+     * кликнули (уволен с завтрашнего дня)
+     * обозначаем конец текущего периода работы
+     */
+    $('body').on('click', '.set_end_now_jobs', function (event) {
+
+        // event.preventDefault();
+        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+        // put_workman_on_sp( this );
+        console.log('set_end_now_jobs');
+        $need_answer = '';
+        $wm_s = '';
+        $date_end = '';
+// set_end_now_jobs( $now_job_id, $s, $res_to ) {
+
+        $.each(this.attributes, function () {
+            console.log(this.name, this.value);
+
+            if (this.name == 'work_id') {
+                $work_id = this.value;
+            } else if (this.name == 'sp') {
+                $sp = this.value;
+            } else if (this.name == 'wm_s') {
+                $wm_s = this.value;
+            } else if (this.name == 'date_finish') {
+                $date_end = this.value;
+            } else if (this.name == 'res_to') {
+                $res_to = this.value;
+            } else if (this.name == 'need_answer') {
+                $need_answer = this.value;
+            }
+
+        });
+
+        if ($need_answer != '' ) {
+            if ( !confirm($need_answer) ) {
+                return false;
+            }
+        }
+
+        $res = set_end_now_jobs( $work_id, $wm_s, $date_end );
+
+        return false;
 
     });
     // else {
@@ -1002,7 +1114,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-    $('body').on('click', '.put_var_in_modal', function (event) {
+    $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
 
@@ -1024,7 +1136,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
             }
         });
+        
         return false;
+        
         if ($(this).prop('data-target2').length()) {
             console.log($(this).prop('data-target2'));
         }
@@ -1100,6 +1214,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
+    
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
 // alert('2323');
@@ -1181,6 +1296,90 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
+    
+    
+    $('body').on('click', '.set_end_jobs_uvolen', function (event) {
+
+// alert('2323');
+        $(this).removeClass("show_job_tab");
+        $(this).addClass("show_job_tab2");
+        var $uri_query = '';
+        var $vars = [];
+        $.each(this.attributes, function () {
+
+            if (this.specified) {
+                // console.log(this.name, this.value);
+                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+
+                if (this.name == 'res_to') {
+                    $vars['resto'] = '#' + this.value + ' tbody';
+                    console.log($vars['resto']);
+                    // alert($res_to);
+                }
+
+                if (this.name == 'show_on_click') {
+                    $('#' + this.value).show('slow');
+                }
+
+            }
+
+        });
+        console.log($vars['resto']);
+        console.log($uri_query);
+        //$(this).html("тут список");
+        var $th = $(this);
+        $.ajax({
+
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=show_info_strings" + $uri_query,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
+                /*
+                 if (typeof $div_hide !== 'undefined') {
+                 $('#' + $div_hide).hide();
+                 }
+                 */
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                $("#ok_but_stat").show('slow');
+//                $("#ok_but").hide();
+            }
+            ,
+            success: function ($j) {
+
+                // $($res_to).html($j.data);
+                // $($vars['resto']).html($j.data);
+                $($vars['resto']).append($j.data);
+                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
+                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
+                // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
+                // $($res_to_id).html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
+
+                // return true;
+
+                /*
+                 // alert($j.html);
+                 if (typeof $div_show !== 'undefined') {
+                 $('#' + $div_show).show();
+                 }
+                 */
+//                $('#form_ok').hide();
+//                $('#form_ok').html($j.html + '<br/><A href="">Сделать ещё заявку</a>');
+//                $('#form_ok').show('slow');
+//                $('#form_new').hide();
+//
+//                $('.list_mag').hide();
+//                $('.list_mag_ok').show('slow');
+
+            }
+
+        });
+        //return false;
+
+    });
+    
     // else {
     // alert(i + ': ' + $(elem).text());
     // }

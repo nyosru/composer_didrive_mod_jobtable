@@ -487,9 +487,9 @@ class JobDesc {
      * @return type
      */
     public static function whereJobmansOnSp($db, $folder = null, $date_start = null, $date_fin = null
-            , $module_man_job_on_sp = 'jobman_send_on_sp'
-            , $module_spec_naznach_on_sp = '050.job_in_sp'
-            ) {
+    , $module_man_job_on_sp = 'jobman_send_on_sp'
+    , $module_spec_naznach_on_sp = '050.job_in_sp'
+    ) {
 
 //whereJobmansOnSp( $db, $folder, $date_start, $date_finish );
 
@@ -509,19 +509,39 @@ class JobDesc {
         $d = array('jobs' => []);
 
         foreach ($jobs['data'] as $k => $v) {
-            $v['dop']['d'] = $v;
-            $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
+
+            // \f\pa($v,2,'','v');
+            // exit;
+
+            if (
+                    ( isset($v['dop']['date'])
+                    // && $date_start >= $v['dop']['date'] 
+                    && $v['dop']['date'] <= $date_fin
+                    ) &&
+                    (!isset($v['dop']['date_finish']) || ( isset($v['dop']['date_finish']) && $date_start <= $v['dop']['date_finish'] && $date_fin >= $v['dop']['date_finish'] ) )
+            ) {
+                $v['dop']['id'] = $v['id'];
+                $v['dop']['d'] = $v;
+                $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
+            }
         }
 
         //\f\pa($d['jobs'], 2,'','jobs');
 
         $spec = \Nyos\mod\items::getItemsSimple($db, $module_spec_naznach_on_sp);
         //\f\pa($spec, 2,'','$spec');
-        
+
         foreach ($spec['data'] as $k => $v) {
-            $v['dop']['d'] = $v;
-            $v['dop']['type2'] = 'spec';
-            $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
+
+            //\f\pa($v);
+
+            if ( isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_fin ) {
+                $v['dop']['id'] = $v['id'];
+                $v['dop']['d'] = $v;
+                $v['dop']['type2'] = 'spec';
+                $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
+            }
+            
         }
 
         krsort($d['jobs']);

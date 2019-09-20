@@ -625,6 +625,65 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
     }
 }
 
+
+
+
+/**
+ * обозначаем конец текущего рабочего периода
+ */
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
+
+    //echo '<br/>'. __FILE__.' '.__LINE__;
+
+    try {
+
+        if (empty($_REQUEST['date_end']))
+            throw new \Exception('не указана дата');
+
+        $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE `id_item` = :id AND name = \'date_finish\' ');
+        $ff->execute(array(':id' => (int) $_REQUEST['work_id']));
+
+        \f\db\db2_insert(
+                $db, 'mitems-dops', array(
+                    'id_item' => (int) $_REQUEST['work_id'],
+                    'name' => 'date_finish',
+                    'value_date' => date('Y-m-d', strtotime($_REQUEST['date_end']))
+                )
+        );
+
+        // \f\pa($_REQUEST);
+//        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
+//            'jobman' => $_REQUEST['workman'],
+//            'sale_point' => $_REQUEST['sp']
+//        ));
+
+        \f\end2('ок', true);
+    }
+    //
+    catch (\Exception $ex) {
+
+        if (!isset($_REQUEST['no_send_msg'])) {
+
+            $text = $ex->getMessage()
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+                    . '</pre>';
+
+            if (class_exists('\nyos\Msg'))
+                \nyos\Msg::sendTelegramm($text, null);
+        }
+
+        return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+    }
+}
+
 // action=put_workman_on_sp
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp') {
 
@@ -655,7 +714,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
             $d['smoke'] = 'da';
 
         if (isset($_REQUEST['type2']) && $_REQUEST['type2'] == 'spec_naznach') {
-            
+
             if (!empty($_REQUEST['sp_from']))
                 $d['sale_point_from'] = $_REQUEST['sp_from'];
 
