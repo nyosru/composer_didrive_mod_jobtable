@@ -189,6 +189,64 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     }
 
+/**
+ * отмена конца смены (если поставили по ошибке)
+ * @param {type} $work_id
+ * @param {type} $wm_s
+ * @param {type} $date_end
+ * @returns {undefined}
+ */
+    function cancel_end_now_jobs( $work_id, $wm_s, $date_end ) {
+
+        console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+
+        // return false;
+
+        // var data = $($th).serialize();
+        // console.log('111 '+data);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=cancel_end_now_jobs&id=" + $work_id +"&s=" + $wm_s + "&work_id=" + $work_id +"&wm_s=" + $wm_s + "&date_end=" + $date_end,
+
+            cache: false,
+            dataType: "json",
+
+            type: "post",
+            beforeSend: function () {
+
+                /*
+                 if (typeof $div_hide !== 'undefined') {
+                 $('#' + $div_hide).hide();
+                 }
+                 */
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                $("#ok_but_stat").show('slow');
+//                $("#ok_but").hide();
+
+            }
+            ,
+            success: function ($j) {
+
+                if ($j['status'] == 'ok') {
+                    alert('окей, отменено, после "ок" перезагрузка страницы, пару секунд пожалуйста');
+                    location.reload();
+                    // $('#user_tr_' + $sp + '_' + $workman ).hide('slow');
+                }
+                //
+                else {
+                    alert($j['html']);
+                    //alert('2');
+                }
+
+            }
+
+        });
+
+
+    }
+
 // перебор div
 //function hidePosts(){ 
 //  var hideText = "текст";
@@ -616,6 +674,55 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $res = set_end_now_jobs( $work_id, $wm_s, $date_end );
+
+        return false;
+
+    });
+    // else {
+    // alert(i + ': ' + $(elem).text());
+    // }
+
+    /**
+     * кликнули (уволен с завтрашнего дня)
+     * обозначаем конец текущего периода работы
+     */
+    $('body').on('click', '.cancel_end_now_jobs', function (event) {
+
+        // event.preventDefault();
+        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+        // put_workman_on_sp( this );
+        console.log('cancel_end_now_jobs');
+        $need_answer = '';
+        $wm_s = '';
+        $date_end = '';
+// set_end_now_jobs( $now_job_id, $s, $res_to ) {
+
+        $.each(this.attributes, function () {
+            console.log(this.name, this.value);
+
+            if (this.name == 'work_id') {
+                $work_id = this.value;
+            } else if (this.name == 'sp') {
+                $sp = this.value;
+            } else if (this.name == 'wm_s') {
+                $wm_s = this.value;
+            } else if (this.name == 'date_finish') {
+                $date_end = this.value;
+            } else if (this.name == 'res_to') {
+                $res_to = this.value;
+            } else if (this.name == 'need_answer') {
+                $need_answer = this.value;
+            }
+
+        });
+
+        if ($need_answer != '' ) {
+            if ( !confirm($need_answer) ) {
+                return false;
+            }
+        }
+
+        $res = cancel_end_now_jobs( $work_id, $wm_s, $date_end );
 
         return false;
 

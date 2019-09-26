@@ -900,7 +900,24 @@
 
                                                 {% if now_job.date_finish is defined and now_job.date_finish == now_job.d1 %}
                                                     <small class="alert-warning" style="display:block; padding: 5px 10px;" >
+                                                        
+                                                        <a href="#" 
+                                                           
+                                                           class="cancel_end_now_jobs"
+
+                                                           need_answer="Отменить конец рабочего промежутка (увольнение) у работника"
+                                                           
+                                                           work_id="{{ now_job.id }}"
+                                                           wm_s="{{ creatSecret( now_job.id ) }}"
+                                                           
+                                                           res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
+                                                           
+                                                           >
+                                                        <span class="fa fa-times" style="float:right;"></span>
+                                                        </a>
+                                                        
                                                         конец назначения
+                                                        
                                                     </small>
                                                 {% endif %}
 
