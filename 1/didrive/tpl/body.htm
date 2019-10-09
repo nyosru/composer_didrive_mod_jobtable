@@ -417,6 +417,180 @@
                                 <div class="tcell" {% if date_start|date_modify("+"~i~" day")|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
 
                                     <nobr>
+                                        
+                                    {# кнопы - загрузка чеков дня #}
+                                    {% if 1 == 1 %}
+                                        <div class="btn-group" style="text-align:right;display:block;xfloat:right;" >
+
+                                            <div class="option_img" 
+                                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                 ><i 
+                                                    xonclick='
+                                                    $(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
+                                                    //$(".dopmenu{{ man.id }}_{{sp_now}}_{{ date }}").toggle("slow");
+                                                    return false;' 
+                                                    class="fa fa-cog"
+                                                    ></i></div>
+
+                                            <div class="dropdown-menu">
+
+                                                {#{ pa( server ) }#}
+                                                
+                                                <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date }}&finish={{ date }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
+                                                   class="put_var_in_modal2 dropdown-item btn-light"
+                                                   >грузим чеки дня</a>
+
+                                                {% if 1 == 2 %}
+
+                                                    <a href="" 
+
+                                                       xclass="put_var_in_modal btn btn-xs btn-light" 
+                                                       class="put_var_in_modal2 dropdown-item btn-light"
+
+                                                       data-toggle2="modal" 
+                                                       data-target2="#add_jobday_for_jobman" 
+
+                                                       jobman="{{ man.id }}"
+                                                       salepoint="{{ spoint.id }}"
+
+                                                       toform_sp="{{ spoint.id }}"
+                                                       toform_sp_name="{{ spoint.head }}"
+
+                                                       toform_jobman="{{ man.id }}"
+                                                       toform_jobman_name="{{ man.head }}"
+
+                                                       date="{{ date }}"
+                                                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}"
+
+                                                       {% set ss = spoint.id ~ man.id %}
+                                                       id2="{{ ss }}"
+                                                       s2="{{ creatSecret( ss ) }}"
+
+                                                       ><nobr><span class="fa fa-plus" ></span> смену</nobr></a>
+
+                                                    <a href="" 
+
+                                                       xclass="put_var_in_modal btn btn-xs btn-light"
+                                                       class="put_var_in_modal2 dropdown-item btn-light"
+
+                                                       data-toggle2="modal" 
+                                                       data-target2="#add_comment" 
+
+                                                       jobman="{{ man.id }}"
+                                                       sale_point="{{ spoint.id }}"
+
+                                                       date_to="{{ date }}"
+                                                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}comment"
+
+                                                       creator="{{ session.now_user_di.id }}"
+
+                                                       toform_sp="{{ spoint.id }}"
+                                                       toform_sp_name="{{ spoint.head }}"
+
+                                                       toform_jobman="{{ man.id }}"
+                                                       toform_jobman_name="{{ man.head }}"
+
+
+                                                       {% set ss = spoint.id ~ man.id %}
+                                                       id2="{{ ss }}"
+                                                       s2="{{ creatSecret( ss ) }}"
+
+                                                       ><nobr><span class="fa fa-plus" ></span> комментарий</nobr></a>
+
+                                                    <a href=""
+
+                                                       xclass="put_var_in_modal btn btn-xs btn-light" 
+                                                       class="put_var_in_modal2 dropdown-item btn-light"
+
+                                                       jobman="{{ man.id }}"
+                                                       salepoint="{{ spoint.id }}"
+
+                                                       toform_sp="{{ spoint.id }}"
+                                                       toform_sp_name="{{ spoint.head }}"
+
+                                                       toform_jobman="{{ man.id }}"
+                                                       toform_jobman_name="{{ man.head }}"
+
+                                                       date="{{ date }}"
+                                                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
+
+                                                       {% set ss = spoint.id ~ pv.id %}
+                                                       id2="{{ ss }}"
+                                                       s2="{{ creatSecret( ss ) }}"
+
+
+                                                       data-target2="#add_minus_for_jobman"
+
+                                                       ><span class="fa fa-minus" ></span> взыскание</a>        
+
+                                                    <a href=""
+
+                                                       xclass="put_var_in_modal btn btn-xs btn-light" 
+                                                       class="put_var_in_modal2 dropdown-item btn-light"
+
+                                                       jobman="{{ man.id }}"
+                                                       salepoint="{{ sp_now }}"
+
+                                                       toform_sp="{{ sp_now }}"
+                                                       toform_sp_name="{{ spoint.head }}"
+
+                                                       toform_jobman="{{ man.id }}"
+                                                       toform_jobman_name="{{ man.head }}"
+
+                                                       date="{{ date }}"
+                                                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+
+                                                       {% set ss = spoint.id ~ pv.id %}
+                                                       id2="{{ ss }}"
+                                                       s2="{{ creatSecret( ss ) }}"
+
+                                                       data-target2="#add_plus_for_jobman"
+
+                                                       ><span class="fa fa-plus" ></span> премия</a>        
+
+                                                    <a href="#"
+
+                                                       class="set_end_now_jobs dropdown-item btn-light"
+
+                                                       need_answer="Последний день работы сотрудника в данной должности ?"
+
+                                                       work_id="{{ now_job.id }}"
+                                                       wm_s="{{ creatSecret( now_job.id ) }}"
+
+                                                       date_finish="{{ date }}"
+
+                                                       res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
+
+                                                       {#                                                         
+                                                        jobman="{{ man.id }}"
+                                                        salepoint="{{ sp_now }}"
+
+                                                        id_set ="{{ now_job.d.id }}"
+
+                                                        toform_sp="{{ sp_now }}"
+                                                        toform_sp_name="{{ spoint.head }}"
+
+                                                        toform_jobman="{{ man.id }}"
+                                                        toform_jobman_name="{{ man.head }}"
+
+                                                        date="{{ date }}"
+                                                        print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+
+                                                        {% set ss = spoint.id ~ pv.id %}
+                                                        id2="{{ ss }}"
+                                                        s2="{{ creatSecret( ss ) }}"
+
+                                                        data-target2="#add_plus_for_jobman"
+                                                        #}
+
+                                                       ><span class="fa fa-window-close" ></span> уволен c завтрашнего дня<br/>
+                                                        <small>сегодня последний день в этой должности</small></a>
+                                                    {% endif %}
+                                            </div>
+                                        </div>
+
+                                    {% endif %}
+
 
                                         {# % set nowd = "01-06-2019"|date_modify("+"~i~" day")|date("d.m.y") % #}
                                         {{ nd|date("d.m") }}
@@ -435,7 +609,7 @@
                                                             return false;">
                                             +оценка
                                         </a>
-                    
+
                                         <center>
                                             <div id="ocneka_{{ spoint_id }}_{{ loop.index }}" class="hide btn-group" role="group" aria-label="Basic example">
                                                 <button class="btn btn-xs btn-light">3</button>
@@ -444,6 +618,12 @@
                                             </div>
                                         </center>
                                         #}
+
+
+
+
+
+
 
                                     </nobr>
 
@@ -852,12 +1032,12 @@
                                                            class="set_end_now_jobs dropdown-item btn-light"
 
                                                            need_answer="Последний день работы сотрудника в данной должности ?"
-                                                           
+
                                                            work_id="{{ now_job.id }}"
                                                            wm_s="{{ creatSecret( now_job.id ) }}"
-                                                           
+
                                                            date_finish="{{ date }}"
-                                                           
+
                                                            res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
 
                                                            {#                                                         
@@ -900,7 +1080,24 @@
 
                                                 {% if now_job.date_finish is defined and now_job.date_finish == now_job.d1 %}
                                                     <small class="alert-warning" style="display:block; padding: 5px 10px;" >
+
+                                                        <a href="#" 
+
+                                                           class="cancel_end_now_jobs"
+
+                                                           need_answer="Отменить конец рабочего промежутка (увольнение) у работника"
+
+                                                           work_id="{{ now_job.id }}"
+                                                           wm_s="{{ creatSecret( now_job.id ) }}"
+
+                                                           res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
+
+                                                           >
+                                                            <span class="fa fa-times" style="float:right;"></span>
+                                                        </a>
+
                                                         конец назначения
+
                                                     </small>
                                                 {% endif %}
 

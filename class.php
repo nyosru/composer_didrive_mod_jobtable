@@ -535,13 +535,12 @@ class JobDesc {
 
             //\f\pa($v);
 
-            if ( isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_fin ) {
+            if (isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_fin) {
                 $v['dop']['id'] = $v['id'];
                 $v['dop']['d'] = $v;
                 $v['dop']['type2'] = 'spec';
                 $d['jobs'][$v['dop']['date'] . '--' . $v['id']] = $v['dop'];
             }
-            
         }
 
         krsort($d['jobs']);
@@ -620,6 +619,242 @@ class JobDesc {
     public static function getSetupJobmanOnSp($db, $date_start, $date_finish = null, $module_man_job_on_sp = 'jobman_send_on_sp', $mod_spec_jobday = '050.job_in_sp') {
 
 
+        $plus_minus_checks = \Nyos\mod\JobBuh::getChecksMinusPlus($db, $date_start, $date_finish);
+        // \f\pa($plus_minus_checks, 2, '', '$plus_minus_checks');
+        foreach ($plus_minus_checks['items'] as $jobman => $v1) {
+            foreach ($v1 as $k => $v) {
+                $checks[$jobman][$v['date']] = $v;
+            }
+        }
+//        // $plus_minus_checks = '';
+        //\f\pa($checks, 2, '', '$checks');
+
+        $ocenki = [];
+
+        foreach ($plus_minus_checks['items'] as $jobman => $v1) {
+            foreach ($v1 as $k => $item) {
+                if (isset($item['ocenka'])) {
+                    $ocenki[$jobman][$item['date']] = $item['ocenka'];
+                } elseif (isset($item['ocenka_auto'])) {
+                    $ocenki[$jobman][$item['date']] = $item['ocenka_auto'];
+                }
+            }
+        }
+
+        // \f\pa($ocenki);
+
+        $return = [];
+
+        if (empty($date_finish)) {
+            $ds = $df = date('Y-m-d', strtotime($date_start));
+        } else {
+            $ds = date('Y-m-d', strtotime($date_start) - 3600 * 24);
+            $df = date('Y-m-d', strtotime($date_finish));
+        }
+
+        /**
+         * тащим спец назначения
+         */
+        if (1 == 1) {
+            $spec_day = \Nyos\mod\items::getItemsSimple($db, $mod_spec_jobday);
+            //\f\pa($spec_day, 2, '', '$spec_day');
+            $spec = [];
+            foreach ($spec_day['data'] as $k => $v) {
+                if ($v['dop']['date'] >= $ds && $v['dop']['date'] <= $df) {
+                    $spec[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+                }
+            }
+            //\f\pa($spec, 2, '', '$spec');
+        }
+
+        /**
+         * назначения сорудников на сп
+         */
+        $jobs = \Nyos\mod\items::getItemsSimple($db, $module_man_job_on_sp);
+//        \f\pa($jobs, 2, '', '$jobs');
+
+
+        $jobin = [];
+
+        foreach ($jobs['data'] as $k => $v) {
+
+            // if ($v['dop']['date'] >= $ds && $v['dop']['date'] <= $df) {
+
+            $jobin[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+
+            /*
+              (
+              [jobman] => 187
+              [sale_point] => 1
+              [dolgnost] => 2
+              [date] => 2019-05-01
+              )
+             */
+            //\f\pa($v['dop']);
+
+
+            /*
+              $nd = date('Y-m-d', strtotime($v['dop']['date']) + 3600 * 24 * 14);
+              $v['dop']['date'] = $nd;
+              $v['dop']['dolgnost'] = rand(10, 50);
+              $jobin[$v['dop']['jobman']][$nd] = $v['dop'];
+
+              $nd = date('Y-m-d', strtotime($v['dop']['date']) + 3600 * 24 * 7);
+              $v['dop']['date'] = $nd;
+              $v['dop']['dolgnost'] = rand(10, 50);
+              $jobin[$v['dop']['jobman']][$nd] = $v['dop'];
+             */
+            // }
+        }
+
+        //\f\pa($jobin, 2, '', '$jobin');
+
+        $j = [];
+
+        foreach ($jobin as $k => $v) {
+
+            if ($ds != $df)
+                ksort($v);
+
+            $j[$k] = $v;
+        }
+
+//      \f\pa($j, 2, '', '$j');
+
+        $j2 = [];
+
+        foreach ($j as $jobman => $v) {
+
+            // $start = false;
+            $param_start = null;
+
+            foreach ($v as $date => $v2) {
+
+                // if ($start === false && \strtotime($date) <= \strtotime($ds)) {
+                if (\strtotime($date) <= \strtotime($ds)) {
+                    $param_start = $v2;
+                }
+
+                if ($date >= $ds) {
+                    // $start = true;
+                    break;
+                }
+            }
+
+            if (!empty($param_start)) {
+                $j2[$jobman][$param_start['date']] = $param_start;
+            }
+        }
+
+        //\f\pa($j2, 2, '', '$j2');
+
+        /**
+         * если ищем несколько дат
+         */
+        if ($ds != $df) {
+
+            $j3 = [];
+
+            foreach ($j2 as $jobman => $date_ar) {
+                foreach ($date_ar as $date => $ar) {
+                    for ($i = 1; $i <= 35; $i++) {
+
+                        $n = date('Y-m-d', strtotime($ds) + 3600 * 24 * $i);
+
+                        if ($n > $df)
+                            break;
+
+//                    if (isset($j[$jobman][$n]))
+//                        $ar = $j[$jobman][$n];
+                        if (isset($j[$n]))
+                            $ar = $j[$n];
+
+                        $return['jobs_on_sp'][$ar['sale_point']][$ar['jobman']] = 1;
+
+                        $a2 = $ar;
+
+                        $a2['data_from_d'] = $a2['date'];
+                        $a2['date'] = $n;
+
+                        if (isset($spec[$jobman][$n])) {
+                            $a2['sale_point'] = $spec[$jobman][$n]['sale_point'];
+                            $a2['dolgnost'] = $spec[$jobman][$n]['dolgnost'];
+
+                            $a2['type'] = 'spec';
+                        }
+
+                        $r[] = $a2;
+                    }
+                }
+            }
+
+            if ($ds != $df)
+                usort($r, "\\f\\sort_ar_date");
+
+            foreach ($r as $k => $v) {
+
+                $salary = \Nyos\mod\JobDesc::getSalaryJobman($db, $v['sale_point'], $v['dolgnost'], $v['date']);
+                // $v['salary'] = $salary;
+                // $v['check'] = $checks[$v['jobman']][$v['date']] ?? 0 ;
+
+                $v['hour'] = 0;
+                if (isset($checks[$v['jobman']][$v['date']]['hour_on_job']) || isset($checks[$v['jobman']][$v['date']]['hour_on_job_hand'])) {
+                    $v['hour'] = $checks[$v['jobman']][$v['date']]['hour_on_job_hand'] ?? $checks[$v['jobman']][$v['date']]['hour_on_job'];
+                }
+
+                $v['ocenka'] = $ocenki[$v['jobman']][$v['date']] ?? 0;
+
+                $v['price_hour'] = 0;
+
+                // if (isset($salary['ocenka-hour-' . $v['ocenka']])) {
+                //\f\pa($v);
+                //\f\pa($salary,2,'','$salary');
+                // $v['prices'] = $salary;
+
+                if (!empty($salary['ocenka-hour-base'])) {
+                    $v['price_hour'] = $salary['ocenka-hour-base'] + ( $salary['if_kurit'] ?? 0 );
+                    $v['ocenka_skip'] = 1;
+                } elseif (isset($salary['ocenka-hour-' . $v['ocenka']])) {
+                    $v['price_hour'] = $salary['ocenka-hour-' . $v['ocenka']] + ( $salary['if_kurit'] ?? 0 );
+                }
+
+                if ($v['price_hour'] != 0 && $v['hour'] != 0) {
+                    $v['summa'] = ceil($v['price_hour'] * $v['hour']);
+                }
+
+                $return['jobs'][$v['jobman']][$v['date']] = $v;
+            }
+
+            //\f\pa($return);
+        }
+        /**
+         * если ищем одну дату
+         */ else {
+            foreach ($j2 as $jobman => $v2) {
+                foreach ($v2 as $date => $v) {
+                    $return['jobs'][$v['jobman']][$ds] = $v;
+                }
+            }
+        }
+
+        //\f\pa($return);
+
+        return $return;
+    }
+
+    /**
+     * получаем сотрудников кто работал в указанном промежутке
+     * @param type $db
+     * @param type $date_start
+     * @param type $date_finish
+     * @param type $module_man_job_on_sp
+     * @param type $mod_spec_jobday
+     * @return type
+     */
+    public static function getJobmansOnTime($db, $date_start, $date_finish = null, $module_man_job_on_sp = 'jobman_send_on_sp', $mod_spec_jobday = '050.job_in_sp') {
+
+        echo '<br/>'.$date_start.' , '.$date_finish.'<br/>';
+        
         $plus_minus_checks = \Nyos\mod\JobBuh::getChecksMinusPlus($db, $date_start, $date_finish);
         // \f\pa($plus_minus_checks, 2, '', '$plus_minus_checks');
         foreach ($plus_minus_checks['items'] as $jobman => $v1) {

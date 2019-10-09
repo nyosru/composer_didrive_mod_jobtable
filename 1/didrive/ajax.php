@@ -684,6 +684,51 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
     }
 }
 
+/**
+ * обозначаем конец текущего рабочего периода
+ */
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
+
+    //echo '<br/>'. __FILE__.' '.__LINE__;
+
+    try {
+
+        $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE `id_item` = :id AND name = \'date_finish\' ');
+        $ff->execute(array(':id' => (int) $_REQUEST['work_id']));
+
+        // \f\pa($_REQUEST);
+//        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
+//            'jobman' => $_REQUEST['workman'],
+//            'sale_point' => $_REQUEST['sp']
+//        ));
+
+        \f\end2('ок', true);
+    }
+    //
+    catch (\Exception $ex) {
+
+        if (!isset($_REQUEST['no_send_msg'])) {
+
+            $text = $ex->getMessage()
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+                    . '</pre>';
+
+            if (class_exists('\nyos\Msg'))
+                \nyos\Msg::sendTelegramm($text, null);
+        }
+
+        return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+    }
+}
+
 // action=put_workman_on_sp
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp') {
 

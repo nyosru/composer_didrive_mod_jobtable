@@ -844,7 +844,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
                     // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
                 }
 
+                if( isset( $check['dop']['jobman'] ) && isset( $check['id'] ) )
                 $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
+                
             }
 
             // }
