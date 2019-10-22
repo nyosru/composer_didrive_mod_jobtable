@@ -11,7 +11,12 @@
     {#{ pa(salarys) }#}
 
     {#{ pa(now_job) }#}
-    {#{ pa(v1) }#}
+
+    {% if 1 == 2 %}
+        v1
+        {{ pa(v1,2) }}
+    {% endif %}
+
     {#{ pa(man) }#}
 
 
@@ -23,7 +28,7 @@
     {#{ pa(salar) }#}
 
 
-    
+
     {#{ pa(now_job) }#}
 
     {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
@@ -71,8 +76,8 @@
              {% endif %}
 
              ">
-            
-{#{ pa(v1) }#}
+
+            {#{ pa(v1) }#}
 
             <nobr>
 
@@ -151,7 +156,7 @@
 
                                     <a href="#"  class="but_show_option" 
                                        onclick="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').toggle('slow');
-                                                   return false;" 
+                                               return false;" 
                                        xonload="$('#drop2_{{ k1 }},.drop2_{{ k1 }}').hide();" >
                                         <span class="fa fa-caret-down" ></span>
                                     </a>
@@ -235,7 +240,7 @@
 
                                                     {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
                                                         selected="selected"
-                                                    {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}
+                                                    {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i and v1.dop.ocenka is not defined %}
                                                         selected="selected"
                                                     {% endif %} 
 
@@ -450,11 +455,11 @@
 
             </nobr>
         </div>
-    {% endif %}
-    {#
-    <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
-        Отработано {{ v7.hours }} ч.
-    </abbr>
-    #}
+        {% endif %}
+            {#
+            <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
+                Отработано {{ v7.hours }} ч.
+            </abbr>
+            #}
 
-{% endspaceless %}
+            {% endspaceless %}
