@@ -48,6 +48,7 @@ $vv['in_body_end'][] = '<script>
 
         $(function() {
           $("select.select_filtered").filterByText($("input#filtr_fio"));
+          $("select.select_addspec").filterByText($("input#filtr_specfio"));
         });
     
     </script>';

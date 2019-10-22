@@ -725,6 +725,7 @@
                         </div>
 
                         <div class="form-group">
+                            
                             <label for="recipient-name" class="form-control-label">Сотрудник:</label>
 
                             {# add_person__workman #}
@@ -736,10 +737,22 @@
 
                             {% endif %}
 
+                            
+                            
+                            
+                            
+                            
+
+                            фильтр списка<br/>
+                            
+                            <input type="text" class="form-control" id="filtr_specfio" >
+                            
+                            
+                            
                             {% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}
                             {#{ pa(jobmans_on_add) }#}
 
-                            <select class="form-control" name="user" id="add_person1day__user" required="requiered" >
+                            <select class="form-control select_addspec" name="user" id="add_person1day__user" required="requiered" >
                                 <option value="">выберите сотрудника</option>
                                 {% for u, u_da in jobmans_on_add %}
                                     <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option>
