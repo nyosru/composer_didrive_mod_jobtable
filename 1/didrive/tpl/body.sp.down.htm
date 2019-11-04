@@ -487,7 +487,9 @@
 
                 {#{ sp_now }#}
                 {#{ pa(oborots) }#}
-
+                
+                <abbr title="суммарный оборот за месяц" style="color: gray; float:right;" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>
+                
                 {#            {% set t = didrive_f__timer_stop() %}
                             <br/>oborot {{ t }}
                 #}
