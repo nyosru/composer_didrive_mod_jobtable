@@ -403,6 +403,8 @@
                         {% for i in range(low=0, high=35, step=1) %}  
 
                             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+                            {% set date_now = nd|date("Y-m-d") %}
+                            
                             {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                                 {#
@@ -420,7 +422,7 @@
                                         
                                     {# кнопы - загрузка чеков дня #}
                                     {% if 1 == 1 %}
-                                        <div class="btn-group" style="text-align:right;display:block;xfloat:right;" >
+                                        <div class="btn-group" style="text-align:right;display:block;float:right;" >
 
                                             <div class="option_img" 
                                                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -435,8 +437,8 @@
                                             <div class="dropdown-menu">
 
                                                 {#{ pa( server ) }#}
-                                                
-                                                <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date }}&finish={{ date }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
+
+                                                <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date_now }}&finish={{ date_now }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
                                                    class="put_var_in_modal2 dropdown-item btn-light"
                                                    >грузим чеки дня</a>
 
@@ -677,7 +679,7 @@
                                                $('#move_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
                                                $('#move_person__sp').val('{{ sp_now }}');
                                                $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                                       " >перевод сотрудника на другую точку</a>
+                                       " >назначить сотрудника на данную точку</a>
 
                                     {#
                                     <a class="dropdown-item" href="#">Action</a>

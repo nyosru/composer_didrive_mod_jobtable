@@ -9,7 +9,7 @@ define('IN_NYOS_PROJECT', true);
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 
-
+//
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto') {
 
     $sec_on_job_ajax = 15;
@@ -66,7 +66,6 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
     $r = 0;
 
     for ($i = 1; $i <= 20; $i++) {
-
 
         $date = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * $i);
         //echo '<fieldset><legend>' . $date . '</legend>';
@@ -247,7 +246,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
         'timer' => $timer,
         'sms' => $telega_send
     ));
-} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka') {
+} 
+//
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka') {
 
     $nd = date('Y-m-d', $_SERVER['REQUEST_TIME']);
 
@@ -337,10 +338,6 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
 
     \f\end2('ok', true);
 }
-
-
-
-
 
 
 die('The end');

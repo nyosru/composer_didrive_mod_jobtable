@@ -811,7 +811,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
     $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats');
     // \f\pa($payeds);
     foreach ($payeds0['data'] as $k => $v) {
-        $payeds[$v['dop']['checkin']] = $v['dop'];
+        $payeds[$v['dop']['checkin']][] = $v['dop'];
     }
 
 
