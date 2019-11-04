@@ -33,9 +33,7 @@
         {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
 
             {#{ pa(v1) }#}
-            
             {#% if payed[v1.id ] #}
-            
 
             {# смена #}
             {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}

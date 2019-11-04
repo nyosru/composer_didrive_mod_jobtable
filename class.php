@@ -188,13 +188,100 @@ class JobDesc {
         return $re2;
     }
 
+    /**
+     * получаем id точки продаж по умолчанию
+     * @param type $db
+     * @param type $module_sp
+     * @return type
+     */
+    public static function getDefaultSpId($db, $module_sp = 'sale_point') {
+
+        if (!empty(self::$cash['sp_default']))
+            return self::$cash['sp_default'];
+
+        $sps = \Nyos\mod\items::getItemsSimple($db, $module_sp);
+        // \f\pa($sps,2,'','sps');
+
+        $sp_default = null;
+
+        foreach ($sps['data'] as $k => $v) {
+            if ($v['head'] == 'default') {
+                self::$cash['sp_default'] = $k;
+                break;
+            }
+        }
+
+        return self::$cash['sp_default'];
+    }
+
+    /**
+     * считаем сумму заработанную за смену
+     * @param массив $a
+     * входящий массив с подборкой всех данных
+     * @return цифра сумма или false
+     */
+    public static function calcSummaDay($a) {
+
+        // $summa = 0;
+        // \f\pa($a);
+
+        if (isset($a['hour_on_job'])) {
+            $hour = $a['hour_on_job'];
+        }
+
+        if (isset($a['ocenka'])) {
+            $ocenka = $a['ocenka'];
+        }
+
+        $smoke = (isset($a['now_job']['smoke']) && $a['now_job']['smoke'] == 'da' ) ? true : false;
+
+        if (
+                !empty($hour) &&
+                !empty($ocenka) &&
+                !empty($a['salary-now']['ocenka-hour-' . $ocenka])
+        ) {
+
+            $summa = $hour * ( $a['salary-now']['ocenka-hour-' . $ocenka] + ( $smoke === true ? ( $a['salary-now']['if_kurit'] ?? 0 ) : 0 )  );
+        }
+
+        return $summa ?? false;
+    }
+
+    /**
+     * 
+     * @param type $db
+     * @param type $sp
+     * @param type $dolgn
+     * @param type $date
+     * @param type $oborot_sp_month
+     * @param type $ocenka
+     * @param type $module_sp
+     * @param type $module_slary
+     * @return type
+     */
     public static function getSalaryJobman($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_slary = '071.set_oplata') {
 
-        //echo '<br/>' . $sp . ', ' . $dolgn . ', ' . $date;
+//        $sp = 2229;
+//        $dolgn = 2;
+//        $date = '2019-10-05';
+//        echo '<hr>';
+//        echo '<hr>';
+//        echo '<hr>';
+//        
+//        echo '<br/>' . $sp . ' -- ' . $dolgn . ' -- ' . $date;
 
         if (isset(self::$cash['salary_now'][$sp][$dolgn][$date]))
             return self::$cash['salary_now'][$sp][$dolgn][$date];
 
+//        echo '<br/>#'.__LINE__;
+
+        $sps = \Nyos\mod\items::getItemsSimple($db, $module_sp);
+        // \f\pa($sps,2,'','sps');
+        // id sp по умолчанию
+        $sp_default = self::getDefaultSpId($db);
+
+        // \f\pa($sp_default,2,'','$sp_default');
+        //$return = [ '11' => '22' ];
         $return = [];
 
         /**
@@ -214,42 +301,110 @@ class JobDesc {
             usort(self::$cash['salarys'], "\\f\\sort_ar_date");
         }
 
-        // \f\pa(self::$cash['salarys']);
+        // \f\pa(self::$cash['salarys'], 2, '', 'salarises');
+        // \Nyos\mod\JobBuh::getOborotSpMonth($db, $v['dop']['now_job']['sale_point'], $v['dop']['date']);
 
         /**
          * достаём зп этой должности этой тп и этой даты
          */
-        $oborot1 = \Nyos\mod\IikoOborot::whatMonthOborot($db, $sp, substr($date, 5, 2), substr($date, 0, 4));
-        //\f\pa($oborot1);
-        $oborot = $oborot1['data']['oborot'];
+//        $oborot1 = \Nyos\mod\IikoOborot::whatMonthOborot($db, $sp, substr($date, 5, 2), substr($date, 0, 4));
+//        // \f\pa($oborot1);
+//        $oborot = $oborot1['data']['oborot'];
+        // echo ' -' . $sp . ' =' . $dolgn . ' ';
+
+        $no_def_sp = false;
 
         foreach (self::$cash['salarys'] as $k => $v) {
 
-            //echo '1';
-            // \f\pa($v,2);
+            //echo ' --1 ';
+            //\f\pa($v,2);
+            // echo '<br/>дата ' . $v['date'];
 
-            if ($v['sale_point'] == $sp && $v['dolgnost'] == $dolgn) {
+            if (
+                    $v['sale_point'] == $sp ||
+                    (
+                    $no_def_sp === false &&
+                    $v['sale_point'] == $sp_default
+                    )
+            ) {
 
-                //\f\pa($v,2);
+                if ($v['sale_point'] == $sp)
+                    $no_def_sp = true;
 
-                if ($date >= $v['date']) {
+//                echo '<br/>точка сходится '.$v['sale_point'];
+//                echo '<br/>'.__FILE__.' #'.__LINE__;
 
-                    if (isset($v['oborot_sp_last_monht_menee']) && $v['oborot_sp_last_monht_menee'] <= $oborot) {
-                        self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
-                    } elseif (isset($v['oborot_sp_last_monht_bolee']) && $v['oborot_sp_last_monht_bolee'] >= $oborot) {
-                        self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
-                    } else {
-                        self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
+                if ($v['dolgnost'] == $dolgn) {
+
+                    // echo '<br/>точка сходится ' . $v['sale_point'];
+                    // echo '<br/>' . __FILE__ . ' #' . __LINE__;
+                    // echo '<br/>должность норм ' . $v['dolgnost'];
+                    // echo '<br/>' . __FILE__ . ' #' . __LINE__;
+
+                    if ($v['sale_point'] != $sp_default) {
+                        // echo ' --' . __LINE__ . ' ';
+                        $no_def_sp = true;
                     }
-                } elseif ($date < $v['date']) {
-                    break;
+
+                    // \f\pa($v, 2);
+
+                    if ($date >= $v['date']) {
+
+                        // \f\pa(self::$cash['salary_now'][$sp][$dolgn][$date], 2, '', 'salary dolgn sp');
+
+                        if (isset($v['oborot_sp_last_monht_menee']) || isset($v['oborot_sp_last_monht_bolee'])) {
+
+                            // достаём оборот этой точки продаж за текущий месяц
+                            $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
+                            // $oborot = 1000000;
+                            // \f\pa($oborot, 2, '', 'oborot');
+                            // \f\pa($v, 2, '', 'v');
+
+                            //echo '<br/>'.$oborot;
+                            //echo '<br/>'.( $v['oborot_sp_last_monht_menee'] ?? '--' );
+                            
+                            if (isset($v['oborot_sp_last_monht_menee']) && $v['oborot_sp_last_monht_menee'] >= $oborot) {
+
+                                //echo '<br/>' . __FILE__ . ' #' . __LINE__;
+                                self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
+                            } elseif (isset($v['oborot_sp_last_monht_bolee']) && $v['oborot_sp_last_monht_bolee'] <= $oborot) {
+
+                                //echo '<br/>' . __FILE__ . ' #' . __LINE__;
+                                self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
+                            }
+//                        else {
+//                            self::$cash['salary_now'][$sp][$dolgn][$date] = -266;
+//                        }
+                        } else {
+                            self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
+                        }
+                        
+                    } elseif ($date < $v['date']) {
+                        break;
+                    }
+
+
+                    // \f\pa(self::$cash['salary_now'][$sp][$dolgn][$date],2,'','salary dolgn sp');
                 }
             }
         }
 
+//        if (isset(self::$cash['salary_now'][$sp][$dolgn][$date])) {
+//            \f\pa(self::$cash['salary_now'][$sp][$dolgn][$date], '', '', 'now salary');
+//        }
+//        if( $ocenka !== null && 
+//            isset(self::$cash['salary_now'][$sp][$dolgn][$date]['ocenka-hour-'.$ocenka]) && 
+//            isset(self::$cash['salary_now'][$sp][$dolgn][$date]['hour_on_job']) ){
+//        
+//        self::$cash['salary_now'][$sp][$dolgn][$date]['summa'] = self::$cash['salary_now'][$sp][$dolgn][$date]['hour_on_job'] * self::$cash['salary_now'][$sp][$dolgn][$date]['ocenka-hour-'.$ocenka];
+//            
+//        }
+        //self::$cash['salary_now'][$sp][$dolgn][$date]['summa'] = 0;
+
+        return self::$cash['salary_now'][$sp][$dolgn][$date];
+
         if (1 == 1) {
             if (!isset(self::$cash['salary_now'][$sp][$dolgn][$date])) {
-
 
                 foreach (self::$cash['salarys'] as $k => $v) {
 
@@ -709,7 +864,7 @@ class JobDesc {
          */
         if (1 == 1) {
             if (isset(self::$cash['now_jobs_spec'][$date])) {
-                foreach(self::$cash['now_jobs_spec'][$date] as $k => $v ) {
+                foreach (self::$cash['now_jobs_spec'][$date] as $k => $v) {
                     $return[$k] = $v;
                 }
             }
@@ -832,10 +987,16 @@ class JobDesc {
      * @param type $mod_spec_jobday
      * @return type
      */
-    public static function getSalarisPeriod($db, string $dt_start, string $dt_finish, $mod_salary = '071.set_oplata') {
+    public static function getSalarisPeriod($db, string $dt_start, string $dt_finish, $mod_salary = '071.set_oplata', $mod_sale_point = 'sale_point') {
 
         if (!empty(self::$cash['salaris_all']))
             return self::$cash['salaris_all'];
+
+
+
+        $sps = \Nyos\mod\items::getItemsSimple($db, $mod_sale_point);
+        // \f\pa($sps, 2, '', '$sps');
+
 
         $salary = \Nyos\mod\items::getItemsSimple($db, $mod_salary);
         // \f\pa($salary, 2, '', '$salary');
@@ -844,8 +1005,11 @@ class JobDesc {
 
         foreach ($salary['data'] as $k1 => $v1) {
 
+
+
             $v1['dop']['id'] = $v1['id'];
-            $ss[$v1['dop']['date']][$v1['dop']['sale_point']][$v1['dop']['dolgnost']][$v1['id']] = $v1['dop'];
+            // $ss[$v1['dop']['date']][$v1['dop']['sale_point']][$v1['dop']['dolgnost']][$v1['id']] = $v1['dop'];
+            $ss[$v1['dop']['date']][( ( isset($sps['data'][$v1['dop']['sale_point']]['head']) && $sps['data'][$v1['dop']['sale_point']]['head'] == 'default' ) ? 'default' : $v1['dop']['sale_point'] )][$v1['dop']['dolgnost']][$v1['id']] = $v1['dop'];
         }
 
         ksort($ss);
@@ -876,9 +1040,7 @@ class JobDesc {
                     // echo '<br/>' . __LINE__;
                     // $now_price[$sp][$dolgn] = $ar3['id'];
                     $now_price[$sp][$dolgn] = $ar3;
-
                 }
-                
             }
         }
 
@@ -902,7 +1064,6 @@ class JobDesc {
         return self::$cash['salaris_all'];
 
         //return $ret2;
-
     }
 
     /**
