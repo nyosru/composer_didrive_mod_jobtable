@@ -803,6 +803,12 @@ class JobDesc {
 // \f\pa( \Nyos\nyos::$folder_now );
 // $re = [];
 
+
+
+
+
+
+
         /**
          * назначения сорудников на сп
          */
@@ -885,7 +891,26 @@ class JobDesc {
             }
         }
 
-        return $ret2;
+/// \f\pa($ret2,2,'','$ret2');
+
+        \Nyos\mod\items::$sql_order = ' ORDER BY mi.sort ASC ';
+        $points = \Nyos\mod\items::getItemsSimple($db, self::$mod_sale_point);
+        // \f\pa($points,2,'','$points');
+
+        $return = [ 
+            'jobs_on_sp' => $ret2['jobs_on_sp'], 
+            'jobs' => [] 
+            ];
+        
+        foreach( $points['data'] as $k => $v ){
+
+            if( isset($ret2['jobs'][$k]) )
+            $return['jobs'][] = $ret2['jobs'][$k];
+            
+        }
+
+        // return $ret2;
+        return $return;
     }
 
     /**
@@ -1406,30 +1431,27 @@ class JobDesc {
 
         // echo '<br/>'.__FUNCTION__;
         // die();
-        
         // строка для удаления
         $check_string = '';
         // массив для удаления
-        $check_ar = 
-        // масив для вставки новых данных
-        $rows_in = [];
+        $check_ar = // масив для вставки новых данных
+                $rows_in = [];
 
         $nn = 1;
         foreach ($array_checks as $check) {
             $check_string .= (!empty($check_string) ? ' OR ' : '' ) . ' `id_item` = :check' . $nn . ' ';
             $check_ar[':check' . $nn] = $check;
-            
-            $rows_in[] = [ 'id_item' => $check ];
-            
+
+            $rows_in[] = ['id_item' => $check];
+
             $nn++;
-            
         }
 
         $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE ( ' . $check_string . ' ) AND `name` = \'ocenka_auto\' ;');
         $ff->execute($check_ar);
 
-        \f\db\sql_insert_mnogo( $db, 'mitems-dops', $rows_in, [ 'name' => 'ocenka_auto', 'value' => $ocenka ] );
-        
+        \f\db\sql_insert_mnogo($db, 'mitems-dops', $rows_in, ['name' => 'ocenka_auto', 'value' => $ocenka]);
+
 //        \f\db\db2_insert( $db, 'mitems-dops', array(
 //            'id_item' => (int) $_REQUEST['work_id'],
 //            'name' => 'date_finish',
