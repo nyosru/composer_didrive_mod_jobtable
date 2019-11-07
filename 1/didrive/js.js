@@ -279,8 +279,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 // onload="calculate_summ_day( {{ sp_now }}, {{ date }} );" 
 
-
-
     /*
      * считаем все суммы всех точек
      * @returns {undefined}
@@ -360,13 +358,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     calculateSummAllGraph();
 
-
-
-
-
-
-
-
     /**
      * вычисляем сумму денег за день 1911
      * @param {type} id
@@ -409,7 +400,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     if ($sum == $summa_oplat) {
                         // console.log($sum + ' бб ' + $summa_oplat);
                         $('body .smena_summa_' + $id).hide();
-                    } 
+                    }
                 }
 
             } else {
@@ -420,13 +411,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
     calcSummMoneySmena();
-
-
-
-
-
-
-
 
     /**
      * кликаем по кнопам плюс минус час
@@ -499,7 +483,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
 
                     setTimeout(function () {
-                        calculateSummAllGraph();
+                        //calculateSummAllGraph();
+
+                        alert($textblock_id);
+                        calcSummMoneySmena($textblock_id);
+
                     }, 100);
                     //$(document).one( calculateSummAllGraph );
 
@@ -509,6 +497,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
+
         return false;
     });
     // else {
@@ -535,8 +524,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             calculateSummAllGraph();
         }, 2000);
     })
-
-
 
 
     $('body').on('click', '.show_job_tab2', function (event) {
@@ -1671,7 +1658,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             ,
             success: function ($j) {
 
-
                 if (showid != 0) {
                     $(showid).show('slow');
                 }
@@ -1681,36 +1667,73 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
 
                 $string = '';
+
+
+//                $.each($j, function(key, val){
+//                    $string += '<br/>' + key + ': ' + val;
+//                });
+                
+                // $string.text((i) => $j[i]);
+
+//                for (var p in $j.data)
+//                    $string += '<br/>' + p + ': ' + $j.data[p];
+//
 //                $.each($j, function (name, value) {
-//                $string += '<br/>'+name + ': ' + value;
+//                    $string += '<br/>' + name + ': ' + value;
+//                    $string += '<br/>' + $j.name;
+//                });
+//
+//                $.each($j.data, function (name, value) {
+//                    $string += '<br/>' + name + ': ' + value;
+//                    $string += '<br/>' + $j.name;
 //                });
 
-                if ($j.status == 'ok') {
+                //$html = '';
 
-                    $html = '';
-                    if ($j.ocenka == 5) {
+                //$html = '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['data'] + '</div>';
+                
+                $html = '';
+                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $string + '</div>';
+                
+//              $html += '<div style="background-color:rgba(0,255,255,0.3);xcolor:red;padding:5px;">' + $j['ocenka'] + '</div>';
+                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot<br/>' + $j['data']['oborot'] + '</div>';
+                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 2<br/>' + $j.data.oborot + '</div>';
+                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 3<br/>' + $j.oborot + '</div>';
+//                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $j['ocenka_oborot'] + '</div>';
+                $html += '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['html'] + '</div>';
+
+                if ($j['status'] == 'ok') {
+
+                    if ($j['ocenka'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 5</div>';
                     } else {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 3</div>';
                     }
 
-                    if ($j.ocenka_time == 5) {
+                    if ($j['ocenka_time'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка времени ожидания: 5</div>';
-                    } else if ($j.ocenka_time == 3) {
+                    } else if ($j['ocenka_time'] == 3) {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка  времени ожидания: 3</div>';
                     }
 
-                    if ($j.ocenka_oborot == 5) {
+
+                    if ($j['ocenka_oborot'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
-                    } else if ($j.ocenka_oborot == 3) {
+                    } else if ($j['ocenka_oborot'] == 3) {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
                     }
 
 
-                    // $(resto).html( $html + $j.txt );
-                    $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
+                    $(resto).html($html + $j.txt);
+                    // $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
+
                 } else {
-                    $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
+                    // alert('11');
+                    if (resto != 0) {
+                        $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
+                    } else {
+                        alert('#1731 resto = 0');
+                    }
                 }
 
                 //alert(resto);

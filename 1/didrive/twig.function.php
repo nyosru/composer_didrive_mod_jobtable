@@ -905,7 +905,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenka_day', function ( $db, s
     $r = [];
 
     foreach ($oc['data'] as $k => $v) {
-        if ($v['dop']['date'] <= $dt1 && $v['dop']['date'] >= $dt2) {
+        if ( isset($v['dop']['date']) && $v['dop']['date'] <= $dt1 && $v['dop']['date'] >= $dt2) {
             $r[$v['dop']['sale_point']][$v['dop']['date']] = $v['dop'];
         }
     }

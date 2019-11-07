@@ -1,6 +1,5 @@
 {% spaceless %}
 
-
     {# итого за день #}
     {% if 1 == 2 %}
 
@@ -35,9 +34,6 @@
         </div>
 
     {% endif %}
-
-
-
 
     {# Время ожидания #}
     {% if 1 == 1 %}
@@ -154,11 +150,6 @@
         </div>
 
     {% endif %}
-
-
-
-
-
 
     {# нормы на день #}
     {% if 1 == 1 %}
@@ -457,12 +448,6 @@
         </div>
     {% endif %}
 
-
-
-
-
-
-
     {# оборот #}
     {% if 1 == 1 %}
         <div class="trow" >
@@ -554,11 +539,9 @@
         </div>
     {% endif %}
 
-
     {# оценка дня #}
     {% if 1 == 1 %}
         <div class="trow" >
-
             <div class="tcell stick-left bg-white" >
                 <nobr>
 
@@ -611,15 +594,15 @@
                             {{ i }} - {{ now_date2 }} <Br/>
                             #}
 
-
-
                             <div class='text-center'>
                                 <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block;"
 
                                    forajax_action="calc_full_ocenka_day" 
 
                                    forajax_id="{{ sp_now }}_{{ i }}" 
+                                   forajax_id2="{{ sp_now }}" 
                                    forajax_s="{{ creatSecret(  sp_now ~ '_' ~ i ) }}" 
+                                   forajax_s2="{{ creatSecret(  sp_now ) }}" 
 
                                    forajax_show_timer="da" 
 
