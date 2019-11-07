@@ -59,6 +59,12 @@ class JobDesc {
     public static $mod_checks = '050.chekin_checkout';
 
     /**
+     * список модулей //  
+     * время ожидания по умолчанию
+     */
+    public static $mod_timeo_default = '074.time_expectations_default';
+
+    /**
      * получаем какие цены по датам у должностей на точке продаж (старая)
      * @param type $db
      * @param type $folder

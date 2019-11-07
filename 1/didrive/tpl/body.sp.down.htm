@@ -286,6 +286,7 @@
 
 
                                     {% elseif session.now_user_di.access == 'admin' %}
+                                        
                                         <form action="" method="POST" class="send_form_to_ajax" 
 
                                               {# показываем блок после отправки запроса #}
@@ -378,13 +379,14 @@
                                                    {% endif %}
                                                    >
 
-                                            {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                 <br/>
                                                 <input class="input-norms on_change_show_block" 
                                                        on_change_show_block="#form{{sp_now}}{{ now_date }}"
                                                        type="number" min="1" max="24" step="0.5"
                                                        name="kolvo_hour_in1smena"
+                                            {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                        value="{{ norms_day[now_date]['kolvo_hour_in1smena'] }}"
+                                            {% endif %}
                                                        >
 
                                                 {% if norms_day[now_date]['type'] is defined and norms_day[now_date]['type'] == 'copy' %}
@@ -392,7 +394,6 @@
                                                     <abbr style="color:gray" title="значения от дня с лева, от {{ norms_day[now_date]['date'] }}">copy</abbr>
                                                 {% endif %}
 
-                                            {% endif %}
 
 
                                             <span id="form{{sp_now}}{{ now_date }}" style="display:none;">

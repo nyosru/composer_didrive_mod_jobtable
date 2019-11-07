@@ -231,6 +231,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
 
 
     if (1 == 1 && !empty($telega_send)) {
+        
         if (class_exists('\nyos\Msg'))
             \nyos\Msg::sendTelegramm($telega_send, null, 1);
 
