@@ -7,7 +7,8 @@
 
     {#    {% set t = didrive_f__timer_start() %}
     #}
-    {% set sp = readItems( 'sale_point', null )  %}
+    {#% set sp = readItems( 'sale_point', null )  %#}
+    {% set sp = items__readItems( db, 'sale_point', null, 'sort_asc' )  %}
     {#{ pa(sp.data) }#}
 
     {#    {% set t = didrive_f__timer_stop() %}
@@ -334,10 +335,8 @@
 
         {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
         {% if 1 == 2 %}
-            <div style="max-height: 250px; overflow: auto;" >
                 <br/> pa(jobs_on_sp)
-                {{ pa(jobs_on_sp) }}
-            </div>
+                {{ pa(jobs_on_sp,2) }}
         {% endif %}
 
         {#                

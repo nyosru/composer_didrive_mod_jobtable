@@ -532,8 +532,10 @@ $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db
      * точки продаж
      */
     // $points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
+    
+    \Nyos\mod\items::$sql_order = ' ORDER BY mi.sort DESC ';
     $points = \Nyos\mod\items::getItemsSimple($db, 'sale_point');
-    // \f\pa($sp0,2);
+    // \f\pa($points,2,'','$points');
 
     /**
      * работники
