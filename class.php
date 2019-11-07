@@ -905,7 +905,7 @@ class JobDesc {
         foreach( $points['data'] as $k => $v ){
 
             if( isset($ret2['jobs'][$k]) )
-            $return['jobs'][] = $ret2['jobs'][$k];
+            $return['jobs'][$k] = $ret2['jobs'][$k];
             
         }
 
