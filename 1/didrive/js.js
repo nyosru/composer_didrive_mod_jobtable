@@ -1668,7 +1668,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 $string = '';
 
-
 //                $.each($j, function(key, val){
 //                    $string += '<br/>' + key + ': ' + val;
 //                });
@@ -1693,14 +1692,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 //$html = '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['data'] + '</div>';
                 
                 $html = '';
-                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $string + '</div>';
+// $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $string + '</div>';
                 
-//              $html += '<div style="background-color:rgba(0,255,255,0.3);xcolor:red;padding:5px;">' + $j['ocenka'] + '</div>';
+// $html += '<div style="background-color:rgba(0,255,255,0.3);xcolor:red;padding:5px;">' + $j['ocenka'] + '</div>';
                 // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot<br/>' + $j['data']['oborot'] + '</div>';
                 // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 2<br/>' + $j.data.oborot + '</div>';
-                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 3<br/>' + $j.oborot + '</div>';
-//                $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $j['ocenka_oborot'] + '</div>';
-                $html += '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['html'] + '</div>';
+// $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 3<br/>' + $j.oborot + '</div>';
+                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $j['ocenka_oborot'] + '</div>';
+// $html += '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['html'] + '</div>';
 
                 if ($j['status'] == 'ok') {
 
@@ -1727,7 +1726,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $(resto).html($html + $j.txt);
                     // $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
 
-                } else {
+                } 
+                // $j['status'] != 'ok'
+                else {
                     // alert('11');
                     if (resto != 0) {
                         $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);

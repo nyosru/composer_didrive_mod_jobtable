@@ -199,10 +199,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
 //        if ( class_exists('\Nyos\mod\items') )
 //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-
         // if (!empty($return['data']['checks_for_new_ocenka'])) {
-            // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
-            \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
+        // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+        \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
         // }
 
         \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
@@ -438,23 +437,29 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
     //
     catch (\Exception $ex) {
 
-        if (!isset($_REQUEST['no_send_msg'])) {
+        // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
-            $text = $ex->getMessage()
-                    . PHP_EOL
-                    . PHP_EOL
-                    . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-                    . PHP_EOL
-                    . $ex->getMessage() . ' #' . $ex->getCode()
-                    . PHP_EOL
-                    . $ex->getFile() . ' #' . $ex->getLine()
-                    . PHP_EOL
-                    . $ex->getTraceAsString()
-                    . '</pre>';
 
-            if (class_exists('\nyos\Msg'))
-                \nyos\Msg::sendTelegramm($text, null);
-        }
+        $text = $ex->getMessage()
+                . 'авторасчёт оценки дня'
+                . PHP_EOL
+                . PHP_EOL
+                . ' sp:' . ( $return['data']['sp'] ?? '--' )
+                . ' date:' . ( $return['data']['date'] ?? '--' )
+                . PHP_EOL
+                . PHP_EOL
+                . '--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL
+                . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL
+                . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL
+                . $ex->getTraceAsString()
+        // . '</pre>'
+        ;
+
+        if (class_exists('\Nyos\Msg'))
+            \Nyos\Msg::sendTelegramm($text, null, 1);
 
         /*
           echo '<pre>'
@@ -493,8 +498,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         $r = ob_get_contents();
         ob_end_clean();
 
-        \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text
-                . $r, false, array('error' => $ex->getMessage(), 'code' => $ex->getCode()));
+        \f\end2('Обнаружены ошибки: ' . $ex->getMessage(), false, [
+            'text' => $text . '<br/>' . $r,
+            'error' => $ex->getMessage(),
+            'code' => $ex->getCode()
+        ]);
     }
 }
 
