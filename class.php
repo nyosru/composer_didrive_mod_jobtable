@@ -883,6 +883,11 @@ class JobDesc {
             $last_date[$v['jobman']] = $v['date'];
         }
 
+
+
+
+
+
         foreach ($re2['jobs'] as $k => $v) {
             foreach ($v as $k1 => $v1) {
                 ksort($v1);
@@ -893,24 +898,17 @@ class JobDesc {
 
 /// \f\pa($ret2,2,'','$ret2');
 
+        /**
+         * выводим список точек по порядку сортировки
+         */
+        
         \Nyos\mod\items::$sql_order = ' ORDER BY mi.sort ASC ';
         $points = \Nyos\mod\items::getItemsSimple($db, self::$mod_sale_point);
-        // \f\pa($points,2,'','$points');
-
-        $return = [ 
-            'jobs_on_sp' => $ret2['jobs_on_sp'], 
-            'jobs' => [] 
-            ];
-        
-        foreach( $points['data'] as $k => $v ){
-
-            if( isset($ret2['jobs'][$k]) )
-            $return['jobs'][$k] = $ret2['jobs'][$k];
-            
+        foreach ($points['data'] as $k => $v) {
+            $ret2['sort'][] = $k;
         }
-
-        // return $ret2;
-        return $return;
+        
+        return $ret2;
     }
 
     /**
