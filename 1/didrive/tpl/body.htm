@@ -636,11 +636,19 @@
                     </div>
                 {% endif %}
 
-
+                {#{ pa(jobs_on_sp,2) }#}
+                
                 {# проходим по списку точки продаж - сотрудники #}                
                 {#{ pa(jobs_on_sp.jobs_on_sp) }#}
-                {% for sp_now, list12 in jobs_on_sp.jobs_on_sp if access_to_sp == false or access_to_sp[sp_now] is defined %}
+                
+                {#% for sp_now, list12 in jobs_on_sp.jobs_on_sp if access_to_sp == false or access_to_sp[sp_now] is defined %#}
+                
+                {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined %}
 
+                    {#{ kk }} - {{ sp_now }#}
+                    
+                    {% set list12 = jobs_on_sp.jobs_on_sp[sp_now] %}
+                    
                     {#{ pa(list12) }#}
 
                     {% set comments = getComments( db, date_start, date_finish, sp_now ) %}

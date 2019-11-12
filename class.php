@@ -396,7 +396,7 @@ class JobDesc {
 
 // \f\pa($v, 2);
 
-                    if ($date >= $v['date']) {
+                    if (isset($v['date']) && $date >= $v['date']) {
 
 // \f\pa(self::$cash['salary_now'][$sp][$dolgn][$date], 2, '', 'salary dolgn sp');
 
@@ -425,7 +425,7 @@ class JobDesc {
                         } else {
                             self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
                         }
-                    } elseif ($date < $v['date']) {
+                    } elseif (isset($v['date']) && $date < $v['date']) {
                         break;
                     }
 
@@ -447,7 +447,11 @@ class JobDesc {
 //        }
 //self::$cash['salary_now'][$sp][$dolgn][$date]['summa'] = 0;
 
-        return self::$cash['salary_now'][$sp][$dolgn][$date];
+        if (isset(self::$cash['salary_now'][$sp][$dolgn][$date])) {
+            return self::$cash['salary_now'][$sp][$dolgn][$date];
+        } else {
+            return;
+        }
 
         if (1 == 1) {
             if (!isset(self::$cash['salary_now'][$sp][$dolgn][$date])) {
@@ -883,6 +887,11 @@ class JobDesc {
             $last_date[$v['jobman']] = $v['date'];
         }
 
+
+
+
+
+
         foreach ($re2['jobs'] as $k => $v) {
             foreach ($v as $k1 => $v1) {
                 ksort($v1);
@@ -893,24 +902,16 @@ class JobDesc {
 
 /// \f\pa($ret2,2,'','$ret2');
 
+        /**
+         * выводим список точек по порядку сортировки
+         */
         \Nyos\mod\items::$sql_order = ' ORDER BY mi.sort ASC ';
         $points = \Nyos\mod\items::getItemsSimple($db, self::$mod_sale_point);
-        // \f\pa($points,2,'','$points');
-
-        $return = [ 
-            'jobs_on_sp' => $ret2['jobs_on_sp'], 
-            'jobs' => [] 
-            ];
-        
-        foreach( $points['data'] as $k => $v ){
-
-            if( isset($ret2['jobs'][$k]) )
-            $return['jobs'][$k] = $ret2['jobs'][$k];
-            
+        foreach ($points['data'] as $k => $v) {
+            $ret2['sort'][] = $k;
         }
 
-        // return $ret2;
-        return $return;
+        return $ret2;
     }
 
     /**
@@ -1420,6 +1421,69 @@ class JobDesc {
         // return $return;
     }
 
+    public static function getDaysOcenkaNo($db, $start_day = '2019-09-01') {
+
+        // echo $start_day;
+        $last_day = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 );
+
+        $e = \Nyos\mod\items::getItemsSimple($db, self::$mod_ocenki_days);
+        // \f\pa($e,2,'','$e');
+
+        $r = [];
+
+                echo ' -+ '.$start_day;
+                echo ' -- '.$last_day;
+                echo '<br/>';
+        
+        foreach ($e['data'] as $k => $v) {
+
+            if (isset($v['dop'])) {
+                
+                if ( isset($v['dop']['date']) && ( $v['dop']['date'] >= $last_day || $v['dop']['date'] < $start_day ) )
+                    continue;
+
+                echo ' -- '.$v['dop']['date'];
+                
+                $r[$v['dop']['date']][$v['dop']['sale_point']] = $v['dop'];
+                
+            }
+        }
+
+        ksort($r);
+        \f\pa($r, 2, '', '$r');
+
+        // $start_day
+        // echo '<br/>край день' . $last_day;
+
+        $r2 = [];
+
+        for ($nn = 0; $nn <= 100; $nn++) {
+
+            $now_date = date('Y-m-d', strtotime($start_day . ' +' . $nn . ' day'));
+
+            echo '<br/>$now_date ' . $now_date;
+
+            foreach ($r as $sp => $dates) {
+
+                if (!isset($dates[$now_date])) {
+                    echo '<br/>- d sp ' . $sp;
+                    $r2[$sp][$now_date] = 1;
+                } else {
+                    echo '<br/>+ d sp ' . $sp;
+                }
+            }
+
+            if ($last_day == $now_date) {
+                break;
+            }
+        }
+
+
+        return \f\end3('ok', true, $r2);
+        //return \f\end3('ok', true, $return);
+        // return $return;
+    }
+
     /**
      * записываем новые авто оценки для смен
      * @param type $db
@@ -1513,10 +1577,37 @@ class JobDesc {
                 // [ocenka_time] => 3
         ];
 
+
+
         foreach ($vv1 as $vv => $vv_text) {
 
-            if (empty($return[$vv]))
-                throw new \Exception('нет значения ' . $vv . ' (' . $vv_text . ')', __LINE__);
+//            \f\pa($vv);
+//            \f\pa($vv_text);
+//            \f\pa($return[$vv]);
+
+            if (empty($return[$vv])) {
+
+                if ($vv == 'timeo_hot') {
+
+                    $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
+                    $return[$vv] = $norms_def[2];
+                } elseif ($vv == 'timeo_cold') {
+
+                    $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
+                    $return[$vv] = $norms_def[1];
+                } elseif ($vv == 'timeo_delivery') {
+
+                    $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
+                    $return[$vv] = $norms_def[3];
+                } else {
+
+                    if (!empty($vv) && $vv == 'oborot') {
+                        throw new \Exception('нет нет оборота по точке (' . $vv_text . ')', 201);
+                    } else {
+                        throw new \Exception('нет значения ' . $vv . ' (' . $vv_text . ')', __LINE__);
+                    }
+                }
+            }
         }
 
 //        \f\pa($return);
@@ -1571,6 +1662,7 @@ class JobDesc {
 
 // время ожидания
         if (1 == 1) {
+
 // время ожидания // холодный цех
             $time_type = 'cold';
             if (
@@ -2375,6 +2467,50 @@ class JobDesc {
 //\f\pa($return);
 
         return $return;
+    }
+
+    /**
+     * какие нормы на день по умолчанию
+     * @param type $array
+     * @param type $sp
+     * @param type $man
+     * @param string $date
+     * @return type
+     */
+    public static function whatNormToDayDefault($db) {
+
+        if (!empty(self::$cash['timeo_default']))
+            return self::$cash['timeo_default'];
+
+        $norms_def0 = \Nyos\mod\items::getItemsSimple($db, '074.time_expectations_default');
+
+        // \f\pa($norms_def);
+        //die();
+
+        $norms_def = [];
+
+        foreach ($norms_def0['data'] as $k => $v) {
+
+            if (!empty($v['dop']['otdel']) && !empty($v['dop']['default'])) {
+
+                $otd = null;
+
+                if ($v['dop']['otdel'] == 1) {
+                    $otd = 'cold';
+                } elseif ($v['dop']['otdel'] == 2) {
+                    $otd = 'hot';
+                } elseif ($v['dop']['otdel'] == 3) {
+                    $otd = 'delivery';
+                }
+
+                if ($otd !== null) {
+                    $norms_def[$v['dop']['otdel']] = $v['dop']['default'];
+                }
+            }
+        }
+
+        return self::$cash['timeo_default'] = $norms_def;
+        // return $norms_def;
     }
 
     /**
