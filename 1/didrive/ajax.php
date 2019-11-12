@@ -37,10 +37,11 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 //\f\pa($_REQUEST);
 // проверяем секрет
 if (
+        ( isset($_REQUEST['action']{0}) &&
         (
-        isset($_REQUEST['action']{0}) && $_REQUEST['action'] == 'calc_full_ocenka_day'
-        ) ||
-        (
+        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
+        )
+        ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
         ) || (
@@ -173,6 +174,66 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
     $r = ob_get_contents();
     ob_end_clean();
+
+    \f\end2($r, true);
+}
+
+// считаем автооценку дня и пишем
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
+
+    echo 'ищем дни без оценки<hr>';
+
+    $tt = \Nyos\mod\JobDesc::getDaysOcenkaNo($db);
+    // \f\pa($tt, 2, '', '$tt');
+
+    $result1 = [];
+
+
+    
+    $povtorov = 1;
+    
+    $nn1 = 0;
+
+    foreach ($tt['data'] as $sp => $dates) {
+
+        if ($nn1 >= $povtorov )
+            break;
+
+        foreach ($dates as $date => $v) {
+
+            if ($nn1 >= $povtorov  )
+                break;
+
+            $for_get = [
+                'action' => 'calc_full_ocenka_day',
+                // 'date' => '2019-11-05',
+                'date' => $date,
+                // 'sp' => '2229'
+                'sp' => $sp
+            ];
+
+            $uri = 'https://yapdomik.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($for_get);
+            echo '<Br/>' . $uri;
+
+            $ee = file_get_contents($uri);
+            $ee1 = json_decode($ee, true);
+            \f\pa($ee1, 2, '', '$ee');
+
+            if (!empty($ee1['error'])) {
+                $result1[] = $ee1;
+            }
+
+
+
+            $nn1++;
+        }
+    }
+//    $e = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
+//    \f\pa($e,2,'','$e');
+
+    \f\pa($result1, 2, '', '$result1');
+
+    $r = '111';
 
     \f\end2($r, true);
 }
@@ -439,7 +500,6 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
         // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
-
         $text = $ex->getMessage()
                 . 'авторасчёт оценки дня'
                 . PHP_EOL
@@ -500,6 +560,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
         \f\end2('Обнаружены ошибки: ' . $ex->getMessage(), false, [
             'text' => $text . '<br/>' . $r,
+            'sp' => ( $return['data']['sp'] ?? null ),
+            'date' => ( $return['data']['date'] ?? null ),
             'error' => $ex->getMessage(),
             'code' => $ex->getCode()
         ]);
