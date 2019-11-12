@@ -60,10 +60,30 @@ class JobDesc {
 
     /**
      * список модулей //  
+     * оборот ыточек по дням
+     */
+    public static $mod_oborots = 'sale_point_oborot';
+
+    /**
+     * список модулей //  
      * время ожидания по умолчанию
      */
     public static $mod_timeo_default = '074.time_expectations_default';
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * получаем какие цены по датам у должностей на точке продаж (старая)
      * @param type $db
@@ -1321,13 +1341,19 @@ class JobDesc {
          * достаём оборот за сегодня
          */
         if (1 == 1) {
+
             \f\timer::start();
 // $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
+
+            // die('<br/>'.__FILE__.' == '.__LINE__);
             $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $_REQUEST['sp'], $_REQUEST['date']);
+
 // \f\pa($return);
 // echo
+
             $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop()
                     . PHP_EOL . $return['oborot'];
+
         }
 
         /**
