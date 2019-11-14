@@ -1703,24 +1703,35 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if ($j['status'] == 'ok') {
 
-                    if ($j['ocenka'] == 5) {
+
+//                $return['data']['ocenka_naruki'] = $ocenka['data']['ocenka_naruki'];
+//                $return['data']['ocenka_time'] = $ocenka['data']['ocenka_time'];
+//                $return['data']['ocenka'] = $ocenka['data']['ocenka'];
+
+
+                    if ($j['data']['ocenka'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 5</div>';
                     } else {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 3</div>';
                     }
 
-                    if ($j['ocenka_time'] == 5) {
+                    if ($j['data']['ocenka_time'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка времени ожидания: 5</div>';
-                    } else if ($j['ocenka_time'] == 3) {
+                    } else {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка  времени ожидания: 3</div>';
                     }
 
 
-                    if ($j['ocenka_oborot'] == 5) {
-                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
-                    } else if ($j['ocenka_oborot'] == 3) {
-                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
+                    if ($j['data']['ocenka_naruki'] == 5) {
+                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка суммы на руки: 5</div>';
+                    } else {
+                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка суммы на руки: 3</div>';
                     }
+//                    if ($j['ocenka_oborot'] == 5) {
+//                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
+//                    } else if ($j['ocenka_oborot'] == 3) {
+//                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
+//                    }
 
 
                     $(resto).html($html + $j.txt);
@@ -1731,7 +1742,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 else {
                     // alert('11');
                     if (resto != 0) {
-                        $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j.html + '</div>' + $string);
+                        $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j['html'] + '</div>');
                     } else {
                         alert('#1731 resto = 0');
                     }

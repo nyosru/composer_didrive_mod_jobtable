@@ -254,9 +254,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
                     \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
                     echo '</fieldset>';
                 } catch (\Exception $ex) {
-            
-                    echo '<br/>'.__FILE__.' '.__LINE__;
-                    
+
+                    echo '<br/>' . __FILE__ . ' ' . __LINE__;
                 }
             }
 
@@ -296,11 +295,15 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
      * перенёс в отдельную функцию 
      * \Nyos\mod\jobdesc\calculateAutoOcenkaDays($db, $sp, $data)
      */
-    
-    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date'] );
+    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
+
     // \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
-    \f\end2('ok',true,$ee1);
-    
+    if (!empty($ee1['data']['error'])) {
+        \f\end2($ee1['data']['error'], false, $ee1);
+    } else {
+        \f\end2('ok', true, $ee1);
+    }
+
     // ob_start('ob_gzhandler');
 
     try {
