@@ -1346,11 +1346,11 @@ class JobDesc {
         if (1 == 1) {
 
             \f\timer::start();
-            
+
 //            echo '<hr>'.__FILE__.' #'.__LINE__;
 //            echo '<br/>'.$return['sp'].' , '.$return['date'];
 //            echo '<hr>';
-            
+
             $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
 
             // \f\pa($timeo);
@@ -1360,7 +1360,6 @@ class JobDesc {
                 $return['time'] .= PHP_EOL . $k . ' > ' . $v;
                 $return[$k] = $v;
             }
-
         }
 
 //        echo '<fieldset style="border: 1px solid gray; padding: 5px; margin: 5px;" ><legend>'
@@ -1446,7 +1445,7 @@ class JobDesc {
     public static function calculateAutoOcenkaDays($db, $sp, $date) {
 
         // return \f\end3( 'wef', true );
-        
+
         ob_start('ob_gzhandler');
 
         try {
@@ -1460,30 +1459,29 @@ class JobDesc {
 
             if (1 == 1) {
                 // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
-                $return['data']['data-ocenka'] =
+                // $return['data']['data-ocenka'] =
                 $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return['data']);
                 // \f\pa($ocenka, 2, '', '$ocenka');
+
+                $return = array_merge($return, $ocenka);
             }
 
 //        if ( class_exists('\Nyos\mod\items') )
 //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
             // if (!empty($return['data']['checks_for_new_ocenka'])) {
             // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
-            $return['data']['data-ocenka1'] =
-            \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
+            $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
             // }
-
-            $return['data']['data-ocenka2'] =
-            \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
-                'sale_point' => $ocenka['data']['sp'],
-                'date' => $ocenka['data']['date'],
-                'ocenka_time' => $ocenka['data']['ocenka_time'],
-                'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
-                'ocenka' => $ocenka['data']['ocenka'],
+            $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+                        'sale_point' => $ocenka['data']['sp'],
+                        'date' => $ocenka['data']['date'],
+                        'ocenka_time' => $ocenka['data']['ocenka_time'],
+                        'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+                        'ocenka' => $ocenka['data']['ocenka'],
             ]);
 
-        $r = ob_get_contents();
-        ob_end_clean();
+            $r = ob_get_contents();
+            ob_end_clean();
 
             return \f\end3('ok ' . ( $r ?? '--' ), true, $return['data']);
 
@@ -1775,7 +1773,6 @@ class JobDesc {
                 'text' => $text . '<br/>' . $r,
             ]);
         }
-        
     }
 
     public static function getDaysOcenkaNo($db, $start_day = '2019-09-01') {
@@ -1800,11 +1797,11 @@ class JobDesc {
 
             if (isset($v['dop'])) {
 
-                if (isset($v['dop']['date']) && ( $v['dop']['date'] > $last_day || $v['dop']['date'] < $start_day )){
-                    
+                if (isset($v['dop']['date']) && ( $v['dop']['date'] > $last_day || $v['dop']['date'] < $start_day )) {
+
                     // echo '<br/>дата в центре, не сходится = ' . $start_day .' = '. $last_day .' | '.$v['dop']['date'];
                     continue;
-                }else{
+                } else {
                     // echo '<br/>дата в центре, сходится = ' . $start_day .' = '. $last_day .' | '.$v['dop']['date'];
                 }
 
@@ -1876,14 +1873,18 @@ class JobDesc {
 
         // echo '<br/>'.__FUNCTION__;
         // die();
+
+
         // строка для удаления
         $check_string = '';
+            
         // массив для удаления
         $check_ar = // масив для вставки новых данных
                 $rows_in = [];
 
         $nn = 1;
         foreach ($array_checks as $check) {
+            
             $check_string .= (!empty($check_string) ? ' OR ' : '' ) . ' `id_item` = :check' . $nn . ' ';
             $check_ar[':check' . $nn] = $check;
 
@@ -1892,8 +1893,10 @@ class JobDesc {
             $nn++;
         }
 
-        $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE ( ' . $check_string . ' ) AND `name` = \'ocenka_auto\' ;');
-        $ff->execute($check_ar);
+        if (!empty($check_string)) {
+            $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE ( ' . $check_string . ' ) AND `name` = \'ocenka_auto\' ;');
+            $ff->execute($check_ar);
+        }
 
         \f\db\sql_insert_mnogo($db, 'mitems-dops', $rows_in, ['name' => 'ocenka_auto', 'value' => $ocenka]);
 
@@ -1904,7 +1907,7 @@ class JobDesc {
 //                )
 //        );
 
-        return;
+        return \f\end3( 'ок', true, [ 'check_string' => ( $check_string ?? 'x') ] );
     }
 
     /**
