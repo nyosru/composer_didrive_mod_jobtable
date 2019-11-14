@@ -181,66 +181,121 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
 
-    echo 'ищем дни без оценки<hr>';
+    echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
 
     $tt = \Nyos\mod\JobDesc::getDaysOcenkaNo($db);
-    // \f\pa($tt, 2, '', '$tt');
+    \f\pa($tt['data'], 2, '', 'tt data');
 
     $result1 = [];
+    $povtorov = 50;
 
-
-    
-    $povtorov = 1;
-    
     $nn1 = 0;
 
-    foreach ($tt['data'] as $sp => $dates) {
 
-        if ($nn1 >= $povtorov )
+    echo '<hr>' . __LINE__ . '<hr>';
+
+    // echo '<fieldset><legend>получили данные начинаем шарить по тем каких нет</legend>';
+
+    foreach ($tt['data'] as $date => $sps) {
+
+        if ($nn1 >= $povtorov)
             break;
 
-        foreach ($dates as $date => $v) {
+        // echo '<br/>' . __FILE__ . ' ' . __LINE__;
+        // echo '<br/>' . $sp . ' ' . $date;
 
-            if ($nn1 >= $povtorov  )
-                break;
+        foreach ($sps as $sp => $v) {
 
-            $for_get = [
-                'action' => 'calc_full_ocenka_day',
-                // 'date' => '2019-11-05',
-                'date' => $date,
-                // 'sp' => '2229'
-                'sp' => $sp
-            ];
-
-            $uri = 'https://yapdomik.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($for_get);
-            echo '<Br/>' . $uri;
-
-            $ee = file_get_contents($uri);
-            $ee1 = json_decode($ee, true);
-            \f\pa($ee1, 2, '', '$ee');
-
-            if (!empty($ee1['error'])) {
-                $result1[] = $ee1;
+            if (!empty($v)) {
+                // \f\pa($v);
+                // echo '<br/>skip string';
+                continue;
             }
 
+            if ($nn1 >= $povtorov)
+                break;
 
+            echo '<br/>' . __FILE__ . ' ' . __LINE__;
+            echo '<br/>' . $sp . ' ' . $date;
+            echo '<br/>';
+
+// запуск через гет
+            if (1 == 2) {
+
+                $for_get = [
+                    'action' => 'calc_full_ocenka_day',
+                    // 'date' => '2019-11-05',
+                    'date' => $date,
+                    // 'sp' => '2229'
+                    'sp' => $sp
+                ];
+
+                $uri = 'https://yapdomik.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($for_get);
+//            // echo '<Br/>' . $uri;
+//
+                $ee = file_get_contents($uri);
+                $ee1 = json_decode($ee, true);
+
+//            // \f\pa($ee1, 2, '', '$ee');
+//
+//            $ee1['uri0'] = $uri;
+//            $ee1['sp0'] = $sp;
+//            $ee1['date0'] = $date;
+                echo '<br/>' . __FILE__ . ' #' . __LINE__;
+                \f\pa($ee1, 2, '', '$ee1 результ оценки дня (вызов страницы)');
+            }
+
+// запуск через функцию
+            else {
+
+                try {
+                    echo '<fieldset><legend>' . __FILE__ . ' #' . __LINE__ . '</legend>';
+                    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $sp, $date);
+                    \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
+                    echo '</fieldset>';
+                } catch (\Exception $ex) {
+            
+                    echo '<br/>'.__FILE__.' '.__LINE__;
+                    
+                }
+            }
+
+//            if (!empty($ee1['error'])) {
+//                $result1[] = $ee1;
+//            }
 
             $nn1++;
+
+            echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
         }
+
+
+        echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
     }
 //    $e = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
 //    \f\pa($e,2,'','$e');
 
+    echo '</fieldset>';
+
+    echo '<hr>' . __LINE__ . '<hr>';
+
+    echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
     \f\pa($result1, 2, '', '$result1');
+    echo '</div>';
 
-    $r = '111';
-
-    \f\end2($r, true);
+    //$r = '111';
+    // echo '<br/>'.__LINE__.'<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+    \f\end2(( $r ?? 'x'), true);
+    // echo '</div>';
 }
 
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
 
+    /**
+     * перенёс в отдельную функцию 
+     * \Nyos\mod\jobdesc\calculateAutoOcenkaDays($db, $sp, $data)
+     */
     // ob_start('ob_gzhandler');
 
     try {
@@ -559,11 +614,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         ob_end_clean();
 
         \f\end2('Обнаружены ошибки: ' . $ex->getMessage(), false, [
-            'text' => $text . '<br/>' . $r,
+            'error' => $ex->getMessage(),
+            'code' => $ex->getCode(),
             'sp' => ( $return['data']['sp'] ?? null ),
             'date' => ( $return['data']['date'] ?? null ),
-            'error' => $ex->getMessage(),
-            'code' => $ex->getCode()
+            'text' => $text . '<br/>' . $r,
         ]);
     }
 }

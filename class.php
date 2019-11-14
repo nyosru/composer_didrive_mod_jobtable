@@ -70,20 +70,6 @@ class JobDesc {
      */
     public static $mod_timeo_default = '074.time_expectations_default';
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * получаем какие цены по датам у должностей на точке продаж (старая)
      * @param type $db
@@ -1332,7 +1318,7 @@ class JobDesc {
 // empty($return['norm_vuruchka']) 
                     empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])
             ) {
-                throw new \Exception('Не все плановые данные по ТП указаны', 13);
+                throw new \Exception('Не все плановые данные по ТП указаны', 204);
 //$error .= PHP_EOL . 'Не все плановые данные по ТП указаны';
             }
         }
@@ -1344,16 +1330,14 @@ class JobDesc {
 
             \f\timer::start();
 // $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
-
             // die('<br/>'.__FILE__.' == '.__LINE__);
-            $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $_REQUEST['sp'], $_REQUEST['date']);
+            $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
 
 // \f\pa($return);
 // echo
 
             $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop()
                     . PHP_EOL . $return['oborot'];
-
         }
 
         /**
@@ -1362,7 +1346,12 @@ class JobDesc {
         if (1 == 1) {
 
             \f\timer::start();
-            $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $_REQUEST['sp'], $_REQUEST['date']);
+            
+            echo '<hr>'.__FILE__.' #'.__LINE__;
+            echo '<br/>'.$return['sp'].' , '.$return['date'];
+            echo '<hr>';
+            
+            $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
 
             // \f\pa($timeo);
 //\f\pa($timeo);
@@ -1371,6 +1360,7 @@ class JobDesc {
                 $return['time'] .= PHP_EOL . $k . ' > ' . $v;
                 $return[$k] = $v;
             }
+
         }
 
 //        echo '<fieldset style="border: 1px solid gray; padding: 5px; margin: 5px;" ><legend>'
@@ -1447,65 +1437,430 @@ class JobDesc {
         // return $return;
     }
 
+    /**
+     * считаем оценку 1 дня (при автоматическом выставлении оценок
+     * @param type $db
+     * @param type $sp
+     * @param type $data
+     */
+    public static function calculateAutoOcenkaDays($db, $sp, $date) {
+
+        // return \f\end3( 'wef', true );
+        
+        ob_start('ob_gzhandler');
+
+        try {
+
+            if (1 == 1) {
+                $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
+                // \f\pa($return, 2, '', '$return данные для оценки дня');
+                // массив чеков для новых оценок
+                // $return['checks_for_new_ocenka']
+            }
+
+            if (1 == 1) {
+                // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
+                $return['data']['data-ocenka'] =
+                $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return['data']);
+                // \f\pa($ocenka, 2, '', '$ocenka');
+            }
+
+//        if ( class_exists('\Nyos\mod\items') )
+//            echo '<br/>' . __FILE__ . ' ' . __LINE__;
+            // if (!empty($return['data']['checks_for_new_ocenka'])) {
+            // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+            $return['data']['data-ocenka1'] =
+            \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
+            // }
+
+            $return['data']['data-ocenka2'] =
+            \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+                'sale_point' => $ocenka['data']['sp'],
+                'date' => $ocenka['data']['date'],
+                'ocenka_time' => $ocenka['data']['ocenka_time'],
+                'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+                'ocenka' => $ocenka['data']['ocenka'],
+            ]);
+
+        $r = ob_get_contents();
+        ob_end_clean();
+
+            return \f\end3('ok ' . ( $r ?? '--' ), true, $return['data']);
+
+            if (1 == 2) {
+
+                // require_once DR . '/all/ajax.start.php';
+                // $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
+                // $ff->execute(array(':id' => (int) $_POST['id2']));
+//die('123');
+//
+                //echo '<br/>'.__FILE__.' '.__LINE__;
+//    $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout', 'show');
+//    \f\pa($checki,2,'','$checki');
+                //echo '<br/>'.__FILE__.' '.__LINE__;
+//    $salary = \Nyos\mod\JobDesc::configGetJobmansSmenas($db);
+//    \f\pa($salary,2,'','$salary');
+//    $return['txt'] .= '<br/>salary';
+//    foreach ($salary as $k => $v) {
+//        $return['txt'] .= '<br/><nobr>[' . $k . '] - ' . $v . '</nobr>';
+//        $return['salary_' . $k] = $v;
+//    }
+//echo '<br/>'.__FILE__.' '.__LINE__;
+//echo '<br/>'.__FILE__.' '.__LINE__;
+//echo '<br/>'.__FILE__.' '.__LINE__;
+                // \f\pa($return);
+                // exit;
+//\f\pa($return);
+                // если есть ошибки
+                if (!empty($error)) {
+
+                    require_once DR . dir_site . 'config.php';
+
+                    $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
+                    // \f\pa($sp);
+
+                    if (!isset($_REQUEST['no_send_msg'])) {
+                        $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
+
+                        if (class_exists('\nyos\Msg'))
+                            \nyos\Msg::sendTelegramm($txt_to_tele, null, 1);
+
+                        if (isset($vv['admin_ajax_job'])) {
+                            foreach ($vv['admin_ajax_job'] as $k => $v) {
+                                \nyos\Msg::sendTelegramm($txt_to_tele, $v);
+                                //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+                            }
+                        }
+                    }
+//echo '<br/>'.__FILE__.' '.__LINE__;
+
+                    return \f\end2('Обнаружены ошибки при расчёте оценки точки продаж (' . $_REQUEST['sp'] . ') за день работы (' . $_REQUEST['date'] . ')' . $error, false);
+                }
+                // если нет ошибок считаем
+                else {
+
+                    \f\timer::start();
+
+                    /**
+                     * сравниваем время ожидания холодный цех
+                     */
+                    if (isset($return['timeo_cold']) && isset($return['norm_time_wait_norm_cold'])) {
+
+                        $return['txt'] .= '<br/><br/>-------------------';
+                        $return['txt'] .= '<br/>время ожидания (хол.цех)';
+                        $return['txt'] .= '<br/>по плану: ' . $return['norm_time_wait_norm_cold'] . ' и значение в ТП ' . $return['timeo_cold'];
+
+                        if (isset($return['timeo_cold']) && isset($return['norm_time_wait_norm_cold']) &&
+                                $return['timeo_cold'] > $return['norm_time_wait_norm_cold']) {
+
+                            $return['txt'] .= '<br/>не норм, оценка 3';
+                            $return['ocenka_time'] = 3;
+                            $return['ocenka'] = 3;
+                        } else {
+                            $return['txt'] .= '<br/>норм, оценка 5';
+                            $return['ocenka_time'] = 5;
+                        }
+                    } else {
+                        throw new \Exception('Вычисляем оценку дня, прервано, не хватает данных по времени ожидания', 14);
+                    }
+
+                    /**
+                     * сравниваем объём выручки
+                     */
+                    if (1 == 2) {
+                        if (!empty($return['norm_vuruchka']) && !empty($return['oborot'])) {
+
+                            $return['txt'] .= '<br/><br/>-------------------';
+                            $return['txt'] .= '<br/>норма выручки';
+                            $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka'] . ' и значение в ТП ' . $return['oborot'];
+
+                            if ($return['oborot'] >= $return['norm_vuruchka']) {
+                                $return['oborot_bolee_norm'] = 1;
+                                $return['ocenka_oborot'] = 5;
+                                $return['txt'] .= '<br/>норм, оценка 5';
+                            } else {
+                                $return['oborot_bolee_norm'] = 0;
+                                $return['ocenka_oborot'] = 3;
+                                $return['ocenka'] = 3;
+                                $return['txt'] .= '<br/>не норм, оценка 3';
+                            }
+                        }
+                        //
+                        else {
+                            throw new \Exception('Вычисляем оценку дня, прервано, не хватает данных по обороту за сутки', 18);
+                        }
+                    }
+
+                    /**
+                     * считаем норму выручки на руки
+                     */
+                    // if (!empty($return['norm_kolvo_hour_in1smena'])) {
+                    if (!empty($return['norm_kolvo_hour_in1smena']) && !empty($return['norm_vuruchka_on_1_hand'])) {
+
+                        $return['txt'] .= '<br/><br/>-------------------';
+                        $return['txt'] .= '<br/>норма выручки (на руки)';
+
+                        $return['smen_in_day'] = round($return['hours'] / $return['norm_kolvo_hour_in1smena'], 1);
+                        $return['txt'] .= '<br/>Кол-во поваров: ' . $return['smen_in_day'];
+
+                        $return['on_hand_fakt'] = ceil($return['oborot'] / $return['smen_in_day']);
+                        // $return['summa_na_ruki_norm'] = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
+                        //$return['txt'] .= '<br/>по плану: ' . $return['summa_na_ruki_norm'] . ' и значение в ТП ' . $return['on_hand_fakt'];
+                        $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka_on_1_hand'] . ' и значение в ТП ' . $return['on_hand_fakt'];
+
+                        if ($return['on_hand_fakt'] < $return['norm_vuruchka_on_1_hand']) {
+                            $return['ocenka'] = 3;
+                            $return['ocenka_naruki'] = 3;
+                            $return['ocenka'] = 3;
+                            $return['txt'] .= '<br/>не норм, оценка 3';
+                        } else {
+                            $return['ocenka_naruki'] = 5;
+                            $return['txt'] .= '<br/>норм, оценка 5';
+                        }
+                    } else {
+                        throw new \Exception('Вычисляем оценку дня, прервано, не хватает значения по плану (норма на руки)', 19);
+                    }
+
+
+                    $return['txt'] .= '<br/>';
+                    $return['txt'] .= '<br/>';
+                    $return['txt'] .= '-----------';
+                    $return['txt'] .= '<br/>';
+                    $return['txt'] .= 'оценка дня : ' . $return['ocenka'];
+                    $return['txt'] .= '<br/>';
+                    $return['txt'] .= '<br/>';
+                    $return['txt'] .= '<br/>';
+
+                    // $return['ocenka_upr'] = $return['ocenka'];
+//            $return['time'] .= PHP_EOL . ' считаем ходится не сходится : ' . \f\timer::stop();
+//            $return['txt'] .= '<br/><nobr>рекомендуемая оценка упр: ' . $return['ocenka_upr'] . '</nobr>';
+
+
+                    /**
+                     * запись результатов в бд
+                     */
+                    if (1 == 1) {
+                        $sql_del = '';
+                        $sql_ar_new = [];
+
+                        foreach ($id_items_for_new_ocenka as $id_item => $v) {
+
+                            $sql_del .= (!empty($sql_del) ? ' OR ' : '' ) . ' id_item = \'' . (int) $id_item . '\' ';
+                            $sql_ar_new[] = array(
+                                'id_item' => $id_item,
+                                'name' => 'ocenka_auto',
+                                'value' => $return['ocenka']
+                            );
+                        }
+
+                        if (!empty($sql_del)) {
+                            $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE name = \'ocenka_auto\' AND ( ' . $sql_del . ' ) ');
+                            $ff->execute();
+                        }
+
+                        \f\db\sql_insert_mnogo($db, 'mitems-dops', $sql_ar_new);
+                        $return['txt'] .= '<br/>записали автоценки сотрудникам';
+                    }
+
+                    require_once DR . dir_site . 'config.php';
+
+                    $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
+                    // \f\pa($sp);
+
+                    \Nyos\mod\items::addNewSimple($db, 'sp_ocenki_job_day', $return);
+
+                    if (!isset($_REQUEST['no_send_msg']) && !isset($_REQUEST['telega_no_send'])) {
+
+                        $txt_to_tele = 'Расчитали автооценку ( ' . $sp['data'][$_REQUEST['sp']]['head'] . ' ) за день работы (' . $_REQUEST['date'] . ')'
+                                . PHP_EOL
+                                . PHP_EOL
+                                . str_replace('<br/>', PHP_EOL, $return['txt'])
+//                        . PHP_EOL
+//                        . '-----------------'
+//                        . PHP_EOL
+//                        . 'время выполнения вычислений'
+//                        . PHP_EOL
+//                        . $return['time']
+                        ;
+
+                        if (class_exists('\nyos\Msg'))
+                            \nyos\Msg::sendTelegramm($txt_to_tele, null, 1);
+
+                        if (isset($vv['admin_ajax_job'])) {
+                            foreach ($vv['admin_ajax_job'] as $k => $v) {
+                                \nyos\Msg::sendTelegramm($txt_to_tele, $v);
+                                //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+                            }
+                        }
+                    }
+
+                    \f\end2(
+                            $return['txt']
+                            . '<br/>часов: ' . $return['hours']
+                            . '<br/>смен в дне: ' . $return['smen_in_day']
+                            , true, $return);
+                }
+
+                //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
+            }
+        }
+        //
+        catch (\Exception $ex) {
+
+            // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
+
+            $text = $ex->getMessage()
+                    . 'авторасчёт оценки дня'
+                    . PHP_EOL
+                    . PHP_EOL
+                    . ' sp:' . ( $return['data']['sp'] ?? '--' )
+                    . ' date:' . ( $return['data']['date'] ?? '--' )
+                    . PHP_EOL
+                    . PHP_EOL
+                    . '--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                    . PHP_EOL
+                    . $ex->getMessage() . ' #' . $ex->getCode()
+                    . PHP_EOL
+                    . $ex->getFile() . ' #' . $ex->getLine()
+                    . PHP_EOL
+                    . $ex->getTraceAsString()
+            // . '</pre>'
+            ;
+
+            if (class_exists('\Nyos\Msg'))
+                \Nyos\Msg::sendTelegramm($text, null, 1);
+
+            /*
+              echo '<pre>'
+              . PHP_EOL
+              . PHP_EOL
+              . '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+              . PHP_EOL
+              . $ex->getMessage() . ' #' . $ex->getCode()
+              . PHP_EOL
+              . $ex->getFile() . ' #' . $ex->getLine()
+              . PHP_EOL
+              . $ex->getTraceAsString()
+              . '</pre>';
+             */
+
+            /*
+
+              require_once DR . dir_site . 'config.php';
+
+              $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
+              // \f\pa($sp);
+
+              $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
+
+              if (class_exists('\nyos\Msg'))
+              \nyos\Msg::sendTelegramm($txt_to_tele, null, 1);
+
+              if (isset($vv['admin_ajax_job'])) {
+              foreach ($vv['admin_ajax_job'] as $k => $v) {
+              \nyos\Msg::sendTelegramm($txt_to_tele, $v);
+              //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+              }
+              }
+             */
+
+            $r = ob_get_contents();
+            ob_end_clean();
+
+            return \f\end3('Обнаружены ошибки: ' . $ex->getMessage(), false, [
+                'error' => $ex->getMessage(),
+                'code' => $ex->getCode(),
+                'sp' => ( $return['data']['sp'] ?? null ),
+                'date' => ( $return['data']['date'] ?? null ),
+                'text' => $text . '<br/>' . $r,
+            ]);
+        }
+        
+    }
+
     public static function getDaysOcenkaNo($db, $start_day = '2019-09-01') {
 
+        $lisp_sp = [];
+
+        $scan_days = 70;
+
         // echo $start_day;
-        $last_day = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 );
+        $last_day = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24);
 
         $e = \Nyos\mod\items::getItemsSimple($db, self::$mod_ocenki_days);
-        // \f\pa($e,2,'','$e');
+        // \f\pa($e,2,'','$e оценки self::$mod_ocenki_days');
 
         $r = [];
 
-                echo ' -+ '.$start_day;
-                echo ' -- '.$last_day;
-                echo '<br/>';
-        
+//        echo ' -+ ' . $start_day;
+//        echo ' -- ' . $last_day;
+//        echo '<br/>';
+
         foreach ($e['data'] as $k => $v) {
 
             if (isset($v['dop'])) {
-                
-                if ( isset($v['dop']['date']) && ( $v['dop']['date'] >= $last_day || $v['dop']['date'] < $start_day ) )
-                    continue;
 
-                echo ' -- '.$v['dop']['date'];
-                
+                if (isset($v['dop']['date']) && ( $v['dop']['date'] > $last_day || $v['dop']['date'] < $start_day )){
+                    
+                    // echo '<br/>дата в центре, не сходится = ' . $start_day .' = '. $last_day .' | '.$v['dop']['date'];
+                    continue;
+                }else{
+                    // echo '<br/>дата в центре, сходится = ' . $start_day .' = '. $last_day .' | '.$v['dop']['date'];
+                }
+
+                if (!isset($lisp_sp[$v['dop']['sale_point']]))
+                    $lisp_sp[$v['dop']['sale_point']] = 1;
+
+//                echo ' -- ' . $v['dop']['date'];
+//                echo ' || ' . $v['dop']['sale_point'];
+//                echo '<br/>';
+
                 $r[$v['dop']['date']][$v['dop']['sale_point']] = $v['dop'];
-                
             }
         }
 
-        ksort($r);
-        \f\pa($r, 2, '', '$r');
-
+//        krsort($r);
+//        \f\pa($r, 2, '', '$r');
         // $start_day
         // echo '<br/>край день' . $last_day;
+        // $r2 = [];
 
-        $r2 = [];
+        for ($nn = 0; $nn <= $scan_days; $nn++) {
 
-        for ($nn = 0; $nn <= 100; $nn++) {
+            // $now_date = date('Y-m-d', strtotime($start_day . ' +' . $nn . ' day'));
+            $now_date = date('Y-m-d', strtotime($last_day . ' - ' . $nn . ' day'));
 
-            $now_date = date('Y-m-d', strtotime($start_day . ' +' . $nn . ' day'));
+            // echo '<br/>$now_date ' . $now_date;
+            // echo '<br/>' . $now_date;
+            // foreach ($r as $date => $sps ) {
 
-            echo '<br/>$now_date ' . $now_date;
+            foreach ($lisp_sp as $sp => $v) {
 
-            foreach ($r as $sp => $dates) {
-
-                if (!isset($dates[$now_date])) {
-                    echo '<br/>- d sp ' . $sp;
-                    $r2[$sp][$now_date] = 1;
-                } else {
-                    echo '<br/>+ d sp ' . $sp;
+                if (!isset($r[$now_date][$sp])) {
+                    $r[$now_date][$sp] = false;
                 }
             }
 
-            if ($last_day == $now_date) {
+//                if (!isset($dates[$now_date])) {
+//                    // echo '<br/>- d sp ' . $sp;
+//                    $r2[$sp][$now_date] = 1;
+//                } else {
+//                    // echo '<br/>+ d sp ' . $sp;
+//                    $r2[$sp][$now_date] = 0;
+//                }
+            // }
+//            foreach( $lisp_sp as $sp2 => $v ){
+//                if( !isset() )
+//            }
+
+            if ($now_date == $start_day)
                 break;
-            }
         }
 
+        krsort($r);
+        // \f\pa($r, 2, '', '$r');
 
-        return \f\end3('ok', true, $r2);
+        return \f\end3('ok', true, $r);
         //return \f\end3('ok', true, $return);
         // return $return;
     }
@@ -1628,7 +1983,9 @@ class JobDesc {
                 } else {
 
                     if (!empty($vv) && $vv == 'oborot') {
-                        throw new \Exception('нет нет оборота по точке (' . $vv_text . ')', 201);
+                        throw new \Exception('нет оборота по точке (' . $vv_text . ')', 201);
+                    } elseif (!empty($vv) && $vv == 'hours') {
+                        throw new \Exception('нет количества часов работы за день для расчёта (' . $vv_text . ')', 203);
                     } else {
                         throw new \Exception('нет значения ' . $vv . ' (' . $vv_text . ')', __LINE__);
                     }
