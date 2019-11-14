@@ -1347,9 +1347,9 @@ class JobDesc {
 
             \f\timer::start();
             
-            echo '<hr>'.__FILE__.' #'.__LINE__;
-            echo '<br/>'.$return['sp'].' , '.$return['date'];
-            echo '<hr>';
+//            echo '<hr>'.__FILE__.' #'.__LINE__;
+//            echo '<br/>'.$return['sp'].' , '.$return['date'];
+//            echo '<hr>';
             
             $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
 
