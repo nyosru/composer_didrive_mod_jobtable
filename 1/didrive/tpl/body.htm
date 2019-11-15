@@ -8,6 +8,22 @@
     {#    {% set t = didrive_f__timer_start() %}
     #}
     {#% set sp = readItems( 'sale_point', null )  %#}
+    
+    
+    
+    
+    {% set sp_access = jobdesc__get__access_moders( db )  %}
+    
+    {#{ pa(sp_access) }#}
+    {#% if sp_access == false or sp_access[] is defined %}
+        тут вся инфа по точке
+    {% endif %#}
+    
+    
+    
+
+
+    
     {% set sp = items__readItems( db, 'sale_point', null, 'sort_asc' )  %}
     {#{ pa(sp.data) }#}
 
@@ -385,7 +401,6 @@
             {#{ pa(plusa) }#}
         {% endif %}
 
-
         {#% set payed = job_buh__get_payed(db,date_start,date_finish) %#}
         {#{ pa(payed) }#}
 
@@ -643,7 +658,7 @@
                 
                 {#% for sp_now, list12 in jobs_on_sp.jobs_on_sp if access_to_sp == false or access_to_sp[sp_now] is defined %#}
                 
-                {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined %}
+                {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
 
                     {#{ kk }} - {{ sp_now }#}
                     

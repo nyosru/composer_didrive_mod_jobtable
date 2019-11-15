@@ -228,6 +228,36 @@ $twig->addFunction($function);
 
 
 
+/**
+ * получаем список доступов к точкам продаж если модератор
+ */
+$function = new Twig_SimpleFunction('jobdesc__get__access_moders', function ( $db ) {
+
+    if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
+
+        $ac = \Nyos\mod\items::getItemsSimple($db, 'sale_point_access_moder');
+        $return = [];
+        
+        
+        foreach ($ac['data'] as $k => $v) {
+
+            if( isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && $v['dop']['user_id'] == $_SESSION['now_user_di']['id']){
+                $return[$v['dop']['sale_point']] = 1;
+            }
+            
+        }
+        
+        return $return;
+        
+    } else {
+        return false;
+    }
+
+});
+$twig->addFunction($function);
+
+
+
 $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $date_start, string $date_finish ) {
 
     // \f\pa( \Nyos\nyos::$folder_now );
@@ -483,7 +513,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_spec_job_on_sp', function ( $d
     $return = [];
 
     foreach ($d['data'] as $k => $v) {
-        if ( isset($v['dop']['jobman']) && isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+        if (isset($v['dop']['jobman']) && isset($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
             $return[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
         }
     }
@@ -505,11 +535,8 @@ $function = new Twig_SimpleFunction('jobdesc__get_access_for_moder', function ( 
     $return = [];
 
     foreach ($d['data'] as $k => $v) {
-        if ( isset($v['dop']['sale_point']) 
-                && isset($v['dop']['user_id']) 
-                && isset($_SESSION['now_user_di']['id'])
-                && $_SESSION['now_user_di']['id'] == $v['dop']['user_id']
-            ) {
+        if (isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && isset($_SESSION['now_user_di']['id']) && $_SESSION['now_user_di']['id'] == $v['dop']['user_id']
+        ) {
             $return[$v['dop']['sale_point']] = true;
         }
     }
@@ -532,7 +559,7 @@ $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db
      * точки продаж
      */
     // $points = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, 'sale_point', 'show', null);
-    
+
     \Nyos\mod\items::$sql_order = ' ORDER BY mi.sort DESC ';
     $points = \Nyos\mod\items::getItemsSimple($db, 'sale_point');
     // \f\pa($points,2,'','$points');
@@ -846,9 +873,8 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
                     // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
                 }
 
-                if( isset( $check['dop']['jobman'] ) && isset( $check['id'] ) )
-                $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
-                
+                if (isset($check['dop']['jobman']) && isset($check['id']))
+                    $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
             }
 
             // }
@@ -907,7 +933,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenka_day', function ( $db, s
     $r = [];
 
     foreach ($oc['data'] as $k => $v) {
-        if ( isset($v['dop']['date']) && $v['dop']['date'] <= $dt1 && $v['dop']['date'] >= $dt2) {
+        if (isset($v['dop']['date']) && $v['dop']['date'] <= $dt1 && $v['dop']['date'] >= $dt2) {
             $r[$v['dop']['sale_point']][$v['dop']['date']] = $v['dop'];
         }
     }

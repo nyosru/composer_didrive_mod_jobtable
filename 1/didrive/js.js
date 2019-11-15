@@ -1734,7 +1734,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                    }
 
 
-                    $(resto).html($html + $j.txt);
+                    $(resto).html($html);
+                    // $(resto).html($html + $j.txt);
                     // $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
 
                 } 
