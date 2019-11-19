@@ -388,9 +388,34 @@
         {% endif %}
 
 
-                {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
-                    {{ pa(sp_now) }}
-                {% endfor %}
+
+
+
+
+
+
+
+        {# текущие доступные точки #}
+        {% if 1 == 2 %}
+            
+            {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
+                {{ pa(sp_now) }}
+            {% endfor %}
+            
+        {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         <div style="display:inline-block;padding-right:100px;margin-right:100px;">
