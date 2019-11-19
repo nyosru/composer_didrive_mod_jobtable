@@ -1443,7 +1443,8 @@ class JobDesc {
      */
     public static function calculateAutoOcenkaDays($db, $sp, $date) {
 
-// return \f\end3( 'wef', true );
+        // echo '<br/>' . __FILE__ . ' #' . __LINE__;
+        // return \f\end3( 'wef', true );
 
         ob_start('ob_gzhandler');
 
@@ -1453,18 +1454,18 @@ class JobDesc {
 
                 $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
 
-//                \f\pa($return, 2, '', '$return данные для оценки дня');
-//                die();
-// массив чеков для новых оценок
-// $return['checks_for_new_ocenka']
+            //                \f\pa($return, 2, '', '$return данные для оценки дня');
+            //                die();
+            // массив чеков для новых оценок
+            // $return['checks_for_new_ocenka']
             }
 
             if (1 == 1) {
-// \f\pa($return['data'], 2, '', '$return данные для оценки дня');
+                // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
                 $return['data']['ocenka-data'] = $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return['data']);
-//\f\pa($ocenka, 2, '', '$ocenka');
-//die();
-// $return = array_merge($return, $ocenka);
+                //\f\pa($ocenka, 2, '', '$ocenka');
+                //die();
+                // $return = array_merge($return, $ocenka);
 
                 $ocenki_error = '';
 
@@ -1482,12 +1483,12 @@ class JobDesc {
                 $return['data']['ocenka'] = $ocenka['data']['ocenka'];
             }
 
-//        if ( class_exists('\Nyos\mod\items') )
-//            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-// if (!empty($return['data']['checks_for_new_ocenka'])) {
-// \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+            //        if ( class_exists('\Nyos\mod\items') )
+            //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
+            // if (!empty($return['data']['checks_for_new_ocenka'])) {
+            // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
             $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
-// }
+            // }
             $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
                         'sale_point' => $ocenka['data']['sp'],
                         'date' => $ocenka['data']['date'],
@@ -1533,7 +1534,7 @@ class JobDesc {
                     $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
 // \f\pa($sp);
 
-                    if (!isset($_REQUEST['no_send_msg'])) {
+                    if (1 == 2 && !isset($_REQUEST['no_send_msg'])) {
                         $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
 
                         if (class_exists('\nyos\Msg'))
@@ -1683,7 +1684,7 @@ class JobDesc {
 
                     \Nyos\mod\items::addNewSimple($db, 'sp_ocenki_job_day', $return);
 
-                    if (!isset($_REQUEST['no_send_msg']) && !isset($_REQUEST['telega_no_send'])) {
+                    if (1 == 2 && (!isset($_REQUEST['no_send_msg']) && !isset($_REQUEST['telega_no_send']) )) {
 
                         $txt_to_tele = 'Расчитали автооценку ( ' . $sp['data'][$_REQUEST['sp']]['head'] . ' ) за день работы (' . $_REQUEST['date'] . ')'
                                 . PHP_EOL
@@ -1723,8 +1724,14 @@ class JobDesc {
 
 // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
+
+
+            echo '<br/>' . __FILE__ . ' #' . __LINE__;
+
+
+
             $text = $ex->getMessage()
-                    . 'авторасчёт оценки дня'
+                    . ' авторасчёт оценки дня'
                     . PHP_EOL
                     . PHP_EOL
                     . ' sp:' . ( $return['data']['sp'] ?? '--' )
@@ -1741,9 +1748,9 @@ class JobDesc {
 // . '</pre>'
             ;
 
-            if (class_exists('\Nyos\Msg'))
+            if (1 == 2 && class_exists('\Nyos\Msg')) {
                 \Nyos\Msg::sendTelegramm($text, null, 1);
-
+            }
             /*
               echo '<pre>'
               . PHP_EOL
@@ -1786,7 +1793,10 @@ class JobDesc {
                 'code' => $ex->getCode(),
                 'sp' => ( $return['data']['sp'] ?? null ),
                 'date' => ( $return['data']['date'] ?? null ),
-                'text' => $text . '<br/>' . str_replace('<br/>', PHP_EOL, $r),
+                // 'text' => $text . '<br/>' . str_replace('<br/>', PHP_EOL, $r),
+                // 'msg' => $ex->getMessage(),
+                'file_line' => $ex->getFile() . ' #' . $ex->getLine(),
+                'trace' => explode(PHP_EOL, $ex->getTraceAsString()),
                 'datas' => ( $return ?? 'x' ),
             ]);
         }
@@ -1794,17 +1804,31 @@ class JobDesc {
 
     public static function getDaysOcenkaNo($db, $start_day = '2019-09-01') {
 
+        // список точек продаж для скана
         $lisp_sp = [];
-
+        // сколько дней сканим от сегодня назад
         $scan_days = 70;
-
 // echo $start_day;
         $last_day = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24);
+
+        /**
+         * собираем список точек продаж
+         */
+        $sps = \Nyos\mod\items::getItemsSimple($db, self::$mod_sale_point);
+        // \f\pa($sps, 2, '', '$sps');
+        // выбираем тех у кого id для получения оборота
+        foreach ($sps['data'] as $k => $v) {
+            if (!empty($v['dop']['id_tech_for_oborot']))
+                $lisp_sp[$v['id']] = 1;
+        }
+        //\f\pa($lisp_sp, 2, '', '$lisp_sp');
+
 
         $e = \Nyos\mod\items::getItemsSimple($db, self::$mod_ocenki_days);
 // \f\pa($e,2,'','$e оценки self::$mod_ocenki_days');
 
         $r = [];
+
 
 //        echo ' -+ ' . $start_day;
 //        echo ' -- ' . $last_day;
@@ -1822,9 +1846,8 @@ class JobDesc {
 // echo '<br/>дата в центре, сходится = ' . $start_day .' = '. $last_day .' | '.$v['dop']['date'];
                 }
 
-                if (!isset($lisp_sp[$v['dop']['sale_point']]))
-                    $lisp_sp[$v['dop']['sale_point']] = 1;
-
+//                if (!isset($lisp_sp[$v['dop']['sale_point']]))
+//                    $lisp_sp[$v['dop']['sale_point']] = 1;
 //                echo ' -- ' . $v['dop']['date'];
 //                echo ' || ' . $v['dop']['sale_point'];
 //                echo '<br/>';
@@ -1833,50 +1856,22 @@ class JobDesc {
             }
         }
 
-//        krsort($r);
-//        \f\pa($r, 2, '', '$r');
-// $start_day
-// echo '<br/>край день' . $last_day;
-// $r2 = [];
 
-        for ($nn = 0; $nn <= $scan_days; $nn++) {
+        foreach ($r as $date => $v1) {
 
-// $now_date = date('Y-m-d', strtotime($start_day . ' +' . $nn . ' day'));
-            $now_date = date('Y-m-d', strtotime($last_day . ' - ' . $nn . ' day'));
+            foreach ($lisp_sp as $sp => $v2) {
 
-// echo '<br/>$now_date ' . $now_date;
-// echo '<br/>' . $now_date;
-// foreach ($r as $date => $sps ) {
-
-            foreach ($lisp_sp as $sp => $v) {
-
-                if (!isset($r[$now_date][$sp])) {
-                    $r[$now_date][$sp] = false;
+                if (empty($v1[$sp])) {
+                    $r[$date][$sp] = false;
                 }
             }
-
-//                if (!isset($dates[$now_date])) {
-//                    // echo '<br/>- d sp ' . $sp;
-//                    $r2[$sp][$now_date] = 1;
-//                } else {
-//                    // echo '<br/>+ d sp ' . $sp;
-//                    $r2[$sp][$now_date] = 0;
-//                }
-// }
-//            foreach( $lisp_sp as $sp2 => $v ){
-//                if( !isset() )
-//            }
-
-            if ($now_date == $start_day)
-                break;
         }
 
+
         krsort($r);
-// \f\pa($r, 2, '', '$r');
+        // \f\pa($r, 2, '', '$r');
 
         return \f\end3('ok', true, $r);
-//return \f\end3('ok', true, $return);
-// return $return;
     }
 
     /**
@@ -2011,17 +2006,16 @@ class JobDesc {
                     //
                     if (!empty($vv) && $vv == 'oborot') {
                         throw new \Exception('нет оборота по точке (' . $vv_text . ')', 201);
-                    } 
+                    }
                     //
                     elseif (!empty($vv) && $vv == 'hours') {
                         throw new \Exception('нет количества часов работы за день для расчёта (' . $vv_text . ')', 203);
-                    } 
+                    }
                     //
                     else {
                         throw new \Exception('нет значения ' . $vv . ' (' . $vv_text . ')', __LINE__);
                     }
                 }
-                
             }
         }
 
@@ -2104,7 +2098,7 @@ class JobDesc {
 
 
             $re['ocenka_time'] = 5;
-            
+
             $tyty = 'cold';
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
             if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
@@ -2203,14 +2197,12 @@ class JobDesc {
 //        $ocenka = 3;
 
         $re['ocenka'] = 5;
-        
+
         if ($re['ocenka_time'] == 3) {
             $re['ocenka'] = 3;
-        }
-        elseif ($re['ocenka_time'] == 3) {
+        } elseif ($re['ocenka_time'] == 3) {
             $re['ocenka'] = 3;
-        }
-        elseif ( $re['ocenka_naruki'] == 3) {
+        } elseif ($re['ocenka_naruki'] == 3) {
             $re['ocenka'] = 3;
         }
 

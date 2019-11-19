@@ -181,19 +181,39 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
 
-    echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
+
+    $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
+    // \f\pa($_sps, 2);
+
+    /**
+     * лог ошибок, трём раз в сутки в 4 утра
+     */
+    $cash_file_errors = DR . '/sites/' . $vv['folder'] . '/log.clear-24.json';
+    // массив с ошибками что были найдены ранее
+    $log_errors = ( file_exists($cash_file_errors) ? json_decode(file_get_contents($cash_file_errors), true) : [] );
+
+
+
+
+
+
+
+
+
+
+    // echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
 
     $tt = \Nyos\mod\JobDesc::getDaysOcenkaNo($db);
-    \f\pa($tt['data'], 2, '', 'tt data');
+    // \f\pa($tt['data'], 2, '', '\Nyos\mod\JobDesc::getDaysOcenkaNo');
+    // exit;
 
     $result1 = [];
-    $povtorov = 50;
+    
+    // повторы если указан $_REQUEST['povtorov']
+    $povtorov = $_REQUEST['povtorov'] ?? 20;
 
     $nn1 = 0;
-
-
-    echo '<hr>' . __LINE__ . '<hr>';
-
+    // echo '<hr>' . __LINE__ . '<hr>';
     // echo '<fieldset><legend>получили данные начинаем шарить по тем каких нет</legend>';
 
     foreach ($tt['data'] as $date => $sps) {
@@ -215,10 +235,18 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
             if ($nn1 >= $povtorov)
                 break;
 
-            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-            echo '<br/>' . $sp . ' ' . $date;
-            echo '<br/>';
+            if (isset($log_errors[$date][$sp]))
+                continue;
 
+            $r2 = [
+                'sp' => $sp,
+                'date' => $date,
+                'res_type' => false
+            ];
+
+//            echo '<fieldset><legend>' . __FILE__ . ' ' . __LINE__.'</legend>'
+//            .'<br/>' . $sp . ' ' . $date
+//            .'</fieldset>';
 // запуск через гет
             if (1 == 2) {
 
@@ -248,12 +276,27 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 // запуск через функцию
             else {
 
+                $r2['res_type'] = 'func';
+
                 try {
-                    echo '<fieldset><legend>' . __FILE__ . ' #' . __LINE__ . '</legend>';
+
+//                     echo '<fieldset><legend>' . __FILE__ . ' #' . __LINE__ . '</legend>';
                     $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $sp, $date);
-                    \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
-                    echo '</fieldset>';
-                } catch (\Exception $ex) {
+//                    \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
+
+                    if (!empty($ee1['data']['error']) && !empty($ee1['data']['code'])) {
+                        $r2['status'] = 'error';
+                    } else {
+                        $r2['status'] = 'ok';
+                    }
+
+                    $r2['res'] = $ee1['data'] ?? 'x';
+
+//                     echo '</fieldset>';
+                }
+
+                //
+                catch (\Exception $ex) {
 
                     echo '<br/>' . __FILE__ . ' ' . __LINE__;
                 }
@@ -263,24 +306,81 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 //                $result1[] = $ee1;
 //            }
 
+
+            $result1[] = $r2;
+
             $nn1++;
 
-            echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
+            // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
         }
 
 
-        echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
+        // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
     }
 //    $e = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
 //    \f\pa($e,2,'','$e');
+    // echo '</fieldset>';
+    // echo '<hr>' . __LINE__ . '<hr>';
+    // echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+    // \f\pa($result1, 2, '', '$result1');
+    // echo '</div>';
+    // \f\pa($log_errors, 2);
 
-    echo '</fieldset>';
+    $for_msg = '';
 
-    echo '<hr>' . __LINE__ . '<hr>';
+    foreach ($result1 as $k => $v) {
 
-    echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
-    \f\pa($result1, 2, '', '$result1');
-    echo '</div>';
+        echo '<fieldset><legend>' . $_sps['data'][$v['sp']]['head'] . ' > ' . $v['date'] . '</legend>';
+
+        $for_msg .= $_sps['data'][$v['sp']]['head'] . ' > ' . $v['date'] . PHP_EOL;
+
+        if (isset($v['status']) && $v['status'] == 'error') {
+
+            $for_msg .= 'ошибка: ' . $v['res']['error'] . ' #' . $v['res']['code'] . PHP_EOL;
+
+            echo '<Br/>' . __LINE__;
+            echo '<Br/>' . $v['res']['error'] . ' #' . $v['res']['code'];
+            $log_errors[$v['date']][$v['sp']] = ['msg' => $v['res']['error'], 'code' => $v['res']['code']];
+        } else {
+            echo '<Br/>' . __LINE__;
+            echo '<Br/>результ норм' .
+            ' / sp - ' . $v['sp'] .
+            ' / date - ' . $v['date'] .
+            ' / часов - ' . $v['res']['hours'] .
+            ' / оценка - ' . $v['res']['ocenka'] .
+            ' / оценка время - ' . $v['res']['ocenka_time'] .
+            ' / оценка на руки - ' . $v['res']['ocenka_naruki'];
+
+            $for_msg .= 'оценка выставлена: ' .
+                    ' общая: ' . $v['res']['ocenka'] .
+                    ' / время: ' . $v['res']['ocenka_time'] .
+                    ' / на руки: ' . $v['res']['ocenka_naruki'] . PHP_EOL;
+        }
+
+        echo '</fieldset>';
+    }
+
+    require_once DR . dir_site . 'config.php';
+    
+    // \f\pa($vv['admin_ajax_job']);
+    
+    if (1 == 1 && class_exists('\Nyos\Msg')) {
+        \Nyos\Msg::sendTelegramm($for_msg, null, 1);
+
+        if (isset($vv['admin_ajax_job'])) {
+            foreach ($vv['admin_ajax_job'] as $k => $v) {
+                \nyos\Msg::sendTelegramm($for_msg, $v);
+                //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+            }
+        }
+    }
+
+    \f\pa($log_errors, 2);
+    file_put_contents($cash_file_errors, json_encode($log_errors));
+
+    echo '<hr>';
+
+
 
     //$r = '111';
     // echo '<br/>'.__LINE__.'<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
@@ -564,7 +664,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
         $text = $ex->getMessage()
-                . 'авторасчёт оценки дня'
+                . ' авторасчёт оценки дня'
                 . PHP_EOL
                 . PHP_EOL
                 . ' sp:' . ( $return['data']['sp'] ?? '--' )
@@ -581,8 +681,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         // . '</pre>'
         ;
 
-        if (class_exists('\Nyos\Msg'))
-            \Nyos\Msg::sendTelegramm($text, null, 1);
+        if (1 == 2) {
+            if (class_exists('\Nyos\Msg'))
+                \Nyos\Msg::sendTelegramm($text, null, 1);
+        }
 
         /*
           echo '<pre>'
