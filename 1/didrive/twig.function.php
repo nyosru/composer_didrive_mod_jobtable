@@ -645,7 +645,7 @@ $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db
 
 
     foreach ($job_in['data'] as $j => $job) {
-
+        
         // \f\pa($job);
         $now_st = strtotime($job['dop']['date']);
 
