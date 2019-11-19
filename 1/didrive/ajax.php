@@ -181,65 +181,228 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
 
-    echo 'ищем дни без оценки<hr>';
+
+    $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
+    // \f\pa($_sps, 2);
+
+    /**
+     * лог ошибок, трём раз в сутки в 4 утра
+     */
+    $cash_file_errors = DR . '/sites/' . $vv['folder'] . '/log.clear-24.json';
+    // массив с ошибками что были найдены ранее
+    $log_errors = ( file_exists($cash_file_errors) ? json_decode(file_get_contents($cash_file_errors), true) : [] );
+
+
+
+
+
+
+
+
+
+
+    // echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
 
     $tt = \Nyos\mod\JobDesc::getDaysOcenkaNo($db);
-    // \f\pa($tt, 2, '', '$tt');
+    // \f\pa($tt['data'], 2, '', '\Nyos\mod\JobDesc::getDaysOcenkaNo');
+    // exit;
 
     $result1 = [];
-
-
     
-    $povtorov = 1;
-    
+    // повторы если указан $_REQUEST['povtorov']
+    $povtorov = $_REQUEST['povtorov'] ?? 20;
+
     $nn1 = 0;
+    // echo '<hr>' . __LINE__ . '<hr>';
+    // echo '<fieldset><legend>получили данные начинаем шарить по тем каких нет</legend>';
 
-    foreach ($tt['data'] as $sp => $dates) {
+    foreach ($tt['data'] as $date => $sps) {
 
-        if ($nn1 >= $povtorov )
+        if ($nn1 >= $povtorov)
             break;
 
-        foreach ($dates as $date => $v) {
+        // echo '<br/>' . __FILE__ . ' ' . __LINE__;
+        // echo '<br/>' . $sp . ' ' . $date;
 
-            if ($nn1 >= $povtorov  )
-                break;
+        foreach ($sps as $sp => $v) {
 
-            $for_get = [
-                'action' => 'calc_full_ocenka_day',
-                // 'date' => '2019-11-05',
-                'date' => $date,
-                // 'sp' => '2229'
-                'sp' => $sp
-            ];
-
-            $uri = 'https://yapdomik.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($for_get);
-            echo '<Br/>' . $uri;
-
-            $ee = file_get_contents($uri);
-            $ee1 = json_decode($ee, true);
-            \f\pa($ee1, 2, '', '$ee');
-
-            if (!empty($ee1['error'])) {
-                $result1[] = $ee1;
+            if (!empty($v)) {
+                // \f\pa($v);
+                // echo '<br/>skip string';
+                continue;
             }
 
+            if ($nn1 >= $povtorov)
+                break;
 
+            if (isset($log_errors[$date][$sp]))
+                continue;
+
+            $r2 = [
+                'sp' => $sp,
+                'date' => $date,
+                'res_type' => false
+            ];
+
+//            echo '<fieldset><legend>' . __FILE__ . ' ' . __LINE__.'</legend>'
+//            .'<br/>' . $sp . ' ' . $date
+//            .'</fieldset>';
+// запуск через гет
+            if (1 == 2) {
+
+                $for_get = [
+                    'action' => 'calc_full_ocenka_day',
+                    // 'date' => '2019-11-05',
+                    'date' => $date,
+                    // 'sp' => '2229'
+                    'sp' => $sp
+                ];
+
+                $uri = 'https://yapdomik.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($for_get);
+//            // echo '<Br/>' . $uri;
+//
+                $ee = file_get_contents($uri);
+                $ee1 = json_decode($ee, true);
+
+//            // \f\pa($ee1, 2, '', '$ee');
+//
+//            $ee1['uri0'] = $uri;
+//            $ee1['sp0'] = $sp;
+//            $ee1['date0'] = $date;
+                echo '<br/>' . __FILE__ . ' #' . __LINE__;
+                \f\pa($ee1, 2, '', '$ee1 результ оценки дня (вызов страницы)');
+            }
+
+// запуск через функцию
+            else {
+
+                $r2['res_type'] = 'func';
+
+                try {
+
+//                     echo '<fieldset><legend>' . __FILE__ . ' #' . __LINE__ . '</legend>';
+                    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $sp, $date);
+//                    \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
+
+                    if (!empty($ee1['data']['error']) && !empty($ee1['data']['code'])) {
+                        $r2['status'] = 'error';
+                    } else {
+                        $r2['status'] = 'ok';
+                    }
+
+                    $r2['res'] = $ee1['data'] ?? 'x';
+
+//                     echo '</fieldset>';
+                }
+
+                //
+                catch (\Exception $ex) {
+
+                    echo '<br/>' . __FILE__ . ' ' . __LINE__;
+                }
+            }
+
+//            if (!empty($ee1['error'])) {
+//                $result1[] = $ee1;
+//            }
+
+
+            $result1[] = $r2;
 
             $nn1++;
+
+            // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
         }
+
+
+        // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
     }
 //    $e = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
 //    \f\pa($e,2,'','$e');
+    // echo '</fieldset>';
+    // echo '<hr>' . __LINE__ . '<hr>';
+    // echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+    // \f\pa($result1, 2, '', '$result1');
+    // echo '</div>';
+    // \f\pa($log_errors, 2);
 
-    \f\pa($result1, 2, '', '$result1');
+    $for_msg = '';
 
-    $r = '111';
+    foreach ($result1 as $k => $v) {
 
-    \f\end2($r, true);
+        echo '<fieldset><legend>' . $_sps['data'][$v['sp']]['head'] . ' > ' . $v['date'] . '</legend>';
+
+        $for_msg .= $_sps['data'][$v['sp']]['head'] . ' > ' . $v['date'] . PHP_EOL;
+
+        if (isset($v['status']) && $v['status'] == 'error') {
+
+            $for_msg .= 'ошибка: ' . $v['res']['error'] . ' #' . $v['res']['code'] . PHP_EOL;
+
+            echo '<Br/>' . __LINE__;
+            echo '<Br/>' . $v['res']['error'] . ' #' . $v['res']['code'];
+            $log_errors[$v['date']][$v['sp']] = ['msg' => $v['res']['error'], 'code' => $v['res']['code']];
+        } else {
+            echo '<Br/>' . __LINE__;
+            echo '<Br/>результ норм' .
+            ' / sp - ' . $v['sp'] .
+            ' / date - ' . $v['date'] .
+            ' / часов - ' . $v['res']['hours'] .
+            ' / оценка - ' . $v['res']['ocenka'] .
+            ' / оценка время - ' . $v['res']['ocenka_time'] .
+            ' / оценка на руки - ' . $v['res']['ocenka_naruki'];
+
+            $for_msg .= 'оценка выставлена: ' .
+                    ' общая: ' . $v['res']['ocenka'] .
+                    ' / время: ' . $v['res']['ocenka_time'] .
+                    ' / на руки: ' . $v['res']['ocenka_naruki'] . PHP_EOL;
+        }
+
+        echo '</fieldset>';
+    }
+
+    require_once DR . dir_site . 'config.php';
+    
+    // \f\pa($vv['admin_ajax_job']);
+    
+    if (1 == 1 && class_exists('\Nyos\Msg')) {
+        \Nyos\Msg::sendTelegramm($for_msg, null, 1);
+
+        if (isset($vv['admin_ajax_job'])) {
+            foreach ($vv['admin_ajax_job'] as $k => $v) {
+                \nyos\Msg::sendTelegramm($for_msg, $v);
+                //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+            }
+        }
+    }
+
+    \f\pa($log_errors, 2);
+    file_put_contents($cash_file_errors, json_encode($log_errors));
+
+    echo '<hr>';
+
+
+
+    //$r = '111';
+    // echo '<br/>'.__LINE__.'<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+    \f\end2(( $r ?? 'x'), true);
+    // echo '</div>';
 }
 
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
+
+    /**
+     * перенёс в отдельную функцию 
+     * \Nyos\mod\jobdesc\calculateAutoOcenkaDays($db, $sp, $data)
+     */
+    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
+
+    // \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
+    if (!empty($ee1['data']['error'])) {
+        \f\end2($ee1['data']['error'], false, $ee1);
+    } else {
+        \f\end2('ok', true, $ee1);
+    }
 
     // ob_start('ob_gzhandler');
 
@@ -501,7 +664,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
         $text = $ex->getMessage()
-                . 'авторасчёт оценки дня'
+                . ' авторасчёт оценки дня'
                 . PHP_EOL
                 . PHP_EOL
                 . ' sp:' . ( $return['data']['sp'] ?? '--' )
@@ -518,8 +681,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         // . '</pre>'
         ;
 
-        if (class_exists('\Nyos\Msg'))
-            \Nyos\Msg::sendTelegramm($text, null, 1);
+        if (1 == 2) {
+            if (class_exists('\Nyos\Msg'))
+                \Nyos\Msg::sendTelegramm($text, null, 1);
+        }
 
         /*
           echo '<pre>'
@@ -559,11 +724,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         ob_end_clean();
 
         \f\end2('Обнаружены ошибки: ' . $ex->getMessage(), false, [
-            'text' => $text . '<br/>' . $r,
+            'error' => $ex->getMessage(),
+            'code' => $ex->getCode(),
             'sp' => ( $return['data']['sp'] ?? null ),
             'date' => ( $return['data']['date'] ?? null ),
-            'error' => $ex->getMessage(),
-            'code' => $ex->getCode()
+            'text' => $text . '<br/>' . $r,
         ]);
     }
 }
