@@ -245,7 +245,7 @@
 
                         {# {{ iy }}<br/> #}
 
-                        {% for i in range(low=1, high=12, step=1) if ( ( year == 2019 and i >= 5 ) or ( year > 2019 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
+                        {% for i in range(low=1, high=12, step=1) if ( ( year == 2019 and i >= 9 ) or ( year > 2019 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
 
                             {% if i < 10 %}
                                 {% set i2 = '0'~i %}
@@ -447,12 +447,14 @@
                 {% if 1 == 1 %}
                     <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
 
+                        {#
                         <div class="btn-group mr-2" role="group" aria-label="First group">
+                        #}
                             <button type="button" class="btn btn-xs btn-default">Показать:</button>
-
+{#
                         </div>
                         <div class="btn-group mr-2" role="group" aria-label="First group">
-
+#}
                             {% set gets = get %}
                             {#{ pa(gets) }#}
 
@@ -469,8 +471,9 @@
                                 {#{ pa(sp_now) }#}
 
                             {% endfor %}
-
+{#
                         </div>
+#}
                     </div>
 
                 {% endif %}
@@ -807,6 +810,9 @@
                                 <div class="dropdown-menu">
 
                                     {# модальные окошки, само окошко в самом низу #}
+                                    
+{% if 1 == 2 %}
+                                    
                                     <a href="#" 
                                        class="dropdown-item btn-light"
                                        data-toggle="modal" data-target="#addPesonalOnSp" onclick="
@@ -824,7 +830,18 @@
                                                $('#move_person__sp').val('{{ sp_now }}');
                                                $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
                                        " >назначить сотрудника на данную точку</a>
+{% endif %}
+                                       
+                                    <a href="#" 
+                                       class="dropdown-item btn-light"
+                                       data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
+                                               $('#add_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
+                                               $('#add_person__sp').val('{{ sp_now }}');
+                                               $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
+                                       " >назначить сотрудника</a>
 
+                                       
+                                       
                                     {#
                                     <a class="dropdown-item" href="#">Action</a>
                                     <a class="dropdown-item" href="#">Another action</a>
@@ -857,8 +874,6 @@
                                     </div>
 
                                     <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
-
-
 
                                         <a href="#" 
                                            xtype="button" xclass="btn btn-info btn-xs" 
@@ -907,9 +922,14 @@
                                 {#{ pa(now_job) }#}
                                 {#{ pa(now_job.dolgnost) }#}
 
+                                
+                                {# шестерёнка у сотрудника, отключил, нет параметров для сотрудника #}
+                                {% if 1 == 2 %}
                                 <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");
                                         return false;' class="fa fa-cog"></i></div>
-
+                                {% endif %}
+                                        
+                                        
                                 {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
                                 <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
 
@@ -939,6 +959,7 @@
                                     <div class="show_2div" style="display:none;" >
 
                                         {# только админ #}
+                                        {% if 1 == 2 %}
                                         <a href="#" 
 
                                            xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
@@ -958,6 +979,17 @@
                                            >удалить сотрудника</a>
 
                                         <div id="resto_del_{{ sp_now }}_{{ man.id }}" ></div>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -982,6 +1014,15 @@
                                             <div id="resto_{{ sp_now }}_{{ man.id }}" ></div>
                                         {% endif %}
 
+                                        
+                                        
+                                        
+                                        <br/>
+                                        <br/>
+                                        <p><small>для назначения новой должности, используйте шестерёнку около названия точки продаж</small></p>
+                                        
+                                        {% if 1 == 2 %}
+                                        
                                         <a href="#" 
                                            data-toggle="modal" data-target="#setNewDolgn" onclick="
                                                    $('#add_person1__workman').val('{{ man.id }}');
@@ -994,6 +1035,7 @@
 
                                            " 
                                            class="btn btn-xs btn-light" ><span class="fa fa-plus" ></span> назначить новую должность</a>
+                                        {% endif %}
 
                                     </div>
 
@@ -1283,6 +1325,16 @@
 
                                                            ><span class="fa fa-times" ></span></a>
                                                         <abbr title="сотруднику назначена новая должность" >{{ dolgn.data[now_job.dolgnost]['head'] }}</abbr>
+                                                        
+                                                        {#{ pa(now_job.d) }#}
+                                                        <small>
+                                                        {% if now_job.d['dop']['kurit'] is defined or now_job.d['dop']['smoke'] is defined %}
+                                                            курит
+                                                        {% else %}
+                                                            не&nbsp;курит
+                                                        {% endif %}
+                                                        </small>
+                                                        
                                                     </div>
 
                                                     <div class="alert-success" 

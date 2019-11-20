@@ -237,22 +237,19 @@ $function = new Twig_SimpleFunction('jobdesc__get__access_moders', function ( $d
 
         $ac = \Nyos\mod\items::getItemsSimple($db, 'sale_point_access_moder');
         $return = [];
-        
-        
+
+
         foreach ($ac['data'] as $k => $v) {
 
-            if( isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && $v['dop']['user_id'] == $_SESSION['now_user_di']['id']){
+            if (isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && $v['dop']['user_id'] == $_SESSION['now_user_di']['id']) {
                 $return[$v['dop']['sale_point']] = 1;
             }
-            
         }
-        
+
         return $return;
-        
     } else {
         return false;
     }
-
 });
 $twig->addFunction($function);
 
@@ -372,6 +369,40 @@ $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $
     return $a_job_in;
 });
 $twig->addFunction($function);
+
+
+/**
+ * список сотрудников для добавления в точки продаж (показываем тех у кого нет назначения на другие точки)
+ * все возможные сотрудники, новая версия от 19-11-20
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_list_jobmans', function ( $db ) {
+
+
+    $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
+    // \f\pa($jobmans, 2);
+    // $job_on_sp = \Nyos\mod\items::getItemsSimple($db, 'jobman_send_on_sp');
+    // \f\pa($jobmans);
+
+//    $jobs = [];
+//    foreach ($job_on_sp['data'] as $k => $v) {
+//        $jobs[$v['dop']['jobman']] = 1;
+//    }
+
+//    $free_jobmans = [];
+//    foreach ($jobmans['data'] as $k => $v) {
+//        if (!isset($jobs[$k])) {
+//            $free_jobmans[] = ['id' => $k, 'head' => $v['head'], 'bd' => $v['dop']['birthday'] ?? ''];
+//        }
+//    }
+//    usort($free_jobmans, "\\f\\sort_ar_head");
+    usort($jobmans['data'], "\\f\\sort_ar_head");
+
+    // return $free_jobmans;
+    return $jobmans['data'];
+});
+$twig->addFunction($function);
+
+
 
 
 /**
@@ -645,7 +676,7 @@ $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db
 
 
     foreach ($job_in['data'] as $j => $job) {
-        
+
         // \f\pa($job);
         $now_st = strtotime($job['dop']['date']);
 

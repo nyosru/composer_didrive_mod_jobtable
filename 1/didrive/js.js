@@ -13,7 +13,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         // console.log('function put_workman_on_sp( ' + $sp + ', ' + $workman + ', ' + $dolgnost + ', ' + $date_start + ' )');
         var data = $($th).serialize();
-        // console.log('111 '+data);
+//        console.log($th);
+//        console.log('111 ',data);
 
         dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
         sp_from = $('#add_person1day__user option:selected').attr('sp');
@@ -451,9 +452,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
 // считаем сумму каждой смены
-//    setTimeout(function () {
-//        calcSummMoneySmena();
-//    }, 300);
+    setTimeout(function () {
+        calcSummMoneySmena();
+    }, 1000);
 
 
 
