@@ -300,7 +300,8 @@ class JobDesc {
 
         return $summa ?? false;
     }
-
+    
+    
     /**
      * 
      * @param type $db

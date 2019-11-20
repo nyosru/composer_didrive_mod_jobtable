@@ -13,7 +13,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         // console.log('function put_workman_on_sp( ' + $sp + ', ' + $workman + ', ' + $dolgnost + ', ' + $date_start + ' )');
         var data = $($th).serialize();
-        // console.log('111 '+data);
+//        console.log($th);
+//        console.log('111 ',data);
 
         dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
         sp_from = $('#add_person1day__user option:selected').attr('sp');
@@ -262,7 +263,22 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 // alert('123');
 
-//alert('123');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function calculate_summ_day($sp, $date) {
 
         $('.price_hour_' + $date + '_' + $sp).each(function (i, elem) {
@@ -356,7 +372,26 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-    calculateSummAllGraph();
+    // calculateSummAllGraph();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * вычисляем сумму денег за день 1911
@@ -366,6 +401,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function calcSummMoneySmena(id = null) {
 
+        console.log('calcSummMoneySmena', id);
         $('body .smena_summa').html('..');
 
         $('body .job_hours').each(function (i, elem) {
@@ -378,39 +414,56 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             $hours = $hours0 * 1;
             // console.log($hours2);
 
-            if ($('.smena_price_' + $id).length && $hours > 0 && $id > 0) {
+            if (1 == 1 || id == $id || id == null) {
 
-                $price = $('.smena_price_' + $id + ' option:selected').attr('price');
-                // console.log('цена - '+$price);
-                console.log($id + ' / ' + $hours + ' / ' + $price);
+                if ($('.smena_price_' + $id).length && $hours > 0 && $id > 0) {
 
-                $sum = $hours * $price;
+                    $price = $('.smena_price_' + $id + ' option:selected').attr('price');
+                    // console.log('цена - '+$price);
+                    console.log($id + ' / ' + $hours + ' / ' + $price);
 
-                if ($sum > 0) {
-                    $('body .smena_summa_' + $id).html($sum + 'р');
-                } else {
-                    $('body .smena_summa_' + $id).html('');
-                }
+                    $sum = $hours * $price;
 
-                if ($('.smena_oplacheno_' + $id).length) {
-
-                    $summa_oplat = $('.smena_oplacheno_' + $id).attr('summ');
-
-                    // если выплачено и начислено сходится, убираем начислено
-                    if ($sum == $summa_oplat) {
-                        // console.log($sum + ' бб ' + $summa_oplat);
-                        $('body .smena_summa_' + $id).hide();
+                    if ($sum > 0) {
+                        $('body .smena_summa_' + $id).html($sum + 'р');
+                    } else {
+                        $('body .smena_summa_' + $id).html('');
                     }
-                }
 
-            } else {
-                console.log('пропускаем');
+                    if ($('.smena_oplacheno_' + $id).length) {
+
+                        $summa_oplat = $('.smena_oplacheno_' + $id).attr('summ');
+
+                        // если выплачено и начислено сходится, убираем начислено
+                        if ($sum == $summa_oplat) {
+                            // console.log($sum + ' бб ' + $summa_oplat);
+                            $('body .smena_summa_' + $id).hide();
+                        }
+                    }
+
+                }
+                //
+                else {
+                    console.log('пропускаем');
+                }
             }
 
         });
     }
 
-    calcSummMoneySmena();
+// считаем сумму каждой смены
+    setTimeout(function () {
+        calcSummMoneySmena();
+    }, 1000);
+
+
+
+
+
+
+
+
+
 
     /**
      * кликаем по кнопам плюс минус час
@@ -418,6 +471,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     $('body').on('click', '.ajax_hour_action', function (event) {
 
         clearTdSummAllGraph();
+
         $th = $(this);
         $znak = $th.attr('type_action'); // - || +
         // console.log($znak); // - || +
@@ -485,7 +539,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     setTimeout(function () {
                         //calculateSummAllGraph();
 
-                        alert($textblock_id);
+                        console.log('$textblock_id', $textblock_id);
+                        // alert($textblock_id);
+
                         calcSummMoneySmena($textblock_id);
 
                     }, 100);
@@ -1671,7 +1727,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                $.each($j, function(key, val){
 //                    $string += '<br/>' + key + ': ' + val;
 //                });
-                
+
                 // $string.text((i) => $j[i]);
 
 //                for (var p in $j.data)
@@ -1690,10 +1746,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 //$html = '';
 
                 //$html = '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['data'] + '</div>';
-                
+
                 $html = '';
 // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $string + '</div>';
-                
+
 // $html += '<div style="background-color:rgba(0,255,255,0.3);xcolor:red;padding:5px;">' + $j['ocenka'] + '</div>';
                 // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot<br/>' + $j['data']['oborot'] + '</div>';
                 // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 2<br/>' + $j.data.oborot + '</div>';
@@ -1738,7 +1794,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $(resto).html($html + $j.txt);
                     // $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
 
-                } 
+                }
                 // $j['status'] != 'ok'
                 else {
                     // alert('11');

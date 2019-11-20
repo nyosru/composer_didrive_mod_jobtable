@@ -498,7 +498,106 @@
     </div>
 </div>                                    
 
-{# сотруднику добавляем смену #}
+{# сотруднику добавляем смену ( все сотрудники, новая версия ) #}
+<div class="bd-example">
+    <div class="modal fade" id="addPesonalOnSp2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    {#
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    #}
+                    <h4 class="modal-title" id="exampleModalLabel">Назначение сотрудника на точку продаж</h4>
+                </div>
+
+                <form class="put_workman_on_sp" method="post" action="" >
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="form-control-label">Точка продаж:</label>
+                            <input type="text" class="form-control" id="add_person__sp_name" readonly="readonly" value="00">
+                            <input type="hidden" id="add_person__sp" name="sp" value="00" >
+                            <input type="hidden" id="add_person__sp_s" name="sp_s" value="00" >
+                        </div>
+
+                        <div class="form-group">
+                            
+                            фильтр списка<br/>
+                            
+                            <input type="text" class="form-control" id="filtr_fio" >
+                            
+                            <label for="recipient-name" class="form-control-label">Сотрудник:</label>
+
+                            {% set jobmans_on_add = jobdesc__get_list_jobmans(db) %}
+                            {#{ pa(jobmans_on_add) }#}
+                            
+                            
+                            <select class="form-control select_filtered" name="user" id="add_person__user" required="requiered" 
+                                    data-live-search="true"
+                                    >
+                                <option value="">выберите сотрудника</option>
+                                {% for u, u_da in jobmans_on_add %}
+                                    <option value="{{ u_da.id }}">{{ u_da.head }} \ {{ u_da.dop.birthday }} \ iiko: {{ u_da.dop.iiko_name }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="form-control-label">Курит ?
+                                <input type="checkbox" name="smoke" value="da" > да, курит
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="recipient-name" class="form-control-label">Должность:</label>
+
+                            {% set dolgnost_on_add = items__readItems(db,'061.dolgnost') %}
+                            {#{ pa(dolgnost_on_add) }#}
+                            <select class="form-control" name="dolgn" id="add_person__user" required="requiered" >
+                                <option value="">Выберите</option>
+                                {% for id, da in dolgnost_on_add.data %}
+                                    <option value="{{ id }}">{{ da.head }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add_person__date" class="form-control-label">Первый день работы в указанной должности:</label>
+                            <input type="date" class="form-control" id="add_person__date" name="date" value="" placeholder="укажите" required="requiered" >
+                        </div>
+
+                        {#
+                        <div class="form-group">
+                            <label for="message-text" class="form-control-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                        #}
+
+                    </div>
+
+                    <div class="modal-footer">
+                        {#
+                        <button type="button" class="btn btn-xs btn-light" data-dismiss="modal">Close</button>
+                        #}
+                        <button type="submit" name="add_profi" value="yes" class="btn btn-success">Назначить</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>                                    
+
+{# сотруднику добавляем смену ( уже работает который) #}
+{% if 1 == 2 %}
 <div class="bd-example">
     <div class="modal fade" id="addPesonalOnSp" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -594,8 +693,10 @@
         </div>
     </div>
 </div>                                    
+{% endif %}
 
 {# назначение новой должности #}
+{% if 1 == 2 %}
 <div class="bd-example">
     <div class="modal fade" id="setNewDolgn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -691,7 +792,9 @@
         </div>
     </div>
 </div>
-
+{% endif %}
+                        
+                        
 {# спец назначение 1 день, приглашение другого сотрудника на точку #}
 <div class="bd-example">
     <div class="modal fade" id="setSpecNaznach" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

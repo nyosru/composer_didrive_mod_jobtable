@@ -39,7 +39,7 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 if (
         ( isset($_REQUEST['action']{0}) &&
         (
-        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
+        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record'
         )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
@@ -178,6 +178,141 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     \f\end2($r, true);
 }
 
+// пишем бонусы по зарплате за день по 1 точке
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record') {
+
+
+    if (empty($_REQUEST['date']))
+        \f\end2('нет даты', false);
+
+    if (!empty($_REQUEST['sp']) && is_numeric($_REQUEST['sp'])) {
+        
+    } else {
+        \f\end2('не определена точка продаж', false);
+    }
+
+    $dt = strtotime($_REQUEST['date']);
+    $_d = date('Y-m-d', $dt);
+    $ds = date('Y-m-d 05:00:00', $dt);
+    $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
+
+    $_sp = $_REQUEST['sp'];
+
+
+
+    // echo 'x '.$ds.' '.$df;
+    // $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
+
+
+    /**
+     * список должность и сколько бонуса накинуть
+     * должность - оценка - бонус
+     */
+    $list_dolg_bonus = [];
+
+
+
+
+
+    /**
+     * массив работник > должность
+     */
+    $where_job = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $_d);
+    // \f\pa($where_job);
+
+    foreach ($where_job as $k => $v) {
+        if (isset($v['sale_point']) && $v['sale_point'] == $_sp && isset($v['jobman']) && isset($v['dolgnost'])) {
+            $job_in[$v['jobman']] = $v['dolgnost'];
+            $list_dolg_bonus[$v['dolgnost']] = 0;
+        }
+    }
+
+    \f\pa($job_in, 2, '', '$job_in работает в указанную дату на точке скана ' . $_sp . ' ( работник > должность )');
+
+
+
+
+
+
+
+    /**
+     * дневной оборот точки
+     */
+    $day_oborot = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
+    \f\pa($day_oborot, 2, '', '$day_oborot');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $_ocenka = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+    // \f\pa($_ocenka,2,'','ocenka');
+
+    $cheki_da = [];
+    $cheki_jobmans = [];
+
+    foreach ($_ocenka['data'] as $k => $v) {
+        if (
+                !empty($v['dop']['start']) && $ds < $v['dop']['start'] && !empty($v['dop']['fin']) && $v['dop']['fin'] < $df && isset($v['dop']['jobman']) && isset($job_in[$v['dop']['jobman']])
+        ) {
+            $cheki_da[$v['id']] = $v;
+
+            // если ещё не было записи
+            if (!isset($cheki_jobmans[$v['dop']['jobman']])) {
+                $ocenka = $v['dop']['ocenka'] ?? $v['dop']['ocenka_auto'];
+                $cheki_jobmans[$v['dop']['jobman']] = $ocenka;
+            }
+// если запись была, то смотрим где ниже оценка            
+            else {
+                $ocenka = $v['dop']['ocenka'] ?? $v['dop']['ocenka_auto'];
+                if ($ocenka < $cheki_jobmans[$v['dop']['jobman']]) {
+                    $cheki_jobmans[$v['dop']['jobman']] = $ocenka;
+                }
+            }
+        }
+    }
+
+    // \f\pa($cheki_da, 2, '', '$cheki_da');
+    \f\pa($cheki_jobmans, 2, '', '$cheki_jobmans список работников > оценка');
+
+
+
+
+
+
+
+    $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
+    // \f\pa($dolgns, 2, '', '$dolgns');
+
+    $d = [];
+
+    foreach ($dolgns['data'] as $k => $v) {
+
+        if ($v['dop']['date'] > $_d)
+            continue;
+
+        $d[$v['dop']['dolgnost']][] = $v['dop'];
+    }
+
+    \f\pa($d, 5, '', 'должности на ' . $_d);
+
+
+
+
+
+
+
+    \f\end2($return ?? 'end, no $return', false, $return_ar);
+}
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
 
@@ -207,8 +342,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     // \f\pa($tt['data'], 2, '', '\Nyos\mod\JobDesc::getDaysOcenkaNo');
     // exit;
 
+
+
     $result1 = [];
-    
+
     // повторы если указан $_REQUEST['povtorov']
     $povtorov = $_REQUEST['povtorov'] ?? 20;
 
@@ -361,9 +498,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     }
 
     require_once DR . dir_site . 'config.php';
-    
+
     // \f\pa($vv['admin_ajax_job']);
-    
+
     if (1 == 1 && class_exists('\Nyos\Msg')) {
         \Nyos\Msg::sendTelegramm($for_msg, null, 1);
 
@@ -960,7 +1097,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         $d['dolgnost'] = $_REQUEST['dolgn'];
         $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
 
-        if (!empty($d['smoke']))
+        if (!empty($_REQUEST['smoke']))
             $d['smoke'] = 'da';
 
         if (isset($_REQUEST['type2']) && $_REQUEST['type2'] == 'spec_naznach') {
