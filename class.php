@@ -55,20 +55,35 @@ class JobDesc {
     /**
      * список модулей //  
      * чеки
+     * @var строка
      */
     public static $mod_checks = '050.chekin_checkout';
 
     /**
      * список модулей //  
      * оборот ыточек по дням
+     * @var строка
      */
     public static $mod_oborots = 'sale_point_oborot';
 
     /**
      * список модулей //  
      * время ожидания по умолчанию
+     * @var строка
      */
     public static $mod_timeo_default = '074.time_expectations_default';
+
+    /**
+     * модуль бонусов (день точка сотрудник сумма )
+     * @var строка
+     */
+    public static $mod_bonus = '072.plus';
+
+    /**
+     * модуль минусов (день точка сотрудник сумма )
+     * @var строка
+     */
+    public static $mod_minus = '072.vzuscaniya';
 
     /**
      * получаем какие цены по датам у должностей на точке продаж (старая)
@@ -300,8 +315,7 @@ class JobDesc {
 
         return $summa ?? false;
     }
-    
-    
+
     /**
      * 
      * @param type $db
@@ -1437,6 +1451,257 @@ class JobDesc {
     }
 
     /**
+     * запись автобонусов день + тп 
+     * @param type $db
+     * @param type $sp
+     * @param type $date
+     * @return type
+     */
+    public static function creatAutoBonus($db, $_sp, $dt0) {
+
+        $dt = strtotime($dt0);
+        $_d = date('Y-m-d', $dt);
+        $ds = date('Y-m-d 05:00:00', $dt);
+        $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
+
+        
+// удаление имеющихся бонусов в этот день
+    $ee = self::deleteAutoBonus($db, $_sp, $_d );
+    //\f\pa($ee,'','','$ee удаление автобонусов');
+        
+        /**
+         * список должность и сколько бонуса накинуть
+         * должность - оценка - бонус
+         */
+        $list_dolg_bonus = [];
+
+        /**
+         * массив работник > должность
+         */
+        $where_job = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $_d);
+        // \f\pa($where_job);
+
+        foreach ($where_job as $k => $v) {
+            if (isset($v['sale_point']) && $v['sale_point'] == $_sp && isset($v['jobman']) && isset($v['dolgnost'])) {
+                $job_in[$v['jobman']] = $v['dolgnost'];
+                $list_dolg_bonus[$v['dolgnost']] = 0;
+            }
+        }
+
+        // \f\pa($job_in, 2, '', '$job_in работает в указанную дату на точке скана ' . $_sp . ' ( работник > должность )');
+
+
+        /**
+         * дневной оборот точки
+         */
+        $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
+        // \f\pa($oborot_month, 2, '', '$oborot_month');
+        // \Nyos\mod\items::$get_data_simple = true;
+        $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+        $checks = [];
+
+        foreach ($checks0['data'] as $k => $v) {
+            if (isset($v['dop']['jobman']) && isset($job_in[$v['dop']['jobman']]) && isset($v['dop']['start']) && $v['dop']['start'] >= $ds && $v['dop']['start'] <= $df) {
+                $v['dop']['item_id'] = $v['id'];
+                $checks[] = $v['dop'];
+            }
+        }
+
+        // usort($checks, "\\f\\sort_ar_start");
+        // \f\pa($checks, 2, '', '$checks');
+
+
+        /*
+          $cheki_da = [];
+          $cheki_jobmans = [];
+
+          // usort($dd, "\\f\\sort_ar_date");
+
+          foreach ($checks as $k => $v) {
+          if (
+          !empty($v['start']) && $ds < $v['start'] && !empty($v['fin']) && $v['fin'] < $df && isset($v['jobman']) && isset($job_in[$v['jobman']])
+          ) {
+          $cheki_da[$v['id']] = $v;
+
+          // если ещё не было записи
+          if (!isset($cheki_jobmans[$v['jobman']])) {
+          $ocenka = $v['ocenka'] ?? $v['ocenka_auto'];
+          $cheki_jobmans[$v['jobman']] = $ocenka;
+          }
+          // если запись была, то смотрим где ниже оценка
+          else {
+          $ocenka = $v['ocenka'] ?? $v['ocenka_auto'];
+          if ($ocenka < $cheki_jobmans['jobman']) {
+          $cheki_jobmans[$v['jobman']] = $ocenka;
+          }
+          }
+          }
+          }
+
+          // \f\pa($cheki_da, 2, '', '$cheki_da');
+          \f\pa($cheki_jobmans, 2, '', '$cheki_jobmans список работников > оценка');
+         */
+
+
+        $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
+// \f\pa($dolgns, 5, '', '$dolgns');
+
+        $dd = [];
+
+        foreach ($dolgns['data'] as $k => $v) {
+            $dd[] = $v['dop'];
+        }
+
+        usort($dd, "\\f\\sort_ar_date");
+        // \f\pa($dd, 5, '', '$dolgns2');
+
+        $d = [];
+
+        foreach ($dd as $k => $v) {
+
+            if ($v['date'] > $_d)
+                continue;
+
+            if (isset($v['oborot_sp_last_monht_bolee'])) {
+
+                if ($oborot_month >= $v['oborot_sp_last_monht_bolee']) {
+
+//                echo '<br/>[' . $v['dolgnost'] . '] ' . __LINE__ . ' ' . $v['oborot_sp_last_monht_bolee'] . ' ++ ' . $oborot_month;
+//                \f\pa($v);
+
+                    $d[$v['dolgnost']] = $v;
+                }
+            }
+
+//
+            elseif (isset($v['oborot_sp_last_monht_menee'])) {
+                if ($oborot_month <= $v['oborot_sp_last_monht_menee']) {
+
+//                echo '<br/>[' . $v['dolgnost'] . '] ' . __LINE__ . ' ' . $v['oborot_sp_last_monht_menee'] . ' ++ ' . $oborot_month;
+//                \f\pa($v);
+                    $d[$v['dolgnost']] = $v;
+                }
+            }
+
+//
+            else {
+
+//            echo '<br/>[' . $v['dolgnost'] . '] ' . __LINE__ . ' ';
+//            \f\pa($v);
+                $d[$v['dolgnost']] = $v;
+            }
+        }
+
+
+
+        $adds = [];
+
+
+        // \f\pa($d, 5, '', '$d должности на ' . $_d);
+        // перебираем чеки ищем кто работает и номер чека берём для комментария
+        foreach ($checks as $k => $v) {
+
+//        echo '<hr>';
+
+            if (isset($job_in[$v['jobman']])) {
+
+//            echo '<br/>jm:' . $v['jobman'];
+//            echo '<br/>должность:' . $job_in[$v['jobman']];
+
+                $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
+//            echo '<br/>оценка:' . $ocenka;
+
+                if( empty($ocenka) )
+                    continue;
+                
+                $premiya = $d[$job_in[$v['jobman']]]['premiya-' . $ocenka] ?? null;
+
+                if (!empty($premiya)) {
+//                echo '<Br/>pr ' . $premiya;
+
+                    $adds[] = [
+                        'auto_bonus_zp' => 'da',
+                        'jobman' => $v['jobman'],
+                        'sale_point' => $_sp,
+                        'date_now' => $_d,
+                        'summa' => $premiya,
+                        'text' => 'бонус к зп',
+                    ];
+
+//                $add = [
+//                    'auto_bonus_zp' => 'da',
+//                    'jobman' => $v['jobman'],
+//                    'sale_point' => $_sp,
+//                    'date_now' => $_d,
+//                    'summa' => $premiya,
+//                    'text' => 'бонус к зп',
+//                ];
+//
+//                \Nyos\mod\items::addNewSimple($db, \Nyos\mod\JobDesc::$mod_bonus, $add);
+                }
+            }
+        }
+
+        if (!empty($adds)) {
+            // \f\pa($adds);
+
+            \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $adds);
+            return \f\end3('bonus exists', true, ['adds' => $adds]);
+        } else {
+
+            return \f\end3('no bonus', false);
+        }
+
+        // return \f\end3('ok', true, $return);
+// return $return;
+    }
+
+    /**
+     * удаление автобонусов по зп ( день + тп )
+     * @param type $db
+     * @param type $sp
+     * @param type $date
+     * @return type
+     */
+    public static function deleteAutoBonus($db, $sp, $date0) {
+
+        $date = date('Y-m-d', strtotime($date0));
+
+        \Nyos\mod\items::$get_data_simple = true;
+        $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
+        //\f\pa($bonuses);
+
+        $sql1 = '';
+        $sql2 = [];
+
+        $nn = 0;
+
+        foreach ($bonuses as $k => $v) {
+            if (isset($v['auto_bonus_zp']) && $v['auto_bonus_zp'] == 'da' && isset($v['date_now']) && $v['date_now'] == $date) {
+
+                $sql2[':id' . $nn] = $v['_id'];
+                $sql1 .= (!empty($sql1) ? ' OR ' : '' ) . ' `id` = :id' . $nn;
+
+                $nn++;
+            }
+        }
+        // \f\pa($bonus_del);
+
+        if (!empty($sql1)) {
+
+            $ff = $db->prepare('UPDATE mitems SET `status` = \'delete\' WHERE ' . $sql1);
+            $ff->execute($sql2);
+
+            return \f\end3('ok, удалено ' . sizeof($sql2) . ' шт.', true, $sql2);
+        } else {
+            return \f\end3('нечего удалять', false);
+        }
+
+
+// return $return;
+    }
+
+    /**
      * считаем оценку 1 дня (при автоматическом выставлении оценок
      * @param type $db
      * @param type $sp
@@ -1455,10 +1720,10 @@ class JobDesc {
 
                 $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
 
-            //                \f\pa($return, 2, '', '$return данные для оценки дня');
-            //                die();
-            // массив чеков для новых оценок
-            // $return['checks_for_new_ocenka']
+                //                \f\pa($return, 2, '', '$return данные для оценки дня');
+                //                die();
+                // массив чеков для новых оценок
+                // $return['checks_for_new_ocenka']
             }
 
             if (1 == 1) {

@@ -39,7 +39,7 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 if (
         ( isset($_REQUEST['action']{0}) &&
         (
-        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record'
+        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month'
         )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
@@ -178,6 +178,61 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     \f\end2($r, true);
 }
 
+
+
+// пишем бонусы по зарплате за месяц по 1 точке
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
+
+    if (empty($_REQUEST['date']))
+        \f\end2('нет даты', false);
+
+    if (!empty($_REQUEST['sp']) && is_numeric($_REQUEST['sp'])) {
+        
+    } else {
+        \f\end2('не определена точка продаж', false);
+    }
+
+    \f\timer::start(3);
+
+    $date_start = date('Y-m-00', strtotime($_REQUEST['date']));
+    $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+    $e = [];
+
+    for ($n = 0; $n <= 31; $n++) {
+
+//    $date_start = date('Y-m-00', strtotime($_REQUEST['date']) );
+//    $date_finish = date('Y-m-d', strtotime($date_start.' +1 month -1 day') );
+
+        $date = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+
+        if ($date > $date_finish)
+            break;
+
+        // echo '<br/>'.$date;
+
+        $e2 = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $date);
+
+        // \f\pa($e2);
+        
+        if( isset($e2['data']['adds']) )
+        foreach ($e2['data']['adds'] as $k => $v) {
+            $e['datas'][] = $v;
+        }
+
+        // \f\pa($ee,'','','$ee создание автобонусов');
+    }
+
+    // echo \f\timer::stop('str', 3);
+    $e['timer'] = \f\timer::stop('str', 3);
+    $e['kolvo'] = sizeof($e['datas']);
+
+    // \f\pa($e);
+    
+    \f\end2('ok', true, $e);
+}
+
+
 // пишем бонусы по зарплате за день по 1 точке
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record') {
 
@@ -191,181 +246,59 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record') {
         \f\end2('не определена точка продаж', false);
     }
 
-    $dt = strtotime($_REQUEST['date']);
-    $_d = date('Y-m-d', $dt);
-    $ds = date('Y-m-d 05:00:00', $dt);
-    $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
+    // \f\timer::start(3);
 
-    $_sp = $_REQUEST['sp'];
+    $ee = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $_REQUEST['date']);
+    // \f\pa($ee,'','','$ee создание автобонусов');
 
+    \f\end2('ok', true, $ee);
 
-
-    // echo 'x '.$ds.' '.$df;
-    // $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
-
-
-    /**
-     * список должность и сколько бонуса накинуть
-     * должность - оценка - бонус
-     */
-    $list_dolg_bonus = [];
-
-
-
-
-
-    /**
-     * массив работник > должность
-     */
-    $where_job = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $_d);
-    // \f\pa($where_job);
-
-    foreach ($where_job as $k => $v) {
-        if (isset($v['sale_point']) && $v['sale_point'] == $_sp && isset($v['jobman']) && isset($v['dolgnost'])) {
-            $job_in[$v['jobman']] = $v['dolgnost'];
-            $list_dolg_bonus[$v['dolgnost']] = 0;
-        }
-    }
-
-    \f\pa($job_in, 2, '', '$job_in работает в указанную дату на точке скана ' . $_sp . ' ( работник > должность )');
-
-
-
-
-
-
-
-    /**
-     * дневной оборот точки
-     */
-    $day_oborot = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
-    \f\pa($day_oborot, 2, '', '$day_oborot');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    $_ocenka = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
-    // \f\pa($_ocenka,2,'','ocenka');
-
-    $cheki_da = [];
-    $cheki_jobmans = [];
-
-    foreach ($_ocenka['data'] as $k => $v) {
-        if (
-                !empty($v['dop']['start']) && $ds < $v['dop']['start'] && !empty($v['dop']['fin']) && $v['dop']['fin'] < $df && isset($v['dop']['jobman']) && isset($job_in[$v['dop']['jobman']])
-        ) {
-            $cheki_da[$v['id']] = $v;
-
-            // если ещё не было записи
-            if (!isset($cheki_jobmans[$v['dop']['jobman']])) {
-                $ocenka = $v['dop']['ocenka'] ?? $v['dop']['ocenka_auto'];
-                $cheki_jobmans[$v['dop']['jobman']] = $ocenka;
-            }
-// если запись была, то смотрим где ниже оценка            
-            else {
-                $ocenka = $v['dop']['ocenka'] ?? $v['dop']['ocenka_auto'];
-                if ($ocenka < $cheki_jobmans[$v['dop']['jobman']]) {
-                    $cheki_jobmans[$v['dop']['jobman']] = $ocenka;
-                }
-            }
-        }
-    }
-
-    // \f\pa($cheki_da, 2, '', '$cheki_da');
-    \f\pa($cheki_jobmans, 2, '', '$cheki_jobmans список работников > оценка');
-
-
-
-
-
-
-
-    $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
-    // \f\pa($dolgns, 2, '', '$dolgns');
-
-    $d = [];
-
-    foreach ($dolgns['data'] as $k => $v) {
-
-        if ($v['dop']['date'] > $_d)
-            continue;
-
-        $d[$v['dop']['dolgnost']][] = $v['dop'];
-    }
-
-    \f\pa($d, 5, '', 'должности на ' . $_d);
-
-
-
-
-
-
-
-    \f\end2($return ?? 'end, no $return', false, $return_ar);
+    // echo \f\timer::stop('str', 3);
 }
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_days') {
 
 
     $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
-    // \f\pa($_sps, 2);
+// \f\pa($_sps, 2);
 
     /**
      * лог ошибок, трём раз в сутки в 4 утра
      */
     $cash_file_errors = DR . '/sites/' . $vv['folder'] . '/log.clear-24.json';
-    // массив с ошибками что были найдены ранее
+// массив с ошибками что были найдены ранее
     $log_errors = ( file_exists($cash_file_errors) ? json_decode(file_get_contents($cash_file_errors), true) : [] );
 
-
-
-
-
-
-
-
-
-
-    // echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
+// echo 'ищем дни без оценки action = ' . $_REQUEST['action'] . '<hr>';
 
     $tt = \Nyos\mod\JobDesc::getDaysOcenkaNo($db);
-    // \f\pa($tt['data'], 2, '', '\Nyos\mod\JobDesc::getDaysOcenkaNo');
-    // exit;
+// \f\pa($tt['data'], 2, '', '\Nyos\mod\JobDesc::getDaysOcenkaNo');
+// exit;
 
 
 
     $result1 = [];
 
-    // повторы если указан $_REQUEST['povtorov']
+// повторы если указан $_REQUEST['povtorov']
     $povtorov = $_REQUEST['povtorov'] ?? 20;
 
     $nn1 = 0;
-    // echo '<hr>' . __LINE__ . '<hr>';
-    // echo '<fieldset><legend>получили данные начинаем шарить по тем каких нет</legend>';
+// echo '<hr>' . __LINE__ . '<hr>';
+// echo '<fieldset><legend>получили данные начинаем шарить по тем каких нет</legend>';
 
     foreach ($tt['data'] as $date => $sps) {
 
         if ($nn1 >= $povtorov)
             break;
 
-        // echo '<br/>' . __FILE__ . ' ' . __LINE__;
-        // echo '<br/>' . $sp . ' ' . $date;
+// echo '<br/>' . __FILE__ . ' ' . __LINE__;
+// echo '<br/>' . $sp . ' ' . $date;
 
         foreach ($sps as $sp => $v) {
 
             if (!empty($v)) {
-                // \f\pa($v);
-                // echo '<br/>skip string';
+// \f\pa($v);
+// echo '<br/>skip string';
                 continue;
             }
 
@@ -432,7 +365,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 //                     echo '</fieldset>';
                 }
 
-                //
+//
                 catch (\Exception $ex) {
 
                     echo '<br/>' . __FILE__ . ' ' . __LINE__;
@@ -448,20 +381,20 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 
             $nn1++;
 
-            // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
+// echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
         }
 
 
-        // echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
+// echo '<br/><hr>nn1 ' . $nn1 . ' ' . __LINE__;
     }
 //    $e = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
 //    \f\pa($e,2,'','$e');
-    // echo '</fieldset>';
-    // echo '<hr>' . __LINE__ . '<hr>';
-    // echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
-    // \f\pa($result1, 2, '', '$result1');
-    // echo '</div>';
-    // \f\pa($log_errors, 2);
+// echo '</fieldset>';
+// echo '<hr>' . __LINE__ . '<hr>';
+// echo '<br/>' . __LINE__ . '<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+// \f\pa($result1, 2, '', '$result1');
+// echo '</div>';
+// \f\pa($log_errors, 2);
 
     $for_msg = '';
 
@@ -499,7 +432,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 
     require_once DR . dir_site . 'config.php';
 
-    // \f\pa($vv['admin_ajax_job']);
+// \f\pa($vv['admin_ajax_job']);
 
     if (1 == 1 && class_exists('\Nyos\Msg')) {
         \Nyos\Msg::sendTelegramm($for_msg, null, 1);
@@ -507,7 +440,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
         if (isset($vv['admin_ajax_job'])) {
             foreach ($vv['admin_ajax_job'] as $k => $v) {
                 \nyos\Msg::sendTelegramm($for_msg, $v);
-                //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+//\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
             }
         }
     }
@@ -519,10 +452,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 
 
 
-    //$r = '111';
-    // echo '<br/>'.__LINE__.'<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
+//$r = '111';
+// echo '<br/>'.__LINE__.'<div style="border: 2px solid orange; padding: 20px; max-height: 400px; overflow: auto;" >';
     \f\end2(( $r ?? 'x'), true);
-    // echo '</div>';
+// echo '</div>';
 }
 
 // считаем автооценку дня и пишем
@@ -534,38 +467,38 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
      */
     $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
 
-    // \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
+// \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
     if (!empty($ee1['data']['error'])) {
         \f\end2($ee1['data']['error'], false, $ee1);
     } else {
         \f\end2('ok', true, $ee1);
     }
 
-    // ob_start('ob_gzhandler');
+// ob_start('ob_gzhandler');
 
     try {
 
         if (1 == 1) {
             $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
-            // \f\pa($return, 2, '', '$return данные для оценки дня');
-            // массив чеков для новых оценок
-            // $return['checks_for_new_ocenka']
+// \f\pa($return, 2, '', '$return данные для оценки дня');
+// массив чеков для новых оценок
+// $return['checks_for_new_ocenka']
         }
 
         if (1 == 1) {
-            // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
+// \f\pa($return['data'], 2, '', '$return данные для оценки дня');
             $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return['data']);
-            // \f\pa($ocenka, 2, '', '$ocenka');
+// \f\pa($ocenka, 2, '', '$ocenka');
         }
 
 //        if ( class_exists('\Nyos\mod\items') )
 //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-        // if (!empty($return['data']['checks_for_new_ocenka'])) {
-        // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+// if (!empty($return['data']['checks_for_new_ocenka'])) {
+// \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
         \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
-        // }
+// }
 
-        \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+        \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
             'sale_point' => $ocenka['data']['sp'],
             'date' => $ocenka['data']['date'],
             'ocenka_time' => $ocenka['data']['ocenka_time'],
@@ -576,19 +509,19 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 //        $r = ob_get_contents();
 //        ob_end_clean();
 
-        \f\end2('ok ' . ( $r ?? '--' ), true, $return['data']);
+        \f\end2('ok ' . ( $r ?? '--'), true, $return['data']);
 
         if (1 == 2) {
 
-            // require_once DR . '/all/ajax.start.php';
-            // $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
-            // $ff->execute(array(':id' => (int) $_POST['id2']));
+// require_once DR . '/all/ajax.start.php';
+// $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
+// $ff->execute(array(':id' => (int) $_POST['id2']));
 //die('123');
 //
-            //echo '<br/>'.__FILE__.' '.__LINE__;
+//echo '<br/>'.__FILE__.' '.__LINE__;
 //    $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout', 'show');
 //    \f\pa($checki,2,'','$checki');
-            //echo '<br/>'.__FILE__.' '.__LINE__;
+//echo '<br/>'.__FILE__.' '.__LINE__;
 //    $salary = \Nyos\mod\JobDesc::configGetJobmansSmenas($db);
 //    \f\pa($salary,2,'','$salary');
 //    $return['txt'] .= '<br/>salary';
@@ -599,16 +532,16 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 //echo '<br/>'.__FILE__.' '.__LINE__;
 //echo '<br/>'.__FILE__.' '.__LINE__;
 //echo '<br/>'.__FILE__.' '.__LINE__;
-            // \f\pa($return);
-            // exit;
+// \f\pa($return);
+// exit;
 //\f\pa($return);
-            // если есть ошибки
+// если есть ошибки
             if (!empty($error)) {
 
                 require_once DR . dir_site . 'config.php';
 
                 $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
-                // \f\pa($sp);
+// \f\pa($sp);
 
                 if (!isset($_REQUEST['no_send_msg'])) {
                     $txt_to_tele = 'Обнаружены ошибки при расчёте оценки точки продаж (' . $sp['data'][$_REQUEST['sp']]['head'] . ') за день работы (' . $_REQUEST['date'] . ')' . PHP_EOL . PHP_EOL . $error;
@@ -619,7 +552,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                     if (isset($vv['admin_ajax_job'])) {
                         foreach ($vv['admin_ajax_job'] as $k => $v) {
                             \nyos\Msg::sendTelegramm($txt_to_tele, $v);
-                            //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+//\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
                         }
                     }
                 }
@@ -627,7 +560,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
                 return \f\end2('Обнаружены ошибки при расчёте оценки точки продаж (' . $_REQUEST['sp'] . ') за день работы (' . $_REQUEST['date'] . ')' . $error, false);
             }
-            // если нет ошибок считаем
+// если нет ошибок считаем
             else {
 
                 \f\timer::start();
@@ -676,7 +609,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                             $return['txt'] .= '<br/>не норм, оценка 3';
                         }
                     }
-                    //
+//
                     else {
                         throw new \Exception('Вычисляем оценку дня, прервано, не хватает данных по обороту за сутки', 18);
                     }
@@ -685,7 +618,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                 /**
                  * считаем норму выручки на руки
                  */
-                // if (!empty($return['norm_kolvo_hour_in1smena'])) {
+// if (!empty($return['norm_kolvo_hour_in1smena'])) {
                 if (!empty($return['norm_kolvo_hour_in1smena']) && !empty($return['norm_vuruchka_on_1_hand'])) {
 
                     $return['txt'] .= '<br/><br/>-------------------';
@@ -695,8 +628,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                     $return['txt'] .= '<br/>Кол-во поваров: ' . $return['smen_in_day'];
 
                     $return['on_hand_fakt'] = ceil($return['oborot'] / $return['smen_in_day']);
-                    // $return['summa_na_ruki_norm'] = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
-                    //$return['txt'] .= '<br/>по плану: ' . $return['summa_na_ruki_norm'] . ' и значение в ТП ' . $return['on_hand_fakt'];
+// $return['summa_na_ruki_norm'] = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
+//$return['txt'] .= '<br/>по плану: ' . $return['summa_na_ruki_norm'] . ' и значение в ТП ' . $return['on_hand_fakt'];
                     $return['txt'] .= '<br/>по плану: ' . $return['norm_vuruchka_on_1_hand'] . ' и значение в ТП ' . $return['on_hand_fakt'];
 
                     if ($return['on_hand_fakt'] < $return['norm_vuruchka_on_1_hand']) {
@@ -722,7 +655,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                 $return['txt'] .= '<br/>';
                 $return['txt'] .= '<br/>';
 
-                // $return['ocenka_upr'] = $return['ocenka'];
+// $return['ocenka_upr'] = $return['ocenka'];
 //            $return['time'] .= PHP_EOL . ' считаем ходится не сходится : ' . \f\timer::stop();
 //            $return['txt'] .= '<br/><nobr>рекомендуемая оценка упр: ' . $return['ocenka_upr'] . '</nobr>';
 
@@ -756,7 +689,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                 require_once DR . dir_site . 'config.php';
 
                 $sp = \Nyos\mod\items::getItemsSimple($db, 'sale_point', 'show');
-                // \f\pa($sp);
+// \f\pa($sp);
 
                 \Nyos\mod\items::addNewSimple($db, 'sp_ocenki_job_day', $return);
 
@@ -780,7 +713,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                     if (isset($vv['admin_ajax_job'])) {
                         foreach ($vv['admin_ajax_job'] as $k => $v) {
                             \nyos\Msg::sendTelegramm($txt_to_tele, $v);
-                            //\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
+//\Nyos\NyosMsg::sendTelegramm('Вход в управление ' . PHP_EOL . PHP_EOL . $e, $k );
                         }
                     }
                 }
@@ -792,13 +725,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                         , true, $return);
             }
 
-            //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
+//return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
         }
     }
-    //
+//
     catch (\Exception $ex) {
 
-        // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
+// if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
         $text = $ex->getMessage()
                 . ' авторасчёт оценки дня'
@@ -815,7 +748,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                 . $ex->getFile() . ' #' . $ex->getLine()
                 . PHP_EOL
                 . $ex->getTraceAsString()
-        // . '</pre>'
+// . '</pre>'
         ;
 
         if (1 == 2) {
@@ -863,8 +796,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         \f\end2('Обнаружены ошибки: ' . $ex->getMessage(), false, [
             'error' => $ex->getMessage(),
             'code' => $ex->getCode(),
-            'sp' => ( $return['data']['sp'] ?? null ),
-            'date' => ( $return['data']['date'] ?? null ),
+            'sp' => ( $return['data']['sp'] ?? null),
+            'date' => ( $return['data']['date'] ?? null),
             'text' => $text . '<br/>' . $r,
         ]);
     }
@@ -873,18 +806,18 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 // удаление смены персонала
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_smena') {
 
-    //echo '<br/>'. __FILE__.' '.__LINE__;
+//echo '<br/>'. __FILE__.' '.__LINE__;
 
     try {
 
-        // \f\pa($_REQUEST);
+// \f\pa($_REQUEST);
 
         $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE `id` = :id ');
         $ff->execute(array(':id' => $_REQUEST['id']));
 
         \f\end2('назначение отменено', true);
     }
-    //
+//
     catch (\Exception $ex) {
 
         if (!isset($_REQUEST['no_send_msg'])) {
@@ -930,10 +863,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_smena') {
 // удаление назначения сотрудника
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_from_sp') {
 
-    //echo '<br/>'. __FILE__.' '.__LINE__;
+//echo '<br/>'. __FILE__.' '.__LINE__;
 
     try {
-        // \f\pa($_REQUEST);
+// \f\pa($_REQUEST);
 
         \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
             'jobman' => $_REQUEST['workman'],
@@ -942,7 +875,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
 
         \f\end2('ок', true);
     }
-    //
+//
     catch (\Exception $ex) {
 
         if (!isset($_REQUEST['no_send_msg'])) {
@@ -975,7 +908,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
  */
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
 
-    //echo '<br/>'. __FILE__.' '.__LINE__;
+//echo '<br/>'. __FILE__.' '.__LINE__;
 
     try {
 
@@ -993,7 +926,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
                 )
         );
 
-        // \f\pa($_REQUEST);
+// \f\pa($_REQUEST);
 //        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
 //            'jobman' => $_REQUEST['workman'],
 //            'sale_point' => $_REQUEST['sp']
@@ -1001,7 +934,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
 
         \f\end2('ок', true);
     }
-    //
+//
     catch (\Exception $ex) {
 
         if (!isset($_REQUEST['no_send_msg'])) {
@@ -1031,14 +964,14 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
  */
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
 
-    //echo '<br/>'. __FILE__.' '.__LINE__;
+//echo '<br/>'. __FILE__.' '.__LINE__;
 
     try {
 
         $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE `id_item` = :id AND name = \'date_finish\' ');
         $ff->execute(array(':id' => (int) $_REQUEST['work_id']));
 
-        // \f\pa($_REQUEST);
+// \f\pa($_REQUEST);
 //        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
 //            'jobman' => $_REQUEST['workman'],
 //            'sale_point' => $_REQUEST['sp']
@@ -1046,7 +979,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_job
 
         \f\end2('ок', true);
     }
-    //
+//
     catch (\Exception $ex) {
 
         if (!isset($_REQUEST['no_send_msg'])) {
@@ -1074,7 +1007,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_job
 // action=put_workman_on_sp
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp') {
 
-    //echo '<br/>'. __FILE__.' '.__LINE__;
+//echo '<br/>'. __FILE__.' '.__LINE__;
     try {
 
         if (isset($_REQUEST['sp']) && isset($_REQUEST['sp_s']) && \Nyos\Nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true) {
@@ -1114,9 +1047,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         }
 
         \f\end2('добавили', true);
-        //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
+//return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
     }
-    //
+//
     catch (\Exception $ex) {
 
         if (!isset($_REQUEST['no_send_msg'])) {
@@ -1162,7 +1095,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
 //
 elseif (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 
-    // require_once DR . '/all/ajax.start.php';
+// require_once DR . '/all/ajax.start.php';
 
     $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
     $ff->execute(array(':id' => (int) $_POST['id2']));
@@ -1188,18 +1121,18 @@ elseif (
         $_POST['action'] == 'goto_other_sp'
         )
 ) {
-    // action=add_new_smena
+// action=add_new_smena
 
     try {
 
-        //require_once DR . '/all/ajax.start.php';
-        // action=add_new_smena
-        // \f\pa($_POST);
-        // [date] => 2019-06-27
-        // [toform_sp] => 2611
-        // [action] => goto_other_sp
-        // [id2] => 10    
-        // [jobman] => 1886        
+//require_once DR . '/all/ajax.start.php';
+// action=add_new_smena
+// \f\pa($_POST);
+// [date] => 2019-06-27
+// [toform_sp] => 2611
+// [action] => goto_other_sp
+// [id2] => 10    
+// [jobman] => 1886        
         /**
          * отправляем сотрудника на другую точку
          */
@@ -1210,15 +1143,15 @@ elseif (
 //
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
 //                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-            // если старт часов меньше часов сдачи
+// если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
-                //$b .= '<br/>'.__LINE__;
+//$b .= '<br/>'.__LINE__;
                 $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
                 $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']) + 3600 * 24;
             }
-            // если старт часов больше часов сдачи
+// если старт часов больше часов сдачи
             else {
-                //$b .= '<br/>'.__LINE__;
+//$b .= '<br/>'.__LINE__;
                 $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
                 $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']);
             }
@@ -1238,7 +1171,7 @@ elseif (
                     . '</nobr>'
                     . '</div>', true);
         }
-        //
+//
         elseif ($_POST['action'] == 'add_new_smena') {
 
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -1246,15 +1179,15 @@ elseif (
 //
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
 //                require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-            // если старт часов меньше часов сдачи
+// если старт часов меньше часов сдачи
             if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
-                //$b .= '<br/>'.__LINE__;
+//$b .= '<br/>'.__LINE__;
                 $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
                 $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']) + 3600 * 24;
             }
-            // если старт часов больше часов сдачи
+// если старт часов больше часов сдачи
             else {
-                //$b .= '<br/>'.__LINE__;
+//$b .= '<br/>'.__LINE__;
                 $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
                 $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']);
             }
@@ -1290,7 +1223,7 @@ elseif (
 //                'start' => date('Y-m-d H:i', $start_time),
 //                'fin' => date('Y-m-d H:i', $fin_time)
 //            )
-            //\f\pa( $indb );
+//\f\pa( $indb );
             \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['073.comments'], $indb);
 
             \f\end2('<div style="background-color: gray; padding:5px;" >'
@@ -1299,7 +1232,7 @@ elseif (
                     . $_REQUEST['comment']
                     . '</div>', true);
         }
-        //
+//
         elseif ($_POST['action'] == 'confirm_smena') {
 
 //        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -1317,7 +1250,7 @@ elseif (
                     . '</nobr>'
                     . '</div>', true);
         }
-        //
+//
         elseif ($_POST['action'] == 'edit_items_dop') {
 
 //        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -1336,7 +1269,7 @@ elseif (
                     . '</div>', true);
         }
     }
-    //
+//
     catch (\Exception $ex) {
 
         $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
@@ -1360,7 +1293,7 @@ elseif (
 
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
-    // action=add_new_smena
+// action=add_new_smena
 
     try {
 
@@ -1373,7 +1306,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 //            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
         \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.vzuscaniya'], array(
-            // 'head' => rand(100, 100000),
+// 'head' => rand(100, 100000),
             'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
             'jobman' => $_REQUEST['jobman'],
             'sale_point' => $_REQUEST['salepoint'],
@@ -1401,7 +1334,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 //                $dd === true ?
 //                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
 //                )
-                // .'окей '.$b
+// .'окей '.$b
 //                . '</br>'
 //                . $b
 //                . '</br>'
@@ -1430,11 +1363,11 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
 }
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
-    // action=add_new_smena
+// action=add_new_smena
 
     try {
 
-        //require_once DR . '/all/ajax.start.php';
+//require_once DR . '/all/ajax.start.php';
 //        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
 //            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 //
@@ -1442,7 +1375,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 //            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
 
         \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.plus'], array(
-            // 'head' => rand(100, 100000),
+// 'head' => rand(100, 100000),
             'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
             'jobman' => $_REQUEST['jobman'],
             'sale_point' => $_REQUEST['salepoint'],
@@ -1471,7 +1404,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
 //                $dd === true ?
 //                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
 //                )
-                // .'окей '.$b
+// .'окей '.$b
 //                . '</br>'
 //                . $b
 //                . '</br>'
@@ -1508,17 +1441,17 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
 //
 //    if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex'))
 //        require $_SERVER['DOCUMENT_ROOT'] . '/all/exception.nyosex';
-    // require_once DR.'/vendor/didrive_mod/items/class.php';
-    // \Nyos\mod\items::getItems( $db, $folder )
-    // echo DR ;
+// require_once DR.'/vendor/didrive_mod/items/class.php';
+// \Nyos\mod\items::getItems( $db, $folder )
+// echo DR ;
     $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/tpl.ajax/');
 
 // инициализируем Twig
     $twig = new Twig_Environment($loader, array(
         'cache' => $_SERVER['DOCUMENT_ROOT'] . '/templates_c',
         'auto_reload' => true
-            //'cache' => false,
-            // 'debug' => true
+//'cache' => false,
+// 'debug' => true
     ));
 
     if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/all/twig.function.php'))
@@ -1540,7 +1473,7 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
     $r = ob_get_contents();
     ob_end_clean();
 
-    // die($r);
+// die($r);
 
 
     \f\end2('окей', true, array('data' => $r));

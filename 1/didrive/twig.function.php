@@ -1019,6 +1019,8 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('get_plusa', function ( $db, string $date_start, string $date_finish ) {
 
+    // \f\timer::start(22);
+
     \Nyos\mod\items::$sql_itemsdop_add_where = '
         ( midop.name != \'date\' OR
             ( 
@@ -1028,10 +1030,32 @@ $function = new Twig_SimpleFunction('get_plusa', function ( $db, string $date_st
             )
         )
         ';
-    $e = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '072.plus', '', null);
+    $e = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '072.plus', 'show', null);
     // \f\pa($vv['checks']);
 
-    return $e;
+    // echo \f\timer::stop('str',22);
+    
+return $e;
+/*
+    \Nyos\mod\items::$get_data_simple = true;
+    $e = \Nyos\mod\items::getItemsSimple($db, '072.plus','show');
+    
+    $return = [];
+    
+    foreach( $e as $k => $v ){
+        if( !empty($v['date_now']) 
+        && $v['date_now'] >= $date_start
+        && $v['date_now'] <= $date_finish ){
+            $return[] = $v;
+        }
+    }
+    
+    // echo \f\timer::stop('str',22);
+    //die();
+    
+    //
+    return $return;
+ */
 });
 $twig->addFunction($function);
 
