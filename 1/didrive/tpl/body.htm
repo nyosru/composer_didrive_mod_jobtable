@@ -1,7 +1,7 @@
 {% spaceless %}
 
     {# считаем общее время #}
-    {% set t = didrive_f__timer_start(99) %}
+    {{ didrive_f__timer_start(99) }}
 
     <script src="/js/numberformat.js" ></script>
 
@@ -20,6 +20,12 @@
         {% set access_to_sp = false %}
 
     {% endif %}
+
+    
+{#    
+<br/>timer1: {{ didrive_f__timer_stop(99) }}
+#}
+
 
     <div class="container-fluid">
 
@@ -177,8 +183,16 @@
 
                 {% endif %}
 
+                
                 {# заготовка модальных окошек #}
+{#                
                 {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
+#}
+            
+{#
+    <br/>timer2: {{ didrive_f__timer_stop(99) }}
+  #}              
+                
 
                 {% if 1 == 2 %}
                     {{ didrive_f__timer_start(6) }}    
@@ -201,6 +215,8 @@
                     {{ pa(jobs_on_sp,2) }}
                 {% endif %}
 
+
+                
                 {# текущие доступные точки #}
                 {% if 1 == 1 %}
                     <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
@@ -238,6 +254,9 @@
 
             </div>
         </div>
+{#
+    <br/>timer3: {{ didrive_f__timer_stop(99) }}
+#}
 
 
 
@@ -248,16 +267,18 @@
 
 
 
-
-
+{% if 1 == 1 %}
 
         {% if get.sp is defined %}
 
             <div style="display:inline-block;padding-right:100px;margin-right:100px;">
                 <div class="ttable cell-padding5 list_otrezki2 cell-border">
 
-                    {# верхняя строка с датами#}
-                    {% if 1 == 1 %}
+                    
+                    
+                    
+{# верхняя строка с датами#}
+{% if 1 == 1 %}
                         <div class="trow stick-top" style="background-color: rgba(255,255,255,0.9);">
                             <div class="tcell"></div>
 
@@ -479,15 +500,21 @@
 
 
                         </div>
-                    {% endif %}
+{% endif %}
 
 
-
-
-
-
+{#
+    <br/>timer31: {{ didrive_f__timer_stop(99) }}
+#}
+{% if 1 == 1 %}
                     {% set checki = jobdesc__get_checki( date_start, date_finish ) %}
+                    {#{ pa(checki) }#}
+{% endif %}
+{#
+    <br/>timer32: {{ didrive_f__timer_stop(99) }}
+#}
 
+{% if 1 == 1 %}        
                     {# get minusa plusa - off #}
                     {% if 1 == 1 %}
                         {% set minusa = get_minusa( db, date_start, date_finish ) %}
@@ -497,31 +524,30 @@
                         {#{ pa(plusa) }#}
                     {% endif %}
 
-
-
-
-
-
-
-
-
-
+{% endif %}
+                    
+                    
+                    
+                    
+                    
                     {# проходим по списку точки продаж - сотрудники #}                
                     {#{ pa(jobs_on_sp.jobs_on_sp) }#}
 
                     {% for kk, sp_now in jobs_on_sp.sort 
 
-                    if 
-
-                        get.sp is defined 
+                    if get.sp is defined 
                         and
-                        ( get.sp == 'all' or get.sp == sp_now )
+                        ( 
+                            get.sp == 'all' 
+                            or get.sp == sp_now 
+                        )
                         and
                         jobs_on_sp.jobs_on_sp[sp_now] is defined 
-                            and ( 
-                                sp_access == false 
-                                or sp_access[sp_now] is defined 
-                            ) 
+                        and 
+                        ( 
+                            sp_access == false 
+                            or sp_access[sp_now] is defined 
+                        ) 
                 
                     %}
 
@@ -536,7 +562,15 @@
 
                     {% set spoint = sp.data[sp_now] %}
                     {#{ pa(spoint) }#}
+                    
+                    {#
+                        <br/>timer41: {{ didrive_f__timer_stop(99) }}
+                    #}
 
+                    
+{% if 1 == 1 %}        
+                    
+                    
                     <div class="trow alert-warning"  >
                         <div class="tcell alert-warning stick-left-up" >
                             <div class="btn-group" style="float:right;" >
@@ -689,7 +723,19 @@
 
                         {% endfor %}
                     </div>
+{% endif %}
 
+                    
+                    {#
+                        <br/>timer5: {{ didrive_f__timer_stop(99) }}
+#}
+                    
+                    
+                    
+                    
+{% if 1 == 1 %}        
+                    
+                    
                     {% set hour_summ = [] %}
 
                     {% for user5, type_user_now in list12 if type_user_now != 'hide' %}
@@ -1149,8 +1195,22 @@
 
                     {% endfor %}
 
+  {#                
+                        <br/>timer6: {{ didrive_f__timer_stop(99) }}
+#}
+                    
+{% endif %}
+                    
+                    
+                    
+                    
+                    
+{% if 1 == 1 %}
+                    
+                    
                     {# итого за день строчки #}
                     {% include dir_mod_now_mod_ditpl~'body.sp.down.htm' %}
+{% endif %}
 
                     {% endfor %}
 
@@ -1158,19 +1218,32 @@
                 </div>
 
                 {% endif %}
-
+{% endif %}
+{#
+            <br/>timer10: {{ didrive_f__timer_stop(99) }}
+  #}          
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        {# общее время #}
+                        {% set t = didrive_f__timer_stop(99) %}
+                    
                     <div style="position: fixed; bottom: 0px; right: 0px; padding: 3px 10px; z-index: 9000; background-color: rgba(255,255,120,0.5);"
                          onclick="$('#bottom_info').show();
                                  $(this).hide();
                                  return false;"
                          >
                         i
+                        {{ t }} сек
                     </div>
 
                     <div class="alert-warning" id="bottom_info" style="display:none; position: fixed; bottom: 10px; right: 10px; padding: 3px 10px; z-index: 9000;">
 
-                        {# общее время #}
-                        {% set t = didrive_f__timer_stop(99) %}
 
                         <A href="#" style="float:right;" onclick="$('#bottom_info').hide('slow');
                                 return false;" >скрыть</a>
@@ -1179,4 +1252,11 @@
                         Ваши сообщения помогут сделать работу удобнее<br/>
                         создание страницы: {{ t }} сек</div>
 
+                        
+                        
+                        
+                        
+                        
+                        
+                        
                     {% endspaceless %}

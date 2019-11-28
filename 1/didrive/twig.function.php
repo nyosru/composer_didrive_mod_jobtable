@@ -382,12 +382,10 @@ $function = new Twig_SimpleFunction('jobdesc__get_list_jobmans', function ( $db 
     // \f\pa($jobmans, 2);
     // $job_on_sp = \Nyos\mod\items::getItemsSimple($db, 'jobman_send_on_sp');
     // \f\pa($jobmans);
-
 //    $jobs = [];
 //    foreach ($job_on_sp['data'] as $k => $v) {
 //        $jobs[$v['dop']['jobman']] = 1;
 //    }
-
 //    $free_jobmans = [];
 //    foreach ($jobmans['data'] as $k => $v) {
 //        if (!isset($jobs[$k])) {
@@ -847,6 +845,12 @@ $twig->addFunction($function);
 
 
 
+
+
+
+
+
+
 $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $date_start, string $date_finish, array $get_points = [] ) {
 
     global $db;
@@ -855,64 +859,98 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
      * Вход выход на смену
      */
     $ud_start = strtotime($date_start);
+    $ud_start = date('Y-m-d 08:00:00', strtotime($date_start));
     $ud_fin = strtotime($date_finish);
+    $ud_fin = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
 
-    \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
-                ( midop.name != \'start\' OR ( midop.name = \'start\' AND midop.value_DATE >= date(\'' . $date_start . '\') ) )
-                    OR
-                ( midop.name != \'fin\' OR ( midop.name = \'fin\' AND midop.value_date <= date(\'' . date('Y-m-d', $ud_fin + 3600 * 24) . '\') ) )
-        )
-        ';
+
+//    \Nyos\mod\items::$sql_itemsdop_add_where = ' ( 
+//                ( midop.name != \'start\' OR ( midop.name = \'start\' AND midop.value_DATE >= date(\'' . $date_start . '\') ) )
+//                    OR
+//                ( midop.name != \'fin\' OR ( midop.name = \'fin\' AND midop.value_date <= date(\'' . date('Y-m-d', $ud_fin + 3600 * 24) . '\') ) )
+//        )
+//        ';
     //$checks = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '050.chekin_checkout', 'show', null);
-    $checks = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout');
-    //\f\pa($checks, 2, null, '$checks');
+//    $checks = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout');
+//    \f\pa($checks, 2, null, '$checks');
 // \f\pa($points);
 
-    $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats');
-    // \f\pa($payeds);
-    foreach ($payeds0['data'] as $k => $v) {
-        $payeds[$v['dop']['checkin']][] = $v['dop'];
+    // \Nyos\mod\items::$style_old = true;
+    $checks0 = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+    $checks = [];
+    // \f\pa($checks);
+    foreach ($checks0 as $k => $v) {
+        if (isset($v['start']) && $v['start'] > $ud_start) {
+            $v['dop'] = $v;
+            $checks['data'][$v['id']] = $v;
+        }
+//        else{
+//            echo '<br/>'.$v['start'];
+//        }
     }
 
-
-
-    /**
-     * работник - дата - время вх и вых
-     */
-    $vv['checks'] = [];
-
+    unset($checks0);
+    
     // \f\pa($checks);
 
-    if (isset($checks['data']) && sizeof($checks['data']) > 0) {
-        foreach ($checks['data'] as $c => $check) {
+    if (1 == 1) {
 
-            // $now_st = strtotime($check['dop']['start']);
-            // if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
-            if (isset($check['dop']['start'])) {
 
-                $da = date('Y-m-d', strtotime($check['dop']['start']));
-
-                if (isset($payeds[$check['id']])) {
-
-                    $check['payed'] = $payeds[$check['id']];
-                }
-                if (isset($check['dop']['fin'])) {
-
-                    $check['dop']['time_on_job'] = ( ceil(strtotime($check['dop']['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['dop']['start']) / 1800) * 1800 );
-                    $check['dop']['hour_on_job'] = ceil($check['dop']['time_on_job'] / 1800) / 2;
-                    // $check['dop']['polhour'] = ceil($check['dop']['time_on_job'] / 1800)*1800;
-                    // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
-                }
-
-                if (isset($check['dop']['jobman']) && isset($check['id']))
-                    $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
-            }
-
-            // }
+        // $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats');
+        
+        $payeds0 = \Nyos\mod\items::getItemsSimple3($db, '075.buh_oplats');
+        // \f\pa($payeds0,'','','payeds');
+        
+        foreach ($payeds0 as $k => $v) {
+            $payeds[$v['checkin']][] = $v;
         }
-    }
+        // \f\pa($payeds,'','','payeds');
 
-    // \f\pa($vv['checks'], 2, null, '$vv[\'checks\']');
+        unset($payeds0);
+        
+    }
+    
+    if( 1 == 1 ){
+
+
+        /**
+         * работник - дата - время вх и вых
+         */
+        $vv['checks'] = [];
+
+        // \f\pa($checks);
+
+        if (isset($checks['data']) && sizeof($checks['data']) > 0) {
+            foreach ($checks['data'] as $c => $check) {
+
+                // $now_st = strtotime($check['dop']['start']);
+                // if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
+                if (isset($check['dop']['start'])) {
+
+                    $da = date('Y-m-d', strtotime($check['dop']['start']));
+
+                    if (isset($payeds[$check['id']])) {
+
+                        $check['payed'] = $payeds[$check['id']];
+                    }
+                    if (isset($check['dop']['fin'])) {
+
+                        $check['dop']['time_on_job'] = ( ceil(strtotime($check['dop']['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['dop']['start']) / 1800) * 1800 );
+                        $check['dop']['hour_on_job'] = ceil($check['dop']['time_on_job'] / 1800) / 2;
+                        // $check['dop']['polhour'] = ceil($check['dop']['time_on_job'] / 1800)*1800;
+                        // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
+                    }
+
+                    if (isset($check['dop']['jobman']) && isset($check['id']))
+                        $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
+                }
+
+                // }
+            }
+        }
+
+        // \f\pa($vv['checks'], 2, null, '$vv[\'checks\']');
+    }
 
     return $vv['checks'];
 });
@@ -1032,30 +1070,29 @@ $function = new Twig_SimpleFunction('get_plusa', function ( $db, string $date_st
         ';
     $e = \Nyos\mod\items::getItems($db, \Nyos\nyos::$folder_now, '072.plus', 'show', null);
     // \f\pa($vv['checks']);
+    // echo \f\timer::stop('str',22);
 
-    // echo \f\timer::stop('str',22);
-    
-return $e;
-/*
-    \Nyos\mod\items::$get_data_simple = true;
-    $e = \Nyos\mod\items::getItemsSimple($db, '072.plus','show');
-    
-    $return = [];
-    
-    foreach( $e as $k => $v ){
-        if( !empty($v['date_now']) 
-        && $v['date_now'] >= $date_start
-        && $v['date_now'] <= $date_finish ){
-            $return[] = $v;
-        }
-    }
-    
-    // echo \f\timer::stop('str',22);
-    //die();
-    
-    //
-    return $return;
- */
+    return $e;
+    /*
+      \Nyos\mod\items::$get_data_simple = true;
+      $e = \Nyos\mod\items::getItemsSimple($db, '072.plus','show');
+
+      $return = [];
+
+      foreach( $e as $k => $v ){
+      if( !empty($v['date_now'])
+      && $v['date_now'] >= $date_start
+      && $v['date_now'] <= $date_finish ){
+      $return[] = $v;
+      }
+      }
+
+      // echo \f\timer::stop('str',22);
+      //die();
+
+      //
+      return $return;
+     */
 });
 $twig->addFunction($function);
 
