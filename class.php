@@ -816,8 +816,8 @@ class JobDesc {
      * @return type
      */
     public static function whereJobmansOnSp($db, $folder = null, $date_start = null, $date_fin = null
-    , $module_man_job_on_sp = 'jobman_send_on_sp'
-    , $module_spec_naznach_on_sp = '050.job_in_sp'
+            , $module_man_job_on_sp = 'jobman_send_on_sp'
+            , $module_spec_naznach_on_sp = '050.job_in_sp'
     ) {
 
 //whereJobmansOnSp( $db, $folder, $date_start, $date_finish );
@@ -1019,8 +1019,8 @@ class JobDesc {
      * @return type
      */
     public static function whereJobmansPeriod($db, $date_start = null, $date_fin = null
-    , $module_man_job_on_sp = 'jobman_send_on_sp'
-    , $module_spec_naznach_on_sp = '050.job_in_sp'
+            , $module_man_job_on_sp = 'jobman_send_on_sp'
+            , $module_spec_naznach_on_sp = '050.job_in_sp'
     ) {
 
 
@@ -1464,11 +1464,11 @@ class JobDesc {
         $ds = date('Y-m-d 05:00:00', $dt);
         $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
 
-        
+
 // удаление имеющихся бонусов в этот день
-    $ee = self::deleteAutoBonus($db, $_sp, $_d );
-    //\f\pa($ee,'','','$ee удаление автобонусов');
-        
+        $ee = self::deleteAutoBonus($db, $_sp, $_d);
+        //\f\pa($ee,'','','$ee удаление автобонусов');
+
         /**
          * список должность и сколько бонуса накинуть
          * должность - оценка - бонус
@@ -1611,9 +1611,9 @@ class JobDesc {
                 $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
 //            echo '<br/>оценка:' . $ocenka;
 
-                if( empty($ocenka) )
+                if (empty($ocenka))
                     continue;
-                
+
                 $premiya = $d[$job_in[$v['jobman']]]['premiya-' . $ocenka] ?? null;
 
                 if (!empty($premiya)) {
@@ -1665,18 +1665,26 @@ class JobDesc {
      */
     public static function deleteAutoBonus($db, $sp, $date0) {
 
+        // echo '<br/>'.$date0;
         $date = date('Y-m-d', strtotime($date0));
 
-        \Nyos\mod\items::$get_data_simple = true;
-        $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
-        //\f\pa($bonuses);
+        // \Nyos\mod\items::$get_data_simple = true;
+        // $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
+
+        if ( empty(self::$cash['bonuses']) ) {
+            self::$cash['bonuses'] = \Nyos\mod\items::getItemsSimple3($db, self::$mod_bonus);
+            // echo '<br/>' . __LINE__;
+        } else {
+            // echo '<br/>' . __LINE__;
+        }
+        // exit;
 
         $sql1 = '';
         $sql2 = [];
 
         $nn = 0;
 
-        foreach ($bonuses as $k => $v) {
+        foreach ( self::$cash['bonuses'] as $k => $v) {
             if (isset($v['auto_bonus_zp']) && $v['auto_bonus_zp'] == 'da' && isset($v['date_now']) && $v['date_now'] == $date) {
 
                 $sql2[':id' . $nn] = $v['_id'];
@@ -1689,6 +1697,7 @@ class JobDesc {
 
         if (!empty($sql1)) {
 
+            // echo 'UPDATE mitems SET `status` = \'delete\' WHERE ' . $sql1;
             $ff = $db->prepare('UPDATE mitems SET `status` = \'delete\' WHERE ' . $sql1);
             $ff->execute($sql2);
 
@@ -1711,8 +1720,7 @@ class JobDesc {
 
         // echo '<br/>' . __FILE__ . ' #' . __LINE__;
         // return \f\end3( 'wef', true );
-
-        ob_start('ob_gzhandler');
+        // ob_start('ob_gzhandler');
 
         try {
 
@@ -1720,11 +1728,13 @@ class JobDesc {
 
                 $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
 
-                //                \f\pa($return, 2, '', '$return данные для оценки дня');
+                \f\pa($return, 2, '', '$return данные для оценки дня');
                 //                die();
                 // массив чеков для новых оценок
                 // $return['checks_for_new_ocenka']
             }
+
+            return \f\end3('ok ' . __LINE__, true);
 
             if (1 == 1) {
                 // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
@@ -1749,22 +1759,28 @@ class JobDesc {
                 $return['data']['ocenka'] = $ocenka['data']['ocenka'];
             }
 
-            //        if ( class_exists('\Nyos\mod\items') )
-            //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-            // if (!empty($return['data']['checks_for_new_ocenka'])) {
-            // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
-            $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
-            // }
-            $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
-                        'sale_point' => $ocenka['data']['sp'],
-                        'date' => $ocenka['data']['date'],
-                        'ocenka_time' => $ocenka['data']['ocenka_time'],
-                        'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
-                        'ocenka' => $ocenka['data']['ocenka'],
-            ]);
+            if (1 == 1) {
 
-            $r = ob_get_contents();
-            ob_end_clean();
+                //        if ( class_exists('\Nyos\mod\items') )
+                //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
+                // if (!empty($return['data']['checks_for_new_ocenka'])) {
+                // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+
+                $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db,
+                                $return['data']['checks_for_new_ocenka'],
+                                $ocenka['data']['ocenka']);
+
+                // }
+                $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+                            'sale_point' => $ocenka['data']['sp'],
+                            'date' => $ocenka['data']['date'],
+                            'ocenka_time' => $ocenka['data']['ocenka_time'],
+                            'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+                            'ocenka' => $ocenka['data']['ocenka'],
+                ]);
+            }
+            // $r = ob_get_contents();
+            // ob_end_clean();
 
             return \f\end3('ok ' . ( $r ?? '--' ), true, $return['data']);
 
@@ -1990,11 +2006,7 @@ class JobDesc {
 
 // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
-
-
             echo '<br/>' . __FILE__ . ' #' . __LINE__;
-
-
 
             $text = $ex->getMessage()
                     . ' авторасчёт оценки дня'
@@ -2051,8 +2063,8 @@ class JobDesc {
               }
              */
 
-            $r = ob_get_contents();
-            ob_end_clean();
+//            $r = ob_get_contents();
+//            ob_end_clean();
 
             return \f\end3('Обнаружены ошибки: ' . $ex->getMessage(), false, [
                 'error' => $ex->getMessage(),
