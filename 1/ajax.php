@@ -76,7 +76,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
         foreach ($ocenki as $k => $v) {
 
             //echo '<br/>' . $v['date'] . '=' . $date;
-            
+
             if (isset($v['date']) && $v['date'] == $date) {
 
                 //echo '<br/>' . $v['date'] . '=' . $date;
@@ -88,16 +88,15 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
                     $sps_job[$sp] = 1;
 
                     //if ($nn <= 10)
-                      //  \f\pa($v);
+                    //  \f\pa($v);
 
                     if ($nn <= 20)
-                    $telega_send .= PHP_EOL . '+ ' . $date . ' ' . $sp_ar['data'][$sp]['head'] . PHP_EOL . 'Время ' . $v['ocenka_time'] . ' Оборот ' . $v['ocenka_oborot']
-                            . ' НаРуки ' . $v['ocenka_naruki'] . ' Общая ' . $v['ocenka'];
-                    
+                        $telega_send .= PHP_EOL . '+ ' . $date . ' ' . $sp_ar['data'][$sp]['head'] . PHP_EOL . 'Время ' . $v['ocenka_time'] . ' Оборот ' . $v['ocenka_oborot']
+                                . ' НаРуки ' . $v['ocenka_naruki'] . ' Общая ' . $v['ocenka'];
+
                     $nn++;
                 }
             }
-            
         }
 
         //\f\pa($sps_job, 2, '', '$sps_job');
@@ -231,7 +230,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
 
 
     if (1 == 1 && !empty($telega_send)) {
-        
+
         if (class_exists('\nyos\Msg'))
             \nyos\Msg::sendTelegramm($telega_send, null, 1);
 
@@ -247,7 +246,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto'
         'timer' => $timer,
         'sms' => $telega_send
     ));
-} 
+}
 //
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka') {
 
@@ -339,6 +338,81 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka')
 
     \f\end2('ok', true);
 }
+
+
+if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['date']) === true) {
+
+    if (isset($_REQUEST['date']) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'clear_copy_checks_today') {
+
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                . ' `md`.`id_item` = mi.id '
+                . 'AND `md`.`name` = \'start\' '
+                . 'AND `md`.`value_datetime` >= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'])) . '\'  '
+                . 'AND `md`.`value_datetime` <= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'] . ' +1day')) . '\'  ';
+        $checks2 = $checks = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+
+        // \f\pa($checks);
+
+        
+        $sql2 = '';
+        $noscan = [];
+        $kolvo = 0;
+
+        foreach ($checks as $k => $v) {
+
+            if ($v['status'] != 'show')
+                continue;
+
+            // echo '<br/>' . $v['id'] . ' ' . $v['start'];
+
+            foreach ($checks2 as $k1 => $v1) {
+
+                if (isset($noscan[$v1['id']]))
+                    continue;
+
+                if ($v1['status'] != 'show')
+                    continue;
+
+                if ($v['id'] != $v1['id'] && $v['jobman'] == $v1['jobman'] && $v1['start'] == $v['start']) {
+
+                    if (isset($noscan[$v['id']]))
+                        continue;
+
+//                    echo '<table><tr><td>';
+//                    \f\pa($v);
+//                    echo '</td><td>';
+//                    \f\pa($v1);
+//                    echo '</td></tr></table>';
+
+                    if (!isset($v1['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v1['id'] . '\' ';
+                        $noscan[$v1['id']] = 1;
+                        $kolvo++;
+                    } elseif (!isset($v['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v['id'] . '\' ';
+                        $noscan[$v['id']] = 1;
+                        $kolvo++;
+                    }
+                }
+            }
+        }
+
+        if (!empty($sql2)) {
+            $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE ' . $sql2 . ' ;');
+            $ff->execute();
+            //$ff->execute(array(':id' => (int) $_POST['id2']));
+        }
+
+        die('Найдено и удалено копий: '.$kolvo);
+
+        die($sql2);
+
+        die('<br/>' . __FILE__ . ' #' . __LINE__);
+
+    }
+}
+
 
 
 die('The end');
@@ -442,7 +516,6 @@ elseif (isset($_POST['action']) && $_POST['action'] == 'end_job_in_sp') {
     } else {
         \f\end2('не окей', false);
     }
-
 }
 
 $e = '';

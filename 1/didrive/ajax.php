@@ -214,11 +214,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
         $e2 = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $date);
 
         // \f\pa($e2);
-        
-        if( isset($e2['data']['adds']) )
-        foreach ($e2['data']['adds'] as $k => $v) {
-            $e['datas'][] = $v;
-        }
+
+        if (isset($e2['data']['adds']))
+            foreach ($e2['data']['adds'] as $k => $v) {
+                $e['datas'][] = $v;
+            }
 
         // \f\pa($ee,'','','$ee создание автобонусов');
     }
@@ -228,7 +228,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e['kolvo'] = sizeof($e['datas']);
 
     // \f\pa($e);
-    
+
     \f\end2('ok', true, $e);
 }
 
@@ -458,20 +458,386 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 // echo '</div>';
 }
 
+
+
+
+
+
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
 
+    // \f\pa($_REQUEST);
+
+    $date = date('Y-m-d', strtotime($_REQUEST['date']));
+    $sp = $_REQUEST['sp'];
+
+    $return = array(
+        'txt' => '',
+        // текст о времени исполнения
+        'time' => '',
+        // смен в дне
+        'smen_in_day' => 0,
+        // часов за день отработано
+        'hours' => 0,
+        // больше или меньше нормы сделано сегодня ( 1 - больше или равно // 0 - меньше // 2 не получилось достать )
+        'oborot_bolee_norm' => 2,
+        // сумма денег на руки от количества смен и процента на ФОТ
+        'summa_na_ruki' => 0,
+        // рекомендуемая оценка управляющего
+// если 0 то нет оценки
+        'ocenka' => 0,
+        'ocenka_naruki' => 0,
+        'checks_for_new_ocenka' => [],
+        'date' => $date,
+        'sp' => $sp
+    );
+
+
+
+
+
+
+
+
+
+
+    // считаем сколько суммарно часов отработано за сегодня
+
+    if (1 == 1) {
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid 
+        ON mid.id_item = mi.id 
+        AND mid.name = \'date\' 
+        AND mid.value_date <= \'' . $date . '\'  ';
+        $job_all0 = \Nyos\mod\items::getItemsSimple3($db, 'jobman_send_on_sp');
+        // \f\pa($job_all0,2);
+
+        usort($job_all0, "\\f\\sort_ar_date");
+
+        // \f\pa($job_all0,2);
+
+        $job_now = [];
+
+        foreach ($job_all0 as $k => $v) {
+            // echo '<br/>'.$v['jobman'].' - '.$v['sale_point'].' + '.$v['date'];
+            $job_now[$v['jobman']] = $v;
+        }
+
+        /**
+         * кто работает сегдня на нашей точке продаж
+         */
+        $job_now_on_sp = [];
+        foreach ($job_now as $k => $v) {
+            if ($v['sale_point'] == $sp)
+                $job_now_on_sp[$k] = $v;
+        }
+
+        // \f\pa($job_now_on_sp,2);
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid 
+        ON mid.id_item = mi.id 
+        AND mid.name = \'date\' 
+        AND mid.value_date = \'' . $date . '\'  ';
+        $spec = \Nyos\mod\items::getItemsSimple3($db, '050.job_in_sp');
+        // \f\pa($spec,2);
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'start\' '
+                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
+                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' ';
+        $checks = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+        // \f\pa($checks, 2);
+
+        $return['hours'] = 0;
+
+        foreach ($checks as $k => $v) {
+            if (isset($job_now_on_sp[$v['jobman']])) {
+                // \f\pa($job_now_on_sp[$v['jobman']]);
+                // \f\pa($v);
+                $return['checks_for_new_ocenka'][] = $v['id'];
+                $return['hours'] += ( $v['hour_on_job_hand'] ?? $v['hour_on_job'] );
+            }
+        }
+
+        // echo '<br/>часов: '.$return['hours'];
+    }
+
+
     /**
-     * перенёс в отдельную функцию 
-     * \Nyos\mod\jobdesc\calculateAutoOcenkaDays($db, $sp, $data)
+     * достаём нормы на день
      */
-    $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
+    if (5 == 5) {
+        \f\timer::start();
+
+        $now_norm = \Nyos\mod\JobDesc::whatNormToDay($db, $return['sp'], $return['date']);
+//\f\pa($now_norm,2,'','$now_norm '.$return['sp'].' / '.$return['date'] );
+
+        if ($now_norm === false)
+            throw new \Exception('Нет плановых данных (дата)', 12);
+
+        foreach ($now_norm as $k => $v) {
+//$return['txt'] .= '<br/><nobr>[norm_' . $k . '] - ' . $v . '</nobr>';
+            $return['norm_' . $k] = $v;
+//echo '<br>'.PHP_EOL.'$return[\'norm_' . $k.'] = '. $v;
+        }
+
+        $return['time'] .= PHP_EOL . ' нормы за день время: ' . \f\timer::stop();
+//\f\pa($return); die();
+
+        if (empty($return['norm_date'])) {
+// $error .= PHP_EOL . 'Нет плановых данных (дата)';
+            throw new \Exception('Нет плановых данных (дата)', 12);
+        } elseif (
+// empty($return['norm_vuruchka']) 
+                empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])
+        ) {
+            throw new \Exception('Не все плановые данные по ТП указаны', 204);
+//$error .= PHP_EOL . 'Не все плановые данные по ТП указаны';
+        }
+    }
+
+    /**
+     * достаём оборот за сегодня
+     */
+    if (5 == 5) {
+
+        \f\timer::start();
+
+// $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
+// die('<br/>'.__FILE__.' == '.__LINE__);
+
+        $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
+
+// \f\pa($return);
+// echo
+
+        $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop()
+                . PHP_EOL . $return['oborot'];
+    }
+
+    /**
+     * достаём время ожидания за сегодня
+     */
+    if (5 == 5) {
+
+        \f\timer::start();
+
+//            echo '<hr>'.__FILE__.' #'.__LINE__;
+//            echo '<br/>'.$return['sp'].' , '.$return['date'];
+//            echo '<hr>';
+
+        $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
+
+// \f\pa($timeo);
+//\f\pa($timeo);
+        $return['time'] .= PHP_EOL . ' достали время ожидания за день: ' . \f\timer::stop();
+        foreach ($timeo as $k => $v) {
+            $return['time'] .= PHP_EOL . $k . ' > ' . $v;
+            $return[$k] = $v;
+        }
+    }
+
+    $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
+    // \f\pa($ocenka, '', '', '$ocenka');
+// \f\pa($return);
+
+    \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
+
+    \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
+        'sale_point' => $ocenka['data']['sp'],
+        'date' => $ocenka['data']['date'],
+        'ocenka_time' => $ocenka['data']['ocenka_time'],
+        'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+        'ocenka' => $ocenka['data']['ocenka'],
+    ]);
+
+    // $return['ocenka'] = $ocenka;
+//        $r = ob_get_contents();
+//        ob_end_clean();
+
+    \f\end2('ok ' . ( $ocenka['html'] ?? '--'), true, $ocenka);
+//        \f\end2('ok ' . ( $r ?? '--'), true, $return );
+
+
+
+
+    if (1 == 1) {
+
+
+
+
+
+        \f\pa($return, '', '', '$return');
+
+
+
+
+
+//$job_now_on_sp    
+        // echo '<br/>'.__FILE__.' #'.__LINE__;
+        echo '<fieldset>';
+        $worker_on_date = \Nyos\mod\JobDesc::whereJobmans($db, $date);
+        echo '</fieldset>';
+        \f\pa($worker_on_date, 2, '', 'self::whereJobmans($db, $date);');
+
+
+
+        die('<br/>end ' . __FILE__ . ' #' . __LINE__);
+
+
+
+
+
+
+
+
+
+// id items для записи авто оценки
+
+        /**
+         * достаём чеки за день
+         */
+        if (1 == 1) {
+
+//        echo '<fieldset><legend>\Nyos\mod\JobDesc::getTimesChecksDay '.__FILE__.' #'.__LINE__.'</legend>';
+//
+//        $id_items_for_new_ocenka = [];
+//        \f\timer::start();
+//
+//        // $return['hours'] = \Nyos\mod\JobDesc::getTimesChecksDay($db, $sp, $e) getOborotSp($db, $return['sp'], $return['date']);
+
+            $times_day = \Nyos\mod\JobDesc::getTimesChecksDay($db, $return['sp'], $return['date']);
+            \f\pa($times_day, 2, '', '\Nyos\mod\JobDesc::getTimesChecksDay');
+//
+//        $return['hours'] = $times_day['hours'];
+//        $id_items_for_new_ocenka = $times_day['id_check_for_new_ocenka'];
+//        // die($return['hours']);
+//
+//        $return['time'] .= PHP_EOL . ' достали время работы по чекам за день : ' . \f\timer::stop()
+//            . PHP_EOL . $return['hours'];
+//
+//        echo '</fieldset>';
+        }
+
+        die('<br/>end ' . __FILE__ . ' #' . __LINE__);
+
+//        if (!class_exists('Nyos\mod\JobDesc'))
+//            require_once DR . DS . 'vendor/didrive_mod/jobdesc/class.php';
+//        echo '<br/>' . __FILE__ . ' ' . __LINE__;
+//        \f\pa($return);
+//        die(__LINE__);
+//        echo '<fieldset style="border: 1px solid gray; padding: 5px; margin: 5px;" ><legend>'
+//        . 'достаём суммарное время работы сотрудников за сегодня</legend>';
+        if (1 == 3) {
+
+//            echo '<hr>';
+//            echo __FILE__.' #'.__LINE__;
+//            echo '<hr>';
+//            echo '<hr>';
+// $sp
+
+            $worker_on_date = self::whereJobmansNowDate($db, $return['date']);
+// \f\pa($worker_on_date, 2, '', '$worker_on_date');
+
+            $ds = strtotime($return['date'] . ' 09:00:00');
+            $df = strtotime($return['date'] . ' 03:00:00 +1 day');
+
+            $ds1 = date('Y-m-d H:i:s', $ds);
+// echo '<Br/>'.date('Y-m-d H:i:s', $ds );
+            $df1 = date('Y-m-d H:i:s', $df);
+// echo '<Br/>'.date('Y-m-d H:i:s', $df );
+
+            $checks = \Nyos\mod\items::getItemsSimple($db, self::$mod_checks);
+            $return['checks_for_new_ocenka'] = [];
+
+            foreach ($checks['data'] as $k3 => $v3) {
+
+                if (
+                        isset($v3['dop']['jobman']) &&
+                        isset($v3['dop']['start']) &&
+                        $v3['dop']['start'] >= $ds1 &&
+                        $v3['dop']['start'] <= $df1 &&
+                        isset($worker_on_date[$v3['dop']['jobman']]['sale_point']) &&
+                        $worker_on_date[$v3['dop']['jobman']]['sale_point'] == $sp
+                ) {
+
+//\f\pa($v3['dop']);
+//break;
+// часы отредактированные в ручную
+                    if (!empty($v3['dop']['hour_on_job_hand'])) {
+                        $return['checks_for_new_ocenka'][] = $v3['id'];
+                        $return['hours'] += $v3['dop']['hour_on_job_hand'];
+                    }
+// авторасчёт количества часов
+                    elseif (!empty($v3['dop']['hour_on_job'])) {
+                        $return['checks_for_new_ocenka'][] = $v3['id'];
+                        $return['hours'] += $v3['dop']['hour_on_job'];
+                    }
+                }
+            }
+//die();
+//            $return['smen_in_day'] = round($return['hours'] / $return['norm_kolvo_hour_in1smena'], 1);
+//            
+//            if( !empty($return['oborot']) && !empty($return['smen_in_day']) )
+//            $return['summa_na_ruki'] = ceil( $return['oborot'] / $return['smen_in_day'] );
+//
+//            // если на руки больше нормы то оценка 5
+//            if ( $return['summa_na_ruki'] >= $return['norm_vuruchka_on_1_hand']) {
+//                $return['ocenka_naruki'] = 5;
+//            }
+//            // если на руки меньше нормы то оценка 3
+//            else {
+//                $return['ocenka_naruki'] = 3;
+//            }
+// $ee = self::getTimesChecksDay($db, $return['sp'], $return['date']);
+// \f\pa($ee, 2, '', '$ee = self::getTimesChecksDay($db, $ar[\'sp\'], $ar[\'date\']);');
+// $return['hours_job_days'] = $ee;
+        }
+// echo '</fieldset>';
+//        return \f\end3('ok', true, $return);
+
+        die('<br/>end ' . __FILE__ . ' #' . __LINE__);
+
+
+
+
+
+        $e = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
+
+        \f\pa($e, 2, '', '$ee1 результ оценки дня 1 (функция) action=calc_full_ocenka_day');
+
+        if (!empty($e['data']['error'])) {
+            \f\end2($e['data']['error'], false, $e);
+        } else {
+            \f\end2('ok', true, $e);
+        }
+
+        die('<br/>end ' . __FILE__ . ' #' . __LINE__);
+    }
+
+
+
+    if (1 == 2) {
+
+        echo __FUNCTION__ . ' ' . __FILE__ . ' ' . __LINE__ . '<hr>';
+
+//    
+//    $r = \Nyos\mod\JobDesc::getTimesChecksDay($db, $_REQUEST['sp'], $_REQUEST['date']);
+//    \f\pa($r,'','','\Nyos\mod\JobDesc::getTimesChecksDay');
+//    
+        /**
+         * перенёс в отдельную функцию 
+         * \Nyos\mod\jobdesc\calculateAutoOcenkaDays($db, $sp, $data)
+         */
+        $ee1 = \Nyos\mod\jobdesc::calculateAutoOcenkaDays($db, $_REQUEST['sp'], $_REQUEST['date']);
 
 // \f\pa($ee1, 2, '', '$ee1 результ оценки дня 1 (функция)');
-    if (!empty($ee1['data']['error'])) {
-        \f\end2($ee1['data']['error'], false, $ee1);
-    } else {
-        \f\end2('ok', true, $ee1);
+        if (!empty($ee1['data']['error'])) {
+            \f\end2($ee1['data']['error'], false, $ee1);
+        } else {
+            \f\end2('ok', true, $ee1);
+        }
     }
 
 // ob_start('ob_gzhandler');
@@ -495,8 +861,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
 // if (!empty($return['data']['checks_for_new_ocenka'])) {
 // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
-        \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
 // }
+
+        \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
 
         \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
             'sale_point' => $ocenka['data']['sp'],
@@ -905,8 +1272,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
 
 /**
  * обозначаем конец текущего рабочего периода
- */
-elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
+ */ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
 
 //echo '<br/>'. __FILE__.' '.__LINE__;
 
@@ -961,8 +1327,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
 
 /**
  * обозначаем конец текущего рабочего периода
- */
-elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
+ */ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
 
 //echo '<br/>'. __FILE__.' '.__LINE__;
 

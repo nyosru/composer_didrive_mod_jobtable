@@ -133,10 +133,12 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
     foreach ($job_in['data'] as $j => $job) {
 
 // \f\pa($job);
+        if( isset($job['dop']['date']) ){
         $now_st = strtotime($job['dop']['date']);
 
         if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
             $a_job_in[$job['dop']['sale_point']][$job['dop']['date']][$job['dop']['jobman']] = 1;
+        }
         }
     }
 
