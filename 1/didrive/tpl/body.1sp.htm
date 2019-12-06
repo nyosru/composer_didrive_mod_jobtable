@@ -62,9 +62,8 @@
                     {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
                     <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
 
-                    <nobr>
+                    <nobr title="#{{ man['id'] }}">
 
-                        #{{ man['id'] }}<br/>
                         {{ man['dop']['lastName'] }}
                         {{ man['dop']['firstName'] }}
 

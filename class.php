@@ -987,6 +987,8 @@ class JobDesc {
         }
 
         //$spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
+
+
         $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
 // \f\pa($spec,2,'','spec');
 
@@ -1460,21 +1462,34 @@ class JobDesc {
      */
     public static function creatAutoBonus($db, $_sp, $dt0) {
 
+        $show_comment = true;
+        $show_comment = false;
+
         $dt = strtotime($dt0);
         $_d = date('Y-m-d', $dt);
         $ds = date('Y-m-d 05:00:00', $dt);
         $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
+
+        if( $show_comment === true )
+        \f\timer::start(123);
 
 
 // удаление имеющихся бонусов в этот день
         $ee = self::deleteAutoBonus($db, $_sp, $_d);
         //\f\pa($ee,'','','$ee удаление автобонусов');
 
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+
         /**
          * список должность и сколько бонуса накинуть
          * должность - оценка - бонус
          */
         $list_dolg_bonus = [];
+
+
+
 
         /**
          * массив работник > должность
@@ -1491,6 +1506,9 @@ class JobDesc {
 
         // \f\pa($job_in, 2, '', '$job_in работает в указанную дату на точке скана ' . $_sp . ' ( работник > должность )');
 
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
 
         /**
          * дневной оборот точки
@@ -1498,15 +1516,30 @@ class JobDesc {
         $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
         // \f\pa($oborot_month, 2, '', '$oborot_month');
         // \Nyos\mod\items::$get_data_simple = true;
-        $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+        // $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+            . ' `md`.`id_item` = mi.id '
+            . 'AND `md`.`name` = \'start\' '
+            . 'AND `md`.`value_datetime` >= \'' . $ds . '\'  '
+            . 'AND `md`.`value_datetime` <= \'' . $df . '\'  ';
+
+        $checks0 = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_checks);
         $checks = [];
 
-        foreach ($checks0['data'] as $k => $v) {
-            if (isset($v['dop']['jobman']) && isset($job_in[$v['dop']['jobman']]) && isset($v['dop']['start']) && $v['dop']['start'] >= $ds && $v['dop']['start'] <= $df) {
-                $v['dop']['item_id'] = $v['id'];
-                $checks[] = $v['dop'];
+        foreach ($checks0 as $k => $v) {
+            if (isset($v['jobman']) && isset($job_in[$v['jobman']]) && isset($v['start']) && $v['start'] >= $ds && $v['start'] <= $df) {
+                $v['item_id'] = $v['id'];
+                $checks[] = $v;
             }
         }
+
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
 
         // usort($checks, "\\f\\sort_ar_start");
         // \f\pa($checks, 2, '', '$checks');
@@ -1544,17 +1577,28 @@ class JobDesc {
          */
 
 
-        $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
-// \f\pa($dolgns, 5, '', '$dolgns');
-
-        $dd = [];
-
-        foreach ($dolgns['data'] as $k => $v) {
-            $dd[] = $v['dop'];
-        }
-
-        usort($dd, "\\f\\sort_ar_date");
-        // \f\pa($dd, 5, '', '$dolgns2');
+//        \f\timer::start(11);
+//        
+//        $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
+//// \f\pa($dolgns, 5, '', '$dolgns');
+//
+//        $dd = [];
+//
+//        foreach ($dolgns['data'] as $k => $v) {
+//            $dd[] = $v['dop'];
+//        }
+//
+//        usort($dd, "\\f\\sort_ar_date");
+//        // \f\pa($dd, 5, '', '$dolgns2');
+//
+//        echo '<br/>tt:'.\f\timer::stop('str',11);
+//        
+//        \f\timer::start(11);
+//        
+        $dd = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+        // \f\pa($dolgns, 5, '', '$dolgns2');
+//        echo '<br/>tt:'.\f\timer::stop('str',11);
+//        die();
 
         $d = [];
 
@@ -1593,6 +1637,8 @@ class JobDesc {
             }
         }
 
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
 
         $adds = [];
@@ -1642,6 +1688,9 @@ class JobDesc {
                 }
             }
         }
+        
+        if( $show_comment === true )
+        echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
         if (!empty($adds)) {
             // \f\pa($adds);
@@ -1688,7 +1737,9 @@ class JobDesc {
         foreach (self::$cash['bonuses'] as $k => $v) {
             if (isset($v['auto_bonus_zp']) && $v['auto_bonus_zp'] == 'da' && isset($v['date_now']) && $v['date_now'] == $date) {
 
-                $sql2[':id' . $nn] = $v['_id'];
+                //\f\pa($v);
+                //$sql2[':id' . $nn] = $v['_id'];
+                $sql2[':id' . $nn] = $v['id'];
                 $sql1 .= (!empty($sql1) ? ' OR ' : '' ) . ' `id` = :id' . $nn;
 
                 $nn++;
@@ -2534,17 +2585,17 @@ class JobDesc {
 
 // \f\pa($ocenki);
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
+
+
         $return = [];
 
         if (empty($date_finish)) {
@@ -2621,7 +2672,6 @@ class JobDesc {
         }
 
 //\f\pa($j2, 2, '', '$j2');
-
         // если ищем несколько дат
         if ($ds != $df) {
 

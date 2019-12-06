@@ -248,6 +248,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record') {
 
     // \f\timer::start(3);
 
+
     $ee = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $_REQUEST['date']);
     // \f\pa($ee,'','','$ee создание автобонусов');
 
