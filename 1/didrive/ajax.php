@@ -8,7 +8,11 @@ ini_set('display_errors', 'On'); // сообщения с ошибками бу�
 //error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 error_reporting(-1); // E_ALL - отображаем ВСЕ ошибки
 
-if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info') {
+if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
+) {
     date_default_timezone_set("Asia/Omsk");
 } else {
     date_default_timezone_set("Asia/Yekaterinburg");

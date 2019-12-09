@@ -3,7 +3,17 @@
 ini_set('display_errors', 'On'); // сообщения с ошибками будут показываться
 error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 
-date_default_timezone_set("Asia/Yekaterinburg");
+
+if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' 
+        || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
+) {
+    date_default_timezone_set("Asia/Omsk");
+} else {
+    date_default_timezone_set("Asia/Yekaterinburg");
+}
+
 define('IN_NYOS_PROJECT', true);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
