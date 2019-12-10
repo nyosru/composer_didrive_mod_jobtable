@@ -133,12 +133,12 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
     foreach ($job_in['data'] as $j => $job) {
 
 // \f\pa($job);
-        if( isset($job['dop']['date']) ){
-        $now_st = strtotime($job['dop']['date']);
+        if (isset($job['dop']['date'])) {
+            $now_st = strtotime($job['dop']['date']);
 
-        if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
-            $a_job_in[$job['dop']['sale_point']][$job['dop']['date']][$job['dop']['jobman']] = 1;
-        }
+            if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
+                $a_job_in[$job['dop']['sale_point']][$job['dop']['date']][$job['dop']['jobman']] = 1;
+            }
         }
     }
 
@@ -208,23 +208,37 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, string $mod_default = '074.time_expectations_default' ) {
 
-    $def = \Nyos\mod\items::getItemsSimple($db, $mod_default, 'show');
-// \f\pa($def,2);
-    $ee = [];
+    $cash_var = 'twig--get_timers_on_sp_default--074.time_expectations_default';
+    $e = \f\Cash::getVar($cash_var);
+    //\f\pa($e);
+    if (!empty($e)) {
 
-    foreach ($def['data'] as $k => $v) {
-        if (isset($v['dop']['otdel'])) {
-            if ($v['dop']['otdel'] == 1) {
-                $ee['cold'] = $v['dop']['default'];
-            } elseif ($v['dop']['otdel'] == 2) {
-                $ee['hot'] = $v['dop']['default'];
-            } elseif ($v['dop']['otdel'] == 3) {
-                $ee['delivery'] = $v['dop']['default'];
+//                echo '<br/>201: ' . \f\timer::stop('str', 121);
+//                echo '<br/>211: ' . \f\CalcMemory::stop(121);
+
+        return $e;
+    }
+
+    //$def = \Nyos\mod\items::getItemsSimple($db, $mod_default, 'show');
+    $def = \Nyos\mod\items::getItemsSimple3($db, $mod_default);
+// \f\pa($def,2);
+    $return = [];
+
+    foreach ($def as $k => $v) {
+        if (isset($v['otdel'])) {
+            if ($v['otdel'] == 1) {
+                $return['cold'] = $v['default'];
+            } elseif ($v['otdel'] == 2) {
+                $return['hot'] = $v['default'];
+            } elseif ($v['otdel'] == 3) {
+                $return['delivery'] = $v['default'];
             }
         }
     }
 
-    return $ee;
+    \f\Cash::setVar($cash_var, $return);
+
+    return $return;
 });
 $twig->addFunction($function);
 
@@ -1121,7 +1135,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_money_dops', function ( $db, s
 
     $e = \Nyos\mod\items::getItemsSimple3($db, '072.plus');
 // \f\pa($e);
-    
+
     foreach ($e as $k => $v) {
         $v['type2'] = 'plus';
 
@@ -1144,10 +1158,10 @@ $function = new Twig_SimpleFunction('jobdesc__get_money_dops', function ( $db, s
 
     $e = \Nyos\mod\items::getItemsSimple3($db, '072.vzuscaniya');
 // \f\pa($e);
-    
+
     foreach ($e as $k => $v) {
         $v['type2'] = 'minus';
-        
+
         if ($type_ar == 'jobman-date') {
             $re[$v['jobman']][$v['date_now']][] = $v;
         }
@@ -1155,7 +1169,6 @@ $function = new Twig_SimpleFunction('jobdesc__get_money_dops', function ( $db, s
         else {
             $re[$v['sale_point']][$v['jobman']][$v['date_now']][] = $v;
         }
-        
     }
 
     return $re;

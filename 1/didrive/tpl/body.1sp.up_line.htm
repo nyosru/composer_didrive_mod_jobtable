@@ -19,7 +19,7 @@
                         <a href="#" 
                            class="dropdown-item btn-light"
                            data-toggle="modal" data-target="#addPesonalOnSp" onclick="
-                                       $('#add_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
+                                       $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
                                        $('#add_person__sp').val('{{ sp_now }}');
                                        $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
                                        return false;
@@ -29,7 +29,7 @@
                         <a href="#" 
                            class="dropdown-item btn-light"
                            data-toggle="modal" data-target="#movePesonalOnSp" onclick="
-                                       $('#move_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
+                                       $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
                                        $('#move_person__sp').val('{{ sp_now }}');
                                        $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
                            " >назначить сотрудника на данную точку</a>
@@ -38,7 +38,7 @@
                     <a href="#" 
                        class="dropdown-item btn-light"
                        data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
-                                   $('#add_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
+                                   $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
                                    $('#add_person__sp').val('{{ sp_now }}');
                                    $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
                        " >назначить сотрудника</a>
@@ -57,7 +57,7 @@
                         xdata-toggle="modal" 
                         xdata-target="#addPesonalOnSp2" 
                         xonclick="
-                                $('#add_person__sp_name').val('{{ sp['data'][sp_now]['head'] }}');
+                                $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
                                 $('#add_person__sp').val('{{ sp_now }}');
                                 $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
                         " 
@@ -118,7 +118,7 @@
                            data-toggle="modal" data-target="#setSpecNaznach" 
 
                            onclick="
-                                       $('#add_person1day__sp_name').html('{{ sp['data'][sp_now]['head'] }}');
+                                       $('#add_person1day__sp_name').html('{{ sps[sp_now]['head'] }}');
                                        $('#add_spec__sp').val('{{ sp_now }}');
                                        $('#add_spec__sp_s').val('{{ creatSecret(sp_now) }}');
 
