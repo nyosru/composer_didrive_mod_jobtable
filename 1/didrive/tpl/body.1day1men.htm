@@ -317,8 +317,6 @@
 
 
 
-
-
     {% if checki[date][man.id] is defined %}
 
         {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
@@ -333,8 +331,7 @@
     {% endif %}
 
 
-
-
+    {# comments.data #}
     {% if comments.data is defined %}
 
         {#{ pa(comments.data ) }#}
@@ -358,6 +355,7 @@
 
 
 
+    {# money_dops #}
     {% if money_dops[now_job.sale_point][now_job.jobman][date] is defined %}
         {% for k,money in money_dops[now_job.sale_point][now_job.jobman][date] %}
             {% if money.type2 == 'plus' %}
