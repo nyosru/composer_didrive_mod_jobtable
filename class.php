@@ -12,6 +12,12 @@ if (!defined('IN_NYOS_PROJECT'))
 class JobDesc {
 
     public static $dir_img_server = false;
+
+    /**
+     * используем одну дату или нет
+     * @var булев
+     */
+    public static $one_date = false;
     public static $cash = [
         'salaris_all' => []
     ];
@@ -316,6 +322,79 @@ class JobDesc {
         return $summa ?? false;
     }
 
+    public static function getSalaryJobman($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_salary = '071.set_oplata') {
+
+//        echo '<br/>sp: ' . $sp;
+//        echo '<br/>d: ' . $dolgn;
+
+        if (isset(self::$cash['salary_now'][$sp][$dolgn][$date]))
+            return self::$cash['salary_now'][$sp][$dolgn][$date];
+
+        $sp_default = self::getDefaultSpId($db);
+
+        if (empty(self::$cash['salarys'])) {
+            self::$cash['salarys'] = \Nyos\mod\items::getItemsSimple3($db, $module_salary);
+            usort(self::$cash['salarys'], "\\f\\sort_ar_date");
+        }
+
+        // если тру то используем точку по умолчанию
+        $sp_def = true;
+        
+        foreach (self::$cash['salarys'] as $k => $v) {
+
+            if ($v['date'] <= $date) {
+
+//                echo '<div style="margin:5px; padding:5px; border:1px solid green; max-height:50px; overflow: auto;" >';
+//                \f\pa($v);
+//                echo '</div>';
+
+                if (isset($v['dolgnost']) && $v['dolgnost'] == $dolgn) {
+                    if (isset($v['sale_point']) && ( $v['sale_point'] == $sp || ( $sp_def === true && $v['sale_point'] == $sp_default ) )) {
+
+                        if (isset($v['oborot_sp_last_monht_menee']) || isset($v['oborot_sp_last_monht_bolee'])) {
+
+//                            echo '<br/>проверяем оборот:';
+
+                            // достаём оборот этой точки продаж за текущий месяц
+                            $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
+//                            \f\pa($oborot, '', '', 'oborot');
+
+                            if (isset($v['oborot_sp_last_monht_menee']) || isset($v['oborot_sp_last_monht_bolee'])) {
+                                if (isset($v['oborot_sp_last_monht_menee'])) {
+                                    if (isset($v['oborot_sp_last_monht_menee']) && $v['oborot_sp_last_monht_menee'] <= $oborot) {
+//                                        echo '<br/>++ ' . __LINE__ . ' ++';
+                                        continue;
+                                    } 
+//                                    else {
+//                                        echo '<br/>-- menee ' . __LINE__ . ' ++';
+//                                    }
+                                }
+                                if (isset($v['oborot_sp_last_monht_bolee'])) {
+                                    if (isset($v['oborot_sp_last_monht_bolee']) && $v['oborot_sp_last_monht_bolee'] >= $oborot) {
+                                        // echo '<br/>++ ' . __LINE__ . ' ++';
+                                        continue;
+                                    } 
+//                                    else {
+//                                        echo '<br/>-- bolee ' . __LINE__ . ' ++';
+//                                    }
+                                }
+                            }
+                        }
+
+                        if( $v['sale_point'] != $sp_default )
+                            $sp_def = false;
+                        
+//                        \f\pa($v);
+                        self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
+                        
+                    }
+                }
+            }
+        }
+
+        return self::$cash['salary_now'][$sp][$dolgn][$date];
+    }
+
     /**
      * 
      * @param type $db
@@ -328,7 +407,7 @@ class JobDesc {
      * @param type $module_slary
      * @return type
      */
-    public static function getSalaryJobman($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_slary = '071.set_oplata') {
+    public static function getSalaryJobman_old1912111155($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_slary = '071.set_oplata') {
 
 //        $sp = 2229;
 //        $dolgn = 2;
@@ -358,14 +437,16 @@ class JobDesc {
          */
         if (empty(self::$cash['salarys'])) {
 
-            $salary = \Nyos\mod\items::getItemsSimple($db, $module_slary, 'show');
-//\f\pa($salary, 2);
+//            $salary = \Nyos\mod\items::getItemsSimple($db, $module_slary, 'show');
+////\f\pa($salary, 2);
+//
+//            self::$cash['salarys'] = [];
+//
+//            foreach ($salary['data'] as $k => $v) {
+//                self::$cash['salarys'][] = $v['dop'];
+//            }
 
-            self::$cash['salarys'] = [];
-
-            foreach ($salary['data'] as $k => $v) {
-                self::$cash['salarys'][] = $v['dop'];
-            }
+            self::$cash['salarys'] = \Nyos\mod\items::getItemsSimple3($db, $module_slary);
 
             usort(self::$cash['salarys'], "\\f\\sort_ar_date");
         }
@@ -589,17 +670,16 @@ class JobDesc {
     public static function getTimeOgidanie($db, int $sp, string $date) {
 
 // echo '<br/>'.$sp.' + '.$date;
-
-        $timeo0 = \Nyos\mod\items::getItemsSimple($db, '074.time_expectations_list', 'show');
+        // $timeo0 = \Nyos\mod\items::getItemsSimple($db, '074.time_expectations_list', 'show');
+        $timeo0 = \Nyos\mod\items::getItemsSimple3($db, '074.time_expectations_list');
 
 //\f\pa($timeo0);
 
-        foreach ($timeo0['data'] as $k => $v) {
-
+        foreach ($timeo0 as $k => $v) {
 // echo '<br/>'.$v['dop']['date'];
 
-            if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && isset($v['dop']['date']) && $v['dop']['date'] == $date) {
-                $timeo[] = $v['dop'];
+            if (isset($v['sale_point']) && $v['sale_point'] == $sp && isset($v['date']) && $v['date'] == $date) {
+                $timeo[] = $v;
             }
         }
 
@@ -704,41 +784,28 @@ class JobDesc {
         /**
          * тащим кто кем и где работал под дням в периоде
          */
-        /*
-          $jobinsp = \Nyos\mod\JobDesc::getSetupJobmanOnSp($db, $date);
-          \f\pa($jobinsp, 2, '', '$jobinsp');
-         */
+        $jobinsp = \Nyos\mod\JobDesc::getSetupJobmanOnSp($db, $date);
+        \f\pa($jobinsp, 2, '', '$jobinsp');
+
+
+        // echo '<br/>'.__FILE__.' #'.__LINE__;
 
         $worker_on_date = self::whereJobmans($db, $date);
         \f\pa($worker_on_date, 2, '', 'self::whereJobmans($db, $date);');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // echo '<br/>'.__FILE__.' #'.__LINE__;
 // \f\pa($jobinsp2, 2, '', '$jobinsp2');
 
-        $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout');
-//\f\pa($checki,2,'','$checki'); // exit;
+
 
         $dd = date('Y-m-d', strtotime($date));
 
         $dds = strtotime(date('Y-m-d 09:00:00', strtotime($date)));
-        $ddf = strtotime(date('Y-m-d 02:00:00', ( strtotime($date) + 3600 * 24)));
+        $ddf = strtotime(date('Y-m-d 02:00:00', ( strtotime($date) . ' + 1 day ')));
+
+
+        $checki = \Nyos\mod\items::getItemsSimple($db, '050.chekin_checkout');
+        // \f\pa($checki,2,'','$checki'); // exit;
 
         $checki2 = [];
 
@@ -748,19 +815,18 @@ class JobDesc {
 
             if (isset($v2['dop']['jobman']) && isset($jobinsp['jobs'][$v2['dop']['jobman']])) {
 
-
                 $ddn = strtotime($v2['dop']['start']);
 
                 if ($dds <= $ddn && $ddn <= $ddf) {
 
 // echo '<br/>#' . __LINE__ . ' ' . $v2['dop']['jobman'];
-                    \f\pa($v2['dop']);
+                    // \f\pa($v2['dop']);
                     $checki2[$v2['dop']['jobman']][] = $v2['dop'];
                 }
             }
         }
 
-        \f\pa($checki2, 2, '', '$checki2'); // exit;
+        // \f\pa($checki2, 2, '', '$checki2'); // exit;
 // $dt1 = date('Y-m-d 05:00:01', strtotime($date));
 // $dt2 = date('Y-m-d 23:50:01', strtotime($date));
 
@@ -797,6 +863,8 @@ class JobDesc {
             }
         }
 
+        \f\pa($return, 2, '', '$return');
+
         if ($return['hours'] == 0)
             throw new \Exception('Количество отработанных часов = 0', 11);
 
@@ -816,8 +884,8 @@ class JobDesc {
      * @return type
      */
     public static function whereJobmansOnSp($db, $folder = null, $date_start = null, $date_fin = null
-    , $module_man_job_on_sp = 'jobman_send_on_sp'
-    , $module_spec_naznach_on_sp = '050.job_in_sp'
+            , $module_man_job_on_sp = 'jobman_send_on_sp'
+            , $module_spec_naznach_on_sp = '050.job_in_sp'
     ) {
 
 //whereJobmansOnSp( $db, $folder, $date_start, $date_finish );
@@ -948,13 +1016,14 @@ class JobDesc {
      */
     public static function whereJobmansNowDate($db, $date = null) {
 
-        $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+        $job = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
 // \f\pa($job,2,'','$job');
 
         $ar = [];
 
-        foreach ($job['data'] as $k => $v) {
-            $ar[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+        foreach ($job as $k => $v) {
+            $ar[$v['jobman']][$v['date']] = $v;
         }
 
         foreach ($ar as $k => $v) {
@@ -992,13 +1061,16 @@ class JobDesc {
             }
         }
 
-        $spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
+        //$spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
+
+
+        $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
 // \f\pa($spec,2,'','spec');
 
-        foreach ($spec['data'] as $k1 => $v1) {
-            if (isset($v1['dop']['date']) && $v1['dop']['date'] == $date) {
-                $v1['dop']['type'] = 'spec';
-                $now_job[$v1['dop']['jobman']] = $v1['dop'];
+        foreach ($spec as $k1 => $v1) {
+            if (isset($v1['date']) && $v1['date'] == $date) {
+                $v1['type'] = 'spec';
+                $now_job[$v1['jobman']] = $v1;
             }
         }
 
@@ -1019,8 +1091,8 @@ class JobDesc {
      * @return type
      */
     public static function whereJobmansPeriod($db, $date_start = null, $date_fin = null
-    , $module_man_job_on_sp = 'jobman_send_on_sp'
-    , $module_spec_naznach_on_sp = '050.job_in_sp'
+            , $module_man_job_on_sp = 'jobman_send_on_sp'
+            , $module_spec_naznach_on_sp = '050.job_in_sp'
     ) {
 
 
@@ -1111,7 +1183,7 @@ class JobDesc {
      */
     public static function whereJobmans($db, $date_start = null, $date_fin = null) {
 
-        echo '<br/>' . __FUNCTION__ . ' ( [' . $date_start . '] , [' . $date_fin . '] ) #' . __LINE__;
+        // echo '<br/>' . __FUNCTION__ . ' ( [' . $date_start . '] , [' . $date_fin . '] ) #' . __LINE__;
 
         if (empty($date_start))
             $date_start = '2019-09-01';
@@ -1122,8 +1194,12 @@ class JobDesc {
         $return = [];
 
         $i = 0;
-        $dt = date('Y-m-d', strtotime($date_start . ' + ' . $i . ' day'));
+        // $dt = date('Y-m-d', strtotime($date_start . ' + ' . $i . ' day'));
+        $dt = date('Y-m-d', strtotime($date_start));
+
         $return[$dt] = self::whereJobmansNowDate($db, $dt);
+
+        // \f\pa($return[$dt],2,'','$return[$dt]');
 
         return $return;
     }
@@ -1279,7 +1355,7 @@ class JobDesc {
         /**
          * достаём чеки за день
          */
-        if (1 == 2) {
+        if (1 == 1) {
 
             $id_items_for_new_ocenka = [];
 
@@ -1307,7 +1383,7 @@ class JobDesc {
         /**
          * достаём нормы на день
          */
-        if (1 == 1) {
+        if (5 == 5) {
             \f\timer::start();
 
             $now_norm = \Nyos\mod\JobDesc::whatNormToDay($db, $return['sp'], $return['date']);
@@ -1340,11 +1416,13 @@ class JobDesc {
         /**
          * достаём оборот за сегодня
          */
-        if (1 == 1) {
+        if (5 == 5) {
 
             \f\timer::start();
+
 // $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
 // die('<br/>'.__FILE__.' == '.__LINE__);
+
             $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
 
 // \f\pa($return);
@@ -1357,7 +1435,7 @@ class JobDesc {
         /**
          * достаём время ожидания за сегодня
          */
-        if (1 == 1) {
+        if (5 == 5) {
 
             \f\timer::start();
 
@@ -1378,7 +1456,7 @@ class JobDesc {
 
 //        echo '<fieldset style="border: 1px solid gray; padding: 5px; margin: 5px;" ><legend>'
 //        . 'достаём суммарное время работы сотрудников за сегодня</legend>';
-        if (1 == 1) {
+        if (1 == 3) {
 
 //            echo '<hr>';
 //            echo __FILE__.' #'.__LINE__;
@@ -1459,21 +1537,34 @@ class JobDesc {
      */
     public static function creatAutoBonus($db, $_sp, $dt0) {
 
+        $show_comment = true;
+        $show_comment = false;
+
         $dt = strtotime($dt0);
         $_d = date('Y-m-d', $dt);
         $ds = date('Y-m-d 05:00:00', $dt);
         $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
 
-        
+        if ($show_comment === true)
+            \f\timer::start(123);
+
+
 // удаление имеющихся бонусов в этот день
-    $ee = self::deleteAutoBonus($db, $_sp, $_d );
-    //\f\pa($ee,'','','$ee удаление автобонусов');
-        
+        $ee = self::deleteAutoBonus($db, $_sp, $_d);
+        //\f\pa($ee,'','','$ee удаление автобонусов');
+
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+
         /**
          * список должность и сколько бонуса накинуть
          * должность - оценка - бонус
          */
         $list_dolg_bonus = [];
+
+
+
 
         /**
          * массив работник > должность
@@ -1490,6 +1581,9 @@ class JobDesc {
 
         // \f\pa($job_in, 2, '', '$job_in работает в указанную дату на точке скана ' . $_sp . ' ( работник > должность )');
 
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
 
         /**
          * дневной оборот точки
@@ -1497,15 +1591,30 @@ class JobDesc {
         $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
         // \f\pa($oborot_month, 2, '', '$oborot_month');
         // \Nyos\mod\items::$get_data_simple = true;
-        $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+        // $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
+
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                . ' `md`.`id_item` = mi.id '
+                . 'AND `md`.`name` = \'start\' '
+                . 'AND `md`.`value_datetime` >= \'' . $ds . '\'  '
+                . 'AND `md`.`value_datetime` <= \'' . $df . '\'  ';
+
+        $checks0 = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_checks);
         $checks = [];
 
-        foreach ($checks0['data'] as $k => $v) {
-            if (isset($v['dop']['jobman']) && isset($job_in[$v['dop']['jobman']]) && isset($v['dop']['start']) && $v['dop']['start'] >= $ds && $v['dop']['start'] <= $df) {
-                $v['dop']['item_id'] = $v['id'];
-                $checks[] = $v['dop'];
+        foreach ($checks0 as $k => $v) {
+            if (isset($v['jobman']) && isset($job_in[$v['jobman']]) && isset($v['start']) && $v['start'] >= $ds && $v['start'] <= $df) {
+                $v['item_id'] = $v['id'];
+                $checks[] = $v;
             }
         }
+
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
 
         // usort($checks, "\\f\\sort_ar_start");
         // \f\pa($checks, 2, '', '$checks');
@@ -1543,17 +1652,28 @@ class JobDesc {
          */
 
 
-        $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
-// \f\pa($dolgns, 5, '', '$dolgns');
-
-        $dd = [];
-
-        foreach ($dolgns['data'] as $k => $v) {
-            $dd[] = $v['dop'];
-        }
-
-        usort($dd, "\\f\\sort_ar_date");
-        // \f\pa($dd, 5, '', '$dolgns2');
+//        \f\timer::start(11);
+//        
+//        $dolgns = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_salary);
+//// \f\pa($dolgns, 5, '', '$dolgns');
+//
+//        $dd = [];
+//
+//        foreach ($dolgns['data'] as $k => $v) {
+//            $dd[] = $v['dop'];
+//        }
+//
+//        usort($dd, "\\f\\sort_ar_date");
+//        // \f\pa($dd, 5, '', '$dolgns2');
+//
+//        echo '<br/>tt:'.\f\timer::stop('str',11);
+//        
+//        \f\timer::start(11);
+//        
+        $dd = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+        // \f\pa($dolgns, 5, '', '$dolgns2');
+//        echo '<br/>tt:'.\f\timer::stop('str',11);
+//        die();
 
         $d = [];
 
@@ -1592,6 +1712,8 @@ class JobDesc {
             }
         }
 
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
 
         $adds = [];
@@ -1611,9 +1733,9 @@ class JobDesc {
                 $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
 //            echo '<br/>оценка:' . $ocenka;
 
-                if( empty($ocenka) )
+                if (empty($ocenka))
                     continue;
-                
+
                 $premiya = $d[$job_in[$v['jobman']]]['premiya-' . $ocenka] ?? null;
 
                 if (!empty($premiya)) {
@@ -1642,6 +1764,9 @@ class JobDesc {
             }
         }
 
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
         if (!empty($adds)) {
             // \f\pa($adds);
 
@@ -1665,21 +1790,31 @@ class JobDesc {
      */
     public static function deleteAutoBonus($db, $sp, $date0) {
 
+        // echo '<br/>'.$date0;
         $date = date('Y-m-d', strtotime($date0));
 
-        \Nyos\mod\items::$get_data_simple = true;
-        $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
-        //\f\pa($bonuses);
+        // \Nyos\mod\items::$get_data_simple = true;
+        // $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
+
+        if (empty(self::$cash['bonuses'])) {
+            self::$cash['bonuses'] = \Nyos\mod\items::getItemsSimple3($db, self::$mod_bonus);
+            // echo '<br/>' . __LINE__;
+        } else {
+            // echo '<br/>' . __LINE__;
+        }
+        // exit;
 
         $sql1 = '';
         $sql2 = [];
 
         $nn = 0;
 
-        foreach ($bonuses as $k => $v) {
+        foreach (self::$cash['bonuses'] as $k => $v) {
             if (isset($v['auto_bonus_zp']) && $v['auto_bonus_zp'] == 'da' && isset($v['date_now']) && $v['date_now'] == $date) {
 
-                $sql2[':id' . $nn] = $v['_id'];
+                //\f\pa($v);
+                //$sql2[':id' . $nn] = $v['_id'];
+                $sql2[':id' . $nn] = $v['id'];
                 $sql1 .= (!empty($sql1) ? ' OR ' : '' ) . ' `id` = :id' . $nn;
 
                 $nn++;
@@ -1689,6 +1824,7 @@ class JobDesc {
 
         if (!empty($sql1)) {
 
+            // echo 'UPDATE mitems SET `status` = \'delete\' WHERE ' . $sql1;
             $ff = $db->prepare('UPDATE mitems SET `status` = \'delete\' WHERE ' . $sql1);
             $ff->execute($sql2);
 
@@ -1709,22 +1845,31 @@ class JobDesc {
      */
     public static function calculateAutoOcenkaDays($db, $sp, $date) {
 
+        $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
+        \f\pa($return, 2, '', '$return readVarsForOcenkaDays');
+
+        die('<br/>end ' . __FILE__ . ' #' . __LINE__);
+
+
+
+
+
+
+
         // echo '<br/>' . __FILE__ . ' #' . __LINE__;
         // return \f\end3( 'wef', true );
-
-        ob_start('ob_gzhandler');
+        // ob_start('ob_gzhandler');
 
         try {
 
             if (1 == 1) {
 
-                $return = \Nyos\mod\JobDesc::readVarsForOcenkaDays($db, $sp, $date);
-
-                //                \f\pa($return, 2, '', '$return данные для оценки дня');
                 //                die();
                 // массив чеков для новых оценок
                 // $return['checks_for_new_ocenka']
             }
+
+            return \f\end3('ok ' . __LINE__, true);
 
             if (1 == 1) {
                 // \f\pa($return['data'], 2, '', '$return данные для оценки дня');
@@ -1749,22 +1894,28 @@ class JobDesc {
                 $return['data']['ocenka'] = $ocenka['data']['ocenka'];
             }
 
-            //        if ( class_exists('\Nyos\mod\items') )
-            //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
-            // if (!empty($return['data']['checks_for_new_ocenka'])) {
-            // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
-            $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['data']['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
-            // }
-            $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
-                        'sale_point' => $ocenka['data']['sp'],
-                        'date' => $ocenka['data']['date'],
-                        'ocenka_time' => $ocenka['data']['ocenka_time'],
-                        'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
-                        'ocenka' => $ocenka['data']['ocenka'],
-            ]);
+            if (1 == 1) {
 
-            $r = ob_get_contents();
-            ob_end_clean();
+                //        if ( class_exists('\Nyos\mod\items') )
+                //            echo '<br/>' . __FILE__ . ' ' . __LINE__;
+                // if (!empty($return['data']['checks_for_new_ocenka'])) {
+                // \f\pa( $return['checks_for_new_ocenka'], 2 , '' , 'checks_for_new_ocenka' );
+
+                $return['data']['ocenka-save'] = \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db,
+                                $return['data']['checks_for_new_ocenka'],
+                                $ocenka['data']['ocenka']);
+
+                // }
+                $return['data']['ocenka-save2'] = \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+                            'sale_point' => $ocenka['data']['sp'],
+                            'date' => $ocenka['data']['date'],
+                            'ocenka_time' => $ocenka['data']['ocenka_time'],
+                            'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+                            'ocenka' => $ocenka['data']['ocenka'],
+                ]);
+            }
+            // $r = ob_get_contents();
+            // ob_end_clean();
 
             return \f\end3('ok ' . ( $r ?? '--' ), true, $return['data']);
 
@@ -1990,11 +2141,7 @@ class JobDesc {
 
 // if ( isset($_REQUEST['no_send_msg']) ) {}else{}
 
-
-
             echo '<br/>' . __FILE__ . ' #' . __LINE__;
-
-
 
             $text = $ex->getMessage()
                     . ' авторасчёт оценки дня'
@@ -2051,8 +2198,8 @@ class JobDesc {
               }
              */
 
-            $r = ob_get_contents();
-            ob_end_clean();
+//            $r = ob_get_contents();
+//            ob_end_clean();
 
             return \f\end3('Обнаружены ошибки: ' . $ex->getMessage(), false, [
                 'error' => $ex->getMessage(),
@@ -2478,18 +2625,18 @@ class JobDesc {
 
     public static function getSetupJobmanOnSp($db, $date_start, $date_finish = null, $module_man_job_on_sp = 'jobman_send_on_sp', $mod_spec_jobday = '050.job_in_sp') {
 
-        echo '<hr>' . __FILE__ . ' #' . __LINE__
-        . '<br/>' . __FUNCTION__
-        . '<hr>';
-
+//        echo '<hr>' . __FILE__ . ' #' . __LINE__
+//        . '<br/>' . __FUNCTION__
+//        . '<hr>';
 //        \f\pa($date_start);
 //        \f\pa($date_finish);
-
-        $ee = self::whereJobmans($db, $date_start, $date_start);
-        \f\pa($ee, 2, '', '$ee');
+//        $ee = self::whereJobmans($db, $date_start, $date_start);
+//        \f\pa($ee, 2, '', 'self::whereJobmans ' . __FILE__ . ' ' . __LINE__);
 
         $plus_minus_checks = \Nyos\mod\JobBuh::getChecksMinusPlus($db, $date_start, $date_finish);
-// \f\pa($plus_minus_checks, 2, '', '$plus_minus_checks');
+        //\f\pa($plus_minus_checks, 2, '', '$plus_minus_checks');
+//        $plus_minus_checks = \Nyos\mod\JobDesc:: Buh::getChecksMinusPlus($db, $date_start, $date_finish);
+//        \f\pa($plus_minus_checks, 2, '', '$plus_minus_checks');
 //        foreach ($plus_minus_checks['items'] as $jobman => $v1) {
 //            foreach ($v1 as $k => $v) {
 //                $checks[$jobman][$v['date']] = $v;
@@ -2500,17 +2647,29 @@ class JobDesc {
 
         $ocenki = [];
 
-        foreach ($plus_minus_checks['items'] as $jobman => $v1) {
-            foreach ($v1 as $k => $item) {
-                if (isset($item['ocenka'])) {
-                    $ocenki[$jobman][$item['date']] = $item['ocenka'];
-                } elseif (isset($item['ocenka_auto'])) {
-                    $ocenki[$jobman][$item['date']] = $item['ocenka_auto'];
+        if (!empty($plus_minus_checks['items']))
+            foreach ($plus_minus_checks['items'] as $jobman => $v1) {
+                foreach ($v1 as $k => $item) {
+                    if (isset($item['ocenka'])) {
+                        $ocenki[$jobman][$item['date']] = $item['ocenka'];
+                    } elseif (isset($item['ocenka_auto'])) {
+                        $ocenki[$jobman][$item['date']] = $item['ocenka_auto'];
+                    }
                 }
             }
-        }
 
 // \f\pa($ocenki);
+
+
+
+
+
+
+
+
+
+
+
 
         $return = [];
 
@@ -2536,45 +2695,16 @@ class JobDesc {
 //\f\pa($spec, 2, '', '$spec');
         }
 
-        /**
-         * назначения сорудников на сп
-         */
-        $jobs = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+        // назначения сорудников на сп
+        // $jobs = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+        $jobs = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
 //        \f\pa($jobs, 2, '', '$jobs');
-
 
         $jobin = [];
 
-        foreach ($jobs['data'] as $k => $v) {
-
-// if ($v['dop']['date'] >= $ds && $v['dop']['date'] <= $df) {
-// $jobin[$v['dop']['jobman']][$v['dop']['date']][] = $v['dop'];
-            $v['dop']['fl'] = __FILE__ . ' #' . __LINE__;
-            $jobin[$v['dop']['date']][] = $v['dop'];
-
-            /*
-              (
-              [jobman] => 187
-              [sale_point] => 1
-              [dolgnost] => 2
-              [date] => 2019-05-01
-              )
-             */
-//\f\pa($v['dop']);
-
-
-            /*
-              $nd = date('Y-m-d', strtotime($v['dop']['date']) + 3600 * 24 * 14);
-              $v['dop']['date'] = $nd;
-              $v['dop']['dolgnost'] = rand(10, 50);
-              $jobin[$v['dop']['jobman']][$nd] = $v['dop'];
-
-              $nd = date('Y-m-d', strtotime($v['dop']['date']) + 3600 * 24 * 7);
-              $v['dop']['date'] = $nd;
-              $v['dop']['dolgnost'] = rand(10, 50);
-              $jobin[$v['dop']['jobman']][$nd] = $v['dop'];
-             */
-// }
+        foreach ($jobs as $k => $v) {
+            // $v['fl'] = __FILE__ . ' #' . __LINE__;
+            $jobin[$v['date']][] = $v;
         }
 
 //\f\pa($jobin, 2, '', '$jobin');
@@ -2617,10 +2747,7 @@ class JobDesc {
         }
 
 //\f\pa($j2, 2, '', '$j2');
-
-        /**
-         * если ищем несколько дат
-         */
+        // если ищем несколько дат
         if ($ds != $df) {
 
             $j3 = [];
@@ -2692,17 +2819,24 @@ class JobDesc {
                     $v['summa'] = ceil($v['price_hour'] * $v['hour']);
                 }
 
-                $return['jobs'][$v['jobman']][$v['date']] = $v;
+                if (self::$one_date === true) {
+                    $return[$v['jobman']] = $v;
+                } else {
+                    $return['jobs'][$v['jobman']][$v['date']] = $v;
+                }
             }
 
 //\f\pa($return);
         }
-        /**
-         * если ищем одну дату
-         */ else {
+        // если ищем одну дату
+        else {
             foreach ($j2 as $jobman => $v2) {
                 foreach ($v2 as $date => $v) {
-                    $return['jobs'][$v['jobman']][$ds] = $v;
+                    if (self::$one_date === true) {
+                        $return[$v['jobman']] = $v;
+                    } else {
+                        $return['jobs'][$v['jobman']][$ds] = $v;
+                    }
                 }
             }
         }
@@ -3267,18 +3401,18 @@ class JobDesc {
     public static function whatNormToDay($db, int $sp, string $date, $date_fin = null) {
 
 // echo '<br/>' . $sp . ' - ' . $date . ' - ' . $date_fin;
-
-        $norms = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr', 'show');
+        // $norms = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr', 'show');
+        $norms = \Nyos\mod\items::getItemsSimple3($db, 'sale_point_parametr', 'show');
 // \f\pa($norms,2,'','$norms'); // die();
 
         $a = [];
 
-        foreach ($norms['data'] as $k => $v) {
+        foreach ($norms as $k => $v) {
 
 //if( $v['dop']['date'] == $d && $v['dop']['sale_point'] == $sp )
-            if (isset($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp) {
+            if (isset($v['sale_point']) && $v['sale_point'] == $sp) {
 //\f\pa($v);
-                $a[] = $v['dop'];
+                $a[] = $v;
 // $dates[] = $v['dop']['date'];
             }
         }

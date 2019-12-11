@@ -54,6 +54,8 @@
                 #}
 
                 {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
+                {#{ pa(time_ex) }#}
+                
                 {% if 1 == 2 %}
                     <br/>
                     {{ date_start }}
@@ -542,6 +544,8 @@
         </span>
     </div>
 {% endif %}
+
+
 
 {# оценка дня #}
 {% if 1 == 1 %}

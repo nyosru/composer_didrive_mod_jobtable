@@ -1,27 +1,13 @@
 {% spaceless %}
 
-    {# spoint.id #}
-    {# spoint.id #}
+    {#{ pa(money) }#}
 
-    {# % for k1, v1 in minusa['data'] if v1.dop.sale_point == spoint.id % #} 
-    {% for mk, minus in minusa['data'] 
-        if 
-            minus.dop.sale_point == spoint.id 
-        and 
-            minus.dop.jobman == man.id 
-        and 
-            minus.dop.date_now == date 
-    %} 
+    <div class="xtext-center show_down_hiden minus {{ money.status }}" >
 
-    {#{ pa(minus) }#}
-    
-    <div class="xtext-center show_down_hiden minus {{ minus.status }}" >
+        <b>{{ money.summa }}</b> &nbsp;
+        <small>{{ money.text }}</small>
 
-
-        <b>{{ minus.dop.summa }}</b> &nbsp;
-        <small>{{ minus.dop.text }}</small>
-
-        {% if minus.status == 'hide' %}
+        {% if money.status == 'hide' %}
             <br/>отменено<br/>
         {% endif %}
 
@@ -30,7 +16,7 @@
 
             <Br/>
 
-            {% if minus.status == 'hide' %}
+            {% if money.status == 'hide' %}
                 {#
                                     <a href="#" class="act act_smena btn3" action="recover_smena" 
                                        go_answer="Хотите восстановить смену ?"
@@ -48,19 +34,19 @@
                    {# модуль итемов #}
                    itemsmod="072.vzuscaniya"
                    {# id итема #}
-                   item_id="{{ minus.id }}"
+                   item_id="{{ money.id }}"
 
                    {# новое значение статуса записи #}
                    new_status="show"
                    {# секрет #}
-                   s3="{{ creatSecret( '072.vzuscaniya-'~minus.id~'-show' ) }}" 
+                   s3="{{ creatSecret( '072.vzuscaniya-'~money.id~'-show' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ minus.id }}" 
+                   show_id="ares{{ money.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ minus.id }}" 
+                   res_to_id="ares{{ money.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Восстановлено"
 
@@ -68,7 +54,7 @@
 
 
 
-            {% elseif minus.status == 'show' %}
+            {% elseif money.status == 'show' %}
 
                 {#
                 <a href="#" class="act act_smena btn3" 
@@ -90,26 +76,26 @@
                    {# модуль итемов #}
                    itemsmod="072.vzuscaniya"
                    {# id итема #}
-                   item_id="{{ minus.id }}"
+                   item_id="{{ money.id }}"
 
                    {# название доп параметра #}
                    {# dop_name="pay_check" #}
                    {# новое значение параметра #}
                    {# dop_new_value="no" #}
                    {# секрет #}
-                   {# s3="{{ creatSecret( '050.chekin_checkout-'~minus.id~'-pay_check-no' ) }}"  #}
+                   {# s3="{{ creatSecret( '050.chekin_checkout-'~money.id~'-pay_check-no' ) }}"  #}
 
                    {# новое значение статуса записи #}
                    new_status="hide"
                    {# секрет #}
-                   s3="{{ creatSecret( '072.vzuscaniya-'~minus.id~'-hide' ) }}" 
+                   s3="{{ creatSecret( '072.vzuscaniya-'~money.id~'-hide' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ minus.id }}" 
+                   show_id="ares{{ money.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ minus.id }}" 
+                   res_to_id="ares{{ money.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Отменено"
 
@@ -122,7 +108,7 @@
 
         </span>
 
-        <div id="ares{{ minus.id }}" style="display:none;"></div>
+        <div id="ares{{ money.id }}" style="display:none;"></div>
 
     </div>
 
@@ -132,7 +118,5 @@
     </abbr>
     #}
 
-    {% endfor %}
 
-        
 {% endspaceless %}

@@ -1,21 +1,22 @@
 {
+
     "name": "didrive_mod/jobdesc",
     "description": "Реестр работ связка модулей отделы + работники + выход на работу",
-    
-    "version": "1.2.16",
-    
+
+    "version": "1.2.22",
+
     "keywords": [
         "didrive", "module", "nyos", "uralweb.info"
     ],
-    "authors": [
-        {
+
+    "authors": [{
             "name": "Sergey Baklanov",
             "email": "1@php-cat.com",
             "homepage": "https://php-cat.com",
             "role": "Developer"
         }
     ],
-    
+
     "homepage": "https://uralweb.info/php/#classes",
     "license": "MIT",
     "require": {
