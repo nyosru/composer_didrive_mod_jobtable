@@ -1898,7 +1898,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             type: "post",
             beforeSend: function () {
 
+
+                $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                 $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
+
+
 
 //                if (hidethis == 1) {
 //                    $th.hide();
@@ -1916,14 +1920,19 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             success: function ($j) {
 
                 if ($j['status'] == 'ok') {
+                    
                     $(resto).html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
+                    $('#body_block_465').html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
 
                     setTimeout(function () {
                         location.reload();
                     }, 1000);
 
                 } else {
+                    
                     $(resto).html('<div style="background-color:rgba(250,0,0,0.3);color:black;padding:5px;">ошибка: ' + $j['html'] + '</div>');
+                    $('#body_block').remove();
+                    
                 }
 
             }

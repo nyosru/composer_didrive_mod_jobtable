@@ -917,7 +917,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
 // \f\pa($payeds0,'','','payeds');
 
         foreach ($payeds0 as $k => $v) {
-            $payeds[$v['checkin']][] = $v;
+            if (!empty($v['checkin'])) {
+                $payeds[$v['checkin']][] = $v;
+            }
         }
 // \f\pa($payeds,'','','payeds');
 

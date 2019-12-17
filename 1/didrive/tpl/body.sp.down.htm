@@ -232,7 +232,7 @@
 
                                     {#{ session.now_user_di.access }#}
 
-                                    {% if session.now_user_di.access == 'moder' %}
+                                    {% if 1 == 2 and session.now_user_di.access == 'moder' %}
 
                                         <input class="input-norms on_change_show_block" 
                                                {% if norms_day[now_date]['vuruchka_on_1_hand'] is defined %}
@@ -287,7 +287,7 @@
                                         {% endif %}
 
 
-                                    {% elseif session.now_user_di.access == 'admin' %}
+                                    {% elseif 1 == 1 or session.now_user_di.access == 'admin' %}
 
                                         <form action="" method="POST" class="send_form_to_ajax" 
 
