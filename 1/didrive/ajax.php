@@ -8,10 +8,7 @@ ini_set('display_errors', 'On'); // сообщения с ошибками бу�
 //error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 error_reporting(-1); // E_ALL - отображаем ВСЕ ошибки
 
-if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
+if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
 ) {
     date_default_timezone_set("Asia/Omsk");
 } else {
@@ -20,10 +17,6 @@ if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info'
 
 
 define('IN_NYOS_PROJECT', true);
-
-
-
-
 
 
 
@@ -61,13 +54,22 @@ if (
 //
 else {
 
-    $e = '';
+    
+    
+//    $e = '';
+//    foreach ($_REQUEST as $k => $v) {
+//        $e .= '<Br/>' . $k . ' - ' . $v;
+//    }
 
-    foreach ($_REQUEST as $k => $v) {
-        $e .= '<Br/>' . $k . ' - ' . $v;
-    }
-
-    f\end2('Произошла неописуемая ситуация #' . __LINE__ . ' обратитесь к администратору ' . $e // . $_REQUEST['id'] . ' && ' . $_REQUEST['secret']
+    $e = \f\pa($_REQUEST, 'html2' );
+    
+    f\end2('Произошла неописуемая ситуация #' . __LINE__ . ' обратитесь к администратору'
+            . '<br/>' 
+            . '<br/>'
+            . 'Попробуйте обновить страницу и повторить действие' 
+            . '<br/>' 
+            . '<br/>' 
+            . $e // . $_REQUEST['id'] . ' && ' . $_REQUEST['secret']
             , 'error');
 }
 
@@ -510,64 +512,14 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
     if (1 == 1) {
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid 
-        ON mid.id_item = mi.id 
-        AND mid.name = \'date\' 
-        AND mid.value_date <= \'' . $date . '\'  ';
-        $job_all0 = \Nyos\mod\items::getItemsSimple3($db, 'jobman_send_on_sp');
-        // \f\pa($job_all0,2);
+        $r = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp );
+        // \f\pa($r);
 
-        usort($job_all0, "\\f\\sort_ar_date");
-
-        // \f\pa($job_all0,2);
-
-        $job_now = [];
-
-        foreach ($job_all0 as $k => $v) {
-            // echo '<br/>'.$v['jobman'].' - '.$v['sale_point'].' + '.$v['date'];
-            $job_now[$v['jobman']] = $v;
+        foreach( $r as $k => $v ){
+            $return[$k] = $v;
         }
 
-        /**
-         * кто работает сегдня на нашей точке продаж
-         */
-        $job_now_on_sp = [];
-        foreach ($job_now as $k => $v) {
-            if ($v['sale_point'] == $sp)
-                $job_now_on_sp[$k] = $v;
-        }
-
-        // \f\pa($job_now_on_sp,2);
-
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid 
-        ON mid.id_item = mi.id 
-        AND mid.name = \'date\' 
-        AND mid.value_date = \'' . $date . '\'  ';
-        $spec = \Nyos\mod\items::getItemsSimple3($db, '050.job_in_sp');
-        // \f\pa($spec,2);
-
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'start\' '
-                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
-                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' ';
-        $checks = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
-        // \f\pa($checks, 2);
-
-        $return['hours'] = 0;
-
-        foreach ($checks as $k => $v) {
-            if (isset($job_now_on_sp[$v['jobman']])) {
-                // \f\pa($job_now_on_sp[$v['jobman']]);
-                // \f\pa($v);
-                $return['checks_for_new_ocenka'][] = $v['id'];
-                $return['hours'] += ( $v['hour_on_job_hand'] ?? $v['hour_on_job'] );
-            }
-        }
-
-        // echo '<br/>часов: '.$return['hours'];
     }
-
 
     /**
      * достаём нормы на день
@@ -1568,11 +1520,13 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-                'hour_on_job_calc' => \Nyos\mod\IikoChecks::calculateHoursInRange($start_time, $fin_time),
+                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
                 'ocenka' => $_REQUEST['ocenka']
             );
+
+            //\f\pa($indb);
 
             \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], $indb);
 
