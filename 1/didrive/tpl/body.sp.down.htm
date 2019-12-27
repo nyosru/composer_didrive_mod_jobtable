@@ -161,10 +161,11 @@
                 <nobr>
 
                     {# получаем обороты #}
-                    {% if 1 == 2 %}                
+                    
+                    {#% if 1 == 2 %}                
                         {% set a = iiko_oborot__get_month_oborot_on_sp( db, sp_now, date_start[5:2], date_start[0:4] ) %}
                         {{ pa(a) }}
-                    {% endif %}
+                    {% endif %#}
 
                     <a href="#" onclick="$('#tr{{sp_now}}norms').toggle('slow');
                             return false;" >
