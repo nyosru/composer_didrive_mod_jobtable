@@ -17,8 +17,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 
 
-
-
+\f\timer_start(1);
 
 
 
@@ -41,6 +40,16 @@ $e = \Nyos\api\Iiko::loadIikoPeople();
 $e2 = \Nyos\api\Iiko::saveIikoPeople($db, $e['data']);
 // \f\pa($e2, 2, '', ' результат выполнения загрузки и проверки данных');
 
+$msg2 = '';
+
+if ((!empty($e2['kolvo_new']) && is_numeric($e2['kolvo_new']) && $e2['kolvo_new'] > 0 ) || (!empty($e2['kolvo_edit_dop']) && is_numeric($e2['kolvo_edit_dop']) && $e2['kolvo_edit_dop'] > 0 )) {
+
+    $msg2 .= 'удаляем кеш данных так как были изменения в локальной базе даных' . PHP_EOL;
+}
+
+$msg2 .= \f\timer_stop(1) . PHP_EOL;
+
+
 try {
 
     if (class_exists('\\Nyos\\Msg')) {
@@ -51,6 +60,7 @@ try {
                 . PHP_EOL . 'записей ' . ( $e2['kolvo_in'] ?? '-' )
                 . PHP_EOL . 'новых сотрудников  ' . ( $e2['kolvo_new'] ?? '-' )
                 . PHP_EOL . 'изменённых доп параметров ' . ( $e2['kolvo_edit_dop'] ?? '-' )
+                . PHP_EOL . ( $msg2 ?? '' )
         ;
 
         \Nyos\Msg::sendTelegramm($msg, null, 1);

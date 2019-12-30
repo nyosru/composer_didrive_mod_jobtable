@@ -1,11 +1,7 @@
 {% spaceless %}
 
-    
     {#{ sp_now }#}
     {#{ pa(sp_now) }#}
-    
-    
-    
 
     {#{ kk }} - {{ sp_now }#}
 
@@ -30,7 +26,6 @@
     {# <br/>timer5: {{ didrive_f__timer_stop(99) }} #}
 
     {% if 1 == 1 %}        
-
 
         {% set hour_summ = [] %}
 
@@ -57,7 +52,6 @@
                         <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");
                                                     return false;' class="fa fa-cog"></i></div>
                         {% endif %}
-
 
                     {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
                     <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>

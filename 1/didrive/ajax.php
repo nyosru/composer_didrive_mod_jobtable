@@ -54,21 +54,21 @@ if (
 //
 else {
 
-    
-    
+
+
 //    $e = '';
 //    foreach ($_REQUEST as $k => $v) {
 //        $e .= '<Br/>' . $k . ' - ' . $v;
 //    }
 
-    $e = \f\pa($_REQUEST, 'html2' );
-    
+    $e = \f\pa($_REQUEST, 'html2');
+
     f\end2('Произошла неописуемая ситуация #' . __LINE__ . ' обратитесь к администратору'
-            . '<br/>' 
             . '<br/>'
-            . 'Попробуйте обновить страницу и повторить действие' 
-            . '<br/>' 
-            . '<br/>' 
+            . '<br/>'
+            . 'Попробуйте обновить страницу и повторить действие'
+            . '<br/>'
+            . '<br/>'
             . $e // . $_REQUEST['id'] . ' && ' . $_REQUEST['secret']
             , 'error');
 }
@@ -473,149 +473,158 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 // считаем автооценку дня и пишем
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_day') {
 
-    // \f\pa($_REQUEST);
 
-    $date = date('Y-m-d', strtotime($_REQUEST['date']));
-    $sp = $_REQUEST['sp'];
+    try {
 
-    $return = array(
-        'txt' => '',
-        // текст о времени исполнения
-        'time' => '',
-        // смен в дне
-        'smen_in_day' => 0,
-        // часов за день отработано
-        'hours' => 0,
-        // больше или меньше нормы сделано сегодня ( 1 - больше или равно // 0 - меньше // 2 не получилось достать )
-        'oborot_bolee_norm' => 2,
-        // сумма денег на руки от количества смен и процента на ФОТ
-        'summa_na_ruki' => 0,
-        // рекомендуемая оценка управляющего
+        // \f\pa($_REQUEST);
+
+        $date = date('Y-m-d', strtotime($_REQUEST['date']));
+        $sp = $_REQUEST['sp'];
+
+        $return = array(
+            'txt' => '',
+            // текст о времени исполнения
+            'time' => '',
+            // смен в дне
+            'smen_in_day' => 0,
+            // часов за день отработано
+            'hours' => 0,
+            // больше или меньше нормы сделано сегодня ( 1 - больше или равно // 0 - меньше // 2 не получилось достать )
+            'oborot_bolee_norm' => 2,
+            // сумма денег на руки от количества смен и процента на ФОТ
+            'summa_na_ruki' => 0,
+            // рекомендуемая оценка управляющего
 // если 0 то нет оценки
-        'ocenka' => 0,
-        'ocenka_naruki' => 0,
-        'checks_for_new_ocenka' => [],
-        'date' => $date,
-        'sp' => $sp
-    );
+            'ocenka' => 0,
+            'ocenka_naruki' => 0,
+            'checks_for_new_ocenka' => [],
+            'date' => $date,
+            'sp' => $sp
+        );
 
+        // считаем сколько суммарно часов отработано за сегодня
 
+        if (1 == 1) {
 
+            $r = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
+            // \f\pa($r);
 
-
-
-
-
-
-
-    // считаем сколько суммарно часов отработано за сегодня
-
-    if (1 == 1) {
-
-        $r = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp );
-        // \f\pa($r);
-
-        foreach( $r as $k => $v ){
-            $return[$k] = $v;
+            foreach ($r as $k => $v) {
+                $return[$k] = $v;
+            }
         }
 
-    }
+        /**
+         * достаём нормы на день
+         */
+        if (5 == 5) {
+            \f\timer::start();
 
-    /**
-     * достаём нормы на день
-     */
-    if (5 == 5) {
-        \f\timer::start();
+            $now_norm = \Nyos\mod\JobDesc::whatNormToDay($db, $return['sp'], $return['date']);
+            // \f\pa($now_norm,2,'','$now_norm '.$return['sp'].' / '.$return['date'] );
 
-        $now_norm = \Nyos\mod\JobDesc::whatNormToDay($db, $return['sp'], $return['date']);
-//\f\pa($now_norm,2,'','$now_norm '.$return['sp'].' / '.$return['date'] );
+            if ($now_norm === false)
+                throw new \Exception('Нет плановых данных (дата)', 12);
 
-        if ($now_norm === false)
-            throw new \Exception('Нет плановых данных (дата)', 12);
-
-        foreach ($now_norm as $k => $v) {
+            foreach ($now_norm as $k => $v) {
 //$return['txt'] .= '<br/><nobr>[norm_' . $k . '] - ' . $v . '</nobr>';
-            $return['norm_' . $k] = $v;
+                $return['norm_' . $k] = $v;
 //echo '<br>'.PHP_EOL.'$return[\'norm_' . $k.'] = '. $v;
-        }
+            }
 
-        $return['time'] .= PHP_EOL . ' нормы за день время: ' . \f\timer::stop();
+            $return['time'] .= PHP_EOL . ' нормы за день время: ' . \f\timer::stop();
 //\f\pa($return); die();
 
-        if (empty($return['norm_date'])) {
+            if (empty($return['norm_date'])) {
 // $error .= PHP_EOL . 'Нет плановых данных (дата)';
-            throw new \Exception('Нет плановых данных (дата)', 12);
-        } elseif (
+                throw new \Exception('Нет плановых данных (дата)', 12);
+            } elseif (
 // empty($return['norm_vuruchka']) 
-                empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])
-        ) {
-            throw new \Exception('Не все плановые данные по ТП указаны', 204);
+                    empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])
+            ) {
+                throw new \Exception('Не все плановые данные по ТП указаны', 204);
 //$error .= PHP_EOL . 'Не все плановые данные по ТП указаны';
+            }
         }
-    }
 
-    /**
-     * достаём оборот за сегодня
-     */
-    if (5 == 5) {
+        /**
+         * достаём оборот за сегодня
+         */
+        if (5 == 5) {
 
-        \f\timer::start();
+            //\f\timer::start();
+            \f\timer_start();
 
 // $return['oborot'] = \Nyos\mod\JobDesc::getOborotSp($db, $_REQUEST['sp'], $_REQUEST['date']);
 // die('<br/>'.__FILE__.' == '.__LINE__);
 
-        $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
+            $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
+            if (empty($return['oborot'])) {
+                // \f\pa($return['oborot'], '', '', 'oborot');
+                $return['oborot'] = \Nyos\mod\IikoOborot::loadFromServerSaveItems($db, $return['sp'], $return['date']);
+                // \f\pa( $return['oborot'] ,'','',' загружен оборот с сервера ');
+            }
 
-// \f\pa($return);
+            // = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']
+// // \f\pa($return);
 // echo
+            // $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop() . PHP_EOL . $return['oborot'];
+            $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer_stop() . PHP_EOL . $return['oborot'];
+        }
 
-        $return['time'] .= PHP_EOL . ' достали обороты за день: ' . \f\timer::stop()
-                . PHP_EOL . $return['oborot'];
-    }
+        /**
+         * достаём время ожидания за сегодня
+         */
+        if (5 == 5) {
 
-    /**
-     * достаём время ожидания за сегодня
-     */
-    if (5 == 5) {
-
-        \f\timer::start();
+            \f\timer::start();
 
 //            echo '<hr>'.__FILE__.' #'.__LINE__;
 //            echo '<br/>'.$return['sp'].' , '.$return['date'];
 //            echo '<hr>';
 
-        $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
+            $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
 
 // \f\pa($timeo);
 //\f\pa($timeo);
-        $return['time'] .= PHP_EOL . ' достали время ожидания за день: ' . \f\timer::stop();
-        foreach ($timeo as $k => $v) {
-            $return['time'] .= PHP_EOL . $k . ' > ' . $v;
-            $return[$k] = $v;
+            $return['time'] .= PHP_EOL . ' достали время ожидания за день: ' . \f\timer::stop();
+            foreach ($timeo as $k => $v) {
+                $return['time'] .= PHP_EOL . $k . ' > ' . $v;
+                $return[$k] = $v;
+            }
         }
-    }
 
-    $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
-    // \f\pa($ocenka, '', '', '$ocenka');
+        $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
+        // \f\pa($ocenka, '', '', '$ocenka');
 // \f\pa($return);
 
-    \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
+        \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
 
-    \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
-        'sale_point' => $ocenka['data']['sp'],
-        'date' => $ocenka['data']['date'],
-        'ocenka_time' => $ocenka['data']['ocenka_time'],
-        'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
-        'ocenka' => $ocenka['data']['ocenka'],
-    ]);
+        \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
+            'sale_point' => $ocenka['data']['sp'],
+            'date' => $ocenka['data']['date'],
+            'ocenka_time' => $ocenka['data']['ocenka_time'],
+            'ocenka_naruki' => $ocenka['data']['ocenka_naruki'],
+            'ocenka' => $ocenka['data']['ocenka'],
+        ]);
 
-    // $return['ocenka'] = $ocenka;
+        // $return['ocenka'] = $ocenka;
 //        $r = ob_get_contents();
 //        ob_end_clean();
 
-    \f\end2('ok ' . ( $ocenka['html'] ?? '--'), true, $ocenka);
+        \f\end2('ok ' . ( $ocenka['html'] ?? '--'), true, $ocenka);
 //        \f\end2('ok ' . ( $r ?? '--'), true, $return );
+    }
+    //
+    catch ( Exception $ex) {
 
+        \f\end2( $ex->getMessage(), false, [
+            'code' => $ex->getCode(),
+            'file' => $ex->getFile(),
+            'line' => $ex->getLine(),
+            'trace' => $ex->getTraceAsString()]
+        );
+    }
 
 
 
@@ -1227,9 +1236,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
 
 
 
-/**
- * обозначаем конец текущего рабочего периода
- */ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
+// обозначаем конец текущего рабочего периода
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs') {
 
 //echo '<br/>'. __FILE__.' '.__LINE__;
 
@@ -1282,9 +1290,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_workman_fro
     }
 }
 
-/**
- * обозначаем конец текущего рабочего периода
- */ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
+// обозначаем конец текущего рабочего периода
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_jobs') {
 
 //echo '<br/>'. __FILE__.' '.__LINE__;
 

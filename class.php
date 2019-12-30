@@ -104,9 +104,6 @@ class JobDesc {
      */
     public static $mod_minus = '072.vzuscaniya';
 
-    
-    
-    
     /**
      * считаем сколько суммарно часов отработано за сегодня
      * @param type $db
@@ -114,27 +111,26 @@ class JobDesc {
      * @param int $sp
      * @return array
      */
-    public static function calcJobHoursDay($db, $date, int $sp ) {
+    public static function calcJobHoursDay($db, $date, int $sp) {
 
         $return = [];
-        
-        \Nyos\mod\items::$join_where = 
-            ' INNER JOIN `mitems-dops` mid 
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid 
                 ON mid.id_item = mi.id 
                 AND mid.name = \'date\' 
                 AND mid.value_date <= \'' . $date . '\'  '
-            .' INNER JOIN `mitems-dops` mid2 
+                . ' INNER JOIN `mitems-dops` mid2 
                 ON mid2.id_item = mi.id 
                 AND mid2.name = \'dolgnost\' '
-            .' LEFT JOIN `mitems-dops` mid3 
+                . ' LEFT JOIN `mitems-dops` mid3 
                 ON mid3.id_item = mid2.value
                 AND mid3.name = \'calc_auto\' '
-                ;
+        ;
 
         \Nyos\mod\items::$select_var1 = ' , mid3.value calc_auto ';
-        
+
         // $job_all0 = \Nyos\mod\items::getItemsSimple3($db, 'jobman_send_on_sp');
-        $job_all0 = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp );
+        $job_all0 = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
         //\f\pa($job_all0,2);
 
         usort($job_all0, "\\f\\sort_ar_date");
@@ -185,20 +181,19 @@ class JobDesc {
 
             if (isset($job_now_on_sp[$v['jobman']])) {
 
-                 // \f\pa($job_now_on_sp[$v['jobman']]);
-                
+                // \f\pa($job_now_on_sp[$v['jobman']]);
+
                 /**
                  * если на должност ине стоит галочка считаем автоматически .. то пропускаем
                  */
-                 if( empty($job_now_on_sp[$v['jobman']]['calc_auto']) ){
-                     \f\pa($v);
-                     continue;
-                 }
+                if (empty($job_now_on_sp[$v['jobman']]['calc_auto'])) {
+                    \f\pa($v);
+                    continue;
+                }
 
 //                if( empty($v['hour_on_job_hand']) && empty($v['hour_on_job']) ){
 //                }
                 // \f\pa($job_now_on_sp[$v['jobman']]);
-
                 // \f\pa($v);
 
                 $return['checks_for_new_ocenka'][] = $v['id'];
@@ -210,10 +205,7 @@ class JobDesc {
 
         // echo '<br/>часов: '.$return['hours'];
         return $return;
-        
     }
-    
-    
 
     /**
      * получаем какие цены по датам у должностей на точке продаж (старая)
@@ -463,7 +455,7 @@ class JobDesc {
 
         // если тру то используем точку по умолчанию
         $sp_def = true;
-        
+
         foreach (self::$cash['salarys'] as $k => $v) {
 
             if ($v['date'] <= $date) {
@@ -478,7 +470,6 @@ class JobDesc {
                         if (isset($v['oborot_sp_last_monht_menee']) || isset($v['oborot_sp_last_monht_bolee'])) {
 
 //                            echo '<br/>проверяем оборот:';
-
                             // достаём оборот этой точки продаж за текущий месяц
                             $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
 //                            \f\pa($oborot, '', '', 'oborot');
@@ -488,7 +479,7 @@ class JobDesc {
                                     if (isset($v['oborot_sp_last_monht_menee']) && $v['oborot_sp_last_monht_menee'] <= $oborot) {
 //                                        echo '<br/>++ ' . __LINE__ . ' ++';
                                         continue;
-                                    } 
+                                    }
 //                                    else {
 //                                        echo '<br/>-- menee ' . __LINE__ . ' ++';
 //                                    }
@@ -497,7 +488,7 @@ class JobDesc {
                                     if (isset($v['oborot_sp_last_monht_bolee']) && $v['oborot_sp_last_monht_bolee'] >= $oborot) {
                                         // echo '<br/>++ ' . __LINE__ . ' ++';
                                         continue;
-                                    } 
+                                    }
 //                                    else {
 //                                        echo '<br/>-- bolee ' . __LINE__ . ' ++';
 //                                    }
@@ -505,12 +496,11 @@ class JobDesc {
                             }
                         }
 
-                        if( $v['sale_point'] != $sp_default )
+                        if ($v['sale_point'] != $sp_default)
                             $sp_def = false;
-                        
+
 //                        \f\pa($v);
                         self::$cash['salary_now'][$sp][$dolgn][$date] = $v;
-                        
                     }
                 }
             }
@@ -3524,10 +3514,35 @@ class JobDesc {
      */
     public static function whatNormToDay($db, int $sp, string $date, $date_fin = null) {
 
-// echo '<br/>' . $sp . ' - ' . $date . ' - ' . $date_fin;
-        // $norms = \Nyos\mod\items::getItemsSimple($db, 'sale_point_parametr', 'show');
-        $norms = \Nyos\mod\items::getItemsSimple3($db, 'sale_point_parametr', 'show');
-// \f\pa($norms,2,'','$norms'); // die();
+        // echo '<br/>' . __FUNCTION__ ;
+        // echo '<br/>' . $sp . ' - ' . $date . ' - ' . $date_fin;
+        //$norms = \Nyos\mod\items::getItemsSimple3($db, 'sale_point_parametr', 'show');
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'sale_point\' '
+                . ' AND mid.value = \'' . $sp . '\' ';
+
+        if (!empty($date_fin)) {
+            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
+                    . ' ON mid2.id_item = mi.id '
+                    . ' AND mid2.name = \'date\' '
+                    . ' AND mid2.value_date >= \'' . $date . '\' '
+                    . ' AND mid2.value_date <= \'' . $date_fin . '\' '
+            ;
+        } else {
+            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
+                    . ' ON mid2.id_item = mi.id '
+                    . ' AND mid2.name = \'date\' '
+                    . ' AND mid2.value_date = \'' . $date . '\' '
+            ;
+        }
+//        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+//                . ' ON mid.id_item = mi.id '
+//                . ' AND mid.name = \'start\' '
+//                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
+//                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' ';
+        $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
+        // \f\pa($norms,2,'','$norms'); // die();
 
         $a = [];
 
