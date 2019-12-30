@@ -1620,20 +1620,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     $('body').on('click', '.jobdesc__calc_full_ocenka_day', function (event) {
 
-        // alert('2323');
-//        $(this).removeClass("show_job_tab");
-//        $(this).addClass("show_job_tab2");
-//        var $uri_query = '';
-//        var $vars = [];
-        // var $vars = serialize(this.attributes);
-        // var $vars =  JSON.stringify(this.attributes);
         var resto = '';
         var $vars = new Array();
         var $uri_query = '';
         var showid = 0;
         var hidethis = 0;
         var answer = 0;
+
         var resto = 0;
+        var resto1 = 0;
+
         var showid = 0;
         $.each(this.attributes, function () {
 
@@ -1644,15 +1640,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     console.log(this.name, this.value);
                 }
 
-
-                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-
-//                forajax_sp="{{ sp_now }}" 
-//                forajax_jobman="{{ man.id }}" 
-//                forajax_datestart="{{ date_start }}"  
-//                forajax_datefin="{{ date_finish }}" 
-
-//
                 if (this.name == 'hidethis') {
                     hidethis = 1;
                 }
@@ -1661,18 +1648,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     showid = '#' + this.value;
                 } else if (this.name == 'res_to_id') {
                     resto = '#' + this.value;
+                    resto1 = this.value + '111';
                 } else if (this.name == 'answer') {
                     answer = this.value;
                 }
-//                if (this.name == 'resto') {
-//                    resto = '#' + this.value;
-//                    //console.log($vars['resto']);
-//                    // alert($res_to);
-//                }
-//
-//                if (this.name == 'show_on_click') {
-//                    $('#' + this.value).show('slow');
-//                }
 
             }
 
@@ -1685,13 +1664,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         }
 
-//        alert($uri_query);
-//        return false;
-
-        // console.log($vars['resto']);
-
-        // console.log($uri_query);
-        //$(this).html("тут список");
         var $th = $(this);
         $.ajax({
 
@@ -1701,15 +1673,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             dataType: "json",
             type: "post",
             beforeSend: function () {
-
                 $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
-                /*
-                 if (typeof $div_hide !== 'undefined') {
-                 $('#' + $div_hide).hide();
-                 }
-                 */
-//                $("#ok_but_stat").show('slow');
-//                $("#ok_but").hide();
             }
             ,
             success: function ($j) {
@@ -1723,47 +1687,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
 
                 $string = '';
-
-//                $.each($j, function(key, val){
-//                    $string += '<br/>' + key + ': ' + val;
-//                });
-
-                // $string.text((i) => $j[i]);
-
-//                for (var p in $j.data)
-//                    $string += '<br/>' + p + ': ' + $j.data[p];
-//
-//                $.each($j, function (name, value) {
-//                    $string += '<br/>' + name + ': ' + value;
-//                    $string += '<br/>' + $j.name;
-//                });
-//
-//                $.each($j.data, function (name, value) {
-//                    $string += '<br/>' + name + ': ' + value;
-//                    $string += '<br/>' + $j.name;
-//                });
-
-                //$html = '';
-
-                //$html = '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['data'] + '</div>';
-
                 $html = '';
-// $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $string + '</div>';
-
-// $html += '<div style="background-color:rgba(0,255,255,0.3);xcolor:red;padding:5px;">' + $j['ocenka'] + '</div>';
-                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot<br/>' + $j['data']['oborot'] + '</div>';
-                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 2<br/>' + $j.data.oborot + '</div>';
-// $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">data oborot 3<br/>' + $j.oborot + '</div>';
-                // $html += '<div style="background-color:rgba(0,255,255,0.2);xcolor:red;padding:5px;">' + $j['ocenka_oborot'] + '</div>';
-// $html += '<div style="background-color:rgba(0,255,255,0.1);xcolor:red;padding:5px;">' + $j['html'] + '</div>';
 
                 if ($j['status'] == 'ok') {
-
-
-//                $return['data']['ocenka_naruki'] = $ocenka['data']['ocenka_naruki'];
-//                $return['data']['ocenka_time'] = $ocenka['data']['ocenka_time'];
-//                $return['data']['ocenka'] = $ocenka['data']['ocenka'];
-
 
                     if ($j['data']['ocenka'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">общая оценка: 5</div>';
@@ -1777,60 +1703,24 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка  времени ожидания: 3</div>';
                     }
 
-
                     if ($j['data']['ocenka_naruki'] == 5) {
                         $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка суммы на руки: 5</div>';
                     } else {
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка суммы на руки: 3</div>';
                     }
-//                    if ($j['ocenka_oborot'] == 5) {
-//                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 5</div>';
-//                    } else if ($j['ocenka_oborot'] == 3) {
-//                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка оборота по точке: 3</div>';
-//                    }
 
+                    $(resto).html($html + '<br/><center><button class="btn btn-xs btn-info" onclick="$(\'#' + resto1 + '\').toggle(\'slow\');" >показать/скрыть расчёты</button></center><br/><div id="' + resto1 + '" style="display: none;background-color: rgba(0,0,255,0.2);padding:10px;" ><nobr><b>расчёт оценки</b>' + $j['data']['txt'] + '</nobr></div>');
 
-                    $(resto).html($html);
-                    // $(resto).html($html + $j.txt);
-                    // $(resto).html($html + '<pre>' + $j.txt + '</pre>' + '<pre>' + $j.time + '</pre>');
+                } else {
 
-                }
-                // $j['status'] != 'ok'
-                else {
                     // alert('11');
                     if (resto != 0) {
                         $(resto).html('<div style="background-color:yellow;color:red;padding:5px;">' + $j['html'] + '</div>');
                     } else {
                         alert('#1731 resto = 0');
                     }
+
                 }
-
-                //alert(resto);
-
-                // $($res_to).html($j.data);
-                // $($vars['resto']).html($j.data);
-                //$(resto).html($j.html);
-
-                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
-                // $th("#main").prepend("<div id='box1'>1 блок</div>");                    
-                // $th.html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
-                // $($res_to_id).html( $j.html + '<br/><A href="">Сделать ещё заявку</a>');
-
-                // return true;
-
-                /*
-                 // alert($j.html);
-                 if (typeof $div_show !== 'undefined') {
-                 $('#' + $div_show).show();
-                 }
-                 */
-//                $('#form_ok').hide();
-//                $('#form_ok').html($j.html + '<br/><A href="">Сделать ещё заявку</a>');
-//                $('#form_ok').show('slow');
-//                $('#form_new').hide();
-//
-//                $('.list_mag').hide();
-//                $('.list_mag_ok').show('slow');
 
             }
 
@@ -1920,7 +1810,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             success: function ($j) {
 
                 if ($j['status'] == 'ok') {
-                    
+
                     $(resto).html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
                     $('#body_block_465').html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
 
@@ -1929,10 +1819,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     }, 1000);
 
                 } else {
-                    
+
                     $(resto).html('<div style="background-color:rgba(250,0,0,0.3);color:black;padding:5px;">ошибка: ' + $j['html'] + '</div>');
                     $('#body_block').remove();
-                    
+
                 }
 
             }

@@ -7,6 +7,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
 
     global $db;
 
+    
+    
+    
 // \f\pa( \Nyos\nyos::$folder_now );
 
     /**

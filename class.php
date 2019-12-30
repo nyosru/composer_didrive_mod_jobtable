@@ -2456,20 +2456,9 @@ class JobDesc {
      */
     public static function calcOcenkaDay($db, $return) {
 
-// \f\pa($return, 2, '', '$return входящие данные ');
-
         $text = '';
-// текст промежуток
         $text_s = '<br/>';
-
-//        echo '<hr>' . __FILE__ . ' #' . __LINE__
-//        . '<br/>' . __FUNCTION__
-//        . '<hr>';
-//        if (empty($return['date']))
-//            throw new Exception('нет даты расчёта оценки', 201);
-
-
-
+        
         $vv1 = [
             'date' => '',
             'sp' => '',
@@ -2479,40 +2468,15 @@ class JobDesc {
             'norm_time_wait_norm_delivery' => '',
             'oborot' => '',
             'hours' => '',
-            // // 'smen_in_day' => '',
-// // 'summa_na_ruki' => '',
             'timeo_cold' => 'время хол цех',
             'timeo_hot' => 'время гор цех',
             'timeo_delivery' => 'время доставка',
-                // [oborot_bolee_norm] => 2
-// [ocenka] => 3
-// [ocenka_naruki] => 5
-// [sale_point] => 1
-// [norm_date] => 2019-09-30
-// [norm_sale_point] => 1
-// [norm_procent_oplata_truda_on_oborota] => 12
-// [norm_kolvo_hour_in1smena] => 16
-// 'timeo_date] => 2019-11-01
-// [timeo_sale_point] => 1
-// [ocenka_time] => 3
         ];
-
-
-
-
-
-
-
-
-
-
-
 
         foreach ($vv1 as $vv => $vv_text) {
 
-//            \f\pa($vv);
-//            \f\pa($vv_text);
-//            \f\pa($return[$vv]);
+            if ($vv == 'norm_time_wait_norm_hot' || $vv == 'norm_time_wait_norm_delivery')
+                continue;
 
             if (empty($return[$vv])) {
 
@@ -2546,182 +2510,105 @@ class JobDesc {
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        \f\pa($return);
-
         $re = [
             'sp' => $return['sp'],
             'date' => $return['date'],
             'ocenka_time' => 0,
             //$return['ocenka_oborot'] => 5;
             'ocenka_naruki' => 0,
-            'ocenka' => 0
+            'ocenka' => 0,
+                // 'txt' => ''
         ];
 
-
-
-
-
-
-
-
-
-
+        $return['txt'] .= '<br/>оборот точки: ' . $return['oborot'];
 
         /**
          * вычисление оценки на руки
          */
         $return['smen_in_day'] = round($return['hours'] / $return['norm_kolvo_hour_in1smena'], 1);
 
-        if (!empty($return['oborot']) && !empty($return['smen_in_day']))
+        $return['txt'] .= '<br/>суммарно отработано часов:' . $return['hours'];
+        $return['txt'] .= '<br/>часов в 1 смене:' . $return['norm_kolvo_hour_in1smena'];
+        $return['txt'] .= '<br/>отработано смен: ' . $return['hours'] . ' / ' . $return['norm_kolvo_hour_in1smena'] . ' = ' . $return['smen_in_day'];
+
+        if (!empty($return['oborot']) && !empty($return['smen_in_day'])) {
             $return['summa_na_ruki'] = ceil($return['oborot'] / $return['smen_in_day']);
+            $return['txt'] .= '<br/>на 1 руки денег: ' . $return['oborot'] . ' / ' . $return['smen_in_day'] . ' = ' . $return['summa_na_ruki'];
+        }
+
 
         $text .= $return['summa_na_ruki'] . ' (сейчас) >= (норма) ' . $return['norm_vuruchka_on_1_hand'] . $text_s;
 
 // если на руки больше нормы то оценка 5
         if ($return['summa_na_ruki'] >= $return['norm_vuruchka_on_1_hand']) {
+
             $re['ocenka_naruki'] = 5;
-            $text .= 'сумма на руки больше нормы ' . $text_s;
+            $text .= 'сумма на руки больше плана/нормыы ' . $text_s;
+            $return['txt'] .= '<br/>сумма на руки больше или равно норм ( ' . $return['summa_na_ruki'] . ' >= ' . $return['norm_vuruchka_on_1_hand'] . ' ) : оценка 5';
         }
 // если на руки меньше нормы то оценка 3
         else {
+
             $re['ocenka_naruki'] = 3;
-            $text .= 'сумма на руки НЕ больше нормы ' . $text_s;
+            $text .= 'сумма на руки меньше плана/нормы ' . $text_s;
+            $return['txt'] .= '<br/>сумма Р на руки меньше НОРМы (' . $return['summa_na_ruki'] . ' < ' . $return['norm_vuruchka_on_1_hand'] . ') : оценка 3';
         }
-
-// \f\pa($return);
-
-        /*
-          $ocenka = 5;
-         */
 
         $ar = $return;
 
 // время ожидания
         if (1 == 1) {
 
-
-//            \f\pa($ar);
-//            die();
-//            [timeo_cold] => 16
-//            [timeo_hot] => 20
-//            [timeo_delivery] => 78
-//
-//            [norm_time_wait_norm_cold] => 15
-//            [norm_time_wait_norm_hot] => 15
-//            [norm_time_wait_norm_delivery] => 90
-
+            $return['txt'] .= '<br/><br/><b>смотрим на время ожидания</b>';
 
             $re['ocenka_time'] = 5;
 
             $tyty = 'cold';
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
+
             if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
+
                 $text .= ' норм ( 5 )';
+                $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' < ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) меньше максимума (нормы) : оценка 5';
             } else {
                 $text .= ' не норм ( 3 )';
                 $re['ocenka_time'] = 3;
+                $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' > ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) больше максимума (нормы) : оценка 3';
             }
 
             $tyty = 'hot';
+
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
-            if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
-                $text .= ' норм ( 5 )';
+            if (empty($ar['norm_time_wait_norm_' . $tyty])) {
+                $text .= ' параметра не указано, оценка максимум ( 5 )';
+                $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
             } else {
-                $text .= ' не норм ( 3 )';
-                $re['ocenka_time'] = 3;
+                if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
+                    $text .= ' норм ( 5 )';
+                    $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' < ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) меньше максимума (нормы) : оценка 5';
+                } else {
+                    $text .= ' не норм ( 3 )';
+                    $re['ocenka_time'] = 3;
+                    $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' > ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) больше максимума (нормы) : оценка 3';
+                }
             }
 
             $tyty = 'delivery';
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
-            if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
-                $text .= ' норм ( 5 )';
+            if (empty($ar['norm_time_wait_norm_' . $tyty])) {
+                $text .= ' параметра не указано, оценка максимум ( 5 )';
+                $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
             } else {
-                $text .= ' не норм ( 3 )';
-                $re['ocenka_time'] = 3;
+                if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
+                    $text .= ' норм ( 5 )';
+                    $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' < ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) меньше максимума (нормы) : оценка 5';
+                } else {
+                    $text .= ' не норм ( 3 )';
+                    $re['ocenka_time'] = 3;
+                    $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' > ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) больше максимума (нормы) : оценка 3';
+                }
             }
         }
-
-        if (1 == 2) {
-
-
-// время ожидания // холодный цех
-            $time_type = 'cold';
-            if (
-                    !empty($ar['norm_time_wait_norm_' . $time_type]) &&
-                    !empty($ar['timeo_' . $time_type])) {
-                if (
-                        $ar['timeo_' . $time_type] <= $ar['norm_time_wait_norm_' . $time_type]
-                ) {
-//            $ocenka = 5;
-                    $text .= 'время ожидания ' . $time_type . ' норм ( 5 )' . $text_s;
-                } else {
-                    $re['ocenka_time'] = $re['ocenka'] = 3;
-                    $text .= 'время ожидания ' . $time_type . ' не норм ( 3 )' . $text_s;
-                }
-                $text .= $ar['timeo_' . $time_type] . ' <= ' . $ar['norm_time_wait_norm_' . $time_type] . $text_s;
-            } else {
-                $text .= 'данных цеха ' . $time_type . ' не найдено (норма или текущее значение) ' . $text_s;
-            }
-
-// время ожидания // горячий цех
-            $time_type = 'hot';
-            if (
-                    !empty($ar['norm_time_wait_norm_' . $time_type]) &&
-                    !empty($ar['timeo_' . $time_type])) {
-                if (
-                        $ar['timeo_' . $time_type] <= $ar['norm_time_wait_norm_' . $time_type]
-                ) {
-//                $ocenka = 5;
-                    $text .= 'время ожидания ' . $time_type . ' норм ( 5 )' . $text_s;
-                } else {
-                    $re['ocenka_time'] = $re['ocenka'] = 3;
-                    $text .= 'время ожидания ' . $time_type . ' не норм ( 3 )' . $text_s;
-                }
-                $text .= $ar['timeo_' . $time_type] . ' <= ' . $ar['norm_time_wait_norm_' . $time_type] . $text_s;
-            } else {
-                $text .= 'данных цеха ' . $time_type . ' не найдено (норма или текущее значение) ' . $text_s;
-            }
-
-// время ожидания // доставка
-            $time_type = 'delivery';
-            if (
-                    !empty($ar['norm_time_wait_norm_' . $time_type]) &&
-                    !empty($ar['timeo_' . $time_type])) {
-                if (
-                        $ar['timeo_' . $time_type] <= $ar['norm_time_wait_norm_' . $time_type]
-                ) {
-//            $ocenka = 5;
-                    $text .= 'время ожидания ' . $time_type . ' норм ( 5 )' . $text_s;
-                } else {
-                    $re['ocenka_time'] = $re['ocenka'] = 3;
-                    $text .= 'время ожидания ' . $time_type . ' не норм ( 3 )' . $text_s;
-                }
-                $text .= $ar['timeo_' . $time_type] . ' <= ' . $ar['norm_time_wait_norm_' . $time_type] . $text_s;
-            } else {
-                $text .= 'данных цеха ' . $time_type . ' не найдено (норма или текущее значение) ' . $text_s;
-            }
-        }
-
-// оцениваем количество денег на руки
-// отработанное время
-//        $jobs = self::getJobmansOnTime1910($db, $ar['date'], $ar['date']);
-//        \f\pa($jobs);
-//        $checks = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp );
-//        \f\pa($checks);
-//        $ocenka = 3;
 
         $re['ocenka'] = 5;
 
@@ -2733,8 +2620,10 @@ class JobDesc {
             $re['ocenka'] = 3;
         }
 
+        $return['txt'] .= '<br/>итоговая общая оценка: ' . $re['ocenka'];
+        $re['txt'] = $return['txt'] . '<hr><b>время обработки</b>' . $return['time'];
+
         return \f\end3($text, true, $re);
-// return \f\end3('нет оценки', false, ['ocenka' => $ocenka]);
     }
 
     public static function getSetupJobmanOnSp($db, $date_start, $date_finish = null, $module_man_job_on_sp = 'jobman_send_on_sp', $mod_spec_jobday = '050.job_in_sp') {
