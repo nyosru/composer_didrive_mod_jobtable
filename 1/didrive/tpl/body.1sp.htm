@@ -5,11 +5,14 @@
 
     {#{ kk }} - {{ sp_now }#}
 
+    
     {% set list12 = jobs_on_sp.jobs_on_sp[sp_now] %}
     {#{ pa(list12) }#}
 
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set comments = getComments( db, date_start, date_finish, sp_now ) %}
     {#{ pa(comments) }#}
+    {% if timer_show == 'on' %} <br/>время getComments 81 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {#% set spoint = sp.data[sp_now] %#}
     {% set spoint = sps[sp_now] %}
@@ -17,11 +20,20 @@
 
     {# <br/>timer41: {{ didrive_f__timer_stop(99) }} #}
 
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {%  set money_dops = jobdesc__get_money_dops( db, date_start, date_finish, sp_now ) %}
     {# money_dops
     {{ pa(money_dops) }}
     #}
+    {% if timer_show == 'on' %} <br/>время jobdesc__get_money_dops 82 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
+    
+    
+    
+    
+    
+    
+    
     {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
     {# <br/>timer5: {{ didrive_f__timer_stop(99) }} #}
 

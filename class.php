@@ -169,7 +169,7 @@ class JobDesc {
         // $job_all0 = \Nyos\mod\items::getItemsSimple3($db, 'jobman_send_on_sp');
         $job_all0 = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
         // echo '11: '.sizeof($job_all0);
-        // \f\pa($job_all0, 2);
+        // \f\pa($job_all0, '','','$job_all0');
 
         $return = [];
 
@@ -267,7 +267,7 @@ class JobDesc {
         ;
         
         $checks = \Nyos\mod\items::get($db, self::$mod_checks );
-        //\f\pa($checks,2,'','checks');
+        // \f\pa($checks,2,'','checks');
         
         $ret['hours'] = 0;
         $ret['smen_in_day'] = 0;
@@ -1845,14 +1845,12 @@ class JobDesc {
         if ($show_comment === true)
             \f\timer::start(123);
 
-
 // удаление имеющихся бонусов в этот день
         $ee = self::deleteAutoBonus($db, $_sp, $_d);
         //\f\pa($ee,'','','$ee удаление автобонусов');
 
         if ($show_comment === true)
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
-
 
         /**
          * список должность и сколько бонуса накинуть
@@ -2094,8 +2092,11 @@ class JobDesc {
         // $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
 
         if (empty(self::$cash['bonuses'])) {
-            self::$cash['bonuses'] = \Nyos\mod\items::getItemsSimple3($db, self::$mod_bonus);
+            
+            //self::$cash['bonuses'] = \Nyos\mod\items::getItemsSimple3($db, self::$mod_bonus);
+            self::$cash['bonuses'] = \Nyos\mod\items::get($db, self::$mod_bonus);
             // echo '<br/>' . __LINE__;
+            
         } else {
             // echo '<br/>' . __LINE__;
         }
@@ -2870,12 +2871,18 @@ class JobDesc {
          * тащим спец назначения
          */
         if (1 == 1) {
-            $spec_day = \Nyos\mod\items::getItemsSimple($db, $mod_spec_jobday);
+            // $spec_day = \Nyos\mod\items::getItemsSimple($db, $mod_spec_jobday);
+            $spec_day = \Nyos\mod\items::get($db, $mod_spec_jobday);
 //\f\pa($spec_day, 2, '', '$spec_day');
             $spec = [];
-            foreach ($spec_day['data'] as $k => $v) {
-                if ($v['dop']['date'] >= $ds && $v['dop']['date'] <= $df) {
-                    $spec[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+//            foreach ($spec_day['data'] as $k => $v) {
+//                if ($v['dop']['date'] >= $ds && $v['dop']['date'] <= $df) {
+//                    $spec[$v['dop']['jobman']][$v['dop']['date']] = $v['dop'];
+//                }
+//            }
+            foreach ($spec_day as $k => $v) {
+                if ($v['date'] >= $ds && $v['date'] <= $df) {
+                    $spec[$v['jobman']][$v['date']] = $v;
                 }
             }
 //\f\pa($spec, 2, '', '$spec');

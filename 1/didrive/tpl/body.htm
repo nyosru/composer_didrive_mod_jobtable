@@ -1,12 +1,7 @@
 {% spaceless %}
 
-
-
     {%  set timer_show = 'off' %}
     {#%  set timer_show = 'on' %#}
-
-
-
 
     {# считаем общее время #}
     {{ didrive_f__timer_start(99) }}
@@ -45,6 +40,8 @@
 
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(15) }}     {% endif %}
     {% set mans = readItems( '070.jobman', null )  %}
+    {#% set mans = items__get( db, '070.jobman', null )  %#}
+    {#{ pa(mans) }#}
     {#% set mans = items__get( db, '070.jobman', null )  %#}
     {% if timer_show == 'on' %} <br/>время 02 - {{ didrive_f__timer_stop(15) }} {% endif %}
 
@@ -127,10 +124,6 @@
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
                 {% if timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-
-
-
 
 
                 {# верхние кнопки даты и скрыть показать даты #}
@@ -303,12 +296,15 @@
                         {# верхняя строка с датами#}
                         {% include dir_mod_now_mod_ditpl~'body.up_line.htm' %}
 
+
                         {# <br/>timer31: {{ didrive_f__timer_stop(99) }} #}
                         {% if 1 == 1 %}
+
                             {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-                            {% set checki = jobdesc__get_checki( date_start, date_finish ) %}
+                            {% set checki = jobdesc__get_checki( db, date_start, date_finish ) %}
                             {#{ pa(checki) }#}
                             {% if timer_show == 'on' %} <br/>время 10 checki - {{ didrive_f__timer_stop(5) }} {% endif %}
+
                         {% endif %}
                         {# <br/>timer32: {{ didrive_f__timer_stop(99) }} #}
 

@@ -205,14 +205,14 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     $e = [];
 
-    for ($n = 0; $n <= 31; $n++) {
+    for ($n = 0; $n <= 32; $n++) {
 
 //    $date_start = date('Y-m-00', strtotime($_REQUEST['date']) );
 //    $date_finish = date('Y-m-d', strtotime($date_start.' +1 month -1 day') );
 
         $date = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
 
-        if ($date > $date_finish)
+        if ($date >= $date_finish)
             break;
 
         // echo '<br/>'.$date;
@@ -507,13 +507,15 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             \f\timer_start(2);
             $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
             
-//            \f\pa($r,'','','calc_hours');
+            // \f\pa($hours,'','','calc_hours');
 //            if (!empty($hours['data']['hours']))
 //                $return['hours'] = $hours['data']['hours'];
             
             foreach ( $hours['data'] as $k => $v) {
                 $return[$k] = $v;
             }
+            
+            //\f\pa($return);
             
             $return['time'] .= '<br/> посчитали сколько часов работы было в этот день'
                     . '<br/>' . \f\timer_stop(2);

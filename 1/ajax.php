@@ -17,7 +17,71 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 
 //
-if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
+
+
+    \Nyos\mod\items::$nocash = true;
+    // \Nyos\mod\items::$need_polya_vars = ' /* */ ';
+    
+    $e = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+    // \f\pa($e);
+
+    $aa = [];
+
+    echo sizeof($e);
+
+    $w = 0;
+    $w1 = 0;
+
+    foreach ($e as $k => $v) {
+                
+        // echo '<br/>'.$v['hour_on_job'];
+        
+//        if( !isset($v['hour_on_job']) ){
+//            \f\pa($v);
+//            die();
+//        }
+        
+//        if ( empty($v['start']) && empty($v['fin']) ) {
+//            \f\pa($v);
+//        }
+        
+        if ( !empty($v['start']) && !empty($v['fin']) && !isset($v['hour_on_job']) ) {
+
+//                if ($w1 >= 50)
+//                    break;
+//                
+//                $w1++;
+            
+            $hour = \Nyos\mod\IikoChecks::calculateHoursInRange($v['fin'], $v['start']);
+            
+            if ($hour == 0)
+                continue;
+            
+            if ($hour > 0) {
+
+//                if ($w >= 10)
+//                    break;
+//
+//                $w++;
+
+//                \f\pa($hour);
+//                echo '<br/>' . $hour;
+
+                $aa[$v['id']]['hour_on_job'] = $hour;
+            }
+//            else
+//            {
+//                echo '<br/>'.__LINE__;
+//            }
+        }
+    }
+
+    \f\pa($aa);
+    \Nyos\mod\items::saveNewDop($db, $aa);
+
+    die(__FILE__);
+} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
 
     $date_start = date('Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME']));
     $date_fin = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
@@ -67,9 +131,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
         // \f\pa($ee);
     }
 
-    if ( !empty($_REQUEST['goto']) ) {
-        \f\redirect( 'https://'.$_SERVER['HTTP_HOST'] , $_REQUEST['goto'] );
-    }elseif ( !empty($_REQUEST['return']) && $_REQUEST['return'] == 'html') {
+    if (!empty($_REQUEST['goto'])) {
+        \f\redirect('https://' . $_SERVER['HTTP_HOST'], $_REQUEST['goto']);
+    } elseif (!empty($_REQUEST['return']) && $_REQUEST['return'] == 'html') {
         \f\pa($return);
     } else {
         \f\end2('автооценка обработали даты ' . $date_start . ' - ' . $date_fin, true, $return);

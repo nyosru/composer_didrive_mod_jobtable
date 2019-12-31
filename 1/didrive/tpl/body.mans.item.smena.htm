@@ -11,39 +11,42 @@
     {#{ pa(salarys) }#}
     {#{ pa(now_job) }#}
 
+
     {% if 1 == 2 %}
         v1
         {{ pa(v1) }}
     {% endif %}
 
     {% if 1 == 3 %}
-    man
-    {{ pa(man) }}
+        man
+        {{ pa(man) }}
     {% endif %}
-    
+
     {#% set salar = 1 %#}
     {#% set salar = get_1salary( salarys, sp_now, now_job.dolgnost, date ) %#}
     {#{ pa(salar) }#}
 
     {% if 1 == 2 %}
-     pa(now_job.dolgnost) }}
-    {{ pa(now_job.dolgnost) }}
+        pa(now_job.dolgnost) }}
+        {{ pa(now_job.dolgnost) }}
     {% endif %}
-        
+
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set salar = jobdesc__getSalaryJobman( db, sp_now, now_job.dolgnost, date ) %}
-    
+    {% if timer_show == 'on' %} <br/>время jobdesc__getSalaryJobman 57 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
     {% if 1 == 2 %}
-    salar
-    {{ pa(salar,2) }}
+        salar
+        {{ pa(salar,2) }}
 
     {% endif %}
-    
+
     {#{ pa(now_job) }#}
 
     {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
-    {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' and now_spec_nazn == true %}
+    {% if v1.who_add_item is defined and v1.who_add_item == 'iiko' and now_spec_nazn == true %}
 
-    {% elseif v1.dop.sale_point is not defined or v1.dop.sale_point == sp_now %}
+    {% elseif v1.sale_point is not defined or v1.sale_point == sp_now %}
 
         <div class="text-center show_down_hiden smena1
 
@@ -54,15 +57,15 @@
              {% elseif v1.status == 'show' %}
 
                  {# чел начал смену и не закончил #}
-                 {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'user' %}
+                 {% if v1.who_add_item is defined and v1.who_add_item == 'user' %}
 
-                     {% if v1.dop.error_added is defined and v1.dop.error_added == 'yes' %}
+                     {% if v1.error_added is defined and v1.error_added == 'yes' %}
                          {% set user_smena_status = 'add_error' %}
                          smena_started_error                                 
-                     {% elseif v1.dop.start is defined and v1.dop.fin is not defined %}
+                     {% elseif v1.start is defined and v1.fin is not defined %}
                          {% set user_smena_status = 'add' %}
                          smena_started
-                     {% elseif v1.dop.start is defined and v1.dop.fin is defined %}
+                     {% elseif v1.start is defined and v1.fin is defined %}
                          {% set user_smena_status = 'add_ok' %}
                          smena_started_ok
                      {% endif %}
@@ -70,9 +73,9 @@
                  {% else %}
 
 
-                     {% if v1.dop.pay_check == 'yes' %}
+                     {% if v1.pay_check == 'yes' %}
                          pay_check
-                         {% if v1.dop.pay_check == 'yes' %}
+                         {% if v1.pay_check == 'yes' %}
                              pay_check
                          {% endif %}
                      {% else %}
@@ -88,50 +91,50 @@
 
             <nobr>
 
-                {% if v1.dop.who_add_item is defined and v1.dop.who_add_item == 'iiko' %}
-                    
+                {% if v1.who_add_item is defined and v1.who_add_item == 'iiko' %}
+
                     <abbr title="загружено с сервера ИИКО" ><small style="float:left;">iiko</small></abbr><br clear="all" />
-                    
-                {% elseif v1.dop.who_add_item is defined and v1.dop.who_add_item == 'admin' %}
-                    
+
+                {% elseif v1.who_add_item is defined and v1.who_add_item == 'admin' %}
+
                     <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
-                    
+
                 {% endif %}
 
                 {#{ pa(v1) }#}
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
-                    {% if v1.dop.start is defined and v1.dop.fin is not defined %}
-                        {{ v1.dop.start|date("H:i") }} - ...
+                    {% if v1.start is defined and v1.fin is not defined %}
+                        {{ v1.start|date("H:i") }} - ...
                     {% else %}
 
-                    {#   v1 [payed] => Array
-                    (
-                        [checkin] => 20974
-                        [summa] => 1552
-                        [pay_buh] => da
-                        [pay_buh_who] => 2
-                        [pay_buh_start] => 2019-08-20 15:47:22
-                    )#}
+                        {#   v1 [payed] => Array
+                        (
+                            [checkin] => 20974
+                            [summa] => 1552
+                            [pay_buh] => da
+                            [pay_buh_who] => 2
+                            [pay_buh_start] => 2019-08-20 15:47:22
+                        )#}
 
-                        {% set kolvo_hour = v1.dop.time_on_job/3600 %}
+                        {% set kolvo_hour = v1.time_on_job/3600 %}
 
                         <abbr class="job_timer" >
-                            {{ v1.dop.start|date("H:i") }} - {{ v1.dop.fin|date("H:i") }}
+                            {{ v1.start|date("H:i") }} - {{ v1.fin|date("H:i") }}
                             <br/>
                         </abbr>
 
                         {#
-                        <abbr class="job_hour" title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов:{{ v1.dop.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
+                        <abbr class="job_hour" title="{{ v1.start|date("d.m H:i") }} - {{ v1.fin|date("d.m H:i") }} отработано часов:{{ v1.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
                         #}
 
                         <abbr class="job_hour" >
                             <nobr>
 
-                                {% if v1.dop.hour_on_job_hand is defined and v1.dop.hour_on_job_hand > 0 %}
-                                    {% set hours_on_job = v1.dop.hour_on_job_hand %}
-                                {% elseif v1.dop.hour_on_job is defined and v1.dop.hour_on_job > 0 %}
-                                    {% set hours_on_job = v1.dop.hour_on_job %}
+                                {% if v1.hour_on_job_hand is defined and v1.hour_on_job_hand > 0 %}
+                                    {% set hours_on_job = v1.hour_on_job_hand %}
+                                {% elseif v1.hour_on_job is defined and v1.hour_on_job > 0 %}
+                                    {% set hours_on_job = v1.hour_on_job %}
                                 {% else %}
                                     {% set hours_on_job = 0 %}
                                 {% endif %}
@@ -145,22 +148,16 @@
                                        ></i> 
                                 {% endif %}
 
-                                
-                                
-                                <span 
-                                    id="hour_{{ v1.id }}" 
-                                    
-                                    {# для динамичного показа суммы за смену + #}
-                                    class="job_hours" 
-                                    id_smena="{{ v1.id }}" 
-                                    {# для динамичного показа суммы за смену - #}
-                                    
-                                    title="{{ v1.dop.start|date("d.m H:i") }} - {{ v1.dop.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.dop.hour_on_job }}"
-                                    {% if v1.dop.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
-                                    >{{ hours_on_job }}</span>
-                                
-                                    
-                                    
+                                <span id="hour_{{ v1.id }}" 
+
+                                      {# для динамичного показа суммы за смену + #}
+                                      class="job_hours" id_smena="{{ v1.id }}" 
+                                      {# для динамичного показа суммы за смену - #}
+
+                                      title="{{ v1.start|date("d.m H:i") }} - {{ v1.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ v1.hour_on_job }}"
+                                      {% if v1.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
+                                      >{{ hours_on_job }}</span>
+
                                 {% if v1.status == 'show' and v1.payed is not defined %}
 
                                     <i class="fa fa-plus ajax_hour_action" 
@@ -183,7 +180,7 @@
                             <br/>
                         </abbr>
 
-                        {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + v1.dop.time_on_job/3600 %#}
+                        {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + v1.time_on_job/3600 %#}
 
                     {% endif %}
 
@@ -194,8 +191,8 @@
                         <input 
                             xtype="text" 
                             type="hidden" 
-                               class="hours_kolvo" 
-                               value="{% if v1.dop.hour_on_job_hand is defined %}{{ v1.dop.hour_on_job_hand }}{% else %}{{ v1.dop.hour_on_job_calc }}{% endif %}" >
+                            class="hours_kolvo" 
+                            value="{% if v1.hour_on_job_hand is defined %}{{ v1.hour_on_job_hand }}{% else %}{{ v1.hour_on_job_calc }}{% endif %}" >
 
                         <center>
 
@@ -227,13 +224,13 @@
                                 {#{ pa(salar) }#}
                                 <select name="ocenka" 
                                         class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
-                                        
-                                            {# для динамичного показа суммы за смену + #}
-                                            smena_price_{{ v1.id }}
-                                            {# для динамичного показа суммы за смену - #}
-                                            
-                                            " 
-                                        
+
+                                        {# для динамичного показа суммы за смену + #}
+                                        smena_price_{{ v1.id }}
+                                        {# для динамичного показа суммы за смену - #}
+
+                                        " 
+
                                         action="edit_dop_pole"
                                         folder="{{ folder }}"
                                         module="050.chekin_checkout"
@@ -260,53 +257,55 @@
 
                                         {% if price_hour > 0 %}
                                             <option value="{{ i }}" 
-                                                    
+
                                                     {# для динамичного показа суммы за смену + #}
                                                     price="{{price_hour}}" 
                                                     {# для динамичного показа суммы за смену - #}
 
-                                                    {% if v1.dop.ocenka is defined and v1.dop.ocenka == i %}
+                                                    {% if v1.ocenka is defined and v1.ocenka == i %}
                                                         selected="selected"
-                                                    {% elseif v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i and v1.dop.ocenka is not defined %}
+                                                    {% elseif v1.ocenka_auto is defined and v1.ocenka_auto == i and v1.ocenka is not defined %}
+                                                        {%  set price_hour_now = price_hour %}
                                                         selected="selected"
                                                     {% endif %} 
 
                                                     xprice="{{price_hour}}" 
                                                     >
-                                                {{ i }} {% if v1.dop.ocenka_auto is defined and v1.dop.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                                {{ i }} {% if v1.ocenka_auto is defined and v1.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
                                             </option>
                                         {% endif %}
 
                                     {% endfor %}
 
                                     {#
-                                    <option value="4" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
-                                    <option value="3" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
-                                    <option value="2" {% if v1.dop.ocenka is defined and v1.dop.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
+                                    <option value="4" {% if v1.ocenka is defined and v1.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
+                                    <option value="3" {% if v1.ocenka is defined and v1.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
+                                    <option value="2" {% if v1.ocenka is defined and v1.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
                                     #}
 
                                 </select>
                             {% endif %}
 
-                            
+
                         </center>
 
                     {% endif %}
 
-                    
-                    
+
+
                     {# для динамичного показа суммы за смену 1911 + #}
-                    <div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену"></div>
+                    <div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену">...</div>
+                    {#<div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену">{{ price_hour * price_hour_now }}</div>#}
                     {# для динамичного показа суммы за смену 1911 - #}
-                    
-                    
-                    
+
+
+
                     {#
                     <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
                     #}
 
-                    
-                    
+
+
                 </div>
 
 
@@ -321,7 +320,7 @@
 
                     {% elseif v1.status == 'show' %}
 
-                        {% if v1.dop.pay_check == 'yes' %}
+                        {% if v1.pay_check == 'yes' %}
 
                             <span class="hide_down" >
                                 отправлено в бух. ожидает оплаты
@@ -476,24 +475,24 @@
 
                         {% set pay_all = pay_all + v2.summa %}
                         {% set pay_string = pay_string~' / '~v2.summa %}
-                        
+
                     {% endfor %}
-                    
+
                     {% if pay_all != 0 %}
 
-                    <abbr class="pole_oplacheno 
-                          
-                          {# для динамичного показа суммы за смену + #}
-                          smena_oplacheno_{{ v1.id }}
-                          {# для динамичного показа суммы за смену - #}
-                          
-                          " 
-                          
-                          {# для динамичного показа суммы за смену + #}
-                          summ="{{ pay_all }}" 
-                          {# для динамичного показа суммы за смену - #}
-                          
-                          title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all|number_format(0, '.', '`') }}&nbsp;₽</abbr>
+                        <abbr class="pole_oplacheno 
+
+                              {# для динамичного показа суммы за смену + #}
+                              smena_oplacheno_{{ v1.id }}
+                              {# для динамичного показа суммы за смену - #}
+
+                              " 
+
+                              {# для динамичного показа суммы за смену + #}
+                              summ="{{ pay_all }}" 
+                              {# для динамичного показа суммы за смену - #}
+
+                              title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all|number_format(0, '.', '`') }}&nbsp;₽</abbr>
 
                     {% endif %}
 

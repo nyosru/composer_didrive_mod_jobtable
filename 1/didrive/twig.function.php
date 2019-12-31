@@ -7,9 +7,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
 
     global $db;
 
-    
-    
-    
+
+
+
 // \f\pa( \Nyos\nyos::$folder_now );
 
     /**
@@ -870,9 +870,9 @@ $twig->addFunction($function);
 
 
 
-$function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $date_start, string $date_finish, array $get_points = [] ) {
+$function = new Twig_SimpleFunction('jobdesc__get_checki', function ( $db, string $date_start, string $date_finish, array $get_points = [] ) {
 
-    global $db;
+    //global $db;
 
     /**
      * Вход выход на смену
@@ -894,18 +894,36 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
 //    \f\pa($checks, 2, null, '$checks');
 // \f\pa($points);
 // \Nyos\mod\items::$style_old = true;
-    $checks0 = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
-    $checks = [];
-// \f\pa($checks);
-    foreach ($checks0 as $k => $v) {
-        if (isset($v['start']) && $v['start'] > $ud_start) {
-            $v['dop'] = $v;
-            $checks['data'][$v['id']] = $v;
-        }
-//        else{
-//            echo '<br/>'.$v['start'];
-//        }
-    }
+//    $checks0 = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'start\' '
+            . ' AND mid.value_datetime >= :ds '
+//            . ' AND mid.value_date <= :df '
+//            . ' INNER JOIN `mitems-dops` mid2 '
+//            . ' ON mid2.id_item = mi.id '
+//            . ' AND mid2.name = \'sale_point\' '
+//            . ' AND mid2.value = :sp '
+
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $ud_start;
+//    \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+//    \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_finish;
+    $checks = \Nyos\mod\items::get($db, '050.chekin_checkout');
+
+
+//    $checks = [];
+//// \f\pa($checks);
+//    foreach ($checks2 as $k => $v) {
+////        if (isset($v['start']) && $v['start'] > $ud_start) {
+//            //$v['dop'] = $v;
+//            $checks[$v['id']] = $v;
+////        }
+////        else{
+////            echo '<br/>'.$v['start'];
+////        }
+//    }
 
     unset($checks0);
 
@@ -915,8 +933,8 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
 
 
 // $payeds0 = \Nyos\mod\items::getItemsSimple($db, '075.buh_oplats');
-
-        $payeds0 = \Nyos\mod\items::getItemsSimple3($db, '075.buh_oplats');
+        // $payeds0 = \Nyos\mod\items::getItemsSimple3($db, '075.buh_oplats');
+        $payeds0 = \Nyos\mod\items::get($db, '075.buh_oplats');
 // \f\pa($payeds0,'','','payeds');
 
         foreach ($payeds0 as $k => $v) {
@@ -939,29 +957,30 @@ $function = new Twig_SimpleFunction('jobdesc__get_checki', function ( string $da
 
 // \f\pa($checks);
 
-        if (isset($checks['data']) && sizeof($checks['data']) > 0) {
-            foreach ($checks['data'] as $c => $check) {
+        if (isset($checks) && sizeof($checks) > 0) {
+
+            foreach ($checks as $c => $check) {
 
 // $now_st = strtotime($check['dop']['start']);
 // if ($ud_start <= $now_st && ( $ud_fin + 3600 * 24 ) >= $now_st) {
-                if (isset($check['dop']['start'])) {
+                if (isset($check['start'])) {
 
-                    $da = date('Y-m-d', strtotime($check['dop']['start']));
+                    $da = date('Y-m-d', strtotime($check['start']));
 
                     if (isset($payeds[$check['id']])) {
 
                         $check['payed'] = $payeds[$check['id']];
                     }
-                    if (isset($check['dop']['fin'])) {
+                    if (isset($check['fin'])) {
 
-                        $check['dop']['time_on_job'] = ( ceil(strtotime($check['dop']['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['dop']['start']) / 1800) * 1800 );
-                        $check['dop']['hour_on_job'] = ceil($check['dop']['time_on_job'] / 1800) / 2;
+                        $check['time_on_job'] = ( ceil(strtotime($check['fin']) / 1800) * 1800 ) - ( ceil(strtotime($check['start']) / 1800) * 1800 );
+                        $check['hour_on_job'] = ceil($check['time_on_job'] / 1800) / 2;
 // $check['dop']['polhour'] = ceil($check['dop']['time_on_job'] / 1800)*1800;
 // $check['dop']['colvo_hour'] = $check['dop']['polhour'] * 2;
                     }
 
-                    if (isset($check['dop']['jobman']) && isset($check['id']))
-                        $vv['checks'][$da][$check['dop']['jobman']][$check['id']] = $check;
+                    if (isset($check['jobman']) && isset($check['id']))
+                        $vv['checks'][$da][$check['jobman']][$check['id']] = $check;
                 }
 
 // }
@@ -1185,16 +1204,43 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    $ocenki = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
+    if (1 == 2) {
+        $ocenki = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
 //\f\pa($ocenki);
 
-    $re = [];
+        $re = [];
 
-    foreach ($ocenki['data'] as $k => $v) {
+        foreach ($ocenki['data'] as $k => $v) {
 
-        if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
-            $re[$v['dop']['date']] = $v['dop'];
-            $re[$v['dop']['date']]['id'] = $v['id'];
+            if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+                $re[$v['dop']['date']] = $v['dop'];
+                $re[$v['dop']['date']]['id'] = $v['id'];
+            }
+        }
+    } else {
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date >= \'' . $date_start . '\' '
+                . ' AND mid.value_date <= \'' . $date_finish . '\' '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'sale_point\' '
+                . ' AND mid2.value = \'' . $sp . '\' '
+
+        ;
+        $ocenki = \Nyos\mod\items::get($db, 'sp_ocenki_job_day');
+//\f\pa($ocenki);
+
+        $re = [];
+
+        foreach ($ocenki as $k => $v) {
+
+            //if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+            $re[$v['date']] = $v;
+            //$re[$v['date']]['id'] = $v['id'];
+            //}
         }
     }
 
