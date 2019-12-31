@@ -1,0 +1,134 @@
+{% spaceless %}
+
+    <div class="trow" >
+
+        <div class="tcell stick-left bg-white" >
+            <nobr>
+
+                <a href="#" onclick="$('#tr{{sp_now}}times').toggle('slow');
+                        return false;" >
+                    <b>Время ожидания</b></a>
+            </nobr>
+
+            {#% set time_ex = get_timers_on_sp( db, sp_now, date_start, date_finish ) %#}
+
+            {#                {% set t = didrive_f__timer_start() %}
+            #}
+
+
+
+            {#% set timer_show = 'on' %#}
+            {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+            {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
+            {#{ pa(time_ex) }#}
+
+            {% if timer_show == 'on' %} <br/>время 06 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+
+            {% if 1 == 2 %}
+                <br/>
+                {{ date_start }}
+                <br/>
+                {{ date_finish }}
+                <br/>
+                time_ex
+                {{ pa(time_ex) }}
+            {% endif %}
+            {#                {% set t = didrive_f__timer_stop() %}
+                            <br/>time_ex {{ t }}
+            #}
+
+            {#                {% set t = didrive_f__timer_start() %}
+            #}                
+
+
+
+
+            {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+            {% set time_ex_default = get_timers_on_sp_default( db ) %}
+
+            {% if timer_show == 'on' %} <br/>время 062 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+            {#
+            <br/>
+            time_ex_default
+            {{ pa(time_ex_default) }}
+            #}
+
+            {#                {% set t = didrive_f__timer_stop() %}
+                            <br/>time_ex_default {{ t }}
+            #}
+
+        </div>
+    </div>
+
+    <div class="trow" id="tr{{sp_now}}times" style="display:none;">
+
+        <div class="tcell stick-left bg-white" >
+
+            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
+                    return false;' class="fa fa-cog"></i></div>
+
+            Холодный цех
+            <br/>
+            Горячий цех
+            <br/>
+            Доставка
+
+
+            <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
+                <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
+                   style="display:block;"
+
+                   forajax_action="load_data_from_server" 
+                   forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                   forajax_show_timer="da" 
+
+                   forajax_sp="{{ sp_now }}" 
+                   {#forajax_jobman="{{ man.id }}" #}
+                   forajax_date_start="{{ date_start }}"  
+                   forajax_date_fin="{{ date_finish }}" 
+                   res_to_id="timeo_{{ sp_now }}"
+                   answer="Грузим данные времени ожидания ?"
+                   >загрузить время ожидания</a>
+            </div>
+
+            <div id="timeo_{{ sp_now }}" ></div>
+
+        </div>         
+
+        {% for i in range(low=0, high=35, step=1) %}  
+
+            {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+            {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+
+                <div class="tcell" >
+                    {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
+                        <div class='text-center'>
+                            {% if time_ex[now_date2]['cold'] > 0 %}
+                                {{ time_ex[now_date2]['cold'] }}
+                            {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
+                            {% else %}-{% endif %}
+                            <Br/>
+                            {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}
+                            {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
+                            {% else %}-{% endif %}
+                            <Br/>
+                            {% if time_ex[now_date2]['delivery'] > 0 %}
+                                {{ time_ex[now_date2]['delivery'] }}
+                            {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
+                            {% else %}-{% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+
+{% endspaceless %}

@@ -19,7 +19,6 @@ require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 //
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
 
-
     \Nyos\mod\items::$nocash = true;
     // \Nyos\mod\items::$need_polya_vars = ' /* */ ';
     
@@ -34,24 +33,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
     $w1 = 0;
 
     foreach ($e as $k => $v) {
-                
-        // echo '<br/>'.$v['hour_on_job'];
-        
-//        if( !isset($v['hour_on_job']) ){
-//            \f\pa($v);
-//            die();
-//        }
-        
-//        if ( empty($v['start']) && empty($v['fin']) ) {
-//            \f\pa($v);
-//        }
-        
         if ( !empty($v['start']) && !empty($v['fin']) && !isset($v['hour_on_job']) ) {
-
-//                if ($w1 >= 50)
-//                    break;
-//                
-//                $w1++;
             
             $hour = \Nyos\mod\IikoChecks::calculateHoursInRange($v['fin'], $v['start']);
             
@@ -59,25 +41,14 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
                 continue;
             
             if ($hour > 0) {
-
-//                if ($w >= 10)
-//                    break;
-//
-//                $w++;
-
-//                \f\pa($hour);
-//                echo '<br/>' . $hour;
-
                 $aa[$v['id']]['hour_on_job'] = $hour;
             }
-//            else
-//            {
-//                echo '<br/>'.__LINE__;
-//            }
         }
     }
 
-    \f\pa($aa);
+    // \f\pa($aa);
+    echo sizeof($aa);
+    
     \Nyos\mod\items::saveNewDop($db, $aa);
 
     die(__FILE__);

@@ -3622,7 +3622,19 @@ class JobDesc {
 //                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' ';
         $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
         // \f\pa($norms,2,'','$norms'); // die();
+        // usort($norms, "\\f\\sort_ar_date");
 
+        $rr = [];
+
+        foreach( $norms as $k => $v ){
+            $rr[$v['date']] = $v;
+        }
+
+        return $rr;
+        
+        
+        
+        
         $a = [];
 
         foreach ($norms as $k => $v) {
