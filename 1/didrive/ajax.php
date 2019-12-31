@@ -504,12 +504,20 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         // считаем сколько суммарно часов отработано за сегодня
         if (1 == 1) {
 
-            $r = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
-            // \f\pa($r);
-
-            foreach ($r as $k => $v) {
+            \f\timer_start(2);
+            $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
+            
+//            \f\pa($r,'','','calc_hours');
+//            if (!empty($hours['data']['hours']))
+//                $return['hours'] = $hours['data']['hours'];
+            
+            foreach ( $hours['data'] as $k => $v) {
                 $return[$k] = $v;
             }
+            
+            $return['time'] .= '<br/> посчитали сколько часов работы было в этот день'
+                    . '<br/>' . \f\timer_stop(2);
+            
         }
 
         /**
@@ -530,9 +538,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             $return['time'] .= '<br/> грузим нормы за день'
                     . '<br/>' . \f\timer_stop(2);
 
-            if ( empty($return['norm_date'])) {
+            if (empty($return['norm_date'])) {
                 throw new \Exception('Нет плановых данных (дата)', 12);
-            } elseif ( empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena']) ) {
+            } elseif (empty($return['norm_vuruchka_on_1_hand']) || empty($return['norm_time_wait_norm_cold']) || empty($return['norm_procent_oplata_truda_on_oborota']) || empty($return['norm_kolvo_hour_in1smena'])) {
                 throw new \Exception('Не все плановые данные по ТП указаны', 204);
             }
         }

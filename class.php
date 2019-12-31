@@ -105,6 +105,120 @@ class JobDesc {
     public static $mod_minus = '072.vzuscaniya';
 
     /**
+     * смотрим кто работает в указанную дату в указанной точке
+     * / если точку не указываем то вывалится массив точек в которых ввсе те люди что там работают
+     * / 1912
+     * @param type $db
+     * @param type $date
+     * @param type $sp
+     */
+    public static function getJobmansDate($db, string $date, $sp = null) {
+
+        if (empty($sp) || ( isset($sp) && is_numeric($sp) )) {
+            
+        } else {
+            return \f\end3('SP не та', false);
+        }
+
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date <= \'' . $date . '\' '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . 'ON mid2.id_item = mi.id '
+                . 'AND mid2.name = \'jobman\' ';
+
+        if (!empty($sp))
+            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid3 '
+                    . 'ON mid3.id_item = mi.id '
+                    . 'AND mid3.name = \'sale_point\' '
+                    . 'AND mid3.value = \'' . $sp . '\' '
+
+//                . ' LEFT JOIN `mitems-dops` mid3 '
+//                . 'ON mid3.id_item = mi.id '
+//                . 'AND mid3.name = \'date_finish\' '
+//                . ' INNER JOIN `mitems-dops` mid2 
+//                ON mid2.id_item = mi.id 
+//                AND mid2.name = \'dolgnost\' '
+//                . ' LEFT JOIN `mitems-dops` mid3 
+//                ON mid3.id_item = mid2.value
+//                AND mid3.name = \'calc_auto\' '
+
+            ;
+
+        \Nyos\mod\items::$select_var1 = ' , mid.value_date date_start ';
+        \Nyos\mod\items::$sql_order = //                ' GROUP BY mid2.value ' . 
+                'ORDER BY date_start DESC '
+//                'ORDER BY mid2.value DESC, date_start DESC '
+        ;
+
+        \Nyos\mod\items::$where2dop = ' AND ( '
+                . ' `name` = \'sale_point\' '
+                . ' OR '
+                . ' `name` = \'jobman\' '
+                . ' OR '
+                . ' `name` = \'date\' '
+                . ' OR '
+                . ' `name` = \'date_finish\' '
+                . ' OR '
+                . ' `name` = \'dolgnost\' '
+                . ' ) '
+        ;
+
+        // $job_all0 = \Nyos\mod\items::getItemsSimple3($db, 'jobman_send_on_sp');
+        $job_all0 = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
+        // echo '11: '.sizeof($job_all0);
+        // \f\pa($job_all0, 2);
+
+        $return = [];
+
+        // echo '<table>';
+
+        foreach ($job_all0 as $k => $v) {
+
+            if (!empty($v['date_finish']) && $v['date_finish'] < $date) {
+                // echo '<br/>-- '.$v['jobman'].' '.$v['sale_point'].' '.$v['date'].' '.( $v['date_finish'] ?? 'x' ).' '.$v['status'];
+                //echo '<tr><td>--'.$v['jobman'].'</td><td>'.$v['sale_point'].'</td><td>'.$v['date'].'</td><td>'.( $v['date_finish'] ?? 'x' ).'</td><td>'.$v['status'].'</td></tr>';
+                // unset($job_all0[$k]);
+                continue;
+            }
+
+            // echo '<br/>'.$v['jobman'].' '.$v['sale_point'].' '.$v['date'].' '.( $v['date_finish'] ?? 'x' ).' '.$v['status'];
+            // echo '<tr><td>'.$v['id'].'</td><td>'.$v['jobman'].'</td><td>'.$v['sale_point'].'</td><td>'.$v['date'].'</td><td>'.( $v['date_finish'] ?? 'x' ).'</td><td>'.$v['status'].'</td></tr>';
+
+            if (!empty($sp)) {
+                if (!isset($return[$v['jobman']]))
+                    $return[$v['jobman']] = $v;
+            } else {
+                if (!isset($return[$v['sale_point']][$v['jobman']]))
+                    $return[$v['sale_point']][$v['jobman']] = $v;
+            }
+        }
+
+        // echo '</table>';
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date = \'' . $date . '\' '
+        ;
+
+        $all_spec = \Nyos\mod\items::get($db, self::$mod_spec_jobday);
+        // \f\pa($all_spec);
+
+        foreach ($all_spec as $k => $v) {
+            if (empty($sp)) {
+                $return[$v['sale_point']][$v['jobman']] = $v;
+            } else {
+                $return[$v['jobman']] = $v;
+            }
+        }
+
+        return $return;
+    }
+
+    /**
      * считаем сколько суммарно часов отработано за сегодня
      * @param type $db
      * @param type $date
@@ -112,6 +226,75 @@ class JobDesc {
      * @return array
      */
     public static function calcJobHoursDay($db, $date, int $sp) {
+
+        
+        
+        $jobs_mesta = self::getJobmansDate($db, $date, $sp);
+        //\f\pa($jobs_mesta,2,'','$jobs_mesta');
+
+        $sql2 = '';
+        foreach( $jobs_mesta as $k => $v ){
+            $sql2 .= ( !empty($sql2) ? ' OR ' : '' ).' mid2.value = \''.$k.'\' ';
+        }
+
+        //\Nyos\mod\items::$show_sql = true;
+        \Nyos\mod\items::$join_where = 
+                ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'start\' '
+                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
+                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' '
+                
+                .' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'jobman\' '
+                . ' AND ('. $sql2 .') '                
+                ;
+
+
+        \Nyos\mod\items::$where2dop = 
+                ' AND ( '
+//                . ' `name` = \'sale_point\' '
+//                . ' OR '
+//                . ' `name` = \'jobman\' '
+//                . ' OR '
+//                . ' `name` = \'date\' '
+//                . ' OR '
+                . ' `name` = \'hour_on_job_hand\' '
+                . ' OR '
+                . ' `name` = \'hour_on_job\' '
+                . ' ) '
+        ;
+        
+        $checks = \Nyos\mod\items::get($db, self::$mod_checks );
+        //\f\pa($checks,2,'','checks');
+        
+        $ret['hours'] = 0;
+        $ret['smen_in_day'] = 0;
+        $ret['checks_for_new_ocenka'] = [];
+                
+        foreach( $checks as $k => $v ){
+
+            $ret['hours'] += $v['hour_on_job_hand'] ?? $v['hour_on_job'] ?? 0 ;
+            $ret['smen_in_day']++;
+            $ret['checks_for_new_ocenka'][] = $v['id'];
+
+        }
+
+        return \f\end3( 'ok' , true, $ret );
+        
+        
+        
+        
+        
+        
+        
+
+
+
+
+
+
 
         $return = [];
 
@@ -2458,7 +2641,7 @@ class JobDesc {
 
         $text = '';
         $text_s = '<br/>';
-        
+
         $vv1 = [
             'date' => '',
             'sp' => '',
