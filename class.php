@@ -227,33 +227,30 @@ class JobDesc {
      */
     public static function calcJobHoursDay($db, $date, int $sp) {
 
-        
-        
+
+
         $jobs_mesta = self::getJobmansDate($db, $date, $sp);
         //\f\pa($jobs_mesta,2,'','$jobs_mesta');
 
         $sql2 = '';
-        foreach( $jobs_mesta as $k => $v ){
-            $sql2 .= ( !empty($sql2) ? ' OR ' : '' ).' mid2.value = \''.$k.'\' ';
+        foreach ($jobs_mesta as $k => $v) {
+            $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . $k . '\' ';
         }
 
         //\Nyos\mod\items::$show_sql = true;
-        \Nyos\mod\items::$join_where = 
-                ' INNER JOIN `mitems-dops` mid '
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
                 . ' AND mid.name = \'start\' '
                 . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
                 . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' '
-                
-                .' INNER JOIN `mitems-dops` mid2 '
+                . ' INNER JOIN `mitems-dops` mid2 '
                 . ' ON mid2.id_item = mi.id '
                 . ' AND mid2.name = \'jobman\' '
-                . ' AND ('. $sql2 .') '                
-                ;
+                . ' AND (' . $sql2 . ') '
+        ;
 
 
-        \Nyos\mod\items::$where2dop = 
-                ' AND ( '
+        \Nyos\mod\items::$where2dop = ' AND ( '
 //                . ' `name` = \'sale_point\' '
 //                . ' OR '
 //                . ' `name` = \'jobman\' '
@@ -265,30 +262,29 @@ class JobDesc {
                 . ' `name` = \'hour_on_job\' '
                 . ' ) '
         ;
-        
-        $checks = \Nyos\mod\items::get($db, self::$mod_checks );
+
+        $checks = \Nyos\mod\items::get($db, self::$mod_checks);
         // \f\pa($checks,2,'','checks');
-        
+
         $ret['hours'] = 0;
         $ret['smen_in_day'] = 0;
         $ret['checks_for_new_ocenka'] = [];
-                
-        foreach( $checks as $k => $v ){
 
-            $ret['hours'] += $v['hour_on_job_hand'] ?? $v['hour_on_job'] ?? 0 ;
-            $ret['smen_in_day']++;
+        foreach ($checks as $k => $v) {
+
+            $ret['hours'] += $v['hour_on_job_hand'] ?? $v['hour_on_job'] ?? 0;
+            $ret['smen_in_day'] ++;
             $ret['checks_for_new_ocenka'][] = $v['id'];
-
         }
 
-        return \f\end3( 'ok' , true, $ret );
-        
-        
-        
-        
-        
-        
-        
+        return \f\end3('ok', true, $ret);
+
+
+
+
+
+
+
 
 
 
@@ -2092,11 +2088,10 @@ class JobDesc {
         // $bonuses = \Nyos\mod\items::getItemsSimple($db, self::$mod_bonus);
 
         if (empty(self::$cash['bonuses'])) {
-            
+
             //self::$cash['bonuses'] = \Nyos\mod\items::getItemsSimple3($db, self::$mod_bonus);
             self::$cash['bonuses'] = \Nyos\mod\items::get($db, self::$mod_bonus);
             // echo '<br/>' . __LINE__;
-            
         } else {
             // echo '<br/>' . __LINE__;
         }
@@ -3593,9 +3588,6 @@ class JobDesc {
      */
     public static function whatNormToDay($db, int $sp, string $date, $date_fin = null) {
 
-        // echo '<br/>' . __FUNCTION__ ;
-        // echo '<br/>' . $sp . ' - ' . $date . ' - ' . $date_fin;
-        //$norms = \Nyos\mod\items::getItemsSimple3($db, 'sale_point_parametr', 'show');
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
                 . ' AND mid.name = \'sale_point\' '
@@ -3615,93 +3607,24 @@ class JobDesc {
                     . ' AND mid2.value_date = \'' . $date . '\' '
             ;
         }
-//        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-//                . ' ON mid.id_item = mi.id '
-//                . ' AND mid.name = \'start\' '
-//                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
-//                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' ';
-        $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
-        // \f\pa($norms,2,'','$norms'); // die();
-        // usort($norms, "\\f\\sort_ar_date");
+        
+        // $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
+        $norms = \Nyos\mod\items::get($db, self::$mod_norms_day );
 
         $rr = [];
 
-        foreach( $norms as $k => $v ){
+        foreach ($norms as $k => $v) {
+
+            // если ищем одну даты то отправляем этот 1 день
+            if ($date_fin === null) {
+                return $v;
+            }
+
+            // если ищем несколько дат, то собираем по датам в массив и возвращаем
             $rr[$v['date']] = $v;
         }
 
         return $rr;
-        
-        
-        
-        
-        $a = [];
-
-        foreach ($norms as $k => $v) {
-
-//if( $v['dop']['date'] == $d && $v['dop']['sale_point'] == $sp )
-            if (isset($v['sale_point']) && $v['sale_point'] == $sp) {
-//\f\pa($v);
-                $a[] = $v;
-// $dates[] = $v['dop']['date'];
-            }
-        }
-
-        usort($a, "\\f\\sort_ar_date");
-
-        $d_start = date('Y-m-d', strtotime($date));
-
-        $last = false;
-
-        foreach ($a as $k => $v) {
-            if ($d_start >= $v['date']) {
-                $last = $v;
-            }
-        }
-
-        /**
-         * если ищем нормы отрезка дат
-         */
-        if (!empty($date_fin)) {
-
-            $d_fin = date('Y-m-d', strtotime($date_fin));
-            $return = [];
-
-// \f\pa($last);
-
-            for ($i = 0; $i <= 32; $i++) {
-
-                $now_date = date('Y-m-d', strtotime($d_start) + (3600 * 24 * $i));
-
-                $copy = true;
-
-                /**
-                 * ищем новое значение параметров
-                 */
-                foreach ($a as $k1 => $v1) {
-                    if ($v1['date'] == $now_date) {
-                        $last = $v1;
-                        $copy = false;
-                        break;
-                    }
-                }
-
-                if ($copy === true)
-                    $last['type'] = 'copy';
-
-                $return[$now_date] = $last;
-
-                if ($now_date == $d_fin)
-                    break;
-            }
-
-            return $return;
-        }
-// если ищем одну дату
-        else {
-
-            return $last;
-        }
     }
 
     /**
