@@ -93,11 +93,13 @@
 
                 {% if v1.who_add_item is defined and v1.who_add_item == 'iiko' %}
 
-                    <abbr title="загружено с сервера ИИКО" ><small style="float:left;">iiko</small></abbr><br clear="all" />
+                    <abbr title="загружено с сервера ИИКО #{{  v1.id }}" ><small style="float:left;">iiko</small></abbr>
+                    <br clear="all" />
 
                 {% elseif v1.who_add_item is defined and v1.who_add_item == 'admin' %}
 
-                    <abbr title="добавлено вручную" ><small style="float:left;">вручную</small></abbr><br clear="all" />
+                    <abbr title="добавлено вручную #{{  v1.id }}" ><small style="float:left;">вручную</small></abbr>
+                    <br clear="all" />
 
                 {% endif %}
 

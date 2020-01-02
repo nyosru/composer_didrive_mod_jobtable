@@ -42,6 +42,12 @@ class JobDesc {
 
     /**
      * список модулей
+     * / работники
+     */
+    public static $mod_jobman = '070.jobman';
+
+    /**
+     * список модулей
      * зарплаты
      */
     public static $mod_salary = '071.set_oplata';
@@ -227,8 +233,6 @@ class JobDesc {
      */
     public static function calcJobHoursDay($db, $date, int $sp) {
 
-
-
         $jobs_mesta = self::getJobmansDate($db, $date, $sp);
         //\f\pa($jobs_mesta,2,'','$jobs_mesta');
 
@@ -241,15 +245,17 @@ class JobDesc {
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
                 . ' AND mid.name = \'start\' '
-                . ' AND mid.value_datetime >= \'' . $date . ' 08:00:00\' '
-                . ' AND mid.value_datetime <= \'' . date('Y-m-d 03:00:00', strtotime($date . ' +1day')) . '\' '
+                . ' AND mid.value_datetime >= :date1 '
+                . ' AND mid.value_datetime <= :date2 '
                 . ' INNER JOIN `mitems-dops` mid2 '
                 . ' ON mid2.id_item = mi.id '
                 . ' AND mid2.name = \'jobman\' '
                 . ' AND (' . $sql2 . ') '
         ;
 
-
+        \Nyos\mod\items::$var_ar_for_1sql[':date1'] =  $date . ' 08:00:00';
+        \Nyos\mod\items::$var_ar_for_1sql[':date2'] =  date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
+        
         \Nyos\mod\items::$where2dop = ' AND ( '
 //                . ' `name` = \'sale_point\' '
 //                . ' OR '
@@ -264,7 +270,7 @@ class JobDesc {
         ;
 
         $checks = \Nyos\mod\items::get($db, self::$mod_checks);
-        // \f\pa($checks,2,'','checks');
+        \f\pa($checks,2,'','checks');
 
         $ret['hours'] = 0;
         $ret['smen_in_day'] = 0;
@@ -3591,25 +3597,29 @@ class JobDesc {
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
                 . ' AND mid.name = \'sale_point\' '
-                . ' AND mid.value = \'' . $sp . '\' ';
+                . ' AND mid.value = :sp ';
+        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
 
         if (!empty($date_fin)) {
             \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
                     . ' ON mid2.id_item = mi.id '
                     . ' AND mid2.name = \'date\' '
-                    . ' AND mid2.value_date >= \'' . $date . '\' '
-                    . ' AND mid2.value_date <= \'' . $date_fin . '\' '
+                    . ' AND mid2.value_date >= :ds '
+                    . ' AND mid2.value_date <= :df '
             ;
+            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
+            \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_fin;
         } else {
             \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
                     . ' ON mid2.id_item = mi.id '
                     . ' AND mid2.name = \'date\' '
-                    . ' AND mid2.value_date = \'' . $date . '\' '
+                    . ' AND mid2.value_date = :ds '
             ;
+            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
         }
-        
+
         // $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
-        $norms = \Nyos\mod\items::get($db, self::$mod_norms_day );
+        $norms = \Nyos\mod\items::get($db, self::$mod_norms_day);
 
         $rr = [];
 
