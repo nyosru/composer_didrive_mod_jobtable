@@ -270,7 +270,7 @@ class JobDesc {
         ;
 
         $checks = \Nyos\mod\items::get($db, self::$mod_checks);
-        \f\pa($checks,2,'','checks');
+        // \f\pa($checks,2,'','checks');
 
         $ret['hours'] = 0;
         $ret['smen_in_day'] = 0;

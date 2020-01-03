@@ -41,18 +41,26 @@
                                 <div class="dropdown-menu">
 
                                     {#{ pa( server ) }#}
-
+{#
                                     <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date_now }}&finish={{ date_now }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
                                        class="put_var_in_modal2 dropdown-item btn-light"
                                        >грузим чеки дня</a>
+#}
+                                    <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date_now }}&finish={{ date_now }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
+                                       class="xput_var_in_modal2 dropdown-item btn-light"
+                                       >грузим/дополняем чеки дня (запускайте 5 раз, чтобы все подгрузились)</a>
 
+                                       {% if session.ss == 'admin' %}
                                     <a href="/vendor/didrive_mod/jobdesc/1/ajax.php?action=clear_copy_checks_today&date={{ date_now }}&s={{ creatSecret( date_now ) }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
                                        class="xput_var_in_modal2 dropdown-item btn-light"
                                        >удаляем все копии чеков (оригинальные без вмешательств) <sup>admin</sup> </a>
+                                       {% endif %}
 
+                                       {#
                                     <a href="/vendor/didrive_mod/iiko_checks/ajax.php?act2=read48_and_refresh_all&start={{ date_now }}&finish={{ date_now }}&go_to_after=//{{ server.HTTP_HOST|url_encode }}{{ server.REQUEST_URI|url_encode }}" 
                                        class="put_var_in_modal2 dropdown-item btn-light"
                                        >грузим/обновляем бонусы ставок дня</a>
+#}
 
                                     {% if 1 == 2 %}
 

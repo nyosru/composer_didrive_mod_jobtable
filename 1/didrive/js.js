@@ -452,9 +452,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
 // считаем сумму каждой смены
-    setTimeout(function () {
-        calcSummMoneySmena();
-    }, 2000);
+//    setTimeout(function () {
+//        calcSummMoneySmena();
+//    }, 2000);
 
 
 

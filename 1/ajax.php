@@ -21,7 +21,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
 
     \Nyos\mod\items::$nocash = true;
     // \Nyos\mod\items::$need_polya_vars = ' /* */ ';
-    
+
     $e = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
     // \f\pa($e);
 
@@ -33,13 +33,13 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
     $w1 = 0;
 
     foreach ($e as $k => $v) {
-        if ( !empty($v['start']) && !empty($v['fin']) && !isset($v['hour_on_job']) ) {
-            
+        if (!empty($v['start']) && !empty($v['fin']) && !isset($v['hour_on_job'])) {
+
             $hour = \Nyos\mod\IikoChecks::calculateHoursInRange($v['fin'], $v['start']);
-            
+
             if ($hour == 0)
                 continue;
-            
+
             if ($hour > 0) {
                 $aa[$v['id']]['hour_on_job'] = $hour;
             }
@@ -48,7 +48,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
 
     // \f\pa($aa);
     echo sizeof($aa);
-    
+
     \Nyos\mod\items::saveNewDop($db, $aa);
 
     die(__FILE__);
@@ -447,7 +447,6 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
 
     if (isset($_REQUEST['date']) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'clear_copy_checks_today') {
 
-
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
                 . ' `md`.`id_item` = mi.id '
                 . 'AND `md`.`name` = \'start\' '
@@ -457,6 +456,90 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
 
         // \f\pa($checks);
 
+        $sql2 = '';
+        $noscan = [];
+        $kolvo = 0;
+
+        foreach ($checks as $k => $v) {
+
+            if ($v['status'] != 'show')
+                continue;
+
+            // echo '<br/>' . $v['id'] . ' ' . $v['start'];
+
+            foreach ($checks2 as $k1 => $v1) {
+
+                if (isset($noscan[$v1['id']]))
+                    continue;
+
+                if ($v1['status'] != 'show')
+                    continue;
+
+                if ($v['id'] != $v1['id'] && $v['jobman'] == $v1['jobman'] && $v1['start'] == $v['start']) {
+
+                    if (isset($noscan[$v['id']]))
+                        continue;
+
+//                    echo '<table><tr><td>';
+//                    \f\pa($v);
+//                    echo '</td><td>';
+//                    \f\pa($v1);
+//                    echo '</td></tr></table>';
+
+                    if (!isset($v1['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v1['id'] . '\' ';
+                        $noscan[$v1['id']] = 1;
+                        $kolvo++;
+                    } elseif (!isset($v['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v['id'] . '\' ';
+                        $noscan[$v['id']] = 1;
+                        $kolvo++;
+                    }
+                }
+            }
+        }
+
+        if (!empty($sql2)) {
+            $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE ' . $sql2 . ' ;');
+            $ff->execute();
+            //$ff->execute(array(':id' => (int) $_POST['id2']));
+        }
+
+        die('Найдено и удалено копий: ' . $kolvo);
+
+        die($sql2);
+
+        die('<br/>' . __FILE__ . ' #' . __LINE__);
+    }
+
+    if (isset($_REQUEST['date']) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_checks_today') {
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                . ' `md`.`id_item` = mi.id '
+                . 'AND `md`.`name` = \'start\' '
+                . 'AND `md`.`value_datetime` >= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'])) . '\'  '
+                . 'AND `md`.`value_datetime` <= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'] . ' +1day')) . '\'  ';
+        // $checks = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+        $checks = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+        // \f\pa($checks);
+
+        $sl = '';
+        $sl2 = [];
+        $n = 1;
+
+        foreach ($checks as $k => $v) {
+            $sl .= (!empty($sl) ? ' OR ' : '' ) . ' `id_item` = :item' . $n . ' ';
+            $sl2[':item' . $n] = $v['id'];
+            $n++;
+        }
+
+        $sql = ' DELETE FROM `mitems-dops` WHERE name = \'fin\' AND ( ' . $sl .' ); ';
+        \f\pa($sql);
+        $ff = $db->prepare($sql);
+        $ff->execute($sl2);
+
+
+        die();
 
         $sql2 = '';
         $noscan = [];

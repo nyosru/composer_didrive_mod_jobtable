@@ -49,12 +49,16 @@
                 {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
 
                     <div class="tcell td_inf_{{sp_now}}obr" >
+
                         <div class='text-center'>
 
+                            {#{ pa(oborots[now_date2]) }#}
+
                             {% if oborots[now_date2]['oborot_server'] is defined %}
+
                                 {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                            {% elseif oborots[now_date2]['oborot_hand'] is defined %}
-                                {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
+
+                            {% else %}
 
                                 <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
                                         vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
@@ -65,26 +69,52 @@
 
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
+                            {% endif %}
+                                
+                                
+                            {% if 1 == 2 %}
 
-                            {% else %}
                                 нет данных <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
                                                    vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
                                                    res_to="{{ sp_now }}_{{ i }}_res_ob"
                                                    xtarget="_blank"
                                                    class="load_ajaxjson_to_id"
-                                                   >загрузить</a></sup>                        
+                                                   >загрузить</a></sup>
 
                                 <div id="{{ sp_now }}_{{ i }}_res_ob" ></div>
 
-
-
                             {% endif %}
 
+                            <input type="number" max="500000" min="0" 
+                                   
+                                   {% if oborots[now_date2]['oborot_hand'] is defined %}
+                                       value="{{ oborots[now_date2]['oborot_hand'] }}" 
+                                   {% else %}
+                                       value="" 
+                                   {% endif %}
+
+                                   style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
+                                   class="form-control didrive__edit_items_dop_pole"
+
+                                   edit_item_id="{{ oborots[now_date2]['id'] }}"
+                                   edit_dop_name="oborot_hand"
+                                   edit_s="{{ creatSecret( oborots[now_date2]['id']~"oborot_hand") }}"
+                                   
+                                   pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
+                                   text_in_pole_price_id="оборот изменился, автооценка будет пересчитана утром"
+
+                                   placeholder="уточнить"
+                                   title="укажите точную сумму оборота"
+
+                                   />
                         </div>
+
                     </div>
+
                 {% endif %}
 
             {% endif %}
+
         {% endfor %}
 
     </span>
