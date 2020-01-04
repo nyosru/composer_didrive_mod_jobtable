@@ -23,11 +23,11 @@
             {% if date_finish >= now_date %}
                 {% if norms_day[now_date]['vuruchka_on_1_hand'] is defined or norms_day[now_date]['time_wait_norm_cold'] is defined or norms_day[now_date]['kolvo_hour_in1smena'] is defined %} 
                     <div class="tcell" style="background-color:rgba(0,255,0,0.1);" >
-                    </div>         
+                    </div>
                 {% else %}
                     <div class="tcell text-center" style="background-color: rgba(255,0,0,0.4);"  >
                         не&nbsp;заполнено
-                    </div>         
+                    </div>
                 {% endif %}  
 
             {%  endif %}

@@ -1589,7 +1589,8 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
+                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i',$start_time), date('Y-m-d H:i',$fin_time) ),
+                // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
                 'ocenka' => $_REQUEST['ocenka']
