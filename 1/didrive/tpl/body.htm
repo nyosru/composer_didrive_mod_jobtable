@@ -1,7 +1,7 @@
 {% spaceless %}
 
     {%  set timer_show = 'off' %}
-    {#%  set timer_show = 'on' %#}
+    {%  set timer_show = 'on1' %}
 
     {# считаем общее время #}
     {{ didrive_f__timer_start(99) }}
@@ -18,10 +18,12 @@
     {#{ didrive_f__timer_start(991) }#}
     {#{ f__timer_start(11) }#}
 
-    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {% set job_in = readItems( '050.job_in_sp', null )  %}
-    {#{ pa(job_in,2) }#}
-    {% if timer_show == 'on' %} <br/>время 04 - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% if 1 == 2 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set job_in = readItems( '050.job_in_sp', null )  %}
+        {#{ pa(job_in,2) }#}
+        {% if timer_show == 'on' %} <br/>время 04 - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
 
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set job_in = items__get( db, '050.job_in_sp', null )  %}
@@ -45,9 +47,31 @@
     {#% set mans = items__get( db, '070.jobman', null )  %#}
     {% if timer_show == 'on' %} <br/>время 02 - {{ didrive_f__timer_stop(15) }} {% endif %}
 
+
+
+
+    
+    
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {% set dolgn = readItems( '061.dolgnost', null )  %}
+    {% set dolgn = jobdesc__get_dolgnosti( db, '061.dolgnost' )  %}
+    {#{ pa(dolgn,2) }#}
+    {#cash - {{ dolgn.cash }}
+    <br/>
+    {{ pa(dolgn,2) }#}
     {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+    {% if 1 == 2 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set dolgn = readItems( '061.dolgnost', null )  %}
+        {{ pa(dolgn,2) }}
+        {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+
+
+
+
+
 
     {% if session.now_user_di.access == 'moder' %}
         {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
@@ -209,7 +233,6 @@
 
                 {% endif %}
 
-
                 {# заготовка модальных окошек #}
                 {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
 
@@ -218,20 +241,18 @@
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
-                {% if timer_show == 'on' %} <br/>время 6 - {{ didrive_f__timer_stop(5) }} {% endif %}
-
+                {% if timer_show == 'on' %} <br/>время 6 - jobs = jobdesc__get_smena_jobs <br/>{{ didrive_f__timer_stop(5) }} {% endif %}
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
                 {#{ pa(spec_jobs_on_sp) }#}
-                {% if timer_show == 'on' %} <br/>время 7 - {{ didrive_f__timer_stop(5) }} {% endif %}
+                {% if timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {# если модератор то выводим исписок точек к оторым есть доступ #}    
                 {% set sp_access = jobdesc__get__access_moders( db )  %}
                 {#{ pa(sp_access) }#}
                 {% if timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
-
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
@@ -325,19 +346,38 @@
 
                         {% endif %}
 
+                        {#{ pa(dolgn,2) }#}
 
+                        {% if 1 == 1 %}
+                            {#%  for kk1, sort1 in dolgn.sort %#}
 
+                                {# проходим по списку точки продаж - сотрудники #}                
+                                {#{ pa(jobs_on_sp.jobs_on_sp) }#}
 
+                                {% for kk, sp_now in jobs_on_sp.sort 
+if 
+get.sp is defined 
+and ( get.sp == 'all' 
+or get.sp == sp_now ) 
+and jobs_on_sp.jobs_on_sp[sp_now] is defined 
+and ( sp_access == false or sp_access[sp_now] is defined ) %}
 
-                        {# проходим по списку точки продаж - сотрудники #}                
-                        {#{ pa(jobs_on_sp.jobs_on_sp) }#}
+{#{ pa(sp_now) }#}
 
-                        {% for kk, sp_now in jobs_on_sp.sort if get.sp is defined and ( get.sp == 'all' or get.sp == sp_now ) and jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
+                                    {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}
 
-                            {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}                            
+                                {% endfor %}
 
-                        {% endfor %}
+                            {#% endfor %#}
 
+                        {% else %}
+
+                            {% for kk, sp_now in jobs_on_sp.sort if get.sp is defined and ( get.sp == 'all' or get.sp == sp_now ) and jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
+
+                                {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}                            
+
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
 
