@@ -56,7 +56,13 @@
 
                             {% if oborots[now_date2]['oborot_server'] is defined %}
 
+                                <span 
+                                    {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
+                                    style="color:gray;" 
+                                    {% endif %}
+                                    >
                                 {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
+                                </span>
 
                             {% else %}
 
@@ -70,8 +76,7 @@
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
                             {% endif %}
-                                
-                                
+
                             {% if 1 == 2 %}
 
                                 нет данных <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
@@ -85,9 +90,12 @@
 
                             {% endif %}
 
-                            <input type="number" max="500000" min="0" 
-                                   
-                                   {% if oborots[now_date2]['oborot_hand'] is defined %}
+                            <input type="number" max="1000000" min="0" 
+
+                                   placeholder="уточнить"
+                                   title="укажите точную сумму оборота"
+
+                                   {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
                                        value="{{ oborots[now_date2]['oborot_hand'] }}" 
                                    {% else %}
                                        value="" 
@@ -99,13 +107,14 @@
                                    edit_item_id="{{ oborots[now_date2]['id'] }}"
                                    edit_dop_name="oborot_hand"
                                    edit_s="{{ creatSecret( oborots[now_date2]['id']~"oborot_hand") }}"
-                                   
+
                                    pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
-                                   text_in_pole_price_id="оборот изменился, автооценка будет пересчитана утром"
+                                   text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
 
-                                   placeholder="уточнить"
-                                   title="укажите точную сумму оборота"
-
+                                    delete_ocenka_sp="{{ sp_now }}"
+                                    delete_ocenka_date="{{ now_date2 }}"
+                                    delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+                                   
                                    />
                         </div>
 

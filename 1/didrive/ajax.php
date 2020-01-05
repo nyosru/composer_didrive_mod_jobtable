@@ -47,6 +47,10 @@ if (
         ) || (
         isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true
+        ) || (
+        // action == 'delete_ocenka'
+        !empty($_REQUEST['sp']) && !empty($_REQUEST['s']) && !empty($_REQUEST['date']) &&
+        \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['sp'] . $_REQUEST['date']) === true
         )
 ) {
     
@@ -318,37 +322,33 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
                     'sp' => $sp['id'],
                     'date' => $new_date,
                 ];
-/*
-                $e = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($u));
-                
-                $e2 = json_decode($e, true);
-                \f\pa( $e2 );
+                /*
+                  $e = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($u));
 
-                sleep(3);
-                
-                if (isset($e2['status']) && $e2['status'] == 'error')
-                    continue;
-*/
-                
-                
-if ( $curl = curl_init () ) //инициализация сеанса
+                  $e2 = json_decode($e, true);
+                  \f\pa( $e2 );
 
-{
+                  sleep(3);
 
-    // $curl
-    
-    curl_setopt ($curl, CURLOPT_URL, 'http://webcodius.ru/');//указываем адрес страницы
-    curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-    // curl_setopt ($curl, CURLOPT_POST, true);
-    // curl_setopt ($curl, CURLOPT_POSTFIELDS, "i=1");
-    curl_setopt ($curl, CURLOPT_HEADER, 0);
-    $result = curl_exec ($curl);//выполнение запроса
-    curl_close ($curl);//закрытие сеанса
-  }                
-                
-                
-                
-                
+                  if (isset($e2['status']) && $e2['status'] == 'error')
+                  continue;
+                 */
+
+
+                if ($curl = curl_init()) { //инициализация сеанса
+                    // $curl
+                    curl_setopt($curl, CURLOPT_URL, 'http://webcodius.ru/'); //указываем адрес страницы
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    // curl_setopt ($curl, CURLOPT_POST, true);
+                    // curl_setopt ($curl, CURLOPT_POSTFIELDS, "i=1");
+                    curl_setopt($curl, CURLOPT_HEADER, 0);
+                    $result = curl_exec($curl); //выполнение запроса
+                    curl_close($curl); //закрытие сеанса
+                }
+
+
+
+
                 die();
             } else {
 //                echo '<br/>'.$sp['id'].' + '.$new_date;
@@ -683,7 +683,12 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
         \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
 
-        \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc:: $mod_ocenki_days, [
+        \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
+            'sale_point' => $ocenka['data']['sp'],
+            'date' => $ocenka['data']['date'],
+        ]);
+
+        \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
             'sale_point' => $ocenka['data']['sp'],
             'date' => $ocenka['data']['date'],
             'ocenka_time' => $ocenka['data']['ocenka_time'],
@@ -1484,6 +1489,38 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
 }
 
 //
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_ocenka') {
+
+    if (empty($_REQUEST['sp']) || empty($_REQUEST['date']) || empty($_REQUEST['s']))
+        \f\end2('не хватает данных', false);
+
+    if (\Nyos\Nyos::checkSecret($_REQUEST['s'], $_REQUEST['sp'] . $_REQUEST['date']) === false)
+        \f\end2('в данных какая то ошибка', false);
+
+    \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_ocenki_days, ['date' => $_REQUEST['date'], 'sale_point' => $_REQUEST['sp']]);
+
+//    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md1 ON md1.id_item = mi.id AND md1.name = \'date\' AND md1.value_date = :date
+//            INNER JOIN `mitems-dops` md2 ON md2.id_item = mi.id AND md2.name = \'sale_point\' AND md2.value = :sp ';
+//
+//    \Nyos\mod\items::$var_ar_for_1sql = [
+//        ':sp' => $_REQUEST['sp'],
+//        ':date' => date('Y-m-d', strtotime($_REQUEST['date']))
+//    ];
+//
+//    \Nyos\mod\items::$limit1 = true;
+//    $n = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_ocenki_days);
+//    // \f\pa($n);
+//    
+//    $e = \Nyos\mod\items::deleteId($db, $n['id'] );
+//// require_once DR . '/all/ajax.start.php';
+//
+//    $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE `id` = :id ');
+//    $ff->execute(array(':id' => (int) $n['id']));
+
+    \f\end2('удалено', true);
+}
+
+//
 elseif (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 
 // require_once DR . '/all/ajax.start.php';
@@ -1589,7 +1626,7 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i',$start_time), date('Y-m-d H:i',$fin_time) ),
+                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange(date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
                 // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',

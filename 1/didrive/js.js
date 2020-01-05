@@ -276,9 +276,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
 
-
-
-
+    
+    
+    
     function calculate_summ_day($sp, $date) {
 
         $('.price_hour_' + $date + '_' + $sp).each(function (i, elem) {
