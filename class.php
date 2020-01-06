@@ -241,6 +241,9 @@ class JobDesc {
             $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . $k . '\' ';
         }
 
+        if (empty($sql2))
+            return \f\end3('нет часов для суммирования', false);
+
         //\Nyos\mod\items::$show_sql = true;
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
@@ -253,9 +256,9 @@ class JobDesc {
                 . ' AND (' . $sql2 . ') '
         ;
 
-        \Nyos\mod\items::$var_ar_for_1sql[':date1'] =  $date . ' 08:00:00';
-        \Nyos\mod\items::$var_ar_for_1sql[':date2'] =  date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
-        
+        \Nyos\mod\items::$var_ar_for_1sql[':date1'] = $date . ' 08:00:00';
+        \Nyos\mod\items::$var_ar_for_1sql[':date2'] = date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
+
         \Nyos\mod\items::$where2dop = ' AND ( '
 //                . ' `name` = \'sale_point\' '
 //                . ' OR '

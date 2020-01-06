@@ -277,36 +277,39 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
             . ' AND mid.value_date >= :df '
     ;
     \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d');
-    \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 5 * 24 * 3600);
+    \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 40 * 24 * 3600);
     $_ocenki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_ocenki_days);
     // \f\pa($_ocenki, '','','$_ocenki');
     $ocenki_now = [];
     foreach ($_ocenki as $k => $v) {
-        $ocenki_now[$v['sale_point']][$v['date']] = $v;
+        // $ocenki_now[$v['sale_point']][$v['date']] = $v;
+        $ocenki_now[$v['sale_point']][$v['date']] = 1;
     }
     // \f\pa($ocenki_now, '', '', '$ocenki_now');
     // $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
     $_sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
     // \f\pa($_sps, 2);
 
+    $temp_var = 'autoocenka_errors';
+    $temp_ar = \f\Cash::getVar($temp_var);
+    // \f\pa($temp_ar, 2, '', 'temp_ar');
 
+    \f\timer_start(7);
 
-
-
-
-
-
-    for ($i = 0; $i <= 6; $i++) {
+    for ($i = 1; $i <= 40; $i++) {
 
         $new_date = date('Y-m-d', $_SERVER['REQUEST_TIME'] - $i * 24 * 3600);
 
         foreach ($_sps as $sp) {
             // \f\pa($sp);
 
+            $timer = \f\timer_stop(7, 'ar');
+
+            if ($timer['sec'] > 25)
+                break;
+
             if (empty($ocenki_now[$sp['id']][$new_date])) {
 
-                echo '<br/>' . $sp['id'] . ' + ' . $new_date;
-                echo '<br/>сканим';
 
                 $u = [
                     'action' => 'calc_full_ocenka_day',
@@ -322,22 +325,17 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
                     'sp' => $sp['id'],
                     'date' => $new_date,
                 ];
-                /*
-                  $e = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($u));
 
-                  $e2 = json_decode($e, true);
-                  \f\pa( $e2 );
+                if (isset($temp_ar[$u['sp']][$u['date']]))
+                    continue;
 
-                  sleep(3);
-
-                  if (isset($e2['status']) && $e2['status'] == 'error')
-                  continue;
-                 */
-
+                // echo '<br/>' . $sp['id'] . ' + ' . $new_date;
 
                 if ($curl = curl_init()) { //инициализация сеанса
                     // $curl
-                    curl_setopt($curl, CURLOPT_URL, 'http://webcodius.ru/'); //указываем адрес страницы
+                    // curl_setopt($curl, CURLOPT_URL, 'http://webcodius.ru/'); //указываем адрес страницы
+                    //указываем адрес страницы
+                    curl_setopt($curl, CURLOPT_URL, 'http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($u));
                     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                     // curl_setopt ($curl, CURLOPT_POST, true);
                     // curl_setopt ($curl, CURLOPT_POSTFIELDS, "i=1");
@@ -345,11 +343,34 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
                     $result = curl_exec($curl); //выполнение запроса
                     curl_close($curl); //закрытие сеанса
                 }
+                // echo '</div>';
 
+                $r1 = json_decode($result, true);
 
+                // \f\pa($result);
+                // \f\pa($r1,'','','$r1');
+                // \f\pa($r1, '', '', '$r1');
 
+                if ($r1['status'] == 'error') {
 
-                die();
+                    $temp_ar[$u['sp']][$u['date']] = $r1;
+                    // $temp_ar[$u['sp']][$u['date']] = 1;
+                    echo '<br/>' . $sp['id'] . ' E ' . $new_date . ' ошибка';
+                } else {
+
+                    // echo '<br/>' . __FILE__ . ' ' . __LINE__;
+                    // echo '<br/>нет ошибок';
+                    // echo '<div style="border: 1px solid green; margin: 10px; padding: 10px; " >';
+                    // \f\pa($result, '', '', 'result');
+                    // \f\pa($r1, '', '', 'result 1');
+                    // echo '</div>';
+                    echo '<br/>' . $r1['data']['sp'] . ' > ' . $r1['data']['date'] . ' = вр ' . $r1['data']['ocenka_time'] . ' / руки ' . $r1['data']['ocenka_naruki'] . ' / ' . $r1['data']['ocenka'];
+                }
+
+                \f\Cash::setVar($temp_var, $temp_ar, 60 * 60 * 5);
+
+                // echo '</div>';
+                // die();
             } else {
 //                echo '<br/>'.$sp['id'].' + '.$new_date;
 //                \f\pa($ocenki_now[$sp['id']][$new_date]);
@@ -357,7 +378,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
         }
     }
 
-    die();
+    die('the end');
 
     //foreach( )
 
@@ -608,7 +629,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         if (1 == 1) {
 
             \f\timer_start(2);
+            // echo '<div style="border: 3px solid gray; padding: 20px; margin: 20px;" >hours<hr>';
             $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
+            // echo '</div>';
+            // \f\pa($hours,'','','hours');
+            if (isset($hours['status']) && $hours['status'] == 'error') {
+                throw new \Exception($hours['html'], 19);
+            }
 
             // \f\pa($hours,'','','calc_hours');
 //            if (!empty($hours['data']['hours']))
