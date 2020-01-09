@@ -177,6 +177,14 @@ $function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, string
 $twig->addFunction($function);
 
 
+
+$function = new Twig_SimpleFunction('jobdesc__calcJobHoursDay', function ( $db, string $date, int $sp ) {
+    // $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
+    return \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
+});
+$twig->addFunction($function);
+
+
 $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
 // \f\pa( \Nyos\nyos::$folder_now );

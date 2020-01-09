@@ -1,6 +1,6 @@
 {% spaceless %}
 
-    {% set timer_show = 'on' %}
+    {#% set timer_show = 'on' %#}
     
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}

@@ -290,7 +290,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     $_sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
     // \f\pa($_sps, 2);
 
+//    $kk = \f\Cash::getVar('keys');
+//    \f\pa($kk, 2, '', 'kk');
+    
     $temp_var = 'autoocenka_errors';
+
     $temp_ar = \f\Cash::getVar($temp_var);
     // \f\pa($temp_ar, 2, '', 'temp_ar');
 
@@ -305,7 +309,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 
             $timer = \f\timer_stop(7, 'ar');
 
-            if ($timer['sec'] > 25)
+            if ($timer['sec'] > 25 )
                 break;
 
             if (empty($ocenki_now[$sp['id']][$new_date])) {
@@ -364,10 +368,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
                     // \f\pa($result, '', '', 'result');
                     // \f\pa($r1, '', '', 'result 1');
                     // echo '</div>';
+                    $temp_ar[$u['sp']][$u['date']] = 'ok';
                     echo '<br/>' . $r1['data']['sp'] . ' > ' . $r1['data']['date'] . ' = вр ' . $r1['data']['ocenka_time'] . ' / руки ' . $r1['data']['ocenka_naruki'] . ' / ' . $r1['data']['ocenka'];
                 }
 
-                \f\Cash::setVar($temp_var, $temp_ar, 60 * 60 * 5);
 
                 // echo '</div>';
                 // die();
@@ -378,6 +382,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
         }
     }
 
+    \f\Cash::setVar($temp_var, $temp_ar, 60 * 60 * 2);
+    
+    
     die('the end');
 
     //foreach( )

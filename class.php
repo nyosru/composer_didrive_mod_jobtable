@@ -284,6 +284,8 @@ class JobDesc {
             $ret['hours'] += $v['hour_on_job_hand'] ?? $v['hour_on_job'] ?? 0;
             $ret['smen_in_day'] ++;
             $ret['checks_for_new_ocenka'][] = $v['id'];
+            $ret['checks'][] = $v;
+                    
         }
 
         return \f\end3('ok', true, $ret);
