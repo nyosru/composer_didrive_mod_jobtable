@@ -14,6 +14,14 @@ class JobDesc {
     public static $dir_img_server = false;
 
     /**
+     * возвращать или нет доп инфу
+     * / работет в /
+     * calculateHoursOnJob
+     * @var type 
+     */
+    public static $return_dop_info = false;
+
+    /**
      * используем одну дату или нет
      * @var булев
      */
@@ -109,6 +117,189 @@ class JobDesc {
      * @var строка
      */
     public static $mod_minus = '072.vzuscaniya';
+
+    /**
+     * чистим переменные что дополнительные
+     * возвращаем параметры со старта
+     */
+    public static function clearTempClassVars() {
+
+        self::$return_dop_info = false;
+    }
+
+    /**
+     * 
+     * @param type $db
+     * @param type $date
+     * @param type $sp_id
+     */
+    public static function calculateHoursOnJob($db, $date = null, $sp_id = null) {
+
+        // если тру то возвращаем доп массивы что были в исчислениях
+        // self::$return_dop_info
+
+        $return = [];
+
+        $return['jobmans_now'] = self::whereJobmansNowDate($db, $date, $sp_id);
+        // \f\pa($jobmans_now,2,'','$jobmans_now');
+
+        $sql2 = '';
+        foreach ($return['jobmans_now'] as $k => $v) {
+            $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . (int) $v['jobman'] . '\' ';
+        }
+
+        if (self::$return_dop_info !== true)
+            unset($return['jobmans_now']);
+
+        if (1 == 1) {
+            \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                    . ' ON mid.id_item = mi.id '
+                    . ' AND mid.name = \'start\' '
+                    . ' AND mid.value_datetime BETWEEN :date1 AND :date2 '
+                    . ' INNER JOIN `mitems-dops` mid2 '
+                    . ' ON mid2.id_item = mi.id '
+                    . ' AND mid2.name = \'jobman\' '
+                    . ' AND (' . $sql2 . ') '
+
+//                    . ' AND mid2.value IN ( :wm ) '
+//        . ' midop.value_date '
+//        . ' BETWEEN \''.date('Y-m-d',strtotime($d_start)).'\' '
+//        . ' AND \''.date('Y-m-d',strtotime($d_finish)).'\' ) ';
+//            . ' AND mid.value_date <= :df '
+//            . ' INNER JOIN `mitems-dops` mid2 '
+//            . ' ON mid2.id_item = mi.id '
+//            . ' AND mid2.name = \'sale_point\' '
+//            . ' AND mid2.value = :sp '
+            ;
+
+
+            // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+            // \Nyos\mod\items::$var_ar_for_1sql[':date'] = $date;
+            \Nyos\mod\items::$var_ar_for_1sql[':date1'] = $date . ' 08:00:00';
+            \Nyos\mod\items::$var_ar_for_1sql[':date2'] = date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
+            // \Nyos\mod\items::$var_ar_for_1sql[':wm'] = $sql2;
+            // \Nyos\mod\items::$show_sql = true;
+
+            $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
+            // \f\pa($return['checks'],'','','checks');
+//            if( \Nyos\mod\items::$show_sql === true )
+//                echo '<br/>'.__LINE__;
+
+            \Nyos\mod\items::$show_sql = false;
+            \Nyos\mod\items::$var_ar_for_1sql = [];
+            // \f\pa($checks, 2, '', '$checks');
+        }
+
+
+
+        // считаем сколько часов в найденных чеках
+        $return['hours'] = 0;
+        if (1 == 1) {
+
+            foreach ($return['checks'] as $k => $v) {
+                $return['hours'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
+            }
+        }
+
+        if (self::$return_dop_info !== true)
+            unset($return['checks']);
+
+        self::clearTempClassVars();
+
+        return \f\end3('окей', true, $return);
+    }
+
+    /**
+     * + 191106
+     * ищем где работают люди на указанную дату
+     * @param класс $db
+     * @param str $date
+     * @param int $sp_id
+     * или ноль или id той точки что интересует
+     * @return array
+     */
+    public static function whereJobmansNowDate($db, $date = null, $sp_id = null) {
+
+        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+        $jobmans = \Nyos\mod\items::getItemsSimple3($db, self::$mod_jobman);
+        $job = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
+// \f\pa($job,2,'','$job');
+
+        $ar = [];
+
+        foreach ($job as $k => $v) {
+
+            if (!empty($jobmans[$v['jobman']]))
+                $v['jm_fio'] = $jobmans[$v['jobman']]['head'];
+
+            $ar[$v['jobman']][$v['date']] = $v;
+        }
+
+        foreach ($ar as $k => $v) {
+            ksort($ar[$k]);
+        }
+
+//        \f\pa($ar, 2, '', 'массив пользователей и их перестановок');
+//        $ar = array( 188 => $ar[188] );
+//        \f\pa($ar, 2, '', 'массив пользователей и их перестановок');
+
+        $now_job = [];
+
+        foreach ($ar as $worker => $dates) {
+
+//            echo '<br/>' . $worker;
+//            \f\pa($dates);
+
+            foreach ($dates as $date1 => $array) {
+
+// echo '<Br/>'.__LINE__.' ++ '.$date1.' <= '.$date;
+
+                if ($date1 <= $date) {
+
+// если есть дата конца и она меньше даты поиска то не пишем значение
+                    if (isset($array['date_finish']) && $array['date_finish'] <= $date) {
+
+                        if (isset($now_job[$worker]))
+                            unset($now_job[$worker]);
+                    }
+// если конец не раньше и не равен дате, то пишем значение
+                    else {
+                        $now_job[$worker] = $array;
+                    }
+                }
+            }
+        }
+
+        //$spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
+
+
+        $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
+// \f\pa($spec,2,'','spec');
+
+        foreach ($spec as $k1 => $v1) {
+            if (isset($v1['date']) && $v1['date'] == $date) {
+                $v1['type'] = 'spec';
+                $now_job[$v1['jobman']] = $v1;
+            }
+        }
+
+// \f\pa($now_job, 2, '', 'массив работников на указанную дату');
+        // только точка что интересует
+        if (!empty($sp_id)) {
+
+            foreach ($now_job as $k => $v) {
+
+                if (!empty($v['sale_point']) && $v['sale_point'] == $sp_id) {
+                    
+                } else {
+                    unset($now_job[$k]);
+                }
+            }
+        }
+
+        // все
+        return $now_job;
+    }
 
     /**
      * смотрим кто работает в указанную дату в указанной точке
@@ -233,6 +424,10 @@ class JobDesc {
      */
     public static function calcJobHoursDay($db, $date, int $sp) {
 
+        $ret = [];
+
+        $ret['who_is_jobs'] = \Nyos\mod\JobDesc::whereJobmansOnSp($db, \Nyos\Nyos::$folder_now, $date);
+
         $jobs_mesta = self::getJobmansDate($db, $date, $sp);
         //\f\pa($jobs_mesta,2,'','$jobs_mesta');
 
@@ -259,18 +454,20 @@ class JobDesc {
         \Nyos\mod\items::$var_ar_for_1sql[':date1'] = $date . ' 08:00:00';
         \Nyos\mod\items::$var_ar_for_1sql[':date2'] = date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
 
-        \Nyos\mod\items::$where2dop = ' AND ( '
+        if (1 == 1) {
+            \Nyos\mod\items::$where2dop = ' AND ( '
 //                . ' `name` = \'sale_point\' '
 //                . ' OR '
 //                . ' `name` = \'jobman\' '
 //                . ' OR '
 //                . ' `name` = \'date\' '
 //                . ' OR '
-                . ' `name` = \'hour_on_job_hand\' '
-                . ' OR '
-                . ' `name` = \'hour_on_job\' '
-                . ' ) '
-        ;
+                    . ' `name` = \'hour_on_job_hand\' '
+                    . ' OR '
+                    . ' `name` = \'hour_on_job\' '
+                    . ' ) '
+            ;
+        }
 
         $checks = \Nyos\mod\items::get($db, self::$mod_checks);
         // \f\pa($checks,2,'','checks');
@@ -285,7 +482,6 @@ class JobDesc {
             $ret['smen_in_day'] ++;
             $ret['checks_for_new_ocenka'][] = $v['id'];
             $ret['checks'][] = $v;
-                    
         }
 
         return \f\end3('ok', true, $ret);
@@ -1308,82 +1504,6 @@ class JobDesc {
     }
 
     /**
-     * + 191106
-     * ищем где работают люди на указанную дату
-     * старая версия -> whereJobmansOnSp
-     * @param type $db
-     * @param type $folder
-     * @param type $date_start
-     * @param type $date_fin
-     * @param type $module_man_job_on_sp
-     * @return type
-     */
-    public static function whereJobmansNowDate($db, $date = null) {
-
-        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
-        $job = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
-// \f\pa($job,2,'','$job');
-
-        $ar = [];
-
-        foreach ($job as $k => $v) {
-            $ar[$v['jobman']][$v['date']] = $v;
-        }
-
-        foreach ($ar as $k => $v) {
-            ksort($ar[$k]);
-        }
-
-//        \f\pa($ar, 2, '', 'массив пользователей и их перестановок');
-//        $ar = array( 188 => $ar[188] );
-//        \f\pa($ar, 2, '', 'массив пользователей и их перестановок');
-
-        $now_job = [];
-
-        foreach ($ar as $worker => $dates) {
-
-//            echo '<br/>' . $worker;
-//            \f\pa($dates);
-
-            foreach ($dates as $date1 => $array) {
-
-// echo '<Br/>'.__LINE__.' ++ '.$date1.' <= '.$date;
-
-                if ($date1 <= $date) {
-
-// если есть дата конца и она меньше даты поиска то не пишем значение
-                    if (isset($array['date_finish']) && $array['date_finish'] <= $date) {
-
-                        if (isset($now_job[$worker]))
-                            unset($now_job[$worker]);
-                    }
-// если конец не раньше и не равен дате, то пишем значение
-                    else {
-                        $now_job[$worker] = $array;
-                    }
-                }
-            }
-        }
-
-        //$spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
-
-
-        $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
-// \f\pa($spec,2,'','spec');
-
-        foreach ($spec as $k1 => $v1) {
-            if (isset($v1['date']) && $v1['date'] == $date) {
-                $v1['type'] = 'spec';
-                $now_job[$v1['jobman']] = $v1;
-            }
-        }
-
-// \f\pa($now_job, 2, '', 'массив работников на указанную дату');
-
-        return $now_job;
-    }
-
-    /**
      * ищем где работают люди за период
      * старая версия whereJobmansOnSp
      * (текущая старая версия) новая > whereJobmans
@@ -1485,7 +1605,7 @@ class JobDesc {
      * пустой (значит 1 день сегодня) или не пустой, тогда промежуток
      * @return type
      */
-    public static function whereJobmans($db, $date_start = null, $date_fin = null) {
+    public static function whereJobmans($db, $date_start = null, $date_fin = null, $sp = null) {
 
         // echo '<br/>' . __FUNCTION__ . ' ( [' . $date_start . '] , [' . $date_fin . '] ) #' . __LINE__;
 

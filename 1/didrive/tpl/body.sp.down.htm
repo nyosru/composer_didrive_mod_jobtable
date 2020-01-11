@@ -17,7 +17,25 @@
                 {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
                     <div class="tcell" >
-
+                        
+                        {% set hours_a = jobdesc__calculateHoursOnJob( db, sp_now, now_date2 ) %}
+                        {{ hours_a.data.hours }}
+                        
+                        {% if session.now_user_di.access == 'admin' %}
+                        {{ pa(hours_a) }}
+                        {% endif %}
+                        
+                        {#% set hours_a =  jobdesc__whereJobmansNowDate( db, sp_now, now_date2 ) %}
+                        {{ pa(hours_a) }#}
+                        
+                        {% if 1 == 2 %}
+                        
+                        
+                        {#% set hours_a =  jobdesc__jobmans_job_on_sp_day( db, sp_now, now_date2 ) %}
+                        {{ pa(hours_a) }#}
+                        
+                        
+                        
                         {% set hours_a =  jobdesc__calcJobHoursDay( db, now_date2, sp_now ) %}
 
                         {{ hours_a['data']['hours'] }}
@@ -38,6 +56,8 @@
 
                         {% endif %}
 
+                        {% endif %}
+                        
                     </div>
 
                 {% endif %}

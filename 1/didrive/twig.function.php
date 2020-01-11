@@ -3,6 +3,69 @@
 /**
   определение функций для TWIG
  */
+/**
+ * кто работает сейчас на точке продаж
+ * 2020-01-10
+ */
+$function = new Twig_SimpleFunction('jobdesc__whereJobmansNowDate', function ( $db, int $sp, string $date ) {
+
+    $workmans = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date, $sp);
+    // \f\pa($workmans,2,'','$workmans');
+
+    return \f\end3('ок', true, $workmans);
+});
+$twig->addFunction($function);
+
+
+$function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $db, int $sp, string $date ) {
+
+    if ($date == '2020-01-05')
+        \Nyos\mod\JobDesc::$return_dop_info = true;
+
+    echo $date.'<Br/>';
+    
+    $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
+    //\f\pa($workmans,2,'','$workmans');
+
+    return \f\end3('ок', true, $workmans['data']);
+});
+$twig->addFunction($function);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string $date_start, string $date_finish, array $get_points = [] ) {
 
     global $db;
@@ -175,7 +238,6 @@ $function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, string
     return \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date_start, $date_finish);
 });
 $twig->addFunction($function);
-
 
 
 $function = new Twig_SimpleFunction('jobdesc__calcJobHoursDay', function ( $db, string $date, int $sp ) {
@@ -560,6 +622,7 @@ $function = new Twig_SimpleFunction('jobdesc__where_now_dolgn', function ( $arra
 });
 $twig->addFunction($function);
 
+
 /**
  * получаем список спец назначнеий в периоде
  */
@@ -602,6 +665,15 @@ $function = new Twig_SimpleFunction('jobdesc__get_access_for_moder', function ( 
 // \f\pa( \Nyos\nyos::$folder_now );
 });
 $twig->addFunction($function);
+
+
+
+
+
+
+
+
+
 
 
 $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {

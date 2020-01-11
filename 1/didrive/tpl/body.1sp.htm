@@ -7,7 +7,8 @@
 
 
     {% set list12 = jobs_on_sp.jobs_on_sp[sp_now] %}
-    {#{ pa(list12) }#}
+    list12
+    {{ pa(list12) }}
 
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set comments = getComments( db, date_start, date_finish, sp_now ) %}

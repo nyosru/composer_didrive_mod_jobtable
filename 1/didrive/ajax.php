@@ -15,10 +15,7 @@ if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'y
     date_default_timezone_set("Asia/Yekaterinburg");
 }
 
-
 define('IN_NYOS_PROJECT', true);
-
-
 
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
@@ -1633,7 +1630,7 @@ elseif (
                     . '</nobr>'
                     . '</div>', true);
         }
-//
+// добавление смены руками
         elseif ($_POST['action'] == 'add_new_smena') {
 
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -1660,8 +1657,11 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-                'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange(date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
+
+                // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
+                'hour_on_job' => \Nyos\mod\IikoChecks::calcHoursInSmena( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
                 // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
+
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
                 'ocenka' => $_REQUEST['ocenka']
@@ -1674,7 +1674,11 @@ elseif (
             \f\end2('<div>'
                     . '<nobr><b class="warn" >смена добавлена</b>'
                     . '<br/>'
-                    . date('d.m.y H:i', $start_time) . ' - ' . date('d.m.y H:i', $fin_time)
+
+                    . date('d.m.y H:i', $start_time) 
+                    . ' - ' . date('d.m.y H:i', $fin_time)
+                    . '<br/>'
+                    . $indb['hour_on_job'] 
                     . '</nobr>'
                     . '</div>', true);
         } elseif ($_POST['action'] == 'add_comment') {
