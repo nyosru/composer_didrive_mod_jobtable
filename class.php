@@ -128,6 +128,26 @@ class JobDesc {
     }
 
     /**
+     * удаляем кеш если что то меняли
+     * / кеш суммы часов за сутки
+     * @param type $date
+     * @param type $sp_id
+     */
+    public static function refreshCashHoursOnJob( $date = null, $sp_id = null ) {
+
+        $ar = [];
+
+        if( !empty( $date) )
+            $ar[] = 'date'.$date;
+        
+        if( !empty($sp_id) )
+            $ar[] = 'sp'.$sp_id;
+            
+        \f\Cash::deleteKeyPoFilter($ar);
+
+    }
+
+    /**
      * 
      * @param type $db
      * @param type $date
@@ -135,6 +155,13 @@ class JobDesc {
      */
     public static function calculateHoursOnJob($db, $date = null, $sp_id = null) {
 
+        $cash_var = 'jobdesc__calculateHoursOnJob_date'.$date.'_sp'.$sp_id;
+        
+        $e = \f\Cash::getVar($cash_var);
+        
+        if( !empty($e) )
+        return \f\end3('окей (кеш)', true, $e );
+        
         // если тру то возвращаем доп массивы что были в исчислениях
         // self::$return_dop_info
 
@@ -206,6 +233,8 @@ class JobDesc {
 
         self::clearTempClassVars();
 
+        \f\Cash::setVar($cash_var,$return,60*60*24);
+        
         return \f\end3('окей', true, $return);
     }
 
@@ -220,10 +249,26 @@ class JobDesc {
      */
     public static function whereJobmansNowDate($db, $date = null, $sp_id = null) {
 
+        
+//        \f\timer_start(12);
+//        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
+//        $jobmans = \Nyos\mod\items::getItemsSimple3($db, self::$mod_jobman);
+//        echo '<br/>1 - '.\f\timer_stop(12);
+        
+        \f\timer_start(12);
         // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
-        $jobmans = \Nyos\mod\items::getItemsSimple3($db, self::$mod_jobman);
-        $job = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
-// \f\pa($job,2,'','$job');
+        $jobmans = \Nyos\mod\items::get($db, self::$mod_jobman);
+        echo '<br/>2 - '.\f\timer_stop(12);
+        
+//        \f\timer_start(12);
+//        $job = \Nyos\mod\items::getItemsSimple3($db, self::$mod_man_job_on_sp);
+//        // \f\pa($job,2,'','$job');
+//        echo '<br/>21 - '.\f\timer_stop(12);
+
+        \f\timer_start(12);
+        $job = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
+        // \f\pa($job,2,'','$job');
+        echo '<br/>21 - '.\f\timer_stop(12);
 
         $ar = [];
 
@@ -272,9 +317,15 @@ class JobDesc {
 
         //$spec = \Nyos\mod\items::getItemsSimple($db, self::$mod_spec_jobday);
 
+//        \f\timer_start(22);
+//        $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
+//// \f\pa($spec,2,'','spec');
+//        echo '<br/>22 '.__LINE__.' - '.\f\timer_stop(22);
 
-        $spec = \Nyos\mod\items::getItemsSimple3($db, self::$mod_spec_jobday);
+//         \f\timer_start(22);
+        $spec = \Nyos\mod\items::get($db, self::$mod_spec_jobday);
 // \f\pa($spec,2,'','spec');
+//        echo '<br/>22 '.__LINE__.' - '.\f\timer_stop(22);
 
         foreach ($spec as $k1 => $v1) {
             if (isset($v1['date']) && $v1['date'] == $date) {

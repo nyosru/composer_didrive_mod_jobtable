@@ -26,13 +26,14 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
         . ' ON mid.id_item = mi.id '
         . ' AND mid.name = \'hour_on_job\' '
-        . ' AND mid.status = \'show\' '
+//        . ' AND mid.status != \'delete\' '
         . ' AND mid.value < 0 '
 ;
 
 $checks = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
 
-// \f\pa($checks);
+//\f\pa($checks);
+//exit;
 
 $in = [];
 

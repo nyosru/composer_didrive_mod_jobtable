@@ -19,10 +19,10 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $db, int $sp, string $date ) {
 
-    if ($date == '2020-01-05')
-        \Nyos\mod\JobDesc::$return_dop_info = true;
+//    if ($date == '2020-01-05')
+//        \Nyos\mod\JobDesc::$return_dop_info = true;
 
-    echo $date.'<Br/>';
+    // echo $date.'<Br/>';
     
     $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
     //\f\pa($workmans,2,'','$workmans');
