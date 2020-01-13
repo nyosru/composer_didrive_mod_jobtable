@@ -249,15 +249,20 @@ class JobDesc {
      */
     public static function whereJobmansNowDate($db, $date = null, $sp_id = null) {
 
+        if( strpos($_SERVER['HTTP_HOST'],'dev') != false )
+        $timer_on = true;
+        
         
 //        \f\timer_start(12);
 //        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
 //        $jobmans = \Nyos\mod\items::getItemsSimple3($db, self::$mod_jobman);
 //        echo '<br/>1 - '.\f\timer_stop(12);
         
+        if( isset($timer_on) && $timer_on === true )
         \f\timer_start(12);
         // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
         $jobmans = \Nyos\mod\items::get($db, self::$mod_jobman);
+        if( isset($timer_on) && $timer_on === true )
         echo '<br/>2 - '.\f\timer_stop(12);
         
 //        \f\timer_start(12);
@@ -265,9 +270,11 @@ class JobDesc {
 //        // \f\pa($job,2,'','$job');
 //        echo '<br/>21 - '.\f\timer_stop(12);
 
+        if( isset($timer_on) && $timer_on === true )
         \f\timer_start(12);
         $job = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
         // \f\pa($job,2,'','$job');
+        if( isset($timer_on) && $timer_on === true )
         echo '<br/>21 - '.\f\timer_stop(12);
 
         $ar = [];
