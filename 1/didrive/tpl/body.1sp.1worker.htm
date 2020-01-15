@@ -5,97 +5,121 @@
 
             {# шестерёнка у сотрудника, отключил, нет параметров для сотрудника #}
             {% if 1 == 2 %}
-                <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");
-                        return false;' class="fa fa-cog"></i></div>
-                {% endif %}
+                <div style="float:right; display:inline-block;" class="option_img" >
+                    <i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");' class="fa fa-cog"></i>
+                </div>
+            {% endif %}
 
-            {% if 1 == 2 %}
-                <div style="float:right; display:inline-block;" 
-                     class="option_img" 
-                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                     ><i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' 
-                    class="fa fa-cog"></i></div>
+
+            {% if 1 == 1 %}
+
+                <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                    <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                </div>
 
                 <div class="dropdown-menu">
 
                     {# модальные окошки, само окошко в самом низу #}
 
-                    {% if 1 == 2 %}
+                    <a 
+
+                        href="#" 
+
+                        class="dropdown-item btn-light"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        onclick="
+                            $('#di_modal #di_modal_header').html('история назначений сотрудника');
+                            $('#di_modal .modal-body').html('<iframe src=\'/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}\' style=\'min-height:50vh; width:100%;\' ></iframe>');
+                        " 
+
+                        >
+                        список назначений сотрудника
+                    </a>
+                    
+                    {% if 1 == 2 %}                    
+
+
+
+
+
+                        {% if 1 == 2 %}
+
+                            <a href="#" 
+                               class="dropdown-item btn-light"
+                               data-toggle="modal" data-target="#addPesonalOnSp" onclick="
+                                       $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                       $('#add_person__sp').val('{{ sp_now }}');
+                                       $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                                       return false;
+                               " >назначить сотрудника на точку продаж
+                                <br/><small>первое назначение</small></a>
+
+                            <a href="#" 
+                               class="dropdown-item btn-light"
+                               data-toggle="modal" data-target="#movePesonalOnSp" onclick="
+                                       $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                       $('#move_person__sp').val('{{ sp_now }}');
+                                       $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                               " >назначить сотрудника на данную точку</a>
+                        {% endif %}
 
                         <a href="#" 
                            class="dropdown-item btn-light"
-                           data-toggle="modal" data-target="#addPesonalOnSp" onclick="
+                           data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
                                    $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
                                    $('#add_person__sp').val('{{ sp_now }}');
                                    $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                                   return false;
-                           " >назначить сотрудника на точку продаж
-                            <br/><small>первое назначение</small></a>
+                           " >назначить сотрудника</a>
+
 
                         <a href="#" 
-                           class="dropdown-item btn-light"
-                           data-toggle="modal" data-target="#movePesonalOnSp" onclick="
-                                   $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                   $('#move_person__sp').val('{{ sp_now }}');
-                                   $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                           " >назначить сотрудника на данную точку</a>
+                           class="dropdown-item btn-light jobdesc__record__auto_bonus_zp__m"
+
+                           sp="{{ sp_now }}"
+                           date="{{ date_start }}"
+
+                           res_to_id="res_new_autoocenka_{{ sp_now }}"
+                           answer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
+
+                           {#
+                            xdata-toggle="modal" 
+                            xdata-target="#addPesonalOnSp2" 
+                            xonclick="
+                                    $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                    $('#add_person__sp').val('{{ sp_now }}');
+                                    $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
+                            " 
+    
+                                xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
+                                xclass="delete_workman_from_sp btn btn-xs btn-light"
+    
+                                xforajax_action="load_checks_for_1jobman"
+                                xforajax_s="{{ creatSecret('load_checks_for_1jobman') }}"
+                                xforajax_show_timer="da"
+    
+    
+                                xworkman="{{ man.id }}"
+                                xwm_s="{{ creatSecret(man.id) }}"
+                           #}
+
+                           >начислить бонусы к ЗП за месяц
+                            <br/>
+                            <small>страница будет обновлена</small>
+                        </a>
+
+                        <div id="res_new_autoocenka_{{ sp_now }}" ></div>                                       
+
+                        {#
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Separated link</a>
+                        #}
                     {% endif %}
 
-                    <a href="#" 
-                       class="dropdown-item btn-light"
-                       data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
-                               $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                               $('#add_person__sp').val('{{ sp_now }}');
-                               $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                       " >назначить сотрудника</a>
-
-
-                    <a href="#" 
-                       class="dropdown-item btn-light jobdesc__record__auto_bonus_zp__m"
-
-                       sp="{{ sp_now }}"
-                       date="{{ date_start }}"
-
-                       res_to_id="res_new_autoocenka_{{ sp_now }}"
-                       answer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
-
-                       {#
-                        xdata-toggle="modal" 
-                        xdata-target="#addPesonalOnSp2" 
-                        xonclick="
-                                $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                $('#add_person__sp').val('{{ sp_now }}');
-                                $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
-                        " 
-
-                            xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
-                            xclass="delete_workman_from_sp btn btn-xs btn-light"
-
-                            xforajax_action="load_checks_for_1jobman"
-                            xforajax_s="{{ creatSecret('load_checks_for_1jobman') }}"
-                            xforajax_show_timer="da"
-
-
-                            xworkman="{{ man.id }}"
-                            xwm_s="{{ creatSecret(man.id) }}"
-                       #}
-
-                       >начислить бонусы к ЗП за месяц
-                        <br/>
-                        <small>страница будет обновлена</small>
-                    </a>
-
-                    <div id="res_new_autoocenka_{{ sp_now }}" ></div>                                       
-
-                    {#
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Separated link</a>
-                    #}
-
-                </div>                
+                </div>
             {% endif %}
 
 

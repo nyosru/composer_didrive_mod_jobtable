@@ -16,9 +16,7 @@ if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'y
 }
 
 define('IN_NYOS_PROJECT', true);
-
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
 //\f\timer::start();
 require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 
@@ -38,6 +36,9 @@ if (
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
+        ) || (
+        isset($_REQUEST['user']{0}) && isset($_REQUEST['s']{5}) &&
+        \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['user']) === true
         ) || (
         isset($_REQUEST['id2']{0}) && isset($_REQUEST['s2']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
@@ -75,6 +76,62 @@ else {
 }
 
 
+
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
+
+    // \f\pa($_REQUEST);
+
+    $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
+    // \f\pa($sps,2);
+
+    $d = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
+    // \f\pa($d,2);
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'jobman\' '
+            . ' AND mid.value = :user '
+//            . ' INNER JOIN `mitems-dops` mid2 '
+//            . ' ON mid2.id_item = mi.id '
+//            . ' AND mid2.name = \'sale_point\' '
+//            . ' AND mid2.value = :sp '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
+//    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+
+    $e = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
+    // \f\pa($e);
+
+    echo '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
+    . '<table class="table table-bordered" >'
+        . '<thead>'
+        . '<tr>'
+        . '<td>точка продаж</td>'
+        . '<td>должность</td>'
+        . '<td>принят</td>'
+        . '<td>уволен</td>'
+        . '</tr>'
+        . '</thead>'
+        . '<tbody>';
+
+    foreach ($e as $k => $v) {
+        echo '<tr>'
+        . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
+        . '<td>' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
+        . '<td>' . $v['date'] . '</td>'
+        . '<td>' . ( $v['date_fin'] ?? '-' ) . '</td>'
+        . '</tr>';
+    }
+
+    echo '</tbody></table>';
+
+    exit;
+}
+
+
+
+
+
 //require_once( $_SERVER['DOCUMENT_ROOT'] . '/0.all/sql.start.php');
 //require( $_SERVER['DOCUMENT_ROOT'] . '/0.site/0.cfg.start.php');
 //require( $_SERVER['DOCUMENT_ROOT'] . DS . '0.all' . DS . 'class' . DS . 'mysql.php' );
@@ -82,7 +139,7 @@ else {
 //
 // сохраняем измененеия и распространяем если нужно на другие дни недели
 //
-if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
     ob_start('ob_gzhandler');
 
