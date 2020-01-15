@@ -286,10 +286,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     // $_sps = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_sale_point);
     $_sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
     // \f\pa($_sps, 2);
-
 //    $kk = \f\Cash::getVar('keys');
 //    \f\pa($kk, 2, '', 'kk');
-    
+
     $temp_var = 'autoocenka_errors';
 
     $temp_ar = \f\Cash::getVar($temp_var);
@@ -306,7 +305,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
 
             $timer = \f\timer_stop(7, 'ar');
 
-            if ($timer['sec'] > 25 )
+            if ($timer['sec'] > 25)
                 break;
 
             if (empty($ocenki_now[$sp['id']][$new_date])) {
@@ -380,8 +379,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     }
 
     \f\Cash::setVar($temp_var, $temp_ar, 60 * 60 * 2);
-    
-    
+
+
     die('the end');
 
     //foreach( )
@@ -701,15 +700,33 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
          * достаём время ожидания за сегодня
          */
         if (5 == 5) {
+
             \f\timer_start(2);
+
             $timeo = \Nyos\mod\JobDesc::getTimeOgidanie($db, $return['sp'], $return['date']);
+
+            // \f\pa($timeo);
+
             $return['time'] .= '<br/>достали время ожидания за день'
                     . '<br/>' . \f\timer_stop(2);
-            foreach ($timeo as $k => $v) {
+
+
+            foreach ($timeo['data'] as $k => $v) {
+                if (strpos($k, '_hand') !== false && !empty($v)) {
+                    $timeo['data'][str_replace('_hand', '', $k)] = $v;
+                    // unset($timeo[$k]);
+                }
+            }
+
+            foreach ($timeo['data'] as $k => $v) {
+
                 // $return['time'] .= PHP_EOL . $k . ' > ' . $v;
-                $return[$k] = $v;
+                $return['timeo_' . $k] = $v;
+                // $return['timeo_'.$k] = $v;
             }
         }
+
+        // \f\pa($return);
 
         $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
         \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
@@ -1657,11 +1674,9 @@ elseif (
                 'sale_point' => $_REQUEST['salepoint'],
                 'start' => date('Y-m-d H:i', $start_time),
                 'fin' => date('Y-m-d H:i', $fin_time),
-
                 // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
-                'hour_on_job' => \Nyos\mod\IikoChecks::calcHoursInSmena( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
+                'hour_on_job' => \Nyos\mod\IikoChecks::calcHoursInSmena(date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
                 // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
-
                 'who_add_item' => 'admin',
                 'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
                 'ocenka' => $_REQUEST['ocenka']
@@ -1674,11 +1689,10 @@ elseif (
             \f\end2('<div>'
                     . '<nobr><b class="warn" >смена добавлена</b>'
                     . '<br/>'
-
-                    . date('d.m.y H:i', $start_time) 
+                    . date('d.m.y H:i', $start_time)
                     . ' - ' . date('d.m.y H:i', $fin_time)
                     . '<br/>'
-                    . $indb['hour_on_job'] 
+                    . $indb['hour_on_job']
                     . '</nobr>'
                     . '</div>', true);
         } elseif ($_POST['action'] == 'add_comment') {

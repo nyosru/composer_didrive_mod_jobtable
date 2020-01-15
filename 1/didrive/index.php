@@ -1,6 +1,6 @@
 <?php
 
-\f\pa($_POST);
+//\f\pa($_POST);
 
 //echo '<br/>';
 //echo '<br/>';

@@ -1,0 +1,112 @@
+{% spaceless %}
+
+    {#{ sp_now }#}
+    {#{ pa(sp_now) }#}
+
+    {#{ kk }} - {{ sp_now }#}
+
+
+    {% set list12 = jobs_on_sp.jobs_on_sp[sp_now] %}
+    {# list12
+    {{ pa(list12) }}
+    #}
+
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% set comments = getComments( db, date_start, date_finish, sp_now ) %}
+    {#{ pa(comments) }#}
+    {% if timer_show == 'on' %} <br/>время getComments 81 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+    {#% set spoint = sp.data[sp_now] %#}
+    {% set spoint = sps[sp_now] %}
+    {#{ pa(spoint) }#}
+
+    {# <br/>timer41: {{ didrive_f__timer_stop(99) }} #}
+
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {%  set money_dops = jobdesc__get_money_dops( db, date_start, date_finish, sp_now ) %}
+    {# money_dops
+    {{ pa(money_dops) }}
+    #}
+    {% if timer_show == 'on' %} <br/>время jobdesc__get_money_dops 82 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+
+
+
+
+
+
+
+    {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
+    {# <br/>timer5: {{ didrive_f__timer_stop(99) }} #}
+    
+    {% set list_job_jobmans = jobdesc__getListJobJobmans(db,sp_now,date_start) %}
+    
+    {% if 1 == 1 %}        
+
+        {% set hour_summ = [] %}
+
+        {%  for kk1, sort1 in dolgn.sort %}
+
+            {% for user5, type_user_now in list12 if type_user_now != 'hide' %}
+            {#% for user5, type_user_now in list_job_jobmans %#}
+
+                {# 1111+
+
+                {{ pa(user5) }}
+                {{ pa(type_user_now) } #}
+
+                {# user #{{ user5 }} #}
+                {% set man = mans['data'][user5] %}
+                
+                {# -----2-----
+                {{ pa(man) }#}
+                
+                {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
+                {#{ pa(now_job) }#}
+                
+                {#{ pa(now_job.dolgnost) }#}
+
+                {% if sort1.id == now_job.dolgnost %}
+
+                    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                    {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.htm' %}
+                    {% if timer_show == 'on' %} <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% endfor %}
+
+        {% for user5, type_user_now in list12 if type_user_now != 'hide' %}
+
+            {% set man = mans['data'][user5] %}
+            {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man.id, date_start ) %}
+
+            {% if now_job.dolgnost is not defined or now_job.dolgnost == '' %}
+                {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.htm' %}
+                {% if timer_show == 'on' %} <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+            {% endif %}
+
+        {% endfor %}
+
+    {% endif %}
+
+    {% if 1 == 1 %}
+
+        {#
+        <br/>timer11-1: {{ didrive_f__timer_stop(99) }}
+        #}
+
+        {# итого за день строчки #}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.htm' %}
+        {% if timer_show == 'on' %} <br/>время 24 tpl body.sp.down.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+        {#
+        <br/>timer11-2: {{ didrive_f__timer_stop(99) }}
+        #}
+
+    {% endif %}
+
+{% endspaceless %}

@@ -1,11 +1,15 @@
 {% spaceless %}
 
     {#% set timer_show = 'on' %#}
-    
+
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
     {% if timer_show == 'on' %} <br/>время 06 - {{ didrive_f__timer_stop(5) }} {% endif %}
-    {#{ pa(time_ex) }#}
+
+    {#
+    time_ex
+    {{ pa(time_ex,2) }}
+    #}
 
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set time_ex_default = get_timers_on_sp_default( db ) %}
@@ -31,21 +35,30 @@
 
                     {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
                         <div class='text-center' xstyle="color:gray;">
-                            {% if time_ex[now_date2]['cold'] > 0 %}
+                            {% if time_ex[now_date2]['cold_hand'] is defined and time_ex[now_date2]['cold_hand'] > 0 %}
+                                {{ time_ex[now_date2]['cold_hand'] }}
+                            {% elseif time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
                                 {{ time_ex[now_date2]['cold'] }}
                             {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
                             {% else %}-{% endif %}
                             /
-                            {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}
+                            {% if time_ex[now_date2]['hot_hand'] is defined and time_ex[now_date2]['hot_hand'] > 0 %}
+                                {{ time_ex[now_date2]['hot_hand'] }}
+                            {% elseif time_ex[now_date2]['hot'] is defined and time_ex[now_date2]['hot'] > 0 %}
+                                {{ time_ex[now_date2]['hot'] }}
                             {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
                             {% else %}-{% endif %}
                             /
-                            {% if time_ex[now_date2]['delivery'] > 0 %}
+                            {% if time_ex[now_date2]['delivery_hand'] is defined and time_ex[now_date2]['delivery_hand'] > 0 %}
+                                {{ time_ex[now_date2]['delivery_hand'] }}
+                            {% elseif time_ex[now_date2]['delivery'] is defined and time_ex[now_date2]['delivery'] > 0 %}
                                 {{ time_ex[now_date2]['delivery'] }}
                             {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
                             {% else %}-{% endif %}
                         </div>
                     {% endif %}
+
+
 
                 </div>
             {% endif %}
@@ -96,21 +109,152 @@
                 <div class="tcell" >
                     {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
                         <div class='text-center'>
-                            {% if time_ex[now_date2]['cold'] > 0 %}
+                            {% if time_ex[now_date2]['cold_hand'] is defined and time_ex[now_date2]['cold_hand'] > 0 %}
+
+                                {% if time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
+                                    <strike style="color:gray;">
+                                        {{ time_ex[now_date2]['cold'] }}
+                                    </strike>
+                                {% endif %} 
+
+                                {{ time_ex[now_date2]['cold_hand'] }}
+                            {% elseif time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
                                 {{ time_ex[now_date2]['cold'] }}
-                            {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
-                            {% else %}-{% endif %}
+                            {% elseif time_ex_default['cold'] is defined %}
+                                <font color="gray" >{{ time_ex_default['cold'] }}</font>
+                            {% else %}
+                                -
+                            {% endif %}
                             <Br/>
-                            {% if time_ex[now_date2]['hot'] > 0 %}{{ time_ex[now_date2]['hot'] }}
+                            {% if time_ex[now_date2]['hot_hand'] is defined and time_ex[now_date2]['hot_hand'] > 0 %}
+                                
+                                {% if time_ex[now_date2]['hot'] is defined and time_ex[now_date2]['hot'] > 0 %}
+                                    <strike style="color:gray;">
+                                        {{ time_ex[now_date2]['hot'] }}
+                                    </strike>
+                                {% endif %} 
+                                
+                                {{ time_ex[now_date2]['hot_hand'] }}
+                            {% elseif time_ex[now_date2]['hot'] > 0 %}
+                                {{ time_ex[now_date2]['hot'] }}
                             {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
                             {% else %}-{% endif %}
                             <Br/>
-                            {% if time_ex[now_date2]['delivery'] > 0 %}
+                            {% if time_ex[now_date2]['delivery_hand'] is defined %}
+                                
+                                {% if time_ex[now_date2]['delivery'] is defined and time_ex[now_date2]['delivery'] > 0 %}
+                                    <strike style="color:gray;">
+                                        {{ time_ex[now_date2]['delivery'] }}
+                                    </strike>
+                                {% endif %} 
+                                
+                                {{ time_ex[now_date2]['delivery_hand'] }}
+                            {% elseif time_ex[now_date2]['delivery'] > 0 %}
                                 {{ time_ex[now_date2]['delivery'] }}
                             {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
                             {% else %}-{% endif %}
                         </div>
                     {% endif %}
+
+
+                    {% if session.now_user_di.access == 'admin' and time_ex[now_date2] is defined %}
+
+                        {#{ pa(time_ex[now_date2]) }#}
+
+                        <center style="padding:3px; bbackground-color:rgba(0,255,0,0.2);">
+                            
+                            только&nbsp;админам
+                            <br/>
+                            
+                            <nobr>
+
+
+
+                                {% set pole7 = 'cold_hand' %}
+                                <input type="number" max="300" min="0" 
+
+                                       placeholder=".."
+                                       title="холодный цех"
+
+                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                            and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
+
+                                       style="display:inline-block;width:40px; padding: 0px; margin: 0 auto; text-align:center;" 
+                                       class="form-control didrive__edit_items_dop_pole"
+
+                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                       edit_dop_name="{{ pole7 }}"
+                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+
+                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+
+                                       delete_ocenka_sp="{{ sp_now }}"
+                                       delete_ocenka_date="{{ now_date2 }}"
+                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                       />
+
+                                {% set pole7 = 'hot_hand' %}
+                                <input type="number" max="300" min="0" 
+
+                                       placeholder=".."
+                                       title="горячий цех"
+
+                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                            and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
+
+                                       style="display:inline-block;width:40px; padding: 0px; margin: 0 auto; text-align:center;" 
+                                       class="form-control didrive__edit_items_dop_pole"
+
+                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                       edit_dop_name="{{ pole7 }}"
+                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+
+                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+
+                                       delete_ocenka_sp="{{ sp_now }}"
+                                       delete_ocenka_date="{{ now_date2 }}"
+                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                       />
+
+                                {% set pole7 = 'delivery_hand' %}
+                                <input type="number" max="300" min="0" 
+
+                                       placeholder=".."
+                                       title="доставка"
+
+                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                            and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
+
+                                       style="display:inline-block;width:40px; padding: 0px; margin: 0 auto; text-align:center;" 
+                                       class="form-control didrive__edit_items_dop_pole"
+
+                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                       edit_dop_name="{{ pole7 }}"
+                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+
+                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+
+                                       delete_ocenka_sp="{{ sp_now }}"
+                                       delete_ocenka_date="{{ now_date2 }}"
+                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                       />
+
+
+
+                            </nobr>              
+                        </center>
+
+                        <div id="a_timeo_{{ sp_now }}_{{ now_date2 }}"></div>
+
+                    {% endif %}
+
+
                 </div>
             {% endif %}
         {% endfor %}
