@@ -79,6 +79,9 @@ else {
 
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
 
+
+    ob_start('ob_gzhandler');
+
     // \f\pa($_REQUEST);
 
     $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
@@ -91,41 +94,71 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             . ' ON mid.id_item = mi.id '
             . ' AND mid.name = \'jobman\' '
             . ' AND mid.value = :user '
-//            . ' INNER JOIN `mitems-dops` mid2 '
-//            . ' ON mid2.id_item = mi.id '
-//            . ' AND mid2.name = \'sale_point\' '
-//            . ' AND mid2.value = :sp '
     ;
     \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
-//    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+    $naznach = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp, '');
+    // \f\pa($e,2,'','nazn');
 
-    $e = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
-    // \f\pa($e);
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'jobman\' '
+            . ' AND mid.value = :user '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
+    $spec = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_spec_jobday, '');
+    // \f\pa($spec, 2, '', 'spec');
 
-    echo '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
-    . '<table class="table table-bordered" >'
-        . '<thead>'
-        . '<tr>'
-        . '<td>точка продаж</td>'
-        . '<td>должность</td>'
-        . '<td>принят</td>'
-        . '<td>уволен</td>'
-        . '</tr>'
-        . '</thead>'
-        . '<tbody>';
+    foreach ($spec as $k => $v) {
+        $v['type'] = 'spec';
+        $naznach[] = $v;
+    }
 
-    foreach ($e as $k => $v) {
+    usort($naznach, "\\f\\sort_ar_date");
+    // \f\pa($naznach, 2, '', '$naznach');
+
+    echo
+    // '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
+
+    '<style> '
+    . ' .d345 th, '
+    . ' .d345 tbody td{ text-align: center; } '
+    . ' .d345 tbody td.r{ text-align: right; } '
+    . '</style>'
+
+    . '<table class="table table-bordered d345" >'
+    . '<thead>'
+    . '<tr>'
+        . '<th>статус записи</th>'
+        . '<th>тип</th>'
+        . '<th>точка продаж</th>'
+        . '<th>должность</th>'
+        . '<th>принят</th>'
+        . '<th>уволен</th>'
+    . '</tr>'
+    . '</thead>'
+    . '<tbody>';
+
+    foreach ( $naznach as $k => $v ) {
         echo '<tr>'
+        . '<td>' . ( isset($v['status']) && $v['status'] == 'show' ? 'вкл' : ( isset($v['status']) && $v['status'] == 'hide' ? 'выкл' : ( isset($v['status']) && $v['status'] == 'delete' ? 'удалено' : 'x' ) ) ) . '</td>'
+        . '<td>' . ( ( isset($v['type']) && $v['type'] == 'spec' ) ? 'спец. назначение' : 'приём' ) . '</td>'
         . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
         . '<td>' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
-        . '<td>' . $v['date'] . '</td>'
-        . '<td>' . ( $v['date_fin'] ?? '-' ) . '</td>'
+        . '<td class="r" >' . $v['date'] . '</td>'
+        . '<td class="r" >' . ( $v['date_fin'] ?? '-' ) . '</td>'
         . '</tr>';
     }
 
-    echo '</tbody></table>';
+    echo '</tbody></table>'
+    . '<center>'
+            . '<p>Если у записи нет увольнения, датой уволнениния считается дата ( -1 день назад ) от следующего приёма на работу</p>'
+            . '</center>';
 
-    exit;
+
+    $r = ob_get_contents();
+    ob_end_clean();
+
+    \f\end2($r, true);
 }
 
 
