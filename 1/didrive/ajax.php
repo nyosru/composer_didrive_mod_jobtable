@@ -719,7 +719,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
 
         // считаем сколько суммарно часов отработано за сегодня
-        if (1 == 1) {
+        if (1 == 2) {
 
             \f\timer_start(2);
             // echo '<div style="border: 3px solid gray; padding: 20px; margin: 20px;" >hours<hr>';
@@ -734,14 +734,31 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 //            if (!empty($hours['data']['hours']))
 //                $return['hours'] = $hours['data']['hours'];
 
+            $return = [];
+            
             foreach ($hours['data'] as $k => $v) {
                 $return[$k] = $v;
             }
 
-            //\f\pa($return);
-
             $return['time'] .= '<br/> посчитали сколько часов работы было в этот день'
                     . '<br/>' . \f\timer_stop(2);
+            
+            \f\pa($return);
+        }
+        
+        // считаем сколько суммарно часов отработано за сегодня (версия 3 - 12010161058 )
+        if (1 == 1) {
+
+            \f\timer_start(2);
+            
+            // echo '<br/>$ert = \Nyos\mod\JobDesc::calcJobHoursDay($db, '.$date.', '.$sp.'); ';
+            $calc_hours = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
+            // \f\pa($ert,2,'','ert');
+            $return['hours'] = $calc_hours['data']['hours'];
+            
+            $return['time'] .= '<br/> посчитали сколько часов работы было в этот день (в3) '
+                    . '<br/>' . \f\timer_stop(2);
+            
         }
 
 
