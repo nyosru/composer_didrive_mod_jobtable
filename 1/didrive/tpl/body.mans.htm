@@ -28,6 +28,8 @@
             {#{ pa(mans.data[user_id]) }#}
 
             {% set jobman = mans.data[user_id] %}
+            
+            {#{ pa(jobman) }#}
 
             {% set nowjob = 0 %}
 
@@ -66,21 +68,24 @@
                 {% endif %}
 
                 [{{ type }}]
-                
+
                 {% include dir_mod_now_mod_ditpl~'body.mans.item.htm' %}
 
             {% endif %}
 
         {% endfor %} 
-    {% endfor %} 
+
+    {% endfor %}
 
     {#{ pa(checki[now_date]) }#}
-
     {# { pa(array_job_people) } #}
 
     <span class="list_otrezki" >
-
+        
         {% for user_id, checki2 in checki[now_date] %} 
+            
+            {#{  pa(user_id) }#}
+            
             {% for check_id, check in checki2 if check.dop.sale_point == spoint.id and check.dop.jobman not in array_job_people %} 
 
                 {#
@@ -130,9 +135,6 @@
         {% endfor %} 
 
     </span>
-
-
-
 
     {% if 1 == 2 %}
 

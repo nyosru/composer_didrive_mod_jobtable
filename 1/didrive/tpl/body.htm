@@ -47,10 +47,6 @@
     {#% set mans = items__get( db, '070.jobman', null )  %#}
     {% if timer_show == 'on' %} <br/>время 02 - {{ didrive_f__timer_stop(15) }} {% endif %}
 
-
-
-
-    
     
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set dolgn = jobdesc__get_dolgnosti( db, '061.dolgnost' )  %}
@@ -60,18 +56,13 @@
     {{ pa(dolgn,2) }#}
     {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
+    
     {% if 1 == 2 %}
         {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
         {% set dolgn = readItems( '061.dolgnost', null )  %}
         {{ pa(dolgn,2) }}
         {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
-
-
-
-
-
-
 
     {% if session.now_user_di.access == 'moder' %}
         {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
@@ -123,6 +114,11 @@
             </div>
         {% endif %}
 
+        
+        
+        
+        
+        
         <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 2vh; margin-bottom: 2vh;" >
 
@@ -241,6 +237,7 @@
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
+                {#{ pa(jobs) }#}
                 {% if timer_show == 'on' %} <br/>время 6 - jobs = jobdesc__get_smena_jobs <br/>{{ didrive_f__timer_stop(5) }} {% endif %}
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
@@ -256,7 +253,11 @@
 
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
-                {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
+                {% if 1 == 2 %} 
+                    <br/> 
+                    pa(jobs_on_sp) 
+                    {{ pa(jobs_on_sp,2) }} 
+                {% endif %}
                 {% if timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
                 {# текущие доступные точки #}

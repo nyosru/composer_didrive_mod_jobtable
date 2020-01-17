@@ -25,9 +25,9 @@
                         href="#" 
 
                         class="dropdown-item btn-light base_modal_go"
-                        
+
                         data-toggle="modal" data-target="#di_modal" 
-                        
+
                         modal_header='назначения сотрудника'
                         ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
                         ajax_vars='action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}'
@@ -35,7 +35,7 @@
                         >
                         список назначений сотрудника
                     </a>
-                    
+
                     {% if 1 == 2 %}                    
 
 
@@ -174,18 +174,6 @@
                         <div id="resto_del_{{ sp_now }}_{{ man.id }}" ></div>
                     {% endif %}
 
-
-
-
-
-
-
-
-
-
-
-
-
                     {# не грузило нифига #}
                     {% if 1 == 2 %}
                         <br/>
@@ -206,9 +194,6 @@
                            >загрузить чекины за месяц</a>
                         <div id="resto_{{ sp_now }}_{{ man.id }}" ></div>
                     {% endif %}
-
-
-
 
                     <br/>
                     <br/>
@@ -238,8 +223,13 @@
 
         </div>
 
-        {# проход по датам по человеку #}
 
+
+
+
+
+
+        {# проход по датам по человеку #}
         {% set last_jobday = 0 %}
 
         {% for i in range(low=0, high=35, step=1) %}  
@@ -254,14 +244,34 @@
                 {# текущий чел #}
                 {#{ man }#}
 
-
-
                 <div class="tcell c{{ man.id }}_{{sp_now}}_{{ date }}">
 
-                    {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
-                    {% if date|date("U") < "now"|date("U") %}                    
 
-                        {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+                    {#% set a1worker__jm_jobs = jobdesc__getNaznachJobmans( db, user5 ) %}
+                    {{ pa(a1worker__jm_jobs) }#}
+
+                    {#% set a1worker__jm_spec = jobdesc__getSpecNaznachJobmans( db, user5 ) %#}
+                    {#{ pa(jm_spec) }#}
+
+                    {% set now_job_cfg = jobdesc__getDayNaznachJobman( db, user5,date ) %}
+                    {#{ pa(now_job_cfg) }#}
+
+                    {% if now_job_cfg.data.sale_point is defined and now_job_cfg.data.sale_point != sp_now %}
+
+                        {#{ pa(now_job_cfg) }#}
+                        {#{ pa(dolgn) }#}
+                        <div style="background-color: rgba(0,255,0,0.1); padding: 5px;" >
+                            работает в {{ sps[now_job_cfg.data.sale_point]["head"] }} {{ dolgn['data'][now_job_cfg.data.dolgnost]['head'] }}
+                        </div>
+
+                    {% else %}
+
+                        {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
+                        {% if date|date("U") < "now"|date("U") %}                    
+
+                            {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+
+                        {% endif %}
 
                     {% endif %}
 
@@ -271,5 +281,7 @@
         {% endfor %}
 
     </div>
+
+
 
 {% endspaceless %}

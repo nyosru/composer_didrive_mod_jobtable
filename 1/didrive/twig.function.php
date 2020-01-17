@@ -17,13 +17,97 @@ $function = new Twig_SimpleFunction('jobdesc__whereJobmansNowDate', function ( $
 $twig->addFunction($function);
 
 
+
+
+
+
+
+
+$function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $db, int $jobman_id, string $date ) {
+
+    // название переменной где храним кеш
+    $cash_var = 'jobdesc__getDayNaznachJobman_date' . $date . '_jobman' . $jobman_id;
+    // время в сек на которое храним кеш
+    $cash_time = 60*10;
+
+    if ( 1 == 2 && !empty($cash_var)) {
+        
+        $list = \f\Cash::getVar($cash_var);
+
+        if (!empty($list))
+        return \f\end3('ок', true, $list);
+        
+    }
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'jobman\' '
+            . ' AND mid.value = :j '
+            . ' INNER JOIN `mitems-dops` mid2 '
+            . ' ON mid2.id_item = mi.id '
+            . ' AND mid2.name = \'date\' '
+            . ' AND mid2.value_date <= :date '
+    ;
+    \Nyos\mod\items::$sql_order = ' ORDER BY mid2.value_date DESC ';
+
+    // \Nyos\mod\items::$show_sql = true;
+
+    \Nyos\mod\items::$var_ar_for_1sql[':j'] = $jobman_id;
+    \Nyos\mod\items::$var_ar_for_1sql[':date'] = $date;
+    \Nyos\mod\items::$limit1 = true;
+
+    $list = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
+    // \f\pa($list['data'], 2, '', '$list');
+    // \f\pa($list, 2, '', '$list');
+    // \f\sort_ar_date();
+//    usort( $list, "\\f\\sort_ar_date" );
+//    
+//    \f\pa($list, 2, '', '$list');
+
+    if (!empty($cash_var) && !empty($cash_time))
+        \f\Cash::setVar($cash_var, $list, $cash_time);
+
+    return \f\end3('ок', true, $list);
+});
+$twig->addFunction($function);
+
+
+
+$function = new Twig_SimpleFunction('jobdesc__getSpecNaznachJobmans', function ( $db, int $jobman_id ) {
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'jobman\' '
+            . ' AND mid.value = :j '
+
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':j'] = $jobman_id;
+
+    $list2 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_spec_jobday);
+    // \f\pa($list2, 2, '', '$list2');
+
+    return \f\end3('ок', true, $list2);
+});
+$twig->addFunction($function);
+
+
+
+
+
+
+
+
+
+
+
+
+
 $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $db, int $sp, string $date ) {
 
 //    if ($date == '2020-01-05')
 //        \Nyos\mod\JobDesc::$return_dop_info = true;
-
     // echo $date.'<Br/>';
-    
+
     $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
     //\f\pa($workmans,2,'','$workmans');
 
