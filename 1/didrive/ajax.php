@@ -746,6 +746,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             \f\pa($return);
         }
         
+        // echo '11111111';
+        
         // считаем сколько суммарно часов отработано за сегодня (версия 3 - 12010161058 )
         if (1 == 1) {
 
@@ -753,14 +755,15 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             
             // echo '<br/>$ert = \Nyos\mod\JobDesc::calcJobHoursDay($db, '.$date.', '.$sp.'); ';
             $calc_hours = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
-            // \f\pa($ert,2,'','ert');
-            $return['hours'] = $calc_hours['data']['hours'];
+            // \f\pa($calc_hours,'','','\Nyos\mod\JobDesc::calculateHoursOnJob');
+            $return['hours'] = ( $calc_hours['data']['hours_calc_auto'] ?? 0 );
             
             $return['time'] .= '<br/> посчитали сколько часов работы было в этот день (в3) '
                     . '<br/>' . \f\timer_stop(2);
             
         }
 
+        // echo '2222222';
 
         /**
          * достаём нормы на день

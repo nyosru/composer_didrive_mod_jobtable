@@ -156,7 +156,8 @@ class JobDesc {
 
         $cash_var = 'jobdesc__calculateHoursOnJob_date' . $date . '_sp' . $sp_id;
 
-        $e = \f\Cash::getVar($cash_var);
+        if (1 == 2)
+            $e = \f\Cash::getVar($cash_var);
 
         if (!empty($e))
             return \f\end3('окей (кеш)', true, $e);
@@ -166,16 +167,20 @@ class JobDesc {
 
         $return = [];
 
+        //echo '<br/>#'.__LINE__.' '.__FILE__;
+
         $return['jobmans_now'] = self::whereJobmansNowDate($db, $date, $sp_id);
-// \f\pa($jobmans_now,2,'','$jobmans_now');
+        // \f\pa( $return['jobmans_now'] ,2,'','$jobmans_now');
+        //echo '<br/>#'.__LINE__.' '.__FILE__;
 
         $sql2 = '';
         foreach ($return['jobmans_now'] as $k => $v) {
             $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . (int) $v['jobman'] . '\' ';
         }
 
-        if (self::$return_dop_info !== true)
-            unset($return['jobmans_now']);
+        //echo '<br/>#'.__LINE__.' '.__FILE__;
+//        if (self::$return_dop_info !== true)
+//            unset($return['jobmans_now']);
 
         if (1 == 1) {
             \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -207,7 +212,7 @@ class JobDesc {
 // \Nyos\mod\items::$show_sql = true;
 
             $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
-// \f\pa($return['checks'],'','','checks');
+            // \f\pa($return['checks'],'','','checks');
 //            if( \Nyos\mod\items::$show_sql === true )
 //                echo '<br/>'.__LINE__;
 
@@ -216,19 +221,34 @@ class JobDesc {
 // \f\pa($checks, 2, '', '$checks');
         }
 
-
-
+//echo '<br/>#'.__LINE__.' '.__FILE__;
+        $dolgn = \Nyos\mod\items::get($db, self::$mod_dolgn);
+        // \f\pa($dolgn,2,'','dolgn');
+//echo '<br/>#'.__LINE__.' '.__FILE__;
+//        \f\pa($return['checks'],2,'','checks');
 // считаем сколько часов в найденных чеках
-        $return['hours'] = 0;
+        $return['hours_calc_auto'] = $return['hours_all'] = 0;
         if (1 == 1) {
 
             foreach ($return['checks'] as $k => $v) {
-                $return['hours'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
+
+                // \f\pa($v,2,'','$v');
+                // \f\pa($return['jobmans_now'][$v['jobman']],2,'','jobmans2');
+                // \f\pa($return['jobmans_now'][$v['jobman']]['dolgnost'],2,'','jobmans21');
+                // \f\pa( ( $dolgn[$return['jobmans_now'][$v['jobman']]['dolgnost']]['calc_auto'] ?? [] ) ,2,'','jobmans21');
+                // \f\pa( $dolgn[$return['jobmans_now'][$v['jobman']]['dolgnost']]['calc_auto'] ?? '0'  ,2,'','jobmans21');
+//                $return['jobmans_now'][$v['jobman']]['dolgnost']
+
+                if (!empty($dolgn[$return['jobmans_now'][$v['jobman']]['dolgnost']]['calc_auto']) && $dolgn[$return['jobmans_now'][$v['jobman']]['dolgnost']]['calc_auto'] == 'da') {
+                    $return['hours_calc_auto'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
+                }
+
+                $return['hours_all'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
             }
         }
 
-        if (self::$return_dop_info !== true)
-            unset($return['checks']);
+//        if (self::$return_dop_info !== true)
+//            unset($return['checks']);
 
         self::clearTempClassVars();
 
@@ -248,10 +268,8 @@ class JobDesc {
      */
     public static function whereJobmansNowDate($db, $date = null, $sp_id = null) {
 
-        if (strpos($_SERVER['HTTP_HOST'], 'dev') != false)
-            $timer_on = true;
-
-
+//        if (strpos($_SERVER['HTTP_HOST'], 'dev') != false)
+//            $timer_on = true;
 //        \f\timer_start(12);
 //        // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
 //        $jobmans = \Nyos\mod\items::getItemsSimple3($db, self::$mod_jobman);
@@ -259,8 +277,10 @@ class JobDesc {
 
         if (isset($timer_on) && $timer_on === true)
             \f\timer_start(12);
+
 // $job = \Nyos\mod\items::getItemsSimple($db, self::$mod_man_job_on_sp);
         $jobmans = \Nyos\mod\items::get($db, self::$mod_jobman);
+
         if (isset($timer_on) && $timer_on === true)
             echo '<br/>2 - ' . \f\timer_stop(12);
 
@@ -271,8 +291,10 @@ class JobDesc {
 
         if (isset($timer_on) && $timer_on === true)
             \f\timer_start(12);
+
         $job = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
 // \f\pa($job,2,'','$job');
+
         if (isset($timer_on) && $timer_on === true)
             echo '<br/>21 - ' . \f\timer_stop(12);
 
@@ -3805,6 +3827,18 @@ class JobDesc {
      */
     public static function whatNormToDay($db, int $sp, string $date, $date_fin = null) {
 
+        // название переменной где храним кеш
+        $cash_var = 'jobdesc__whatNormToDay_sp' . $sp . '_date' . $date . '_date_fin' . $date_fin;
+        // время в сек на которое храним кеш
+        $cash_time = 60;
+
+        if (!empty($cash_var)) {
+            $e = \f\Cash::getVar($cash_var);
+
+            if (!empty($e))
+                return $e;
+        }
+
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
                 . ' AND mid.name = \'sale_point\' '
@@ -3844,6 +3878,9 @@ class JobDesc {
 // если ищем несколько дат, то собираем по датам в массив и возвращаем
             $rr[$v['date']] = $v;
         }
+
+        if (!empty($cash_var) && !empty($cash_time))
+            \f\Cash::setVar($cash_var, $rr, $cash_time);
 
         return $rr;
     }

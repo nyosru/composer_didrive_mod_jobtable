@@ -10,7 +10,6 @@
                 </div>
             {% endif %}
 
-
             {% if 1 == 1 %}
 
                 <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
@@ -32,11 +31,6 @@
                         modal_header='назначения сотрудника'
                         ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
                         ajax_vars='action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}'
-                        
-                        xonclick="
-                            $('#di_modal #di_modal_header').html('история назначений сотрудника');
-                            $('#di_modal .modal-body').html('<iframe src=\'/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}\' style=\'min-height:50vh; width:100%;\' ></iframe>');
-                        " 
 
                         >
                         список назначений сотрудника
