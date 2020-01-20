@@ -14,6 +14,12 @@ class JobDesc {
     public static $dir_img_server = false;
 
     /**
+     * запускать удаление бонусов каждый день или нет
+     * @var type 
+     */
+    public static $no_delete_autobonus_1day = false;
+
+    /**
      * возвращать или нет доп инфу
      * / работет в /
      * calculateHoursOnJob
@@ -2077,23 +2083,27 @@ class JobDesc {
         $ds = date('Y-m-d 05:00:00', $dt);
         $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
 
-        if ($show_comment === true)
-            \f\timer::start(123);
 
 // удаление имеющихся бонусов в этот день
-        $ee = self::deleteAutoBonus($db, $_sp, $_d);
+        if (self::$no_delete_autobonus_1day !== true) {
+
+            if ($show_comment === true)
+                \f\timer::start(123);
+
+            $ee = self::deleteAutoBonus($db, $_sp, $_d);
 //\f\pa($ee,'','','$ee удаление автобонусов');
 
-        if ($show_comment === true)
-            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+            if ($show_comment === true)
+                echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+            
+        }
+
 
         /**
          * список должность и сколько бонуса накинуть
          * должность - оценка - бонус
          */
         $list_dolg_bonus = [];
-
-
 
 
         /**
@@ -2126,7 +2136,8 @@ class JobDesc {
         if ($show_comment === true)
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+        \Nyos\mod\items::$join_where = 
+                ' INNER JOIN `mitems-dops` md ON '
                 . ' `md`.`id_item` = mi.id '
                 . 'AND `md`.`name` = \'start\' '
                 . 'AND `md`.`value_datetime` >= \'' . $ds . '\'  '
@@ -2306,8 +2317,7 @@ class JobDesc {
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
         if (!empty($adds)) {
-// \f\pa($adds);
-
+            // \f\pa($adds);
             \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $adds);
             return \f\end3('bonus exists', true, ['adds' => $adds]);
         } else {
@@ -2327,6 +2337,63 @@ class JobDesc {
      * @return type
      */
     public static function deleteAutoBonus($db, $sp, $date0) {
+
+        \Nyos\mod\items::$var_ar_for_1sql[':d1'] = date('Y-m-d', strtotime($date0));
+        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date_now\' '
+                . ' AND mid.value_date = :d1 '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'sale_point\' '
+                . ' AND mid2.value = :sp '
+                . ' INNER JOIN `mitems-dops` mid3 '
+                . ' ON mid3.id_item = mi.id '
+                . ' AND mid3.name = \'auto_bonus_zp\' '
+                . ' AND mid3.value = \'da\' '
+
+        ;
+        $bonuses = \Nyos\mod\items::get($db, self::$mod_bonus);
+        // \f\pa($er, '', '', 'bonuses');
+
+        $dop = [
+                // ':d' => date('Y-m-d', strtotime($date0)),
+                // ':sp' => $sp
+        ];
+
+        $sql_up = '';
+        $n = 1;
+
+        foreach ($bonuses as $k => $v) {
+
+            $sql_up .= (!empty($sql_up) ? ' OR ' : '' ) . '`id` = :i' . $n;
+            $dop[':i' . $n] = $v['id'];
+            $n++;
+        }
+
+        // \f\pa($sql_up);
+        // echo '<br/>' . __FUNCTION__ . ' + ' . $sp . ' + ' . $date0;
+
+        $ff = $db->prepare('UPDATE 
+                `mitems`
+            SET
+                `status` = \'delete\'
+            WHERE 
+                ' . $sql_up . '
+                ;');
+        $e = $ff->execute($dop);
+
+        // return $e;
+        // \Nyos\mod\items::$show_sql = true;
+        // \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+
+        return;
+
+        //exit;
+
+        $sql = '';
 
 // echo '<br/>'.$date0;
         $date = date('Y-m-d', strtotime($date0));
@@ -2374,6 +2441,75 @@ class JobDesc {
         }
 
 
+// return $return;
+    }
+
+    /**
+     * удаляем автобонусы за весь месяц
+     * @param type $db
+     * @param type $sp
+     * @param type $date0
+     * @return type
+     */
+    public static function deleteAutoBonusMonth($db, $sp, $date0) {
+
+        \Nyos\mod\items::$var_ar_for_1sql[':d1'] = date('Y-m-01', strtotime($date0));
+        \Nyos\mod\items::$var_ar_for_1sql[':d2'] = date('Y-m-d', strtotime(\Nyos\mod\items::$var_ar_for_1sql[':d1'] . ' +1 month -1 day'));
+        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date_now\' '
+                . ' AND mid.value_date >= :d1 '
+                . ' AND mid.value_date <= :d2 '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'sale_point\' '
+                . ' AND mid2.value = :sp '
+                . ' INNER JOIN `mitems-dops` mid3 '
+                . ' ON mid3.id_item = mi.id '
+                . ' AND mid3.name = \'auto_bonus_zp\' '
+                . ' AND mid3.value = \'da\' '
+
+        ;
+        // возвращаем только результаты первого запроса
+        \Nyos\mod\items::$return_items_header = true;
+        $bonuses = \Nyos\mod\items::get($db, self::$mod_bonus);
+        // \f\pa($bonuses, '', '', 'bonuses');
+
+        $dop = [
+                // ':d' => date('Y-m-d', strtotime($date0)),
+                // ':sp' => $sp
+        ];
+
+        $sql_up = '';
+        $n = 1;
+
+        foreach ($bonuses as $k => $v) {
+
+            $sql_up .= (!empty($sql_up) ? ' OR ' : '' ) . '`id` = :i' . $n;
+            $dop[':i' . $n] = $v['id'];
+            $n++;
+        }
+
+        // \f\pa($sql_up);
+        // echo '<br/>' . __FUNCTION__ . ' + ' . $sp . ' + ' . $date0;
+
+        if (!empty($sql_up)) {
+            $ff = $db->prepare('UPDATE 
+                `mitems`
+            SET
+                `status` = \'delete\'
+            WHERE 
+                ' . $sql_up . '
+                ;');
+            $e = $ff->execute($dop);
+        }
+        // return $e;
+        // \Nyos\mod\items::$show_sql = true;
+        // \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+
+        return;
 // return $return;
     }
 

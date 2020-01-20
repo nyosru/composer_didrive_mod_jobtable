@@ -290,8 +290,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     \f\timer::start(3);
 
-    $date_start = date('Y-m-00', strtotime($_REQUEST['date']));
+    $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+    \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
 
     $e = [];
 
@@ -305,7 +308,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
         if ($date >= $date_finish)
             break;
 
-// echo '<br/>'.$date;
+        //echo '<br/>11 - '.$date;
 
         $e2 = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $date);
 
