@@ -2248,6 +2248,10 @@ class JobDesc {
 
         $adds = [];
 
+        /**
+         * массив куда ложим что за бонусы ужи дали, чтобы одному челу в один день делать только 1 бонус
+         */
+        $no_repeat_adds = [];
 
 // \f\pa($d, 5, '', '$d должности на ' . $_d);
 // перебираем чеки ищем кто работает и номер чека берём для комментария
@@ -2271,14 +2275,18 @@ class JobDesc {
                 if (!empty($premiya)) {
 //                echo '<Br/>pr ' . $premiya;
 
-                    $adds[] = [
-                        'auto_bonus_zp' => 'da',
-                        'jobman' => $v['jobman'],
-                        'sale_point' => $_sp,
-                        'date_now' => $_d,
-                        'summa' => $premiya,
-                        'text' => 'бонус к зп',
-                    ];
+
+                    if (!isset($no_repeat_adds[$_sp][$v['jobman']][$_d])) {
+                        $no_repeat_adds[$_sp][$v['jobman']][$_d] = 1;
+                        $adds[] = [
+                            'auto_bonus_zp' => 'da',
+                            'jobman' => $v['jobman'],
+                            'sale_point' => $_sp,
+                            'date_now' => $_d,
+                            'summa' => $premiya,
+                            'text' => 'бонус к зп',
+                        ];
+                    }
 
 //                $add = [
 //                    'auto_bonus_zp' => 'da',
@@ -2902,17 +2910,14 @@ class JobDesc {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[2];
-                    
                 } elseif ($vv == 'timeo_cold') {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[1];
-                    
                 } elseif ($vv == 'timeo_delivery') {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[3];
-                    
                 } else {
 
 //
@@ -3016,14 +3021,13 @@ class JobDesc {
 
             $tyty = 'delivery';
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
-            
-            if ( empty($ar['norm_time_wait_norm_' . $tyty]) ) {
-                
+
+            if (empty($ar['norm_time_wait_norm_' . $tyty])) {
+
                 $text .= ' параметра не указано, оценка максимум ( 5 )';
                 $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
-                
             } else {
-                
+
                 if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
                     $text .= ' норм ( 5 )';
                     $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' < ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) меньше максимума (нормы) : оценка 5';
