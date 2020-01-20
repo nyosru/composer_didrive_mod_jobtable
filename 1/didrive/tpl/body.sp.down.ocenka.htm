@@ -14,7 +14,11 @@
                 <div class="dropdown-menu">
 
                     {# модальные окошки, само окошко в самом низу #}
-                    <a href="/vendor/didrive_mod/jobdesc/1/ajax.php?action=calc_mont_sp&sp={{ sp_now }}&2return=html&goto={{ server.REQUEST_URI|url_encode }}" class="dropdown-item btn-light" >просчитать оценки месяца</a>
+                    <a href="/vendor/didrive_mod/jobdesc/1/ajax.php?action=calc_mont_sp&sp={{ sp_now }}&2return=html&goto={{ server.REQUEST_URI|url_encode }}" class="dropdown-item btn-light" 
+                       onclick="$('body').append('<div id=\'body_block\' class=\'body_block\' >пару секунд, вычисляем<br/><span id=\'body_block_25\'></span></div>');"
+                       >
+                        просчитать оценки месяца
+                    </a>
 
                 </div>
             </div>
