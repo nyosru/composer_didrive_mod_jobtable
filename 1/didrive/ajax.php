@@ -288,13 +288,61 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
         \f\end2('не определена точка продаж', false);
     }
 
+    \f\timer_start(3);
+
+    $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
+    $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+    // ставим переменную чтобы дальше не удалять по дням
+//    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
+
+    $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+    // \f\pa($ww,'','','ww');
+
+    $e = [];
+
+    if (!empty($ww['data']['adds']))
+        foreach ($ww['data']['adds'] as $v) {
+            $e['datas'][] = $v;
+        }
+
+    $e['timer'] = \f\timer_stop(3);
+    $e['kolvo'] = sizeof($e['datas']);
+
+//\f\pa($e,2);
+//    exit;
+
+    \f\end2('ok', true, $e);
+}
+
+/**
+ * старая версия
+ */ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month-old-2001202213') {
+
+    if (empty($_REQUEST['date']))
+        \f\end2('нет даты', false);
+
+    if (!empty($_REQUEST['sp']) && is_numeric($_REQUEST['sp'])) {
+        
+    } else {
+        \f\end2('не определена точка продаж', false);
+    }
+
     \f\timer::start(3);
 
     $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
+
+
+
+    /**
+     * удаляем все смены что были ранее
+     */
     \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
-    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
+    // ставим переменную чтобы дальше не удалять по дням
+//    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
+
 
     $e = [];
 
@@ -326,7 +374,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e['timer'] = \f\timer::stop('str', 3);
     $e['kolvo'] = sizeof($e['datas']);
 
-// \f\pa($e);
+    \f\pa($e, 2);
+
+    exit;
 
     \f\end2('ok', true, $e);
 }

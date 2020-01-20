@@ -2076,7 +2076,7 @@ class JobDesc {
     public static function creatAutoBonus($db, $_sp, $dt0) {
 
         $show_comment = true;
-        $show_comment = false;
+        //$show_comment = false;
 
         $dt = strtotime($dt0);
         $_d = date('Y-m-d', $dt);
@@ -2095,7 +2095,6 @@ class JobDesc {
 
             if ($show_comment === true)
                 echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
-            
         }
 
 
@@ -2111,11 +2110,15 @@ class JobDesc {
          */
         $where_job = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $_d);
 // \f\pa($where_job);
+        // доп в запрос где выбираем чеки
+        $sql_select_checks_dop = '';
 
         foreach ($where_job as $k => $v) {
             if (isset($v['sale_point']) && $v['sale_point'] == $_sp && isset($v['jobman']) && isset($v['dolgnost'])) {
                 $job_in[$v['jobman']] = $v['dolgnost'];
                 $list_dolg_bonus[$v['dolgnost']] = 0;
+
+                $sql_select_checks_dop .= (!empty($sql_select_checks_dop) ? ',' : '' ) . $v['jobman'];
             }
         }
 
@@ -2125,36 +2128,50 @@ class JobDesc {
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
 
+        \f\timer_start(47);
+
         /**
          * дневной оборот точки
          */
         $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
+
+        if ($show_comment === true)
+            echo '<br/>ob mont (' . __LINE__ . '): ' . \f\timer_stop(47);
+
 // \f\pa($oborot_month, 2, '', '$oborot_month');
 // \Nyos\mod\items::$get_data_simple = true;
 // $checks0 = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\JobDesc::$mod_checks);
 
         if ($show_comment === true)
-            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+            \f\timer_start(47);
 
-        \Nyos\mod\items::$join_where = 
-                ' INNER JOIN `mitems-dops` md ON '
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
                 . ' `md`.`id_item` = mi.id '
                 . 'AND `md`.`name` = \'start\' '
                 . 'AND `md`.`value_datetime` >= \'' . $ds . '\'  '
-                . 'AND `md`.`value_datetime` <= \'' . $df . '\'  ';
+                . 'AND `md`.`value_datetime` <= \'' . $df . '\'  '
 
-        $checks0 = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_checks);
+//                .' INNER JOIN `mitems-dops` md2 '
+//                . ' ON `md2`.`id_item` = mi.id '
+//                . ' AND `md2`.`name` = \'jobman\' '
+//                . ' AND `md2`.`value` IN ( '.$sql_select_checks_dop.' ) '
+
+        ;
+
+        //$checks0 = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_checks);
+        $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
         $checks = [];
 
         foreach ($checks0 as $k => $v) {
-            if (isset($v['jobman']) && isset($job_in[$v['jobman']]) && isset($v['start']) && $v['start'] >= $ds && $v['start'] <= $df) {
+            // if (isset($v['jobman']) && isset($job_in[$v['jobman']]) && isset($v['start']) && $v['start'] >= $ds && $v['start'] <= $df) {
+            if (isset($v['jobman']) && isset($job_in[$v['jobman']])) {
                 $v['item_id'] = $v['id'];
                 $checks[] = $v;
             }
         }
 
         if ($show_comment === true)
-            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+            echo '<br/>get checks (' . __LINE__ . '): ' . \f\timer_stop(47);
 
 
 // usort($checks, "\\f\\sort_ar_start");
@@ -2211,7 +2228,17 @@ class JobDesc {
 //        
 //        \f\timer::start(11);
 //        
+
+
+        if ($show_comment === true)
+            \f\timer_start(12);
+
         $dd = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+
+        if ($show_comment === true)
+            echo '<br/>get salary (' . __LINE__ . '): ' . \f\timer_stop(12);
+
+
 // \f\pa($dolgns, 5, '', '$dolgns2');
 //        echo '<br/>tt:'.\f\timer::stop('str',11);
 //        die();
@@ -2312,6 +2339,193 @@ class JobDesc {
                 }
             }
         }
+
+        if ($show_comment === true)
+            echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+        if (!empty($adds)) {
+            // \f\pa($adds);
+            \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $adds);
+            return \f\end3('bonus exists', true, ['adds' => $adds]);
+        } else {
+
+            return \f\end3('no bonus', false);
+        }
+
+// return \f\end3('ok', true, $return);
+// return $return;
+    }
+
+    public static function creatAutoBonusMonth($db, $_sp, $dt0) {
+
+        $show_comment = true;
+        $show_comment = false;
+
+        $dt = strtotime($dt0);
+        $_d = date('Y-m-d', $dt);
+        $ds = date('Y-m-d 05:00:00', $dt);
+        $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
+
+        // старт и конец месяца
+        $date_start = date('Y-m-01', $dt);
+        $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+        /**
+         * удаляем все смены что были ранее
+         */
+        \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_sp, $date_start);
+
+        if ($show_comment === true)
+            \f\timer_start(47);
+
+        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start_checks = date('Y-m-d 08:00:00', strtotime($date_start . ' -1 day'));
+        \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_finish_checks = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                . ' `md`.`id_item` = mi.id '
+                . 'AND `md`.`name` = \'start\' '
+                . 'AND `md`.`value_datetime` >= :ds '
+                . 'AND `md`.`value_datetime` <= :df ';
+
+        $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+
+        if ($show_comment === true)
+            echo '<br/>get checks (' . __LINE__ . '): ' . \f\timer_stop(47);
+
+        $dd = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+
+        /**
+         * месячный оборот точки
+         */
+        if ($show_comment === true)
+            \f\timer_start(47);
+        $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
+        if ($show_comment === true)
+            echo '<br/>ob mont (' . __LINE__ . '): ' . \f\timer_stop(47);
+
+
+
+        $adds = [];
+
+        /**
+         * массив куда ложим что за бонусы ужи дали, чтобы одному челу в один день делать только 1 бонус
+         */
+        $no_repeat_adds = [];
+
+
+
+
+
+
+        for ($n = 0; $n <= 32; $n++) {
+
+//    $date_start = date('Y-m-00', strtotime($_REQUEST['date']) );
+//    $date_finish = date('Y-m-d', strtotime($date_start.' +1 month -1 day') );
+
+            $date = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+
+            if ($date >= $date_finish)
+                break;
+
+            $ds = date('Y-m-d 08:00:00', strtotime($date) );
+            $df = date('Y-m-d 03:00:00', strtotime($date) + 3600 * 24);
+
+            /**
+             * список должность и сколько бонуса накинуть
+             * должность - оценка - бонус
+             */
+            $list_dolg_bonus = [];
+
+            /**
+             * массив работник > должность
+             */
+            $where_job = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $_d);
+
+            foreach ($where_job as $k => $v) {
+                if (isset($v['sale_point']) && $v['sale_point'] == $_sp && isset($v['jobman']) && isset($v['dolgnost'])) {
+                    $job_in[$v['jobman']] = $v['dolgnost'];
+                    $list_dolg_bonus[$v['dolgnost']] = 0;
+                }
+            }
+
+            if ($show_comment === true)
+                \f\timer_start(47);
+
+            $checks = [];
+
+            foreach ($checks0 as $k => $v) {
+                if (isset($v['jobman']) && isset($job_in[$v['jobman']]) && isset($v['start']) && $v['start'] >= $ds && $v['start'] <= $df) {
+                    // if (isset($v['jobman']) && isset($job_in[$v['jobman']]) ) {
+                    $v['item_id'] = $v['id'];
+                    $checks[] = $v;
+                }
+            }
+
+            if ($show_comment === true)
+                echo '<br/>get checks (' . __LINE__ . '): ' . \f\timer_stop(47);
+
+            if ($show_comment === true)
+                \f\timer_start(12);
+
+            if ($show_comment === true)
+                echo '<br/>get salary (' . __LINE__ . '): ' . \f\timer_stop(12);
+
+            $d = [];
+
+            foreach ($dd as $k => $v) {
+
+                if ($v['date'] > $_d)
+                    continue;
+
+                if (isset($v['oborot_sp_last_monht_bolee'])) {
+                    if ($oborot_month >= $v['oborot_sp_last_monht_bolee']) {
+                        $d[$v['dolgnost']] = $v;
+                    }
+                } elseif (isset($v['oborot_sp_last_monht_menee'])) {
+                    if ($oborot_month <= $v['oborot_sp_last_monht_menee']) {
+                        $d[$v['dolgnost']] = $v;
+                    }
+                } else {
+                    $d[$v['dolgnost']] = $v;
+                }
+            }
+
+            if ($show_comment === true)
+                echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
+
+
+            foreach ($checks as $k => $v) {
+
+                if (isset($job_in[$v['jobman']])) {
+
+                    $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
+
+                    if (empty($ocenka))
+                        continue;
+
+                    $premiya = $d[$job_in[$v['jobman']]]['premiya-' . $ocenka] ?? null;
+
+                    if (!empty($premiya)) {
+//                echo '<Br/>pr ' . $premiya;
+
+
+                        if (!isset($no_repeat_adds[$_sp][$v['jobman']][$date])) {
+                            $no_repeat_adds[$_sp][$v['jobman']][$date] = 1;
+                            $adds[] = [
+                                'auto_bonus_zp' => 'da',
+                                'jobman' => $v['jobman'],
+                                'sale_point' => $_sp,
+                                // 'date_now' => $_d,
+                                'date_now' => $date,
+                                'summa' => $premiya,
+                                'text' => 'бонус к зп',
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
 
         if ($show_comment === true)
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);

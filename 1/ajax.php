@@ -52,10 +52,14 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
     \Nyos\mod\items::saveNewDop($db, $aa);
 
     die(__FILE__);
-} elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
+    
+} 
 
-    $date_start = date('Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME']));
-    $date_fin = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+//
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
+    
+    $date_start = date( 'Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME'] ) );
+    $date_fin = date( 'Y-m-d', strtotime($date_start . ' +1 month -1 day') );
 
     // echo $date_start . ' ' . $date_fin;
 //    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -106,12 +110,15 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
         \f\redirect('https://' . $_SERVER['HTTP_HOST'], $_REQUEST['goto']);
     } elseif (!empty($_REQUEST['return']) && $_REQUEST['return'] == 'html') {
         \f\pa($return);
+    } elseif ( isset($_REQUEST['return']) && $_REQUEST['return'] == 'html-small') {
+        die( 'автооценка обработали даты ' . $date_start . ' - ' . $date_fin );
     } else {
         \f\end2('автооценка обработали даты ' . $date_start . ' - ' . $date_fin, true, $return);
     }
 
     die();
 }
+
 //
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto') {
 
