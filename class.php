@@ -2902,14 +2902,17 @@ class JobDesc {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[2];
+                    
                 } elseif ($vv == 'timeo_cold') {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[1];
+                    
                 } elseif ($vv == 'timeo_delivery') {
 
                     $norms_def = \Nyos\mod\JobDesc::whatNormToDayDefault($db);
                     $return[$vv] = $norms_def[3];
+                    
                 } else {
 
 //
@@ -3013,10 +3016,14 @@ class JobDesc {
 
             $tyty = 'delivery';
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
-            if (empty($ar['norm_time_wait_norm_' . $tyty])) {
+            
+            if ( empty($ar['norm_time_wait_norm_' . $tyty]) ) {
+                
                 $text .= ' параметра не указано, оценка максимум ( 5 )';
                 $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
+                
             } else {
+                
                 if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
                     $text .= ' норм ( 5 )';
                     $return['txt'] .= '<br/>время цеха ' . $tyty . ' ( ' . $ar['timeo_' . $tyty] . ' < ' . $ar['norm_time_wait_norm_' . $tyty] . ' ) меньше максимума (нормы) : оценка 5';

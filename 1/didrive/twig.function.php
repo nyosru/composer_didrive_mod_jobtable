@@ -3,20 +3,6 @@
 /**
   определение функций для TWIG
  */
-/**
- * кто работает сейчас на точке продаж
- * 2020-01-10
- */
-$function = new Twig_SimpleFunction('jobdesc__whereJobmansNowDate', function ( $db, int $sp, string $date ) {
-
-    $workmans = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date, $sp);
-    // \f\pa($workmans,2,'','$workmans');
-
-    return \f\end3('ок', true, $workmans);
-});
-$twig->addFunction($function);
-
-
 
 
 
@@ -57,6 +43,12 @@ $function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $
     \Nyos\mod\items::$limit1 = true;
 
     $list = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
+    
+//    \Nyos\mod\items::$join_where = '';
+//    \Nyos\mod\items::$limit1 = false;
+//    \Nyos\mod\items::$var_ar_for_1sql = [];
+//    \Nyos\mod\items::$sql_order = '';
+    
     // \f\pa($list['data'], 2, '', '$list');
     // \f\pa($list, 2, '', '$list');
     // \f\sort_ar_date();
@@ -73,41 +65,31 @@ $twig->addFunction($function);
 
 
 
-$function = new Twig_SimpleFunction('jobdesc__getSpecNaznachJobmans', function ( $db, int $jobman_id ) {
 
-    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-            . ' ON mid.id_item = mi.id '
-            . ' AND mid.name = \'jobman\' '
-            . ' AND mid.value = :j '
 
-    ;
-    \Nyos\mod\items::$var_ar_for_1sql[':j'] = $jobman_id;
 
-    $list2 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_spec_jobday);
-    // \f\pa($list2, 2, '', '$list2');
 
-    return \f\end3('ок', true, $list2);
+/**
+ * кто работает сейчас на точке продаж
+ * 2020-01-10
+ */
+$function = new Twig_SimpleFunction('jobdesc__whereJobmansNowDate', function ( $db, int $sp, string $date ) {
+
+    $workmans = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date, $sp);
+    // \f\pa($workmans,2,'','$workmans');
+
+    return \f\end3('ок', true, $workmans);
 });
 $twig->addFunction($function);
-
-
-
-
-
-
-
-
-
-
-
 
 
 $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $db, int $sp, string $date ) {
 
 //    if ($date == '2020-01-05')
 //        \Nyos\mod\JobDesc::$return_dop_info = true;
-    // echo $date.'<Br/>';
 
+    // echo $date.'<Br/>';
+    
     $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
     //\f\pa($workmans,2,'','$workmans');
 

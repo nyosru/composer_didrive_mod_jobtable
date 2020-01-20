@@ -26,7 +26,7 @@
         <div class="tcell stick-left bg-white" onclick="$('#tr{{sp_now}}times').toggle('slow');"  >
 
             <nobr>
-                <b style="color:blue;">Время ожидания</b>
+                <b>Время ожидания</b>
             </nobr>
 
         </div>
@@ -97,12 +97,8 @@
     <div class="trow" id="tr{{sp_now}}times" style="display:none;">
         <div class="tcell stick-left bg-white" >
 
-            {# шестерёнка и менюшка #}
-            {% if 1 == 2 %}
-                <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
-                        return false;' class="fa fa-cog"></i>
-                </div>
-            {% endif %}
+            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
+                    return false;' class="fa fa-cog"></i></div>
 
             Холодный цех
 
@@ -112,28 +108,25 @@
             <br/>
             Доставка
 
-            {# шестерёнка и менюшка #}
-            {% if 1 == 2 %}
+            <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
+                <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
+                   style="display:block;"
 
-                <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
-                    <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
-                       style="display:block;"
+                   forajax_action="load_data_from_server" 
+                   forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                   forajax_show_timer="da" 
 
-                       forajax_action="load_data_from_server" 
-                       forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
-                       forajax_show_timer="da" 
+                   forajax_sp="{{ sp_now }}" 
+                   {#forajax_jobman="{{ man.id }}" #}
+                   forajax_date_start="{{ date_start }}"  
+                   forajax_date_fin="{{ date_finish }}" 
+                   res_to_id="timeo_{{ sp_now }}"
+                   answer="Грузим данные времени ожидания ?"
+                   >загрузить время ожидания</a>
+            </div>
 
-                       forajax_sp="{{ sp_now }}" 
-                       {#forajax_jobman="{{ man.id }}" #}
-                       forajax_date_start="{{ date_start }}"  
-                       forajax_date_fin="{{ date_finish }}" 
-                       res_to_id="timeo_{{ sp_now }}"
-                       answer="Грузим данные времени ожидания ?"
-                       >загрузить время ожидания</a>
-                </div>
+            <div id="timeo_{{ sp_now }}" ></div>
 
-                <div id="timeo_{{ sp_now }}" ></div>
-            {% endif %}
         </div>         
 
         {% for i in range(low=0, high=35, step=1) %}  
@@ -250,8 +243,8 @@
 
                             {% endif %}
 
-
-
+                            
+                            
                             <Br/>
 
 

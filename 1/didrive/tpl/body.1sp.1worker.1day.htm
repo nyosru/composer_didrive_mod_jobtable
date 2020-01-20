@@ -1,7 +1,5 @@
 {% spaceless %}
 
-    1111111
-    
     {#
     man {{ man.jobman }}
     <br/>
@@ -15,8 +13,6 @@
         and date|date('Y-m-d 05:00:00') < v1.start
         and date|date_modify('+1 day')|date('Y-m-d 05:00:00') > v1.start
     %}
-
-    {{ pa(v1) }}
     
     {{ v1.start }}
     <Br/>

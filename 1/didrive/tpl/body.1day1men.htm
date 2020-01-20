@@ -1,10 +1,8 @@
 {% spaceless %}
 
-
-
     {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
     {#{ pa(now_job) }#}
-
+    
     {% set skip_smens_iiko = false %}
 
     {% if now_job.type2 is defined and now_job.type2 == 'spec' and now_job.d1 == now_job.d2 %}

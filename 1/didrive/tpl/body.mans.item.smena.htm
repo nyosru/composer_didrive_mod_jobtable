@@ -1,7 +1,5 @@
 {% spaceless %}
 
-    
-    
     {#
     {{ man.dop.dolgnost }} +
     {{ date }} +
@@ -188,7 +186,19 @@
 
                     {% endif %}
 
+
+
+
+
+
+
+
+
+
                     {% if v1.status == 'show' %}
+
+
+                        {% set summa_day = 0 %}
 
                         {#{ pa(v1) }#}
 
@@ -216,6 +226,8 @@
 
                                 {{ price_hour }}р/ч
 
+                                {% set summa_day = hours_on_job * price_hour %}
+
                             {% else %}
 
                                 {#                    <input 
@@ -223,7 +235,7 @@
                                                         class="now_kolvo_hour" 
                                                         value="{{ kolvo_hour }}" 
                                                         >
-                                #}                    
+                                #}
 
                                 {#{ pa(salar) }#}
                                 <select name="ocenka" 
@@ -241,12 +253,15 @@
                                         dop_name="ocenka"
                                         item_id="{{ v1.id }}"
                                         s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~v1.id ) }}" 
+                                        
                                         {% if v1.payed is defined %} disabled="disabled" {% endif %}
                                         >
                                     <option price="0" value="">Оценка</option>
 
                                     {#{ pa(salar) }#}
 
+                                    {%  set price_hour1_now = '' %}
+                                    
                                     {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
 
                                         {% set price_hour = 0 %}
@@ -268,14 +283,33 @@
 
                                                     {% if v1.ocenka is defined and v1.ocenka == i %}
                                                         selected="selected"
+                                                        
+                                                        {%  if price_hour1_now == ''%}
+                                                        {%  set price_hour1_now = price_hour %}
+                                                        {% endif %}
+
                                                     {% elseif v1.ocenka_auto is defined and v1.ocenka_auto == i and v1.ocenka is not defined %}
+                                                        
                                                         {%  set price_hour_now = price_hour %}
+                                                        
+                                                        {%  if price_hour1_now == ''%}
+                                                        {%  set price_hour1_now = price_hour %}
+                                                        {% endif %}
+                                                        
                                                         selected="selected"
                                                     {% endif %} 
 
                                                     xprice="{{price_hour}}" 
                                                     >
-                                                {{ i }} {% if v1.ocenka_auto is defined and v1.ocenka_auto == i %}(А){% endif %} » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+
+                                                {{ i }} 
+
+                                                {% if v1.ocenka_auto is defined and v1.ocenka_auto == i %}(А){% endif %} 
+
+                                                » {% if price_hour > 0 %}{{price_hour}}р/ч{% endif %}
+                                                
+                                                {# pr1 {{ price_hour1_now }} #}
+
                                             </option>
                                         {% endif %}
 
@@ -288,6 +322,11 @@
                                     #}
 
                                 </select>
+
+                                {% if price_hour1_now != '' %}
+                                {% set summa_day = hours_on_job * price_hour1_now %}
+                                {% endif %}
+
                             {% endif %}
 
 
@@ -295,20 +334,23 @@
 
                     {% endif %}
 
-
-
+                    
                     {# для динамичного показа суммы за смену 1911 + #}
-                    <div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену">...</div>
+                    <div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену">
+                        
+                        {% if summa_day is defined and summa_day != 0 %}
+                            {{ summa_day }}
+                        {% else %}
+                            ...
+                        {% endif %}
+                    </div>
+
                     {#<div class="smena_summa smena_summa_{{ v1.id }}" title="сумма за смену">{{ price_hour * price_hour_now }}</div>#}
                     {# для динамичного показа суммы за смену 1911 - #}
-
-
 
                     {#
                     <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
                     #}
-
-
 
                 </div>
 
