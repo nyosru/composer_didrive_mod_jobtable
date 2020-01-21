@@ -23,14 +23,26 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 
 
-$sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
-// \f\pa($sps);
 
-$nn = 1;
+
+// --------------------------------- //
+// защита от повторного срабатывания в секундах
+$time_expire = 60 * 60 * 11;
+
 \f\timer_start(5);
 $txt = 'обновляем автооценки дней ТП за текущий месяц';
 $txt0 = '';
 $txt2 = '';
+
+// --------------------------------- // 
+
+
+
+
+$sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
+// \f\pa($sps);
+
+$nn = 1;
 
 foreach ($sps as $k => $v) {
 
@@ -84,7 +96,7 @@ foreach ($sps as $k => $v) {
         // \f\pa($result, '', '', 'result');
         curl_close($curl); //закрытие сеанса
 
-        \f\Cash::setVar($temp_var, 1, 60 * 5);
+        \f\Cash::setVar($temp_var, 1, ( $time_expire ?? 60 * 60 * 5));
     }
 }
 
@@ -100,34 +112,34 @@ if (!empty($txt2))
 
 $txt .= PHP_EOL . 'таймер: ' . \f\timer_stop(5, 'str');
 
-\nyos\Msg::sendTelegramm($txt, null, 1);
+\nyos\Msg::sendTelegramm($txt, null, 2);
 
 die('<pre>' . $txt);
 
-exit;
-
-
-
-$in = [];
-
-$w = 0;
-
-foreach ($checks as $k => $v) {
-
-    $w++;
-
-    if ($w >= 10)
-        break;
-
-    \f\pa($v);
-
-    $v['new_hour'] = \Nyos\mod\IikoChecks::calcHoursInSmena(date('Y-m-d H:i', strtotime($v['start'])), date('Y-m-d H:i', strtotime($v['fin'])));
-    \f\pa($v);
-
-    $in[$v['id']] = ['hour_on_job' => $v['new_hour']];
-}
-
-$res = \Nyos\mod\items::saveNewDop($db, $in);
-\f\pa($res);
-
-exit;
+//exit;
+//
+//
+//
+//$in = [];
+//
+//$w = 0;
+//
+//foreach ($checks as $k => $v) {
+//
+//    $w++;
+//
+//    if ($w >= 10)
+//        break;
+//
+//    \f\pa($v);
+//
+//    $v['new_hour'] = \Nyos\mod\IikoChecks::calcHoursInSmena(date('Y-m-d H:i', strtotime($v['start'])), date('Y-m-d H:i', strtotime($v['fin'])));
+//    \f\pa($v);
+//
+//    $in[$v['id']] = ['hour_on_job' => $v['new_hour']];
+//}
+//
+//$res = \Nyos\mod\items::saveNewDop($db, $in);
+//\f\pa($res);
+//
+//exit;
