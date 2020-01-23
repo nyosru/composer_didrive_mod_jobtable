@@ -1,14 +1,10 @@
 {% spaceless %}
 
     <div class="trow" id="user_tr_{{ sp_now }}_{{ user5 }}" >
+
         <div class="tcell stick-left bg-white">
 
-            {# шестерёнка у сотрудника, отключил, нет параметров для сотрудника #}
-            {#% if 1 == 2 %}
-                <div style="float:right; display:inline-block;" class="option_img" >
-                    <i onclick='$(".user_{{ sp_now }}_{{ man.id }} .show_2div").toggle("slow");' class="fa fa-cog"></i>
-                </div>
-            {% endif %#}
+            {# шестерёнка у сотрудника #}
 
             {% if 1 == 1 %}
 
@@ -18,8 +14,7 @@
 
                 <div class="dropdown-menu">
 
-                    {# модальные окошки, само окошко в самом низу #}
-
+                    {# универсальное модальное окошко используем #}
                     <a 
                         href="#" 
                         class="dropdown-item btn-light base_modal_go"
@@ -27,255 +22,127 @@
 
                         modal_header='назначения сотрудника'
                         ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
-                        ajax_vars='action=show_naznach&view=html&user={{ man.id }}&s={{ creatSecret( man.id ) }}'
+                        ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'
 
                         >
                         список назначений сотрудника
                     </a>
 
-                    {% if 1 == 2 %}                    
-
-                        {% if 1 == 2 %}
-
-                            <a href="#" 
-                               class="dropdown-item btn-light"
-                               data-toggle="modal" data-target="#addPesonalOnSp" onclick="
-                                       $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                       $('#add_person__sp').val('{{ sp_now }}');
-                                       $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                                       return false;
-                               " >назначить сотрудника на точку продаж
-                                <br/><small>первое назначение</small></a>
-
-                            <a href="#" 
-                               class="dropdown-item btn-light"
-                               data-toggle="modal" data-target="#movePesonalOnSp" onclick="
-                                       $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                       $('#move_person__sp').val('{{ sp_now }}');
-                                       $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                               " >назначить сотрудника на данную точку</a>
-                        {% endif %}
-
-                        <a href="#" 
-                           class="dropdown-item btn-light"
-                           data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
-                                   $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                   $('#add_person__sp').val('{{ sp_now }}');
-                                   $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                           " >назначить сотрудника</a>
-
-                        <a href="#" 
-                           class="dropdown-item btn-light jobdesc__record__auto_bonus_zp__m"
-
-                           sp="{{ sp_now }}"
-                           date="{{ date_start }}"
-
-                           res_to_id="res_new_autoocenka_{{ sp_now }}"
-                           answer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
-
-                           {#
-                            xdata-toggle="modal" 
-                            xdata-target="#addPesonalOnSp2" 
-                            xonclick="
-                                    $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                    $('#add_person__sp').val('{{ sp_now }}');
-                                    $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
-                            " 
-    
-                                xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
-                                xclass="delete_workman_from_sp btn btn-xs btn-light"
-    
-                                xforajax_action="load_checks_for_1jobman"
-                                xforajax_s="{{ creatSecret('load_checks_for_1jobman') }}"
-                                xforajax_show_timer="da"
-    
-    
-                                xworkman="{{ man.id }}"
-                                xwm_s="{{ creatSecret(man.id) }}"
-                           #}
-
-                           >начислить бонусы к ЗП за месяц
-                            <br/>
-                            <small>страница будет обновлена</small>
-                        </a>
-
-                        <div id="res_new_autoocenka_{{ sp_now }}" ></div>                                       
-
-                        {#
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Separated link</a>
-                        #}
-                    {% endif %}
-
                 </div>
             {% endif %}
 
+            {#<div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>#}
+            <div style="color:gray;">{{ user_v['dolgnost_name'] }}</div>
 
-
-            {#<sup title="{{ dolgn.data[now_job.dolgnost]['head'] }}">{{ dolgn.data[now_job.dolgnost]['head'][:6] }}</sup>#}
-            <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>
-
-            <nobr title="#{{ man['id'] }}">
-
-                {{ man['dop']['lastName'] }}
-                {{ man['dop']['firstName'] }}
-
-                {#{ pa(man_now) }#}
-                {#% set man1 = man['data'][v1.dop.jobman] %#}
-
+            <nobr title="#{{ user_v['jobman'] }}">
+                {{ user_v['fio'] }}
             </nobr>
 
-            {#
-            <a href="" onclick="$('#r_{{ sp_now }}_{{ man.id }}').toggle('slow'); return false;">разработка, показать параметры</a>
-            <div id="r_{{ sp_now }}_{{ man.id }}" style="max-height: 250px; overflow: auto; display:none;" >
-            {{ pa(now_job) }}
-            {{ pa(man) }}
-            </div>
-            #}
-
-            {% if type_job == 'spec' %}
-                <abbr class="alert-danger" style="padding:1px 5px;" title="был назначен с другой точки">S</abbr>
+            {% if user_v['type_job'] is defined and user_v['type_job'] == 'spec' %}
+                <abbr class="alert-danger" style="padding:1px 5px;" title="был СПЕЦ назначен с другой точки">S</abbr>
             {% endif %}
-
-            <div class="user_{{ sp_now }}_{{ man.id }}" >
-                <div class="show_2div" style="display:none;" >
-
-                    {# только админ #}
-                    {% if 1 == 2 %}
-                        <a href="#" 
-
-                           xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
-                           class="delete_workman_from_sp btn btn-xs btn-light"
-
-                           forajax_action="load_checks_for_1jobman"
-                           forajax_s="{{ creatSecret('load_checks_for_1jobman') }}"
-                           forajax_show_timer="da"
-
-                           sp="{{ sp_now }}"
-                           workman="{{ man.id }}"
-                           wm_s="{{ creatSecret(man.id) }}"
-                           res_to_id="resto_del_{{ sp_now }}_{{ man.id }}"
-
-                           answer="Совсем удалить сотрудника с данной точки продаж (вся история 'сотрудник + точка' будет удалена) ?"
-
-                           >удалить сотрудника</a>
-
-                        <div id="resto_del_{{ sp_now }}_{{ man.id }}" ></div>
-                    {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    {# не грузило нифига #}
-                    {% if 1 == 2 %}
-                        <br/>
-                        <a href="#" class="user_{{ sp_now }}_{{ man.id }} get_checks btn btn-xs btn-light" 
-
-                           forajax_action="load_checks_for_1jobman" 
-                           forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
-                           forajax_show_timer="da" 
-
-                           forajax_sp="{{ sp_now }}" 
-                           forajax_jobman="{{ man.id }}" 
-                           forajax_datestart="{{ date_start }}"
-
-                           forajax_datefin="{{ date_finish }}" 
-                           res_to_id="resto_{{ sp_now }}_{{ man.id }}"
-                           answer="Грузим check-in и check-out сотрудника за месяц (все имеющиеся чеки добавленные с сервера ИИКО будут удалены, в добавленных периодах не будет оценок если стоят)"
-
-                           >загрузить чекины за месяц</a>
-                        <div id="resto_{{ sp_now }}_{{ man.id }}" ></div>
-                    {% endif %}
-
-
-
-
-                    <br/>
-                    <br/>
-                    <p><small>для назначения новой должности, используйте шестерёнку около названия точки продаж</small></p>
-
-                    {% if 1 == 2 %}
-
-                        <a href="#" 
-                           data-toggle="modal" data-target="#setNewDolgn" onclick="
-                                   $('#add_person1__workman').val('{{ man.id }}');
-                                   $('#add_person1__workman_fio').html('{{ man['dop']['lastName'] }} {{ man['dop']['firstName'] }}');
-
-                                   $('#add_person1__sp_name').html('{{ sp['data'][sp_now]['head'] }}');
-
-                                   $('#add_person1__sp').val('{{ sp_now }}');
-                                   $('#add_person1__sp_s').val('{{ creatSecret(sp_now) }}');
-
-                           " 
-                           class="btn btn-xs btn-light" ><span class="fa fa-plus" ></span> назначить новую должность</a>
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-            {#{ pa(v75) }#}
 
         </div>
 
-        {# проход по датам по человеку #}
 
+
+
+        {#
+          pa(now_dolgn) }}
+        {{  pa(now_dolgn) }}
+          #}  
+
+
+
+
+
+        {% set man = user_v['jobman'] %}
+
+        {# проход по датам по человеку #}
         {% set last_jobday = 0 %}
 
-        {% for i in range(low=0, high=35, step=1) %}  
 
-            {% set now_spec_nazn_nn = 0 %}
-            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
 
-            {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
-                {# текущая дата #}
-                {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                {# текущий чел #}
-                {#{ man }#}
 
-                {% set now_job_cfg = jobdesc__getDayNaznachJobman( db, user5, date ) %}
-                {#{ pa(now_job_cfg,2) }#}
 
-                <div class="tcell c{{ man.id }}_{{sp_now}}_{{ date }}">
+        {% set now_dolgn = '' %}
 
-                    {% if now_job_cfg.data.sale_point is defined and now_job_cfg.data.sale_point != sp_now %}
+        {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
+        {% for k,v in getListJobsPeriodAll.data.norm.data[man] if now_dolgn == '' %}
+            {% set now_dolgn = v %}
+        {% endfor %}
 
-                        {#{ pa(now_job_cfg) }#}
-                        {#{ pa(dolgn) }#}
+        {#{ pa(now_dolgn) }#}
 
-                        <div style="background-color: rgba(0,255,0,0.1); padding: 5px;" >
-                            работает в {{ sps[now_job_cfg.data.sale_point]["head"] }} {{ dolgn['data'][now_job_cfg.data.dolgnost]['head'] }}
+        {% for i in range(low=0, high=31, step=1) %}  
+
+            {#% set now_spec_nazn_nn = 0 %}
+            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %#}
+
+            {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+            {% if date <= date_finish %}
+
+                {# если было новое назначение #}
+                {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
+                    {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
+                {% endif %}
+
+                <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
+                    {#% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %#}
+                    {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.htm' %}
+                </div>
+
+                {% if 1 == 2 %}
+
+                    {% set now_spec_nazn_nn = 0 %}
+                    {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+
+                    {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                        {# текущая дата #}
+                        {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                        {# текущий чел #}
+                        {#{ man }#}
+
+                        {% set now_job_cfg = jobdesc__getDayNaznachJobman( db, user5, date ) %}
+                        {#{ pa(now_job_cfg,2) }#}
+
+                        <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
+
+                            {% if now_job_cfg.data.sale_point is defined and now_job_cfg.data.sale_point != sp_now %}
+
+                                {#{ pa(now_job_cfg) }#}
+                                {#{ pa(dolgn) }#}
+
+                                <div style="background-color: rgba(0,255,0,0.1); padding: 5px;" >
+                                    работает в {{ sps[now_job_cfg.data.sale_point]["head"] }} {{ dolgn['data'][now_job_cfg.data.dolgnost]['head'] }}
+                                </div>
+
+                            {% else %}
+
+                                {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
+                                {% if date|date("U") < "now"|date("U") %}                    
+
+                                    {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+
+                                {% endif %}
+
+                            {% endif %}
+
                         </div>
-
-                    {% else %}
-
-                        {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
-                        {% if date|date("U") < "now"|date("U") %}                    
-
-                            {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
-
-                        {% endif %}
 
                     {% endif %}
                     
-                </div>
-
+                {% endif %}
+                
             {% endif %}
 
         {% endfor %}
+
+
+
 
     </div>
 

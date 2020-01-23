@@ -114,7 +114,8 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
     }
 
     usort($naznach, "\\f\\sort_ar_date");
-// \f\pa($naznach, 2, '', '$naznach');
+
+    //\f\pa($naznach, 2, '', '$naznach');
 
     echo
 // '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
@@ -144,7 +145,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
         . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
         . '<td>' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
         . '<td class="r" >' . $v['date'] . '</td>'
-        . '<td class="r" >' . ( $v['date_fin'] ?? '-' ) . '</td>'
+        . '<td class="r" >' . ( $v['date_finish'] ?? '-' ) . '</td>'
         . '</tr>';
     }
 
@@ -276,6 +277,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
 
 
+
 // пишем бонусы по зарплате за месяц по 1 точке
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
 
@@ -298,6 +300,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
     // \f\pa($ww,'','','ww');
+    // exit;
 
     $e = [];
 

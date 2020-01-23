@@ -1,45 +1,8 @@
 {% spaceless %}
 
-        
-            {% for ckeck_id, check in getListJobsPeriodAll.data.checks if check.jobman == user_v['jobman'] %}    
-                
-                {{ pa(check) }}
-                
-                {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.smena.htm' %}
-                
-            {% endfor %}
-    
-            <hr>
-            <hr>
-            <hr>
-            <hr>
-            
-        {% if checki[date][man.id] is defined %}
-            {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
-
-                {{ pa(k1) }}
-                {{ pa(v1) }}
-                {#% if payed[v1.id ] #}
-
-                {# смена #}
-                {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
-
-            {% endfor %}
-        {% endif %}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
     {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
-    {{ pa(now_job) }}
-
+    {#{ pa(now_job) }#}
+    
     {% set skip_smens_iiko = false %}
 
     {% if now_job.type2 is defined and now_job.type2 == 'spec' and now_job.d1 == now_job.d2 %}
@@ -318,6 +281,17 @@
 
         {% endif %}
 
+
+
+
+
+
+
+
+
+
+
+
         {#
         {{ pa(spoint) }}
         {{ pa(date) }}
@@ -326,73 +300,74 @@
 
         {% set now_spec_nazn = false %}
 
-        {% if spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] is defined and spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] != now_job.sale_point %}
+        {% if 
+        spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] is defined 
+        and spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] != now_job.sale_point %}
 
-            {#{ pa(spec_jobs_on_sp[now_job.jobman][now_job.d1]) }#}
-            {#{ pa(now_job) }#}
-            {#{ pa(sps) }#}
-
-            <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                спец.назначение Отправлен на работу в {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point']]['head'] }}
-            </div>
-            {% set now_spec_nazn = true %}
-
-        {% endif %}
-
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        {# comments.data #}
-        {% if comments.data is defined %}
-
-            {#{ pa(comments.data ) }#}
-
-            {% for k1, v1 in comments.data if v1.dop.sale_point == sp_now and v1.dop.date_to == date and v1.dop.jobman == man.id and v1.status == 'show' %} 
-
-                <div class="show_1comment" >
-                    <a href="#" class="act act_smena btn3" 
-                       style="float:right;"
-                       go_answer="удалить комментарий ?"
-                       action="delete_comment" id2="{{ v1.id }}" s2="{{ creatSecret( v1.id ) }}" resto="ares{{ v1.id }}" show_id="ares{{ v1.id }}" hidethis="da" ><i class="fa fa-times"></i></a>
-                    {{ v1.dop.comment }}</div>
-
-                <div id="ares{{ k1 }}" style="display:none;"></div>
-
-                {#{ pa(v1) }#}
-
-            {% endfor %}
-
-        {% endif %}
-
-
-
-        {# money_dops #}
-        {% if money_dops[now_job.sale_point][now_job.jobman][date] is defined %}
-            {% for k,money in money_dops[now_job.sale_point][now_job.jobman][date] %}
-                {% if money.type2 == 'plus' %}
-                    {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
-                {% elseif money.type2 == 'minus' %}
-                    {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
+        {#{ pa(spec_jobs_on_sp[now_job.jobman][now_job.d1]) }#}
         {#{ pa(now_job) }#}
+        {#{ pa(sps) }#}
+
+        <div class="alert-warning text-center" style="padding: 5px 2px;" >
+            спец.назначение Отправлен на работу в {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point']]['head'] }}
+        </div>
+        {% set now_spec_nazn = true %}
 
     {% endif %}
 
 
 
+    {% if checki[date][man.id] is defined %}
 
-{% endspaceless %}
+        {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
+
+            {#{ pa(v1) }#}
+            {#% if payed[v1.id ] #}
+
+            {# смена #}
+            {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
+
+        {% endfor %}
+    {% endif %}
+
+
+    {# comments.data #}
+    {% if comments.data is defined %}
+
+        {#{ pa(comments.data ) }#}
+
+        {% for k1, v1 in comments.data if v1.dop.sale_point == sp_now and v1.dop.date_to == date and v1.dop.jobman == man.id and v1.status == 'show' %} 
+
+            <div class="show_1comment" >
+                <a href="#" class="act act_smena btn3" 
+                   style="float:right;"
+                   go_answer="удалить комментарий ?"
+                   action="delete_comment" id2="{{ v1.id }}" s2="{{ creatSecret( v1.id ) }}" resto="ares{{ v1.id }}" show_id="ares{{ v1.id }}" hidethis="da" ><i class="fa fa-times"></i></a>
+                {{ v1.dop.comment }}</div>
+
+            <div id="ares{{ k1 }}" style="display:none;"></div>
+
+            {#{ pa(v1) }#}
+
+        {% endfor %}
+
+    {% endif %}
+
+
+
+    {# money_dops #}
+    {% if money_dops[now_job.sale_point][now_job.jobman][date] is defined %}
+        {% for k,money in money_dops[now_job.sale_point][now_job.jobman][date] %}
+            {% if money.type2 == 'plus' %}
+                {% include dir_mod_now_mod_ditpl~'body.mans.item.bonus.htm' %}
+            {% elseif money.type2 == 'minus' %}
+                {% include dir_mod_now_mod_ditpl~'body.mans.item.minusa.htm' %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {#{ pa(now_job) }#}
+
+    {% endif %}
+
+        {% endspaceless %}

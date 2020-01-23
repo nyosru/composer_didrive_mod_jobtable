@@ -1792,8 +1792,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                 $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
 
-
-
 //                if (hidethis == 1) {
 //                    $th.hide();
 //                }
