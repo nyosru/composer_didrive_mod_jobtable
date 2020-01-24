@@ -1,19 +1,18 @@
 {% spaceless %}
 
-    <div class="xtext-center show_down_hiden plus {{ plus.status }}" >
-        <b>+{{ plus.summa|number_format(0, '.', '`') }}</b> &nbsp;
-        <small>{{ plus.text }}</small>
+    <div class="xtext-center show_down_hiden plus {{ item.status }}" >
+        <b>+{{ item.summa|number_format(0, '.', '`') }}</b> &nbsp;
+        <small>{{ item.text }}</small>
 
-        {% if plus.status == 'hide' %}
+        {% if item.status == 'hide' %}
             <br/>отменено<br/>
         {% endif %}
 
         <span class="hide_down" >
             {#{ pa(plus) }#}
 
-            <Br/>
+            {% if item.status == 'hide' %}
 
-            {% if plus.status == 'hide' %}
                 {#
                 <a href="#" class="act act_smena btn3" action="recover_smena" 
                    go_answer="Хотите восстановить смену ?"
@@ -31,25 +30,25 @@
                    {# модуль итемов #}
                    itemsmod="072.plus"
                    {# id итема #}
-                   item_id="{{ plus.id }}"
+                   item_id="{{ item.id }}"
 
                    {# новое значение статуса записи #}
                    new_status="show"
                    {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~plus.id~'-show' ) }}" 
+                   s3="{{ creatSecret( '072.plus-'~item.id~'-show' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ plus.id }}" 
+                   show_id="ares{{ item.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ plus.id }}" 
+                   res_to_id="ares{{ item.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Восстановлено"
 
                    >восстановить</a>
 
-            {% elseif plus.status == 'show' %}
+            {% elseif item.status == 'show' %}
 
                 {#
                 <a href="#" class="act act_smena btn3" 
@@ -70,26 +69,26 @@
                    {# модуль итемов #}
                    itemsmod="072.plus"
                    {# id итема #}
-                   item_id="{{ plus.id }}"
+                   item_id="{{ item.id }}"
 
                    {# название доп параметра #}
                    {# dop_name="pay_check" #}
                    {# новое значение параметра #}
                    {# dop_new_value="no" #}
                    {# секрет #}
-                   {# s3="{{ creatSecret( '050.chekin_checkout-'~plus.id~'-pay_check-no' ) }}"  #}
+                   {# s3="{{ creatSecret( '050.chekin_checkout-'~item.id~'-pay_check-no' ) }}"  #}
 
                    {# новое значение статуса записи #}
                    new_status="hide"
                    {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~plus.id~'-hide' ) }}" 
+                   s3="{{ creatSecret( '072.plus-'~item.id~'-hide' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ plus.id }}" 
+                   show_id="ares{{ item.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ plus.id }}" 
+                   res_to_id="ares{{ item.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Отменено"
 
@@ -100,7 +99,7 @@
             {% endif %}
 
         </span>
-        <div id="ares{{ plus.id }}" style="display:none;"></div>
+        <div id="ares{{ item.id }}" style="display:none;"></div>
     </div>
 
 {% endspaceless %}

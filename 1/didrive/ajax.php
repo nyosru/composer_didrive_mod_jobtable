@@ -1741,6 +1741,12 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_ocenka') {
 //
 elseif (isset($_POST['action']) && ( $_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 
+    // удаляем запись кеша главного массива данных
+    if (!empty($_REQUEST['delete_cash_start_date'])) {
+        $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . date('Y-m-01',strtotime($_REQUEST['delete_cash_start_date'])) ]);
+        // \f\pa($e);
+    }
+
 // require_once DR . '/all/ajax.start.php';
 
     $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
@@ -1865,23 +1871,20 @@ elseif (
                     . $indb['hour_on_job']
                     . '</nobr>'
                     . '</div>', true);
-        } elseif ($_POST['action'] == 'add_comment') {
+        }
 
-            $indb = $_REQUEST;
+        // добавляем комментарий к дню работника
+        elseif ($_POST['action'] == 'add_comment') {
 
-//array(
-//                // 'head' => rand(100, 100000),
-//                'jobman' => $_REQUEST['jobman'],
-//                'sale_point' => $_REQUEST['salepoint'],
-//                'start' => date('Y-m-d H:i', $start_time),
-//                'fin' => date('Y-m-d H:i', $fin_time)
-//            )
-//\f\pa( $indb );
-            \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['073.comments'], $indb);
+            // удаляем запись кеша главного массива данных
+            $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
+            // \f\pa($e);
 
-            \f\end2('<div style="background-color: gray; padding:5px;" >'
-                    . '<b class="warn" >добавили комментарий</b>'
-                    . '<br/>'
+            $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
+
+            \f\end2('<div class="warn" style="padding:5px;" >'
+                    . '<div style="padding:5px; margin-bottom: 5px; background-color: rgba(0,0,0,0.1);" >добавили комментарий</div>'
+                    //. '<br/>'
                     . $_REQUEST['comment']
                     . '</div>', true);
         }

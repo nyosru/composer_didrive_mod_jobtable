@@ -41,7 +41,8 @@
     {# список сотрудников на указанной ТП #}
     {#{ pa(getListJobsPeriodAll.data.job_on_sp[sp_now]) }#}
 
-    {#{ pa(getListJobsPeriodAll,2) }#}
+    {#{ pa(getListJobsPeriodAll.data,2) }#}
+    {#{ pa(getListJobsPeriodAll.data.comments,2) }#}
 
     {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
     {# <br/>timer5: {{ didrive_f__timer_stop(99) }} #}

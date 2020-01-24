@@ -1,50 +1,114 @@
 {% spaceless %}
 
-    {#{ man }}
-    {{ sp_now }}
-    {{ pa(getListJobsPeriodAll.data.spec.data) }#}
+    {#{ man }#}
+    {#{ pa( item ) }#}
 
-    {% for k, spec in getListJobsPeriodAll.data.spec.data if spec.jobman == man and spec.sale_point == sp_now and spec.date == date %}
+    <div class="xtext-center show_down_hiden minus {{ item.status }}" >
 
-        спец
-        {{ pa(spec) }}
+        <b>{{ item.summa }}</b> &nbsp;
+        <small>{{ item.text }}</small>
 
-        <div class="alert-warning text-center" style="padding: 5px 2px;" >
-            спец. назначение<br/>в {{ sps[spec.sale_point]['head'] }} {{ dolgn[spec.dolgnost]['head'] }}
-        </div>
-
-    {% endfor %}
-
-    {% for k, spec in getListJobsPeriodAll.data.spec.data if spec.jobman == man and spec.sale_point != sp_now and spec.date == date %}
-
-        спец
-        {{ pa(spec) }}
-
-        <div class="alert-warning text-center" style="padding: 5px 2px;" >
-            спец. назначение сегодня <u>работает на {{ sps[spec.sale_point]['head'] }}</u>
-        </div>
-
-    {% endfor %}
-
-
-    
-    
-    {% if 1 == 2 %}
-        {% if spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] is defined and spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] != now_job.sale_point %}
-
-            {#{ pa(spec_jobs_on_sp[now_job.jobman][now_job.d1]) }#}
-            {#{ pa(now_job) }#}
-            {#{ pa(sps) }#}
-
-            <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                спец.назначение Отправлен на работу в {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point']]['head'] }}
-            </div>
-            {% set now_spec_nazn = true %}
-
-        {% else %}
-            {% set now_spec_nazn = false %}
+        {% if item.status == 'hide' %}
+            <br/>отменено<br/>
         {% endif %}
-    {% endif %}
 
+        <span class="hide_down" >
+            {#{ pa(minus) }#}
+
+            {% if item.status == 'hide' %}
+                {#
+                                    <a href="#" class="act act_smena btn3" action="recover_smena" 
+                                       go_answer="Хотите восстановить смену ?"
+                                       id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
+                #}
+
+                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
+                   xstyle='display:none;'
+                   {# действие после вопроса #}
+                   comit_answer="Отменить взыскание ?"
+
+                   {# замена доп параметра #}
+                   action="edit_dop_item"
+
+                   {# модуль итемов #}
+                   itemsmod="072.vzuscaniya"
+                   {# id итема #}
+                   item_id="{{ item.id }}"
+
+                   {# новое значение статуса записи #}
+                   new_status="show"
+                   {# секрет #}
+                   s3="{{ creatSecret( '072.vzuscaniya-'~item.id~'-show' ) }}" 
+
+                   {# скрыть ссылку после клика #}
+                   hidethis="da" 
+                   {# сделать видимым блок по id #}
+                   show_id="ares{{ item.id }}" 
+                   {# id куда печатаем результат #}
+                   res_to_id="ares{{ item.id }}" 
+                   {# сообщение печатаем если всё ок #}
+                   msg_to_success="Восстановлено"
+
+                   >восстановить</a>
+
+
+
+            {% elseif item.status == 'show' %}
+
+                {#
+                <a href="#" class="act act_smena btn3" 
+                   go_answer="Хотите удалить минус ?"
+                   action="delete_minus" id2="{{ mk }}" s2="{{ creatSecret( mk ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" 
+                   
+                   >отменить взыскание</a>
+                #}
+
+
+                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
+                   xstyle='display:none;'
+                   {# действие после вопроса #}
+                   comit_answer="Отменить взыскание ?"
+
+                   {# замена доп параметра #}
+                   action="edit_dop_item"
+
+                   {# модуль итемов #}
+                   itemsmod="072.vzuscaniya"
+                   {# id итема #}
+                   item_id="{{ item.id }}"
+
+                   {# название доп параметра #}
+                   {# dop_name="pay_check" #}
+                   {# новое значение параметра #}
+                   {# dop_new_value="no" #}
+                   {# секрет #}
+                   {# s3="{{ creatSecret( '050.chekin_checkout-'~item.id~'-pay_check-no' ) }}"  #}
+
+                   {# новое значение статуса записи #}
+                   new_status="hide"
+                   {# секрет #}
+                   s3="{{ creatSecret( '072.vzuscaniya-'~item.id~'-hide' ) }}" 
+
+                   {# скрыть ссылку после клика #}
+                   hidethis="da" 
+                   {# сделать видимым блок по id #}
+                   show_id="ares{{ item.id }}" 
+                   {# id куда печатаем результат #}
+                   res_to_id="ares{{ item.id }}" 
+                   {# сообщение печатаем если всё ок #}
+                   msg_to_success="Отменено"
+
+                   {# print_res_to_id="ares{{ k1 }}" #}
+
+                   >Отменить взыскание</a>
+
+
+            {% endif %}
+
+        </span>
+
+        <div id="ares{{ item.id }}" style="display:none;"></div>
+
+    </div>
 
 {% endspaceless %}

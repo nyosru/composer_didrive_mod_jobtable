@@ -1,50 +1,17 @@
 {% spaceless %}
 
-    {#{ man }}
-    {{ sp_now }}
-    {{ pa(getListJobsPeriodAll.data.spec.data) }#}
+    {#{ pa(item) }#}
+    <div class="show_1comment" >
+        <a href="#" class="act act_smena btn3" 
+           style="float:right;"
+           go_answer="удалить комментарий ?"
+           action="delete_comment" id2="{{ item.id }}" s2="{{ creatSecret( item.id ) }}" 
+           resto="ares{{ item.id }}" show_id="ares{{ item.id }}" 
+           delete_cash_start_date="{{ date }}"
+           hidethis="da" ><i class="fa fa-times"></i></a>
+            {{ item.comment }}
+    </div>
 
-    {% for k, spec in getListJobsPeriodAll.data.spec.data if spec.jobman == man and spec.sale_point == sp_now and spec.date == date %}
-
-        спец
-        {{ pa(spec) }}
-
-        <div class="alert-warning text-center" style="padding: 5px 2px;" >
-            спец. назначение<br/>в {{ sps[spec.sale_point]['head'] }} {{ dolgn[spec.dolgnost]['head'] }}
-        </div>
-
-    {% endfor %}
-
-    {% for k, spec in getListJobsPeriodAll.data.spec.data if spec.jobman == man and spec.sale_point != sp_now and spec.date == date %}
-
-        спец
-        {{ pa(spec) }}
-
-        <div class="alert-warning text-center" style="padding: 5px 2px;" >
-            спец. назначение сегодня <u>работает на {{ sps[spec.sale_point]['head'] }}</u>
-        </div>
-
-    {% endfor %}
-
-
-    
-    
-    {% if 1 == 2 %}
-        {% if spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] is defined and spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point'] != now_job.sale_point %}
-
-            {#{ pa(spec_jobs_on_sp[now_job.jobman][now_job.d1]) }#}
-            {#{ pa(now_job) }#}
-            {#{ pa(sps) }#}
-
-            <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                спец.назначение Отправлен на работу в {{ sp.data[spec_jobs_on_sp[now_job.jobman][now_job.d1]['sale_point']]['head'] }}
-            </div>
-            {% set now_spec_nazn = true %}
-
-        {% else %}
-            {% set now_spec_nazn = false %}
-        {% endif %}
-    {% endif %}
-
+    <div id="ares{{ item.id }}" style="display:none;"></div>
 
 {% endspaceless %}

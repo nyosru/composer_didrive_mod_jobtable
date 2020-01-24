@@ -104,8 +104,8 @@
                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                      ><i 
                         xonclick='
-                        $(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
-                        //$(".dopmenu{{ man.id }}_{{sp_now}}_{{ date }}").toggle("slow");
+                        $(".c{{ man }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
+                        //$(".dopmenu{{ man }}_{{sp_now}}_{{ date }}").toggle("slow");
                         return false;' 
                         class="fa fa-cog"
                         ></i></div>
@@ -146,25 +146,27 @@
                        data-toggle2="modal" 
                        data-target2="#add_comment" 
 
-                       jobman="{{ man.id }}"
-                       sale_point="{{ spoint.id }}"
+                       jobman="{{ man }}"
+                       sale_point="{{ sp_now }}"
 
                        date_to="{{ date }}"
-                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}comment"
+                       print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}comment"
 
                        creator="{{ session.now_user_di.id }}"
 
-                       toform_sp="{{ spoint.id }}"
-                       toform_sp_name="{{ spoint.head }}"
+                       toform_sp="{{ sp_now }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                       toform_jobman="{{ man.id }}"
-                       toform_jobman_name="{{ man.head }}"
+                       toform_jobman="{{ man }}"
+                       toform_jobman_name="{{ mans[man]['head'] }}"
 
 
-                       {% set ss = spoint.id ~ man.id %}
+                       {% set ss = sp_now ~ man %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
 
+                       delete_cash_start_date="{{ date_start }}"
+                       
                        ><nobr><span class="fa fa-plus" ></span> комментарий</nobr></a>
 
                     <a href=""
@@ -172,21 +174,21 @@
                        xclass="put_var_in_modal btn btn-xs btn-light" 
                        class="put_var_in_modal2 dropdown-item btn-light"
 
-                       jobman="{{ man.id }}"
+                       jobman="{{ man }}"
                        {# salepoint="{{ sp_oint.id }}" #}
                        salepoint="{{ sp_now }}"
 
-                       {# toform_sp="{{ spoint.id }}" #}
+                       {# toform_sp="{{ sp_now }}" #}
                        toform_sp="{{ sp_now }}"
-                       toform_sp_name="{{ spoint.head }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                       toform_jobman="{{ man.id }}"
-                       toform_jobman_name="{{ man.head }}"
+                       toform_jobman="{{ man }}"
+                       toform_jobman_name="{{ mans[man]['head'] }}"
 
                        date="{{ date }}"
-                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
+                       print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}"
 
-                       {% set ss = spoint.id ~ pv.id %}
+                       {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
 
@@ -199,19 +201,19 @@
                        xclass="put_var_in_modal btn btn-xs btn-light" 
                        class="put_var_in_modal2 dropdown-item btn-light"
 
-                       jobman="{{ man.id }}"
+                       jobman="{{ man }}"
                        salepoint="{{ sp_now }}"
 
                        toform_sp="{{ sp_now }}"
-                       toform_sp_name="{{ spoint.head }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                       toform_jobman="{{ man.id }}"
-                       toform_jobman_name="{{ man.head }}"
+                       toform_jobman="{{ man }}"
+                       toform_jobman_name="{{ mans[man]['head'] }}"
 
                        date="{{ date }}"
-                       print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+                       print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus"
 
-                       {% set ss = spoint.id ~ pv.id %}
+                       {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
 
@@ -230,24 +232,24 @@
 
                        date_finish="{{ date }}"
 
-                       res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
+                       res_to="res{{ sp_now }}{{ man }}{{ date }}remove_job"
 
                        {#                                                         
-                        jobman="{{ man.id }}"
+                        jobman="{{ man }}"
                         salepoint="{{ sp_now }}"
         
                         id_set ="{{ now_dolgn.id }}"
         
                         toform_sp="{{ sp_now }}"
-                        toform_sp_name="{{ spoint.head }}"
+                        toform_sp_name="{{ sps[sp_now]['head'] }}"
         
-                        toform_jobman="{{ man.id }}"
-                        toform_jobman_name="{{ man.head }}"
+                        toform_jobman="{{ man }}"
+                        toform_jobman_name="{{ mans[man]['head'] }}"
         
                         date="{{ date }}"
-                        print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+                        print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus"
         
-                        {% set ss = spoint.id ~ pv.id %}
+                        {% set ss = sp_now ~ pv.id %}
                         id2="{{ ss }}"
                         s2="{{ creatSecret( ss ) }}"
         
@@ -261,13 +263,13 @@
 
             </div>
 
-            <div id="res{{ spoint.id }}{{ man.id }}{{ date }}" ></div>
-            <div id="res{{ spoint.id }}{{ man.id }}{{ date }}comment" ></div>    
+            <div id="res{{ sp_now }}{{ man }}{{ date }}" ></div>
+            <div id="res{{ sp_now }}{{ man }}{{ date }}comment" ></div>    
 
-            <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
-            <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
+            <div id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
+            <div id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
 
-            <div id="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job" ></div>    
+            <div id="res{{ sp_now }}{{ man }}{{ date }}remove_job" ></div>    
 
         {% endif %}
 
@@ -302,13 +304,28 @@
 
         {% endfor %}
 
-
-
-
-        {% for k, plus in getListJobsPeriodAll.data.plusa if plus.jobman == man and plus.date_now == date %}
+        {# плюсы #}
+        {% for k, item in getListJobsPeriodAll.data.plusa if item.jobman == man and item.date_now == date %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
         {% endfor %}
 
+        {# минусы #}
+        {% for k, item in getListJobsPeriodAll.data.minusa if item.jobman == man and item.date_now == date %}
+            {#{ pa(item) }#}
+            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.minus.htm' %}
+        {% endfor %}
+
+        {# комментарии #}
+
+        {#{ pa( getListJobsPeriodAll.data.comments ) }#}
+
+        {% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man and item.date_to == date %}
+        {#% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man %#}
+            
+            {#{ pa( item ) }#}
+            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.comment.htm' %}
+            
+        {% endfor %}
 
         {#% for k, plus in getListJobsPeriodAll.data.minusa if plus.jobman == man %}    
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
@@ -338,8 +355,8 @@
 
 
 
-            {% if checki[date][man.id] is defined %}
-                {% for k1, v1 in checki[date][man.id] if v1.status != 'delete' %} 
+            {% if checki[date][man] is defined %}
+                {% for k1, v1 in checki[date][man] if v1.status != 'delete' %} 
 
                     {{ pa(k1) }}
                     {{ pa(v1) }}
@@ -361,7 +378,7 @@
 
 
 
-            {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man.id, date ) %}
+            {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, man, date ) %}
             {{ pa(now_job) }}
 
             {% set skip_smens_iiko = false %}
@@ -396,8 +413,8 @@
                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                          ><i 
                             xonclick='
-                            $(".c{{ man.id }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
-                            //$(".dopmenu{{ man.id }}_{{sp_now}}_{{ date }}").toggle("slow");
+                            $(".c{{ man }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
+                            //$(".dopmenu{{ man }}_{{sp_now}}_{{ date }}").toggle("slow");
                             return false;' 
                             class="fa fa-cog"
                             ></i></div>
@@ -412,19 +429,19 @@
                            data-toggle2="modal" 
                            data-target2="#add_jobday_for_jobman" 
 
-                           jobman="{{ man.id }}"
-                           salepoint="{{ spoint.id }}"
+                           jobman="{{ man }}"
+                           salepoint="{{ sp_now }}"
 
-                           toform_sp="{{ spoint.id }}"
-                           toform_sp_name="{{ spoint.head }}"
+                           toform_sp="{{ sp_now }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                           toform_jobman="{{ man.id }}"
-                           toform_jobman_name="{{ man.head }}"
+                           toform_jobman="{{ man }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
 
                            date="{{ date }}"
-                           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}"
+                           print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}"
 
-                           {% set ss = spoint.id ~ man.id %}
+                           {% set ss = sp_now ~ man %}
                            id2="{{ ss }}"
                            s2="{{ creatSecret( ss ) }}"
 
@@ -438,22 +455,22 @@
                            data-toggle2="modal" 
                            data-target2="#add_comment" 
 
-                           jobman="{{ man.id }}"
-                           sale_point="{{ spoint.id }}"
+                           jobman="{{ man }}"
+                           sale_point="{{ sp_now }}"
 
                            date_to="{{ date }}"
-                           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}comment"
+                           print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}comment"
 
                            creator="{{ session.now_user_di.id }}"
 
-                           toform_sp="{{ spoint.id }}"
-                           toform_sp_name="{{ spoint.head }}"
+                           toform_sp="{{ sp_now }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                           toform_jobman="{{ man.id }}"
-                           toform_jobman_name="{{ man.head }}"
+                           toform_jobman="{{ man }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
 
 
-                           {% set ss = spoint.id ~ man.id %}
+                           {% set ss = sp_now ~ man %}
                            id2="{{ ss }}"
                            s2="{{ creatSecret( ss ) }}"
 
@@ -464,21 +481,21 @@
                            xclass="put_var_in_modal btn btn-xs btn-light" 
                            class="put_var_in_modal2 dropdown-item btn-light"
 
-                           jobman="{{ man.id }}"
+                           jobman="{{ man }}"
                            {# salepoint="{{ sp_oint.id }}" #}
                            salepoint="{{ sp_now }}"
 
-                           {# toform_sp="{{ spoint.id }}" #}
+                           {# toform_sp="{{ sp_now }}" #}
                            toform_sp="{{ sp_now }}"
-                           toform_sp_name="{{ spoint.head }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                           toform_jobman="{{ man.id }}"
-                           toform_jobman_name="{{ man.head }}"
+                           toform_jobman="{{ man }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
 
                            date="{{ date }}"
-                           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}"
+                           print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}"
 
-                           {% set ss = spoint.id ~ pv.id %}
+                           {% set ss = sp_now ~ pv.id %}
                            id2="{{ ss }}"
                            s2="{{ creatSecret( ss ) }}"
 
@@ -491,19 +508,19 @@
                            xclass="put_var_in_modal btn btn-xs btn-light" 
                            class="put_var_in_modal2 dropdown-item btn-light"
 
-                           jobman="{{ man.id }}"
+                           jobman="{{ man }}"
                            salepoint="{{ sp_now }}"
 
                            toform_sp="{{ sp_now }}"
-                           toform_sp_name="{{ spoint.head }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                           toform_jobman="{{ man.id }}"
-                           toform_jobman_name="{{ man.head }}"
+                           toform_jobman="{{ man }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
 
                            date="{{ date }}"
-                           print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+                           print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus"
 
-                           {% set ss = spoint.id ~ pv.id %}
+                           {% set ss = sp_now ~ pv.id %}
                            id2="{{ ss }}"
                            s2="{{ creatSecret( ss ) }}"
 
@@ -522,24 +539,24 @@
 
                            date_finish="{{ date }}"
 
-                           res_to="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job"
+                           res_to="res{{ sp_now }}{{ man }}{{ date }}remove_job"
 
                            {#                                                         
-                            jobman="{{ man.id }}"
+                            jobman="{{ man }}"
                             salepoint="{{ sp_now }}"
         
                             id_set ="{{ now_dolgn.id }}"
         
                             toform_sp="{{ sp_now }}"
-                            toform_sp_name="{{ spoint.head }}"
+                            toform_sp_name="{{ sps[sp_now]['head'] }}"
         
-                            toform_jobman="{{ man.id }}"
-                            toform_jobman_name="{{ man.head }}"
+                            toform_jobman="{{ man }}"
+                            toform_jobman_name="{{ mans[man]['head'] }}"
         
                             date="{{ date }}"
-                            print_res_to_id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus"
+                            print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus"
         
-                            {% set ss = spoint.id ~ pv.id %}
+                            {% set ss = sp_now ~ pv.id %}
                             id2="{{ ss }}"
                             s2="{{ creatSecret( ss ) }}"
         
@@ -552,13 +569,13 @@
                     </div>
                 </div>
 
-                <div id="res{{ spoint.id }}{{ man.id }}{{ date }}" ></div>
-                <div id="res{{ spoint.id }}{{ man.id }}{{ date }}comment" ></div>    
+                <div id="res{{ sp_now }}{{ man }}{{ date }}" ></div>
+                <div id="res{{ sp_now }}{{ man }}{{ date }}comment" ></div>    
 
-                <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
-                <div id="res{{ spoint.id }}{{ man.id }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
+                <div id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}" xstyle="display:none;"></div>
+                <div id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
 
-                <div id="res{{ spoint.id }}{{ man.id }}{{ date }}remove_job" ></div>    
+                <div id="res{{ sp_now }}{{ man }}{{ date }}remove_job" ></div>    
 
                 {#{ pa(now_job) }#}
 
@@ -617,7 +634,7 @@
 
                     {#{ pa(comments.data ) }#}
 
-                    {% for k1, v1 in comments.data if v1.dop.sale_point == sp_now and v1.dop.date_to == date and v1.dop.jobman == man.id and v1.status == 'show' %} 
+                    {% for k1, v1 in comments.data if v1.dop.sale_point == sp_now and v1.dop.date_to == date and v1.dop.jobman == man and v1.status == 'show' %} 
 
                         <div class="show_1comment" >
                             <a href="#" class="act act_smena btn3" 
