@@ -305,7 +305,7 @@
         {% endfor %}
 
         {# плюсы #}
-        {% for k, item in getListJobsPeriodAll.data.plusa if item.jobman == man and item.date_now == date %}
+        {% for k, item in getListJobsPeriodAll.data.plusa if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
         {% endfor %}
 

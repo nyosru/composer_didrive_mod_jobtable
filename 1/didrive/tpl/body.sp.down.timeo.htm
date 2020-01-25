@@ -21,12 +21,12 @@
 
     {#% set timer_show = 'on1' %#}
 
-    <div class="trow" >
+    <div class="trow" onclick="$('#tr{{sp_now}}times').toggle('slow');" style="cursor:pointer;">
 
-        <div class="tcell stick-left bg-white" onclick="$('#tr{{sp_now}}times').toggle('slow');"  >
+        <div class="tcell stick-left bg-white"   >
 
             <nobr>
-                <b>Время ожидания</b>
+                <b style="color:blue;">Время ожидания</b>
             </nobr>
 
         </div>

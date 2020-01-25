@@ -73,6 +73,12 @@ class JobDesc {
     public static $mod_sale_point = 'sale_point';
 
     /**
+     * доступ модераторов к точкам продаж
+     * точки продаж
+     */
+    public static $mod_sale_point_access_moder = 'sale_point_access_moder';
+
+    /**
      * список модулей
      * нормы на день
      */
@@ -598,8 +604,9 @@ class JobDesc {
         return $now_job;
     }
 
-    public static function getListJobsPeriodAll($db, $date_start, $date_finish) {
+    public static function getListJobsPeriodAll($db, $date_start, $date_finish = null ) {
 
+        
         // $cash_var = 'jobdesc__all_date' . $date_start;
 
         if (!empty($cash_var)) {
@@ -609,10 +616,16 @@ class JobDesc {
             if (!empty($e))
                 return \f\end3('окей (кеш)', true, $e);
         }
-
+        
 //            $e = \f\Cash::deleteKeyPoFilter( [ 'all' , 'jobdesc' , 'sp'.$_REQUEST['sale_point'], 'date'.$_REQUEST['delete_cash_start_date'] ] );
 //            \f\pa($e);
 
+        
+        // если финиша нет, то ставим финиш последним днём месяца
+        if( empty($date_finish) )
+        $date_finish = date('Y-m-d',strtotime(date('Y-m-01',strtotime($date_start)).' +1 month -1 day'));
+        // \f\pa($date_finish);
+        
 
         $return = [
             'minusa' => [],
@@ -2851,6 +2864,7 @@ class JobDesc {
         $show_comment = true;
         $show_comment = false;
 
+        
         $dt = strtotime($dt0);
         $_d = date('Y-m-d', $dt);
         $ds = date('Y-m-d 05:00:00', $dt);
@@ -2863,8 +2877,9 @@ class JobDesc {
         /**
          * удаляем все смены что были ранее
          */
-        \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_sp, $date_start);
-
+        $ww1 = \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_sp, $date_start);
+//        \f\pa($ww1);
+//        exit;
 
         if ($show_comment === true)
             \f\timer_start(47);
@@ -2885,18 +2900,15 @@ class JobDesc {
 
         $dd = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
 
-
         /**
          * месячный оборот точки
          */
         if ($show_comment === true)
             \f\timer_start(47);
-
+        
         $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
         if ($show_comment === true)
             echo '<br/>ob mont (' . __LINE__ . '): ' . \f\timer_stop(47);
-
-
 
         $adds = [];
 
@@ -2905,18 +2917,13 @@ class JobDesc {
          */
         $no_repeat_adds = [];
 
-
-
-
         $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
-        // \f\pa($jobs_all);
+//        \f\pa($jobs_all);
+//        exit;
 //        \f\pa( $jobs_all['data']['spec'], '' , '' , 'jobs_all-data-spec' );
 //        \f\pa( $jobs_all['data']['norm']['data'], '' , '' , 'jobs_all-data-norm-data' );
 //        \f\pa( $jobs_all['data']['job_on_sp'][$_sp], '' , '' , 'jobs_all-data-job_on_sp-'.$_sp );
 //        \f\pa($jobs_all['data']['checks'], 2, '', 'jobs_all-data-checks');
-
-
-
 
         for ($n = 0; $n <= 32; $n++) {
 
@@ -2927,13 +2934,14 @@ class JobDesc {
             // echo '<br/>' . $date;
 //            if ( $date <= $date_start )
 //                continue;
+//            if ( $date != '2020-01-04' )
+//                continue;
 
             if ($date >= $date_finish)
                 break;
 
             $ds = date('Y-m-d 08:00:00', strtotime($date));
             $df = date('Y-m-d 03:00:00', strtotime($date) + 3600 * 24);
-
 
             // собираем в массив (сегодняшняя дата) работник _ какая должность
             $jobs_now__man__ar = [];
@@ -2959,6 +2967,7 @@ class JobDesc {
 //                        \f\pa($key);
 
                         foreach ($jobs_all['data']['spec']['data'] as $sk => $sv) {
+                            
                             if ($sv['date'] == $date && $sv['sale_point'] == $_sp && $sv['jobman'] == $man) {
                                 // \f\pa($sv,'','','sv');
                                 $v1['sale_point'] = $sv['sale_point'];
@@ -2966,14 +2975,17 @@ class JobDesc {
                                 $v1['type'] = 'spec';
                                 break;
                             }
+                            
                         }
 
                         if ($v1['sale_point'] != $_sp)
                             continue;
-
+                        
                         $v1['dr'] = $date;
                         // $jobs_now__man__ar[$man] = $v1;
+                        
                         $jobs_now__man__ar[$man] = $v1;
+                        
                     }
                 }
 
@@ -2989,7 +3001,16 @@ class JobDesc {
                   }
                  */
             }
-            // \f\pa($jobs_now__man__ar);
+            // \f\pa($jobs_now__man__ar,2,'','$jobs_now__man__ar');
+//            exit;
+            
+//            foreach( $jobs_now__man__ar as $k => $v ){
+//                if( $v['jobman'] == 33216 )
+//                    \f\pa($v,'','','$jobs_now__man__ar 33216');
+//            }
+//            
+//            exit;
+            
             // все чеки за сегодня учитывая спец назначения и назначения
             $checks = [];
             foreach ($jobs_all['data']['checks'] as $k => $v) {
@@ -3003,7 +3024,8 @@ class JobDesc {
                     }
                 }
             }
-            // \f\pa($checks);
+            
+            // \f\pa($checks,'','','$checks');
             // если нет чеков сегодня то пропускаем расчёт дня
             if (empty($checks))
                 continue;
@@ -3121,7 +3143,8 @@ class JobDesc {
             echo '<br/>tt(' . __LINE__ . '): ' . \f\timer::stop('str', 123);
 
         if (!empty($adds)) {
-            // \f\pa($adds,'','','adds');
+//            \f\pa($adds,'','','adds');
+//            exit;
             \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $adds);
             return \f\end3('bonus exists', true, ['adds' => $adds]);
         } else {
@@ -3446,6 +3469,14 @@ class JobDesc {
      */
     public static function deleteAutoBonusMonth($db, $sp, $date0) {
 
+//        $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date0 );        
+        //\f\pa($jobs_all['data']['plusa']);
+//        foreach( $jobs_all['data']['plusa'] as $k => $v ){
+//            if( $v['date_now'] == '2020-01-05' ){
+//                \f\pa($v);
+//            }
+//        }
+        
         \Nyos\mod\items::$var_ar_for_1sql[':d1'] = date('Y-m-01', strtotime($date0));
         \Nyos\mod\items::$var_ar_for_1sql[':d2'] = date('Y-m-d', strtotime(\Nyos\mod\items::$var_ar_for_1sql[':d1'] . ' +1 month -1 day'));
         \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;

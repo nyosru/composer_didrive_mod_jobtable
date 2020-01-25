@@ -3,26 +3,19 @@
 /**
   определение функций для TWIG
  */
-
-
-
-
-
-
 $function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $db, int $jobman_id, string $date ) {
 
     // название переменной где храним кеш
     $cash_var = 'jobdesc__getDayNaznachJobman_date' . $date . '_jobman' . $jobman_id;
     // время в сек на которое храним кеш
-    $cash_time = 60*10;
+    $cash_time = 60 * 10;
 
-    if ( 1 == 2 && !empty($cash_var)) {
-        
+    if (1 == 2 && !empty($cash_var)) {
+
         $list = \f\Cash::getVar($cash_var);
 
         if (!empty($list))
-        return \f\end3('ок', true, $list);
-        
+            return \f\end3('ок', true, $list);
     }
 
     \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -43,12 +36,11 @@ $function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $
     \Nyos\mod\items::$limit1 = true;
 
     $list = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
-    
+
 //    \Nyos\mod\items::$join_where = '';
 //    \Nyos\mod\items::$limit1 = false;
 //    \Nyos\mod\items::$var_ar_for_1sql = [];
 //    \Nyos\mod\items::$sql_order = '';
-    
     // \f\pa($list['data'], 2, '', '$list');
     // \f\pa($list, 2, '', '$list');
     // \f\sort_ar_date();
@@ -87,9 +79,8 @@ $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $
 
 //    if ($date == '2020-01-05')
 //        \Nyos\mod\JobDesc::$return_dop_info = true;
-
     // echo $date.'<Br/>';
-    
+
     $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
     //\f\pa($workmans,2,'','$workmans');
 
@@ -344,6 +335,67 @@ $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, 
     \f\Cash::setVar($cash_var, $return);
 
     return $return;
+});
+$twig->addFunction($function);
+
+
+
+/**
+ * получаем список доступов доступных точек продаж
+ */
+$function = new Twig_SimpleFunction('jobdesc__get__admin_access_to_sp', function ( $db ) {
+
+    if ( empty($_SESSION['now_user_di']['id']) or empty($_SESSION['now_user_di']['access']) )
+        return \f\end3('не хватает переменных #' . __LINE__, false);
+
+    $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point, 'show', 'sort_asc');
+
+    // \f\pa( $_SESSION['now_user_di']['access'] );
+    // echo '11-' . $_SESSION['now_user_di']['access'] . '-22';
+
+    // \f\pa( $_SESSION['now_user_di'] );
+    
+    
+//    if (isset($_SESSION['now_user_di']['access']))
+//        \f\pa(123);
+
+//    if ($_SESSION['now_user_di']['access'] == 'admin')
+//        \f\pa(123);
+
+    
+    if ( !empty( $_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'admin' ) {
+
+        return \f\end3('ок админ', true, $sps);
+        
+    } elseif (isset( $_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'user_id\' '
+                . ' AND mid.value = :user_id '
+        ;
+        \Nyos\mod\items::$var_ar_for_1sql[':user_id'] = $_SESSION['now_user_di']['id'];
+        //\Nyos\mod\items::$show_sql = true;
+
+        $ac = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point_access_moder);
+        $return = [];
+
+        foreach ($sps as $k1 => $v1) {
+
+            // \f\pa($v1);
+            foreach ($ac as $k => $v) {
+                if (isset($v['sale_point']) && $v['sale_point'] == $v1['id'])
+                    $return[] = $v1;
+            }
+        }
+
+        return \f\end3('ок модер', true, $return);
+    } else {
+
+        return \f\end3('не достаточно прав доступа #' . __LINE__, false);
+    }
+
+    return \f\end3('что то пошло не так #' . __LINE__, false, $_SESSION);
 });
 $twig->addFunction($function);
 
@@ -711,29 +763,25 @@ $twig->addFunction($function);
 $function = new Twig_SimpleFunction('jobdesc__getListJobsPeriodAll', function ( $db, string $date_start, string $date_finish ) {
 
 // echo $date_start.' , '.$date_finish ;
-    
 //    $jobs_spec = \Nyos\mod\JobDesc::getListJobsPeriodSpec( $db, $date_start, $date_finish );
 //    \f\pa($jobs_spec, 2,'','$ee12 спец назначения');
 //
 //    $jobs = \Nyos\mod\JobDesc::getListJobsPeriod( $db, $date_start, $date_finish );
 //    \f\pa($jobs, 2,'','$ee12 обычные назначения');
 
-    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll( $db, $date_start, $date_finish );
+    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
     // \f\pa($jobs_all, 2,'','jobs_all');
 
     return $jobs_all;
 
-    $ee12 = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date_start );
-    \f\pa($ee12,'','','$ee12');
+    $ee12 = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date_start);
+    \f\pa($ee12, '', '', '$ee12');
 
 //    $ee1 = \Nyos\mod\JobDesc::getJobmansDate($db, $date_start );
 //    \f\pa($ee1,'','','$ee1');
-
-
-    
 //    $ee = \Nyos\mod\JobDesc::whereJobmansPeriod($db, $date_start, $date_finish);
 //    \f\pa($ee,'','','$ee');
-    
+
     return \Nyos\mod\JobDesc::whereJobmansOnSp($db, $folder, $date_start, $date_finish);
 
 // \f\pa( \Nyos\nyos::$folder_now );
@@ -858,22 +906,16 @@ $twig->addFunction($function);
 $function = new Twig_SimpleFunction('jobdesc__jobmans_job_on_sp', function ( $db, $folder = null, string $date_start, string $date_finish ) {
 
 // echo $date_start.' , '.$date_finish ;
-    
-    
 //    $ee12 = \Nyos\mod\JobDesc::getListJobsPeriod( $db, $date_start, $date_finish );
 //    \f\pa($ee12,'','','$ee12');
 //
 //    $ee12 = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date_start );
 //    \f\pa($ee12,'','','$ee12');
-
 //    $ee1 = \Nyos\mod\JobDesc::getJobmansDate($db, $date_start );
 //    \f\pa($ee1,'','','$ee1');
-
-
-    
 //    $ee = \Nyos\mod\JobDesc::whereJobmansPeriod($db, $date_start, $date_finish);
 //    \f\pa($ee,'','','$ee');
-    
+
     return \Nyos\mod\JobDesc::whereJobmansOnSp($db, $folder, $date_start, $date_finish);
 
 // \f\pa( \Nyos\nyos::$folder_now );
@@ -1138,7 +1180,7 @@ $function = new Twig_SimpleFunction('jobdesc__getSalaryJobman', function ( $db, 
 //    $e = \Nyos\mod\JobDesc::getSalaryJobman($db, $sp, $dolgn, $date);
 //    \f\pa($e);
 //    echo '</div>';
-    
+
     return \Nyos\mod\JobDesc::getSalaryJobman($db, $sp, $dolgn, $date);
 });
 $twig->addFunction($function);

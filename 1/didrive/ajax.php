@@ -299,18 +299,12 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 //    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
 
     $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
-    // \f\pa($ww,'','','ww');
-    // exit;
-
-    $e = [];
-
-    if (!empty($ww['data']['adds']))
-        foreach ($ww['data']['adds'] as $v) {
-            $e['datas'][] = $v;
-        }
-
-    $e['timer'] = \f\timer_stop(3);
-    $e['kolvo'] = sizeof($e['datas']);
+     
+    $e = [ 
+        'datas' => ( $ww['data']['adds'] ?? [] ),
+        'timer' => \f\timer_stop(3),
+        'kolvo' => sizeof($ww['data']['adds']),
+        ] ;
 
 //\f\pa($e,2);
 //    exit;
