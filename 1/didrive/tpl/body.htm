@@ -174,19 +174,17 @@
 
                 {% endif %}
 
-
                 {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
                 {% if timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-
-
-
-
                 {# верхние кнопки даты и скрыть показать даты #}
                 {% if 1 == 1 %}
 
-                    <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> показать график без смен</a> 
+                    {#{ pa(session) }#}
+                    {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                    <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> показать все ТП без смен</a> 
+                    {% endif %}
 
                     <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> время смен</button> 
                     {#

@@ -94,7 +94,7 @@
 
     </div>
 
-    <div class="trow" id="tr{{sp_now}}times" style="display:none;">
+    <div class="trow timeo_tr" id="tr{{sp_now}}times" style="display:none;">
         <div class="tcell stick-left bg-white" >
 
             <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
@@ -137,6 +137,47 @@
 
 
                 <div class="tcell" >
+                    
+            {% if 1 == 1 %}
+
+                <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                    <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                </div>
+
+                <div class="dropdown-menu">
+                    
+                    {# универсальное модальное окошко используем #}
+                    {#
+                    <a 
+                        href="#" 
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='считаем среднее время ожидания за день'
+                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                        ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
+
+                        >
+                        грузим и считаем время за день
+                    </a>
+                    #}
+                    
+                    <a 
+                        href="#" 
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='считаем среднее время ожидания за день'
+                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                        ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&resave_res=da&xview=html&xshow_dop_info=12'
+
+                        >
+                        считаем время и записываем если отличается
+                    </a>
+                        
+                </div>
+            {% endif %}
+                    
                     {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
                         <div class='text-center'>
 
@@ -171,7 +212,6 @@
                                    value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                   style="display:inline-block;width:60px; padding: 0px; margin: 0 auto; text-align:center;" 
                                    class="form-control didrive__edit_items_dop_pole"
 
                                    edit_item_id="{{ time_ex[now_date2]['id'] }}"
@@ -225,7 +265,6 @@
                                        value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                       style="display:inline-block;width:60px; padding: 0px; margin: 0 auto; text-align:center;" 
                                        class="form-control didrive__edit_items_dop_pole"
 
                                        edit_item_id="{{ time_ex[now_date2]['id'] }}"
@@ -284,7 +323,6 @@
                                        value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                       style="display:inline-block;width:60px; padding: 0px; margin: 0 auto; text-align:center;" 
                                        class="form-control didrive__edit_items_dop_pole"
 
                                        edit_item_id="{{ time_ex[now_date2]['id'] }}"
