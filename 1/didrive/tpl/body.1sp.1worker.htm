@@ -28,6 +28,21 @@
                         список назначений сотрудника
                     </a>
 
+                    {# универсальное модальное окошко используем #}
+                    <a 
+                        href="#" 
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='назначения сотрудника'
+                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                        {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+                        ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+
+                        >
+                        смены в этом месяце
+                    </a>
+
                 </div>
             {% endif %}
 

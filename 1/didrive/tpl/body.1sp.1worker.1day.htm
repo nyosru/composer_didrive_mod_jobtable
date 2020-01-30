@@ -1,16 +1,16 @@
 {% spaceless %}
 
-    
+
     {# глобальный большой массив #}
     {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
 
-    
+
     {# если было новое назначение #}
     {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
         {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
     {% endif %}
 
-    
+
     {# всякие глобальные штуки - спец назначение#}    
     {% if 1 == 1 %}
 
@@ -67,7 +67,7 @@
 
     {% endif %}
 
-    
+
     {# проверяем работает или нет #}
     {# если был уволен вчера или дальше #}
     {% if ( now_dolgn['date_finish'] is defined and date is defined and date > now_dolgn['date_finish'] ) or ( now_dolgn['sale_point'] is defined and now_dolgn['sale_point'] != sp_now ) %}
@@ -87,7 +87,7 @@
         222222200
     {% endif %#}
 
-    
+
     {#
     1 {{ pa(spec_out) }}
     2 {{ pa(spec_in) }}
@@ -166,7 +166,7 @@
                        s2="{{ creatSecret( ss ) }}"
 
                        delete_cash_start_date="{{ date_start }}"
-                       
+
                        ><nobr><span class="fa fa-plus" ></span> комментарий</nobr></a>
 
                     <a href=""
@@ -290,17 +290,24 @@
 
         {# смены работы #}
 
+        {# используем для отсечения старых смен от новых #}
+        {% set day_nnow = "now"|date("Y-m-d 05:00:00") %}
+
         {% set day_start = date|date("Y-m-d 08:00:00") %}
         {% set day_end = date|date_modify("+1 day")|date("Y-m-d 03:00:00") %}
 
-        {% for ckeck_id, check in getListJobsPeriodAll.data.checks if check.jobman == user_v['jobman'] and check.start >= day_start and check.start <= day_end %}    
+        {% for ckeck_id, check in getListJobsPeriodAll.data.checks if check.jobman == user_v['jobman'] and check.start is defined and check.start >= day_start and check.start <= day_end %}
 
             {% if 1 == 2 %}
                 pa(check) 
                 {{ pa(check) }}
             {% endif %}
 
-            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.smena.htm' %}
+            {# не показываем не закрытые смены что были вчера и раньше а если сегодня то показываем незакрытые #}
+            {% if check.start < day_nnow and check.fin is not defined %}
+            {% else %}
+                {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.smena.htm' %}
+            {% endif %}
 
         {% endfor %}
 
@@ -320,11 +327,11 @@
         {#{ pa( getListJobsPeriodAll.data.comments ) }#}
 
         {% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man and item.date_to == date %}
-        {#% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man %#}
-            
+            {#% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man %#}
+
             {#{ pa( item ) }#}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.comment.htm' %}
-            
+
         {% endfor %}
 
         {#% for k, plus in getListJobsPeriodAll.data.minusa if plus.jobman == man %}    

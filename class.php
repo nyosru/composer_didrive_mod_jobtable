@@ -604,9 +604,16 @@ class JobDesc {
         return $now_job;
     }
 
-    public static function getListJobsPeriodAll($db, $date_start, $date_finish = null ) {
+    /**
+     * получаем полный расклад за месяц
+     * @param type $db
+     * @param type $date_start
+     * @param type $date_finish
+     * @return type
+     */
+    public static function getListJobsPeriodAll($db, $date_start, $date_finish = null) {
 
-        
+        // если есть то пишем кеш
         // $cash_var = 'jobdesc__all_date' . $date_start;
 
         if (!empty($cash_var)) {
@@ -616,42 +623,30 @@ class JobDesc {
             if (!empty($e))
                 return \f\end3('окей (кеш)', true, $e);
         }
-        
+
 //            $e = \f\Cash::deleteKeyPoFilter( [ 'all' , 'jobdesc' , 'sp'.$_REQUEST['sale_point'], 'date'.$_REQUEST['delete_cash_start_date'] ] );
 //            \f\pa($e);
-
-        
         // если финиша нет, то ставим финиш последним днём месяца
-        if( empty($date_finish) )
-        $date_finish = date('Y-m-d',strtotime(date('Y-m-01',strtotime($date_start)).' +1 month -1 day'));
-        // \f\pa($date_finish);
-        
+        if (empty($date_finish))
+            $date_finish = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date_start)) . ' +1 month -1 day'));
 
         $return = [
-            'minusa' => [],
+//            'money' => [],
+            'where_job__workman_date' => [],
+//            'minusa' => [],
             'comments' => [], // норм + - 8
-            'plusa' => [],
+//            'plusa' => [],
             'jobmans' => [],
-            'job_on_sp' => [],
+//             'job_on_sp' => [],
             'spec' => \Nyos\mod\JobDesc::getListJobsPeriodSpec($db, $date_start, $date_finish),
             'norm' => \Nyos\mod\JobDesc::getListJobsPeriod($db, $date_start, $date_finish),
             'checks' => [],
         ];
 
-//        $jobs_spec = \Nyos\mod\JobDesc::getListJobsPeriodSpec($db, $date_start, $date_finish);
-//        // \f\pa($jobs_spec, 2,'','$ee12 спец назначения');
-//        $return['spec'] = $jobs_spec;
-//        $jobs = \Nyos\mod\JobDesc::getListJobsPeriod($db, $date_start, $date_finish);
-//        // \f\pa($jobs, 2,'','$ee12 обычные назначения');
-//        $return['norm'] = $jobs;
-
         $mans = \Nyos\mod\items::get($db, self::$mod_jobman);
         $dolgn = \Nyos\mod\items::get($db, self::$mod_dolgn);
 
         $jobman_in_sql = '';
-
-//        $return['jobmans'] = [];
-//        $return['job_on_sp'] = [];
 
         foreach ($return['norm']['data'] as $jm => $v1) {
             foreach ($v1 as $n => $v) {
@@ -688,25 +683,6 @@ class JobDesc {
             }
         }
 
-        // \f\pa($return,'','','$return');
-
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'start\' '
-                . ' AND mid.value_datetime >= :ds '
-                . ' AND mid.value_datetime <= :df '
-                . ' INNER JOIN `mitems-dops` mid2 '
-                . ' ON mid2.id_item = mi.id '
-                . ' AND mid2.name = \'jobman\' '
-                . ' AND mid2.value IN ( ' . $jobman_in_sql . ' ) '
-        ;
-
-        // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
-        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d 08:00:00', strtotime($date_start));
-        \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
-        // \Nyos\mod\items::$var_ar_for_1sql[':jms'] = $jobman_in_sql;
-
-        $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
 
 
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -720,13 +696,21 @@ class JobDesc {
                 . ' AND mid2.value IN ( ' . $jobman_in_sql . ' ) '
 
         ;
-
-        // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
         \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
         \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
-        // \Nyos\mod\items::$var_ar_for_1sql[':jms'] = $jobman_in_sql;
+        $return['money_minus'] = \Nyos\mod\items::get($db, self::$mod_minus);
 
-        $return['minusa'] = \Nyos\mod\items::get($db, self::$mod_minus);
+        foreach ($return['money_minus'] as $k => $v) {
+
+//            \f\pa($v);
+//            \f\pa($v['summa']);
+
+            if (!isset($return['money_to_pay'][$v['sale_point']][$v['jobman']])) {
+                $return['money_to_pay'][$v['sale_point']][$v['jobman']] = $v['summa'];
+            } else {
+                $return['money_to_pay'][$v['sale_point']][$v['jobman']] += $v['summa'];
+            }
+        }
 
 
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -738,15 +722,21 @@ class JobDesc {
                 . ' ON mid2.id_item = mi.id '
                 . ' AND mid2.name = \'jobman\' '
                 . ' AND mid2.value IN ( ' . $jobman_in_sql . ' ) '
-
         ;
-
-        // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
         \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
         \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
-        // \Nyos\mod\items::$var_ar_for_1sql[':jms'] = $jobman_in_sql;
+        $return['money_bonus'] = \Nyos\mod\items::get($db, self::$mod_bonus);
 
-        $return['plusa'] = \Nyos\mod\items::get($db, self::$mod_bonus);
+
+        foreach ($return['money_bonus'] as $k => $v) {
+            //\f\pa($v);
+            if (!isset($return['money_to_pay'][$v['sale_point']][$v['jobman']])) {
+                $return['money_to_pay'][$v['sale_point']][$v['jobman']] = $v['summa'];
+            } else {
+                $return['money_to_pay'][$v['sale_point']][$v['jobman']] += $v['summa'];
+            }
+        }
+
 
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
@@ -759,19 +749,211 @@ class JobDesc {
                 . ' AND mid2.value IN ( ' . $jobman_in_sql . ' ) '
 
         ;
-
-        // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
         \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
         \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
-        // \Nyos\mod\items::$var_ar_for_1sql[':jms'] = $jobman_in_sql;
-
         $return['comments'] = \Nyos\mod\items::get($db, self::$mod_comments);
 
-//        echo 'колво'.sizeof($checks);
-//        \f\pa($checks, '', '', 'shecks');
+
+
+
+
+
+        foreach ($return['jobmans'] as $wman => $v0) {
+
+            for ($i = 0; $i <= 31; $i ++) {
+
+                $now_date = date('Y-m-d', strtotime($date_start . ' +' . $i . ' day'));
+
+                if ($now_date > $date_finish)
+                    break;
+
+                foreach ($return['spec']['data'] as $k => $v) {
+                    if ($v['date'] == $now_date && $v['jobman'] == $wman) {
+                        $spec_job = $v;
+                        break;
+                    }
+                }
+
+                // если было спец назначение в этот день
+                if (!empty($spec_job)) {
+                    $spec_job['type'] = 'spec';
+                    // $now_job = $spec_job;
+
+                    if (!empty($now_job)) {
+                        $spec_job['norm_sale_point'] = $now_job['sale_point'];
+                        $spec_job['norm_dolgnost'] = $now_job['dolgnost'];
+                    }
+                }
+                // если не было спец назначения в этот день
+                else {
+
+                    // ищем последнюю дату до даты старта периода
+                    if ($i == 0) {
+                        foreach ($return['norm']['data'][$wman] as $k => $v) {
+                            if ($v['date'] > $now_date)
+                                continue;
+                            if ($v['date'] <= $now_date)
+                                $now_job = $v;
+                        }
+                    }
+
+                    // проверяем текущую дату
+                    else {
+                        foreach ($return['norm']['data'][$wman] as $k => $v) {
+                            if ($v['date'] == $now_date)
+                                $now_job = $v;
+                        }
+                    }
+                }
+
+                $now_smena = $spec_job ?? $now_job;
+
+                $var_cash_salary = 'salary_dolgnost' . $now_smena['dolgnost'] . '_sp' . $now_smena['sale_point'] . '_date' . $now_date;
+                $salary = \f\Cash::getVar($var_cash_salary);
+
+                if (!empty($salary)) {
+                    $now_smena['salary'] = $salary;
+                } else {
+                    $now_smena['salary'] = // $salary = 
+                            self::getSalaryJobman($db,
+                                    $now_smena['sale_point'],
+                                    $now_smena['dolgnost'],
+                                    $now_date);
+
+                    \f\Cash::setVar($var_cash_salary, $now_smena);
+                }
+
+                $return['where_job__workman_date'][$wman][$now_date] = $now_smena;
+
+                if (isset($spec_job))
+                    unset($spec_job);
+            }
+        }
+
+        if (isset($return['salary']))
+            unset($return['salary']);
+
+
+
+
+
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date >= :ds '
+                . ' AND mid.value_date <= :df '
+        ;
+        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
+        \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
+        $return['oplats'] = \Nyos\mod\items::get($db, '075.buh_oplats');
+
+
+        foreach ($return['oplats'] as $k => $v) {
+
+            // \f\pa($v);
+
+            if (!isset($v['sale_point']) || !isset($v['jobman']))
+                continue;
+
+            if (!isset($return['money_oplats'][$v['sale_point']][$v['jobman']])) {
+                $return['money_oplats'][$v['sale_point']][$v['jobman']] = $v['summa'];
+            } else {
+                $return['money_oplats'][$v['sale_point']][$v['jobman']] += $v['summa'];
+            }
+        }
+
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'start\' '
+                . ' AND mid.value_datetime >= :ds '
+                . ' AND mid.value_datetime <= :df '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'jobman\' '
+                . ' AND mid2.value IN ( ' . $jobman_in_sql . ' ) '
+        ;
+        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d 08:00:00', strtotime($date_start));
+        \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
+        $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
+
+        foreach ($return['checks'] as $k => $v) {
+
+            // пропускаем если нет конца или нет автооценки или нет количества отработанных часов
+            if (empty($v['fin']) || empty($v['ocenka_auto']) || empty($v['hour_on_job']))
+                continue;
+
+            $dn = date('Y-m-d', strtotime($v['start']));
+
+            // временная переменная для простоты
+            $ii = $return['where_job__workman_date'][$v['jobman']][$dn];
+
+            $return['checks'][$k]['salary_hour'] = $ii['salary']['ocenka-hour-base'] ?? $ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )] ?? null;
+
+            if (empty($return['checks'][$k]['salary_hour']))
+                continue;
+
+            if (isset($ii['smoke']) && $ii['smoke'] == 'da' && !empty($ii['salary']['if_kurit'])) {
+                $return['checks'][$k]['salary_hour'] += $ii['salary']['if_kurit'];
+            }
+
+            $return['checks'][$k]['summa'] = ceil($return['checks'][$k]['salary_hour'] * ( $v['hour_on_job_hand'] ?? $v['hour_on_job'] ));
+
+//            if (!isset($we))
+//                $we = 0;
+//            if ($we < 10) {
+//                \f\pa($return['checks'][$k]);
+//                \f\pa($return['where_job__workman_date'][$v['jobman']][date('Y-m-d', strtotime($v['start']))]['sale_point']);
+//                $we++;
+//            }
+
+            if (!empty($return['checks'][$k]['summa'])) {
+                if (!isset($return['money_to_pay'][$return['where_job__workman_date'][$v['jobman']][date('Y-m-d', strtotime($v['start']))]['sale_point']][$v['jobman']])) {
+                    $return['money_to_pay'][$return['where_job__workman_date'][$v['jobman']][date('Y-m-d', strtotime($v['start']))]['sale_point']][$v['jobman']] = $return['checks'][$k]['summa'];
+                } else {
+                    $return['money_to_pay'][$return['where_job__workman_date'][$v['jobman']][date('Y-m-d', strtotime($v['start']))]['sale_point']][$v['jobman']] += $return['checks'][$k]['summa'];
+                }
+            }
+        }
 
         if (!empty($cash_var))
             \f\Cash::setVar($cash_var, $return, 60 * 60 * 12);
+
+        // \f\pa($return['money'], '', '', 'money');
+        // \f\pa($return['money_for_pay__sp__man'], '', '', 'money');
+        // \f\pa($return, '', '', 'return');
+        // \f\pa($return['where_job__workman_date'], '', '', 'where_job__workman_date');
+//        foreach ($return as $kk => $vv) {
+        // echo '<Br/>' . $kk;
+        // \f\pa($vv);
+//            $n = 1;
+//            foreach ($vv as $k1 => $v1) {
+//                $n++;
+//                echo '<br/>' . $k1;
+//                \f\pa($v1);
+//                if ($n > 3)
+//                    break;
+//            }
+//        foreach ($return['spec']['data'] as $k1 => $v1) {
+//            $n++;
+//            echo '<br/>' . $k1;
+//            \f\pa($v1);
+//            if ($n > 3)
+//                break;
+//        }
+//
+//        $n = 1;
+//        foreach ($return['jobmans']['data'] as $k1 => $v1) {
+//            $n++;
+//            echo '<br/>' . $k1;
+//            \f\pa($v1);
+//            if ($n > 3)
+//                break;
+//        }
+//         }
+        // \f\pa($return['money_to_pay']);
+        // \f\pa($return);
 
         return \f\end3('ок', true, $return);
     }
@@ -830,10 +1012,13 @@ class JobDesc {
 
         foreach ($ar as $worker => $dates) {
 
+
 //            echo '<br/>' . $worker;
 //            \f\pa($dates);
 
             foreach ($dates as $date1 => $array) {
+
+
 
 // echo '<Br/>'.__LINE__.' ++ '.$date1.' <= '.$date;
 
@@ -2864,7 +3049,7 @@ class JobDesc {
         $show_comment = true;
         $show_comment = false;
 
-        
+
         $dt = strtotime($dt0);
         $_d = date('Y-m-d', $dt);
         $ds = date('Y-m-d 05:00:00', $dt);
@@ -2905,7 +3090,7 @@ class JobDesc {
          */
         if ($show_comment === true)
             \f\timer_start(47);
-        
+
         $oborot_month = \Nyos\mod\IikoOborot::getOborotMonth($db, $_sp, $_d);
         if ($show_comment === true)
             echo '<br/>ob mont (' . __LINE__ . '): ' . \f\timer_stop(47);
@@ -2967,7 +3152,7 @@ class JobDesc {
 //                        \f\pa($key);
 
                         foreach ($jobs_all['data']['spec']['data'] as $sk => $sv) {
-                            
+
                             if ($sv['date'] == $date && $sv['sale_point'] == $_sp && $sv['jobman'] == $man) {
                                 // \f\pa($sv,'','','sv');
                                 $v1['sale_point'] = $sv['sale_point'];
@@ -2975,17 +3160,15 @@ class JobDesc {
                                 $v1['type'] = 'spec';
                                 break;
                             }
-                            
                         }
 
                         if ($v1['sale_point'] != $_sp)
                             continue;
-                        
+
                         $v1['dr'] = $date;
                         // $jobs_now__man__ar[$man] = $v1;
-                        
+
                         $jobs_now__man__ar[$man] = $v1;
-                        
                     }
                 }
 
@@ -3003,14 +3186,12 @@ class JobDesc {
             }
             // \f\pa($jobs_now__man__ar,2,'','$jobs_now__man__ar');
 //            exit;
-            
 //            foreach( $jobs_now__man__ar as $k => $v ){
 //                if( $v['jobman'] == 33216 )
 //                    \f\pa($v,'','','$jobs_now__man__ar 33216');
 //            }
 //            
 //            exit;
-            
             // все чеки за сегодня учитывая спец назначения и назначения
             $checks = [];
             foreach ($jobs_all['data']['checks'] as $k => $v) {
@@ -3024,7 +3205,7 @@ class JobDesc {
                     }
                 }
             }
-            
+
             // \f\pa($checks,'','','$checks');
             // если нет чеков сегодня то пропускаем расчёт дня
             if (empty($checks))
@@ -3476,7 +3657,7 @@ class JobDesc {
 //                \f\pa($v);
 //            }
 //        }
-        
+
         \Nyos\mod\items::$var_ar_for_1sql[':d1'] = date('Y-m-01', strtotime($date0));
         \Nyos\mod\items::$var_ar_for_1sql[':d2'] = date('Y-m-d', strtotime(\Nyos\mod\items::$var_ar_for_1sql[':d1'] . ' +1 month -1 day'));
         \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
@@ -5075,34 +5256,34 @@ class JobDesc {
 
         $nowutime = strtotime($date . ' 00:00');
 
-        // if (!empty($array['jobs'][$sp][$man]))
-        foreach ($array['jobs'][$sp][$man] as $k => $v) {
+        if (!empty($array['jobs'][$sp][$man]))
+            foreach ($array['jobs'][$sp][$man] as $k => $v) {
 // \f\pa($v['date']);
 
-            if (isset($v['date']) && $nowutime == strtotime($v['date'])) {
+                if (isset($v['date']) && $nowutime == strtotime($v['date'])) {
 
-                $v['d1'] = $date;
-                $v['d2'] = $v['date'];
+                    $v['d1'] = $date;
+                    $v['d2'] = $v['date'];
 
-                return $v;
+                    return $v;
+                }
             }
-        }
 
         $now = [];
 
-        // if (!empty($array['jobs'][$sp][$man]))
-        foreach ($array['jobs'][$sp][$man] as $k => $v) {
+        if (!empty($array['jobs'][$sp][$man]))
+            foreach ($array['jobs'][$sp][$man] as $k => $v) {
 
 // \f\pa($v['date']);
 
-            if (isset($v['date']) && $nowutime > strtotime($v['date'] . ' 00:00')) {
+                if (isset($v['date']) && $nowutime > strtotime($v['date'] . ' 00:00')) {
 
-                $v['d1'] = $date;
-                $v['d2'] = $v['date'];
+                    $v['d1'] = $date;
+                    $v['d2'] = $v['date'];
 
-                $now = $v;
+                    $now = $v;
+                }
             }
-        }
 
         if (!empty($now)) {
             return $now;
