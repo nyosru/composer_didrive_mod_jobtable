@@ -3,32 +3,9 @@
     {%  set rand_d = random() %}
     {# rand {{ rand_d }} #}
 
-    {#
-    {{ man.dop.dolgnost }} +
-    {{ date }} +
-    {{ man.id }} +
-    {{ sp_now }} +
-    {{ pa(check) }}
-    #}
-
-    {#{ pa(salarys) }#}
-    {#{ pa(now_job) }#}
-
-    {% if 1 == 2 %} check {{ pa(check) }} {% endif %}
-    {% if 1 == 3 %} man {{ pa(man) }} {% endif %}
-
-    {#% set salar = 1 %#}
-    {#% set salar = get_1salary( salarys, sp_now, now_job.dolgnost, date ) %#}
-    {#{ pa(salar) }#}
-
-    {% if 1 == 2 %} pa(now_job.dolgnost) {{ pa(now_job.dolgnost) }} {% endif %}
-    {% if 1 == 2 and spec_in != 0 %} спец {{ pa(spec_in) }} {% endif %}
-    {% if 1 == 2 and spec_out != 0 %} спец {{ pa(spec_out) }} {% endif %}
-
-
-
-{# достаём размер оплаты текущей должности #}
+    {# достаём размер оплаты текущей должности #}
     {% if 1 == 1 %}
+
         {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
         {% if spec_in.dolgnost is defined %}
@@ -43,7 +20,10 @@
         {% endif %}
 
         {% if timer_show == 'on' %} <br/>время jobdesc__getSalaryJobman 57 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
     {% endif %}
+
+
 
 
     {#{ pa(now_job) }#}
@@ -216,7 +196,7 @@
 
                             {% if salar['ocenka-hour-base'] is defined %}
 
-                                {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                {% if ( now_dolgn.smoke is defined and now_dolgn.smoke == 'da' ) or ( now_job.smoke is defined and now_job.smoke == 'da' ) %}
                                     {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
                                 {% else %}
                                     {% set price_hour = salar['ocenka-hour-base'] %}
@@ -241,7 +221,14 @@
                                                         >
                                 #}
 
-                                {#{ pa(salar) }#}
+                                {#
+                                <div class="text-left" >
+                                    {{ pa(now_job) }}
+                                    {{ pa(salar) }}
+                                </div>
+                                #}
+
+
                                 <select name="ocenka" 
                                         class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
 
@@ -271,7 +258,7 @@
                                         {% set price_hour = 0 %}
 
                                         {% if salar['ocenka-hour-'~i] is defined %}> 
-                                            {% if now_job.smoke is defined and now_job.smoke == 'da' %}
+                                            {% if ( now_dolgn.smoke is defined and now_dolgn.smoke == 'da' ) or ( now_job.smoke is defined and now_job.smoke == 'da' ) %}
                                                 {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
                                             {% else %}
                                                 {% set price_hour = salar['ocenka-hour-'~i] %}
