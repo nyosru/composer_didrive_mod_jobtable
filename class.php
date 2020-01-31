@@ -844,6 +844,7 @@ class JobDesc {
                     if (!empty($salary)) {
                         $now_smena['salary'] = $salary;
                     } else {
+
                         $now_smena['salary'] = // $salary = 
                                 self::getSalaryJobman($db,
                                         $now_smena['sale_point'],
@@ -864,12 +865,12 @@ class JobDesc {
 
 
 
-        if (isset($return['salary']))
-            unset($return['salary']);
-
-
+//        if (isset($return['salary']))
+//            unset($return['salary']);
+// \f\pa($return['salary']);
 // тащим оплаты что были
         if (1 == 1) {
+
             \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                     . ' ON mid.id_item = mi.id '
                     . ' AND mid.name = \'date\' '
@@ -879,7 +880,6 @@ class JobDesc {
             \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
             \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
             $return['oplats'] = \Nyos\mod\items::get($db, '075.buh_oplats');
-
 
             foreach ($return['oplats'] as $k => $v) {
 
@@ -902,6 +902,7 @@ class JobDesc {
 
         // тащим смены и расставляем зарплату
         if (1 == 1) {
+
             \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                     . ' ON mid.id_item = mi.id '
                     . ' AND mid.name = \'start\' '
@@ -921,7 +922,7 @@ class JobDesc {
                 // пропускаем если нет конца или нет автооценки или нет количества отработанных часов
                 // автооценка не нужна сменам с фиксированной оплатой
                 // if (empty($v['fin']) || empty($v['ocenka_auto']) || empty($v['hour_on_job']))
-                
+
                 if (empty($v['fin']) || empty($v['hour_on_job']))
                     continue;
 
@@ -934,13 +935,13 @@ class JobDesc {
                     $return['checks'][$k]['salary_hour'] = $ii['salary']['ocenka-hour-base'];
                 }
                 // 
-                elseif ( !empty($v['ocenka_auto']) && isset($ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )])) {
+                elseif (!empty($v['ocenka_auto']) && isset($ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )])) {
                     $return['checks'][$k]['salary_hour'] = $ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )];
                 }
-                
+
                 if (empty($return['checks'][$k]['salary_hour']))
                     continue;
-                
+
                 if (isset($ii['smoke']) && $ii['smoke'] == 'da' && !empty($ii['salary']['if_kurit'])) {
                     $return['checks'][$k]['salary_hour'] += $ii['salary']['if_kurit'];
                 }
@@ -1647,15 +1648,34 @@ class JobDesc {
 
 //        echo '<br/>sp: ' . $sp;
 //        echo '<br/>d: ' . $dolgn;
+//        if ($dolgn == 55497 && $date == '2020-01-03') {
+//            echo '<br/>' . __LINE__ . ' ' . $date;
+//            $show_info = true;
+//        }
 
         if (isset(self::$cash['salary_now'][$sp][$dolgn][$date]))
             return self::$cash['salary_now'][$sp][$dolgn][$date];
 
         $sp_default = self::getDefaultSpId($db);
 
+
+        if (isset($show_info) && $show_info === true) {
+            \f\pa(self::$cash['salarys']);
+        }
+
         if (empty(self::$cash['salarys'])) {
-            self::$cash['salarys'] = \Nyos\mod\items::getItemsSimple3($db, $module_salary);
+
+            self::$cash['salarys'] = \Nyos\mod\items::get($db, $module_salary);
             usort(self::$cash['salarys'], "\\f\\sort_ar_date");
+
+            if (isset($show_info) && $show_info === true) {
+                echo '<br/>' . __LINE__;
+            }
+
+        }
+
+        if (isset($show_info) && $show_info === true) {
+            \f\pa(self::$cash['salarys']);
         }
 
 // если тру то используем точку по умолчанию
@@ -1670,6 +1690,7 @@ class JobDesc {
 //                echo '</div>';
 
                 if (isset($v['dolgnost']) && $v['dolgnost'] == $dolgn) {
+
                     if (isset($v['sale_point']) && ( $v['sale_point'] == $sp || ( $sp_def === true && $v['sale_point'] == $sp_default ) )) {
 
                         if (isset($v['oborot_sp_last_monht_menee']) || isset($v['oborot_sp_last_monht_bolee'])) {

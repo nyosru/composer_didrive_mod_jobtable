@@ -183,7 +183,27 @@
 
                     {#{ pa(session) }#}
                     {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
-                    <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> показать все ТП без смен</a> 
+                        <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> ТП без смен</a>
+                    {% endif %}
+
+                    
+                    {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                    <a 
+                        href="#" 
+                        
+                        class="base_modal_go btn btn-xs btn-light" 
+                        style="float:right;"
+                        
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='возможные должности и ставки'
+                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                        {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+                        ajax_vars='{{  { 'action':'show_dolgn', 'date_start': date_start , 'view' : 'html' }|url_encode }}'
+
+                        >
+                        ставки и размер зарплат
+                    </a>
                     {% endif %}
 
                     <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> время смен</button> 
@@ -266,10 +286,10 @@
 
                 {% endif %}
 
-                
-                
-                
-                
+
+
+
+
                 {# заготовка модальных окошек #}
                 {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
 
@@ -335,15 +355,16 @@
             </div>
 
         </div>
-
+                
+                
         {#{ pa(access_to_sp) }#}
 
         {% if get.sp is not defined %}
-        
+
             <div class="bg-warning" style="padding:10px;" >Выберите точку продаж</div>
-            
+
         {% elseif 1 == 1 and get.sp is defined %}
-            
+
             <div style="display:inline-block;padding-right:100px;margin-right:100px;">
                 <div class="ttable cell-padding5 list_otrezki2 cell-border">
 
@@ -353,15 +374,34 @@
                     {% for kk, sp_now_nn in access_to_sp.data if get.sp is defined and sp_now_nn.head != 'default' and ( get.sp == 'all' or get.sp == sp_now_nn.id ) %}
 
                         {% if 1 == 1 and getListJobsPeriodAll is not defined %}
+                            
                             {% if 1 == 3 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                            
                             {% set getListJobsPeriodAll = jobdesc__getListJobsPeriodAll( db, date_start, date_finish ) %}
+                            
                             {% if 1 == 2 %} 
                                 <br/> pa(getListJobsPeriodAll) 
                                 {{ pa(getListJobsPeriodAll) }} 
                             {% endif %}
+                                
+                            {% if 1 == 2 %} 
+                                <br/> pa(getListJobsPeriodAll) 
+                                {% for k,x in getListJobsPeriodAll.data %}
+                                    <br/>{{ k }}
+                                {% endfor %}
+                                    
+                            {% endif %}
+                                
+                            {% if 1 == 2 %} 
+                                <br/> pa(getListJobsPeriodAll.data.plusa) 
+                                {{ pa(getListJobsPeriodAll.data.plusa) }} 
+                            {% endif %}
+                            
                             {% if 1 == 3 or timer_show == 'on' %}<br/>время getListJobsPeriodAll - {{ didrive_f__timer_stop(5) }} {% endif %}
+                            
                         {% endif %}
-
+                        
+                        
                         {% set sp_now = sp_now_nn.id %}
                         {#{ pa(sp_now) }#}
                         {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}

@@ -1,32 +1,73 @@
 {% spaceless %}
 
-    {%  set rand_d = random() %}
-    {# rand {{ rand_d }} #}
-
-    {# достаём размер оплаты текущей должности #}
+    {# получаем данные на входе #}
     {% if 1 == 1 %}
 
-        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-
-        {% if spec_in.dolgnost is defined %}
-            {% set salar = jobdesc__getSalaryJobman( db, sp_now, spec_in.dolgnost, date ) %}
-        {% else %}
-            {% set salar = jobdesc__getSalaryJobman( db, sp_now, now_job.dolgnost, date ) %}
+        {% if 1 == 2 %}
+            pa(now_job) 
+            {{ pa(now_job) }}
         {% endif %}
 
         {% if 1 == 2 %}
-            salar
-            {{ pa(salar,2) }}
+            pa(now_dolgn) 
+            {{ pa(now_dolgn) }}
         {% endif %}
 
-        {% if timer_show == 'on' %} <br/>время jobdesc__getSalaryJobman 57 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+        {% if 1 == 2 %}
+            массив данных по должности и зарплате
+            {{ pa(getListJobsPeriodAll.data.where_job__workman_date[man][date]) }}
+        {% endif %}
+
+        {% set data_on_workman_day = getListJobsPeriodAll.data.where_job__workman_date[man][date] %}
+
+        {% if 1 == 1 %}
+            массив данных по должности и зарплате data_on_workman_day
+            {{ pa(data_on_workman_day) }}
+        {% endif %}
+
+
+
+
+
+
+        {# достаём размер оплаты текущей должности #}
+        {% if 1 == 2 %}
+
+            {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+            {% if spec_in.dolgnost is defined %}
+                {% set salar = jobdesc__getSalaryJobman( db, sp_now, spec_in.dolgnost, date ) %}
+            {% else %}
+                {% set salar = jobdesc__getSalaryJobman( db, sp_now, now_job.dolgnost, date ) %}
+            {% endif %}
+
+            {% if 1 == 2 %}
+                salar
+                {{ pa(salar,2) }}
+            {% endif %}
+
+            {% if timer_show == 'on' %} <br/>время jobdesc__getSalaryJobman 57 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+        {% endif %}
+
+        {% set salar = data_on_workman_day['salary'] %}
 
     {% endif %}
 
 
 
+    
+    
+    
+    
+    {%  set rand_d = random() %}
+    {# rand {{ rand_d }} #}
 
-    {#{ pa(now_job) }#}
+    
+    
+
+
 
     {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
     {% if check.who_add_item is defined and check.who_add_item == 'iiko' and now_spec_nazn == true %}
@@ -91,8 +132,11 @@
                 {#{ pa(check) }#}
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
+                    {# если нет финиша #}
                     {% if check.start is defined and check.fin is not defined %}
                         {{ check.start|date("H:i") }} - ...
+
+                        {# если есть финиш #}
                     {% else %}
 
                         {#   check [payed] => Array
@@ -194,12 +238,12 @@
 
                         <center>
 
-                            {% if salar['ocenka-hour-base'] is defined %}
+                            {% if data_on_workman_day['salary']['ocenka-hour-base'] is defined %}
 
                                 {% if ( now_dolgn.smoke is defined and now_dolgn.smoke == 'da' ) or ( now_job.smoke is defined and now_job.smoke == 'da' ) %}
-                                    {% set price_hour = salar['ocenka-hour-base']+salar['if_kurit'] %}
+                                    {% set price_hour = data_on_workman_day['salary']['ocenka-hour-base']+data_on_workman_day['salary']['if_kurit'] %}
                                 {% else %}
-                                    {% set price_hour = salar['ocenka-hour-base'] %}
+                                    {% set price_hour = data_on_workman_day['salary']['ocenka-hour-base'] %}
                                 {% endif %}
 
                                 <input 
@@ -474,8 +518,6 @@
                         <a href="#" class="act act_smena btn3" 
                            go_answer="Хотите удалить смену ?"
                            action="delete_smena" id2="{{ check.id }}" s2="{{ creatSecret( check.id ) }}" resto="ares{{ check.id }}" show_id="ares{{ check.id }}" hidethis="da" >удалить смену</a>
-
-
 
                         {% if 1 == 2 %}
                             <a href="#" class="act act_smena btn3" 

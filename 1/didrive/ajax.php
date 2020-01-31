@@ -30,9 +30,13 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 // проверяем секрет
 if (
         ( isset($_REQUEST['action']{0}) &&
-        (
-        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month'
-        )
+            (
+            $_REQUEST['action'] == 'calc_full_ocenka_day' 
+                || $_REQUEST['action'] == 'autostart_ocenka_days' 
+                || $_REQUEST['action'] == 'bonus_record' 
+                || $_REQUEST['action'] == 'bonus_record_month'
+                || $_REQUEST['action'] == 'show_dolgn'
+            )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true

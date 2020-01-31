@@ -311,21 +311,22 @@
 
         {% endfor %}
 
+        
         {# плюсы #}
-        {% for k, item in getListJobsPeriodAll.data.plusa if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
+        {% for k, item in getListJobsPeriodAll.data.money_bonus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
         {% endfor %}
 
+
         {# минусы #}
-        {% for k, item in getListJobsPeriodAll.data.minusa if item.jobman == man and item.date_now == date %}
+        {% for k, item in getListJobsPeriodAll.data.money_minus if item.jobman == man and item.date_now == date %}
             {#{ pa(item) }#}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.minus.htm' %}
         {% endfor %}
 
+
         {# комментарии #}
-
         {#{ pa( getListJobsPeriodAll.data.comments ) }#}
-
         {% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man and item.date_to == date %}
             {#% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man %#}
 
