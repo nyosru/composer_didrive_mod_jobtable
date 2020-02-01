@@ -312,6 +312,7 @@
         {% endfor %}
 
         
+        
         {# плюсы #}
         {% for k, item in getListJobsPeriodAll.data.money_bonus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
@@ -320,7 +321,6 @@
 
         {# минусы #}
         {% for k, item in getListJobsPeriodAll.data.money_minus if item.jobman == man and item.date_now == date %}
-            {#{ pa(item) }#}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.minus.htm' %}
         {% endfor %}
 

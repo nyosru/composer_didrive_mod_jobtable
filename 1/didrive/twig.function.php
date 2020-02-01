@@ -339,7 +339,6 @@ $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, 
 $twig->addFunction($function);
 
 
-
 /**
  * получаем список доступов доступных точек продаж
  */

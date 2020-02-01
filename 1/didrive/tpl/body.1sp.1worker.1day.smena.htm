@@ -7,12 +7,11 @@
             pa(now_job) 
             {{ pa(now_job) }}
         {% endif %}
-
+        
         {% if 1 == 2 %}
             pa(now_dolgn) 
             {{ pa(now_dolgn) }}
         {% endif %}
-
 
         {% if 1 == 2 %}
             массив данных по должности и зарплате
@@ -21,14 +20,10 @@
 
         {% set data_on_workman_day = getListJobsPeriodAll.data.where_job__workman_date[man][date] %}
 
-        {% if 1 == 1 %}
+        {% if 1 == 2 %}
             массив данных по должности и зарплате data_on_workman_day
             {{ pa(data_on_workman_day) }}
         {% endif %}
-
-
-
-
 
 
         {# достаём размер оплаты текущей должности #}
@@ -55,11 +50,6 @@
 
     {% endif %}
 
-
-
-    
-    
-    
     
     {%  set rand_d = random() %}
     {# rand {{ rand_d }} #}
@@ -129,6 +119,12 @@
 
                 {% endif %}
 
+                
+                
+                
+                
+                
+                
                 {#{ pa(check) }#}
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
@@ -139,25 +135,10 @@
                         {# если есть финиш #}
                     {% else %}
 
-                        {#   check [payed] => Array
-                        (
-                            [checkin] => 20974
-                            [summa] => 1552
-                            [pay_buh] => da
-                            [pay_buh_who] => 2
-                            [pay_buh_start] => 2019-08-20 15:47:22
-                        )#}
-
-                        {% set kolvo_hour = check.time_on_job/3600 %}
-
                         <abbr class="job_timer" >
                             {{ check.start|date("H:i") }} - {{ check.fin|date("H:i") }}
                             <br/>
                         </abbr>
-
-                        {#
-                        <abbr class="job_hour" title="{{ check.start|date("d.m H:i") }} - {{ check.fin|date("d.m H:i") }} отработано часов:{{ check.time_on_job/3600 }}" >{{ kolvo_hour }}<br/></abbr>
-                        #}
 
                         <abbr class="job_hour" >
                             <nobr>
@@ -170,13 +151,23 @@
                                     {% set hours_on_job = 0 %}
                                 {% endif %}
 
+                                
+                                
+                                
                                 {% if check.status == 'show' and check.payed is not defined %}
                                     <i class="fa fa-minus ajax_hour_action" 
                                        type_action="-" 
                                        hour_id="{{ check.id }}" 
                                        block="hour_{{ check.id }}" 
-                                       s="{{ creatSecret('hour_'~check.id) }}" 
-                                       ></i> 
+                                       s="{{ creatSecret('hour_'~check.id) }}"
+
+                                       cash_delete1_1="hoursonjob"
+                                       cash_delete1_2name="date"
+                                       cash_delete1_2="{{ date }}"
+                                       cash_delete1_3name="sp"
+                                       cash_delete1_3="{{ sp_now }}"
+
+                                       ></i>
                                 {% endif %}
 
                                 <span id="hour_{{ check.id }}" 
@@ -196,6 +187,13 @@
                                        hour_id="{{ check.id }}" 
                                        block="hour_{{ check.id }}" 
                                        s="{{ creatSecret('hour_'~check.id) }}" 
+                                       
+                                       cash_delete1_1="hoursonjob"
+                                       cash_delete1_2name="date"
+                                       cash_delete1_2="{{ date }}"
+                                       cash_delete1_3name="sp"
+                                       cash_delete1_3="{{ sp_now }}"
+                                       
                                        ></i> 
 
                                     <a href="#"  class="but_show_option" 
@@ -211,24 +209,12 @@
                             <br/>
                         </abbr>
 
-                        {#% set total[now_date2]['hours'] = total[now_date2]['hours'] + check.time_on_job/3600 %#}
-
                     {% endif %}
-
-
-
-
-
-
-
-
 
 
                     {% if check.status == 'show' %}
 
                         {% set summa_day = 0 %}
-
-                        {#{ pa(check) }#}
 
                         <input 
                             xtype="text" 
@@ -258,12 +244,6 @@
 
                             {% else %}
 
-                                {#                    <input 
-                                                        type="text" 
-                                                        class="now_kolvo_hour" 
-                                                        value="{{ kolvo_hour }}" 
-                                                        >
-                                #}
 
                                 {#
                                 <div class="text-left" >

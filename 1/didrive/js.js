@@ -276,9 +276,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
 
-    
-    
-    
+
+
+
     function calculate_summ_day($sp, $date) {
 
         $('.price_hour_' + $date + '_' + $sp).each(function (i, elem) {
@@ -365,9 +365,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     /* затираем данные в строчках с результатом работы */
     function clearTdSummAllGraph() {
-
         $('body .show_summ_hour_day').each(function (i, elem) {
-
             $(elem).html('...');
         });
     }
@@ -468,9 +466,26 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     /**
      * кликаем по кнопам плюс минус час
      */
-    $('body').on('click', '.ajax_hour_action', function (event) {
 
-        clearTdSummAllGraph();
+
+    $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
+    
+//    $('body').on('click', '.ajax_hour_action', function () {
+//        jobdesc__plus_minus_hour(this);
+//        });
+
+    function jobdesc__plus_minus_hour() {
+
+//        clearTdSummAllGraph();
+        var uri_query = '';
+
+        $.each(this.attributes, function () {
+            if (this.specified) {
+                //console.log(1, this.name, this.value);
+                uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
+            }
+        });
+
 
         $th = $(this);
         $znak = $th.attr('type_action'); // - || +
@@ -485,22 +500,24 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $s = $th.attr('s');
         // console.log($textblock_id);
 
-        $cifra = parseFloat($('span#' + $textblock_id).text());
+        $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
+
         console.log($('span#' + $textblock_id).text());
         console.log($cifra);
+
         if ($znak == '-') {
-            $new_val = $cifra - 0.5;
+            var $new_val = +$cifra - +0.5;
         }
 //
         else if ($znak == '+') {
-            $new_val = $cifra + 0.5;
+            var $new_val = +$cifra + +0.5;
         }
 
         $('span#' + $textblock_id).text($new_val);
         $.ajax({
 
             url: "/vendor/didrive_mod/items/1/ajax.php",
-            data: "action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            data: uri_query+"&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
             cache: false,
             dataType: "json",
             type: "post",
@@ -555,11 +572,71 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
 
         return false;
-    });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
+    }
+ 
+// не использую
+    function jobdesc__plus_minus_hour_ajax( uri_query, $hour_id , $new_val , $textblock_id , $s, $textblock_id, $new_val ) {
 
+        $.ajax({
+
+            url: "/vendor/didrive_mod/items/1/ajax.php",
+            data: uri_query+"&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
+
+                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
+                $('span#' + $textblock_id).css('font-weight', 'bold');
+                //if (typeof $div_hide !== 'undefined') {
+                //$('#' + $div_hide).hide();
+                //}
+
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+                //                $("#ok_but_stat").show('slow');
+                //                $("#ok_but").hide();
+            }
+            ,
+            success: function ($j) {
+
+                // alert($j.status);
+
+                if ($j.status == 'error') {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
+                    // $('span#' + $textblock_id).css('color', 'darkred');
+
+                } else {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
+                    // $('span#' + $textblock_id).css('color', 'darkgreen');
+
+                    // console.log($new_val);
+                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
+                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+
+                    setTimeout(function () {
+                        //calculateSummAllGraph();
+
+                        console.log('$textblock_id', $textblock_id);
+                        // alert($textblock_id);
+
+                        calcSummMoneySmena($textblock_id);
+
+                    }, 100);
+                    //$(document).one( calculateSummAllGraph );
+
+                }
+
+
+            }
+
+        });
+
+        return false;
+    }
+ 
 
     $('body').on('change', '.select_edit_item_dop2', function () {
 

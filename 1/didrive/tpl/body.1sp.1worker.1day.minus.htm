@@ -16,10 +16,11 @@
             {#{ pa(minus) }#}
 
             {% if item.status == 'hide' %}
+
                 {#
-                                    <a href="#" class="act act_smena btn3" action="recover_smena" 
-                                       go_answer="Хотите восстановить смену ?"
-                                       id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
+                <a href="#" class="act act_smena btn3" action="recover_smena" 
+                   go_answer="Хотите восстановить смену ?"
+                   id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
                 #}
 
                 <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
@@ -50,8 +51,6 @@
                    msg_to_success="Восстановлено"
 
                    >восстановить</a>
-
-
 
             {% elseif item.status == 'show' %}
 

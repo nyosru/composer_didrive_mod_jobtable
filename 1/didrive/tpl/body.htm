@@ -8,10 +8,7 @@
 
     <script src="/js/numberformat.js" ></script>
 
-
-
-
-
+    
     {% set sps = items__get( db, 'sale_point' )  %}
     {#{ pa(sps) }#}
 
@@ -199,7 +196,7 @@
                         modal_header='возможные должности и ставки'
                         ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
                         {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
-                        ajax_vars='{{  { 'action':'show_dolgn', 'date_start': date_start , 'view' : 'html' }|url_encode }}'
+                        ajax_vars='{{  { 'action':'show_dolgn', 'date_start': date_start , 'view' : 'html', 'sp': get.sp }|url_encode }}'
 
                         >
                         ставки и размер зарплат
