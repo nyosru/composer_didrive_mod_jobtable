@@ -316,9 +316,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
         . '<td>'
         . ( $v['head'] ?? '-' )
         . '<br/>'
-        . '<small>'
-        . (!isset($v['calc_auto']) ? 'не' : '' )
-        . ' участвует в&nbsp;автооценке</small>'
+        . '<small>в&nbsp;автооценке '
+        . (!isset($v['calc_auto']) ? '<span style="color:red;">не&nbsp;участвует</span>' : '<span style="color:green;">участвует</span>' )
+        . '</small>'
         . '</td>'
         . '<td>'
         . ( $dolgn2['date'] ?? '-' )
@@ -350,24 +350,28 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
         // echo $v['head'];
 
         $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], $date_fin);
-        
-        if( empty($dolgn2['date']) )
+
+        if (empty($dolgn2['date']))
             continue;
-        
+
         // \f\pa($dolgn2);
         // $dolgn = \Nyos\mod\JobDesc::getSalarisNow($db, $_REQUEST['sp'], $v['id'], $date_fin);
         // \f\pa($dolgn);
 
         show_tr_oplats($v, $dolgn2);
 
-        if ( $dolgn2['date'] >= $date_start) {
+        if ($dolgn2['date'] >= $date_start) {
 
             $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], date('Y-m-d', strtotime($dolgn2['date'] . ' -1 day')));
+            if (empty($dolgn2['date']))
+                continue;
             show_tr_oplats($v, $dolgn2);
 
             if ($dolgn2['date'] >= $date_start) {
 
                 $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], date('Y-m-d', strtotime($dolgn2['date'] . ' -1 day')));
+                if (empty($dolgn2['date']))
+                    continue;
                 show_tr_oplats($v, $dolgn2);
             }
         }

@@ -46,7 +46,9 @@
 
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
 
-            {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
+            {#% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %#}
+            {% if now_date2|date("Y-m-d") < "now"|date_modify("-1 day")|date("Y-m-d") 
+                and now_date2|date("Y-m-d") <= date_finish|date("Y-m-d") %}
 
                 <div class="tcell tr{{sp_now}}ras" >
 
@@ -63,7 +65,7 @@
                             #}
 
                             <div class='text-center'>
-                                <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block;"
+                                <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block; float:right;"
 
                                    forajax_action="calc_full_ocenka_day" 
 
@@ -87,7 +89,12 @@
 
                                    onclick="$('#ocenka_info_{{ sp_now }}_{{ i }}').hide('slow');"
 
-                                   >расчитать оценку</a>
+                                   title="расчитать оценку дня"
+                                   
+                                   >
+                                    {# расчитать оценку #}
+                                    <span class="fa fa-refresh" ></span>
+                                </a>
 
 
                                 <div id="ocenka_{{ sp_now }}_{{ i }}" style="text-align:left; xmin-width: 250px;"></div>

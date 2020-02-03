@@ -11,13 +11,6 @@
     {{ pa(time_ex,2) }}
     #}
 
-    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {% set time_ex_default = get_timers_on_sp_default( db ) %}
-    {% if timer_show == 'on' %} <br/>время get_timers_on_sp_default - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {% set norms_day = jobdesc__get_norms( db, sp_now, date_start, date_finish ) %}
-    {% if timer_show == 'on' %} <br/>время norms_day - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {#% set timer_show = 'on1' %#}
 
