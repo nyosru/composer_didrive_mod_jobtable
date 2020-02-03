@@ -28,6 +28,8 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 // --------------------------------- //
 // защита от повторного срабатывания в секундах
 $time_expire = 60 * 60 * 11;
+$time_expire = 60 * 60;
+
 
 \f\timer_start(5);
 $txt = 'обновляем автооценки дней ТП за текущий месяц';
@@ -37,10 +39,129 @@ $txt2 = '';
 // --------------------------------- // 
 
 
-
-
 $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
-// \f\pa($sps);
+// \f\pa($sps, 2,'','$sps');
+
+$ocenki_sp_date = [];
+if (1 == 1) {
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'date\' '
+            . ' AND mid.value_date >= :ds '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 40);
+    \Nyos\mod\items::$where2dop = ' AND ( midop.name = \'date\' OR midop.name = \'sale_point\' ) ';
+    $sps_ocenki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_ocenki_days);
+    // \f\pa($sps_ocenki, 2);
+    foreach ($sps_ocenki as $k => $v) {
+        $ocenki_sp_date[$v['sale_point']][$v['date']] = 1;
+    }
+    unset($sps_ocenki);
+}
+
+
+$norms_day__sp_date = [];
+if (1 == 1) {
+
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'date\' '
+            . ' AND mid.value_date >= :ds '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 40);
+
+    \Nyos\mod\items::$where2dop = ' AND ( midop.name = \'date\' OR midop.name = \'sale_point\' ) ';
+
+    $ar = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_norms_day);
+    // \f\pa($sps_norms, 2, '', '$sps_norms' );
+    foreach ($ar as $k => $v) {
+        $norms_day__sp_date[$v['sale_point']][$v['date']] = 1;
+    }
+    unset($ar);
+    // \f\pa($norms_day__sp_date, 2, '', '$norms_day__sp_date');
+}
+
+
+// $shifts_without_estim = [];
+// $shifts_estim = [];
+//$shifts = [];
+//if (1 == 1) {
+//    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+//            . ' ON mid.id_item = mi.id '
+//            . ' AND mid.name = \'date\' '
+//            . ' AND mid.value_date >= :ds '
+//    ;
+//    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 40);
+//    \Nyos\mod\items::$where2dop = ' AND ( midop.name = \'date\' OR midop.name = \'sale_point\' ) ';
+//    $ar = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks );
+//    // \f\pa($sps_norms, 2, '', '$sps_norms' );
+//    foreach ($ar as $k => $v) {
+//        $shifts[$v['sale_point']][$v['date']] = 1;
+//    }
+//    unset($ar);
+//    \f\pa($shifts, 2, '', '$shifts');
+//}
+
+    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 10) );
+    
+    $jobs_all['data']['where_job__workman_date'] = [];
+    
+    \f\pa($jobs_all, 12,'','jobs_all');
+    //\f\pa($jobs_all['data']['where_job__workman_date'], 12,'','jobs_all');
+
+//    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 40) );
+//    \f\pa($jobs_all, 12,'','jobs_all');
+
+
+
+
+
+
+
+
+
+foreach ($sps as $k => $v) {
+
+    if ($v['head'] == 'default')
+        continue;
+
+    for ($i = 1; $i <= 39; $i++) {
+
+        $date = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * $i);
+
+        echo '<br/>' . $v['head'] . ' ' . $date . ' '
+        . ( isset($ocenki_sp_date[$v['id']][$date]) ? 'есть' : 'нет' )
+        . ' нормы '
+        . ( isset($norms_day__sp_date[$v['id']][$date]) ? 'есть' : 'нет' )
+        ;
+
+        $need_estimation = false;
+
+        // если есть норма дня то изучаем остальные параметры и если нужно считаем оценку
+        if (isset($norms_day__sp_date[$v['id']][$date])) {
+
+            if (!isset($ocenki_sp_date[$v['id']][$date])) {
+                $need_estimation = true;
+            }
+        }
+
+        echo '<br/>' . $v['head'] . ' ' . $date . ' оценка ' . ( $need_estimation === true ? 'нужна++' : 'не нужна --' );
+    }
+}
+
+exit;
+
+
+
+
+
+
+
+
+
+
+
 
 $nn = 1;
 

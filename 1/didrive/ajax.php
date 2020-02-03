@@ -29,10 +29,9 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 //\f\pa($_REQUEST);
 // проверяем секрет
 if (
-        ( isset($_REQUEST['action']{0}) &&
         (
-        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month' || $_REQUEST['action'] == 'show_dolgn'
-        )
+        !empty($_REQUEST['action']) &&
+        ( $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month' || $_REQUEST['action'] == 'show_dolgn' )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
@@ -55,8 +54,6 @@ if (
 }
 //
 else {
-
-
 
 //    $e = '';
 //    foreach ($_REQUEST as $k => $v) {
@@ -297,34 +294,24 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
 
     echo '<table class=table >'
     . '<thead>'
-            
     . '<tr>'
     . '<th rowspan=2 >Должность</th>'
     . '<th rowspan=2 >Старт</th>'
+    . '<th rowspan=2 >за час</th>'
     . '<th colspan=2 >оценка 3</th>'
     . '<th colspan=2 >оценка 5</th>'
     // . '<th rowspan=2 ></th>'
     . '</tr>'
-            
     . '<tr>'
     . '<th>в час</th>'
     . '<th>бонус</th>'
     . '<th>в час</th>'
     . '<th>бонус</th>'
     . '</tr>'
-            
     . '</thead>'
     . '<tbody>';
 
-    foreach ($dolgn as $k => $v) {
-
-        // echo $v['head'];
-
-        $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], $date_fin);
-
-        // $dolgn = \Nyos\mod\JobDesc::getSalarisNow($db, $_REQUEST['sp'], $v['id'], $date_fin);
-        // \f\pa($dolgn);
-
+    function show_tr_oplats($v, $dolgn2) {
         echo '<tr>'
         . '<td>'
         . ( $v['head'] ?? '-' )
@@ -335,6 +322,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
         . '</td>'
         . '<td>'
         . ( $dolgn2['date'] ?? '-' )
+        . '</td>'
+        . '<td>'
+        // \f\pa($v);
+        . ( $dolgn2['ocenka-hour-base'] ?? '-' )
         . '</td>'
         . '<td>'
         // \f\pa($v);
@@ -352,7 +343,34 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
         . '</td>'
         . '</tr>'
         ;
+    }
 
+    foreach ($dolgn as $k => $v) {
+
+        // echo $v['head'];
+
+        $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], $date_fin);
+        
+        if( empty($dolgn2['date']) )
+            continue;
+        
+        // \f\pa($dolgn2);
+        // $dolgn = \Nyos\mod\JobDesc::getSalarisNow($db, $_REQUEST['sp'], $v['id'], $date_fin);
+        // \f\pa($dolgn);
+
+        show_tr_oplats($v, $dolgn2);
+
+        if ( $dolgn2['date'] >= $date_start) {
+
+            $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], date('Y-m-d', strtotime($dolgn2['date'] . ' -1 day')));
+            show_tr_oplats($v, $dolgn2);
+
+            if ($dolgn2['date'] >= $date_start) {
+
+                $dolgn2 = \Nyos\mod\JobDesc::getSalaryJobman($db, $_REQUEST['sp'], $v['id'], date('Y-m-d', strtotime($dolgn2['date'] . ' -1 day')));
+                show_tr_oplats($v, $dolgn2);
+            }
+        }
     }
 
     echo '</tbody></table>';

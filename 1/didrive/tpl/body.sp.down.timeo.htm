@@ -39,6 +39,12 @@
 
                 <div class="tcell" >
 
+                    {% if norms_day[now_date2]['time_wait_norm_cold'] is not defined %}
+                        
+                        <center style="color:gray" >заполните нормы&nbsp;дня</center>
+                        
+                    {% else %}
+                    
                     {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
 
                         {#{ pa(norms_day) }#}
@@ -86,7 +92,9 @@
                         </div>
                     {% endif %}
 
+                    {% endif %}
 
+                    {#{ pa(norms_day[now_date2]) }#}
 
                 </div>
             {% endif %}
