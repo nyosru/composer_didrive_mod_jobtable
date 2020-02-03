@@ -3,8 +3,10 @@
     <div class="trow" >
         <div class="tcell stick-left bg-white" >
 
+            {% if 1 == 2 %}
             <div class="btn-group" style="float:right;" >
 
+                
                 <div style="float:right; display:inline-block;" 
                      class="option_img" 
                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -22,15 +24,13 @@
 
                 </div>
             </div>
-
+            {% endif %}
 
             <nobr>
 
-                <a href="#" onclick="$('.tr{{sp_now}}ras').toggle('slow');
-                        return false;" >
+                {# <a href="#" onclick="$('.tr{{sp_now}}ras').toggle('slow'); return false;" > #}
                     <b>Расчёт оценки дня</b>
-                    {# скрыть/показать #}
-                </a>
+                {# </a> #}
 
             </nobr>
 
@@ -109,7 +109,6 @@
 
                         <div id="a_price_{{ sp_now }}_{{ now_date2 }}" >
 
-
                             <div id="ocenka_info_{{ sp_now }}_{{ i }}" style="text-align:left;">
                                 {% if ocenki_day[now_date2] is defined %}
                                     {#{ pa(ocenki_day[sp_now][now_date2]) }#}
@@ -138,6 +137,7 @@
                         </div>
 
                     {% endif %}
+
                 </div>
 
             {% endif %}

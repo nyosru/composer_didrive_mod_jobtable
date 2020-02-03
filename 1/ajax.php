@@ -52,14 +52,13 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
     \Nyos\mod\items::saveNewDop($db, $aa);
 
     die(__FILE__);
-    
-} 
+}
 
 //
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
-    
-    $date_start = date( 'Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME'] ) );
-    $date_fin = date( 'Y-m-d', strtotime($date_start . ' +1 month -1 day') );
+
+    $date_start = date('Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME']));
+    $date_fin = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
     // echo $date_start . ' ' . $date_fin;
 //    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
@@ -110,11 +109,47 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
         \f\redirect('https://' . $_SERVER['HTTP_HOST'], $_REQUEST['goto']);
     } elseif (!empty($_REQUEST['return']) && $_REQUEST['return'] == 'html') {
         \f\pa($return);
-    } elseif ( isset($_REQUEST['return']) && $_REQUEST['return'] == 'html-small') {
-        die( 'автооценка обработали даты ' . $date_start . ' - ' . $date_fin );
+    } elseif (isset($_REQUEST['return']) && $_REQUEST['return'] == 'html-small') {
+        die('автооценка обработали даты ' . $date_start . ' - ' . $date_fin);
     } else {
         \f\end2('автооценка обработали даты ' . $date_start . ' - ' . $date_fin, true, $return);
     }
+
+    die();
+}
+
+// стираем оценку дня
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ocenka_clear') {
+
+    if (empty($_REQUEST['sp']) || empty($_REQUEST['date']))
+        \f\end2('не хватает данных', false);
+
+    // $date = ;
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'date\' '
+            . ' AND mid.value_date = :d '
+            . ' INNER JOIN `mitems-dops` mid2 '
+            . ' ON mid2.id_item = mi.id '
+            . ' AND mid2.name = \'sale_point\' '
+            . ' AND mid2.value = :sp '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $_REQUEST['sp'];
+    \Nyos\mod\items::$var_ar_for_1sql[':d'] = date('Y-m-d', strtotime($_REQUEST['date']));
+
+    \Nyos\mod\items::$return_items_header = true;
+    $ocenka = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_ocenki_days);
+
+    // \f\pa($ocenka);
+    if (!empty($ocenka))
+        foreach ($ocenka as $k => $v) {
+            if (!empty($v['id'])) {
+                $res = \Nyos\mod\items::deleteId($db, $v['id']);
+                \f\pa($res);
+            }
+        }
+
+    \f\end2('автооценку удалили', true, $ocenka);
 
     die();
 }
@@ -540,7 +575,7 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
             $n++;
         }
 
-        $sql = ' DELETE FROM `mitems-dops` WHERE name = \'fin\' AND ( ' . $sl .' ); ';
+        $sql = ' DELETE FROM `mitems-dops` WHERE name = \'fin\' AND ( ' . $sl . ' ); ';
         \f\pa($sql);
         $ff = $db->prepare($sql);
         $ff->execute($sl2);

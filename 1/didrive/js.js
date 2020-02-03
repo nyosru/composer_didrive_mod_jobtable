@@ -1,6 +1,82 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
 
+    function ocenka_clear($sp, $date) {
+
+        $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
+
+        console.log('стираем 2', $sp, $date);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/ajax.php",
+            data: "action=ocenka_clear&sp=" + $sp + "&date=" + $date,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            async: false,
+//            beforeSend: function () {
+//
+//                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
+//                $('span#' + $textblock_id).css('font-weight', 'bold');
+//                //if (typeof $div_hide !== 'undefined') {
+//                //$('#' + $div_hide).hide();
+//                //}
+//
+//                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+//                //                $("#ok_but_stat").show('slow');
+//                //                $("#ok_but").hide();
+//
+//                ocenka_clear($in_sp, $in_date);
+//
+//            }
+//            ,
+            success: function ($j) {
+
+                console.log('стираем оценку дня', $j);
+//
+//                // alert($j.status);
+//
+//                if ($j.status == 'error') {
+//
+//                    // $('span#' + $textblock_id).css('border-bottom', '2px solid red');
+//                    // $('span#' + $textblock_id).css('color', 'darkred');
+//
+//                } else {
+//
+//                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
+//                    // $('span#' + $textblock_id).css('color', 'darkgreen');
+//
+//                    // console.log($new_val);
+//                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+//                    // $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
+//                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+//
+//
+//                    // $.debounce( 1000, calcSummMoneySmena2 );
+//                    // calcSummMoneySmena2($textblock_id);
+//
+////                    setTimeout( function () {
+////                        //calculateSummAllGraph();
+////
+////                        console.log('$textblock_id', $textblock_id);
+////                        // alert($textblock_id);
+////
+////                        calcSummMoneySmena($textblock_id);
+////
+////                    }, 100);
+////                    //$(document).one( calculateSummAllGraph );
+//
+//                }
+
+
+            }
+
+        });
+
+    }
+
+
     /**
      * обработка назначения сотрудника на точку продаж
      * @param {type} $sp
@@ -398,8 +474,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      * @returns {undefined}
      */
     function calcSummMoneySmena(id = null) {
+        $.debounce(1000, calcSummMoneySmena2);
+    }
 
-        console.log('calcSummMoneySmena', id);
+    function calcSummMoneySmena2(id = null) {
+
+        //alert( id );
+        //console.log('calcSummMoneySmena', id);
+
         $('body .smena_summa').html('..');
 
         $('body .job_hours').each(function (i, elem) {
@@ -468,14 +550,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
 
 
-    $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
-    
-//    $('body').on('click', '.ajax_hour_action', function () {
-//        jobdesc__plus_minus_hour(this);
-//        });
+    // $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
 
-    function jobdesc__plus_minus_hour() {
+    $('body').on('click', '.ajax_hour_action', function () {
 
+        var in_date = '';
+        var in_sp = '';
 //        clearTdSummAllGraph();
         var uri_query = '';
 
@@ -483,8 +563,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             if (this.specified) {
                 //console.log(1, this.name, this.value);
                 uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
+
+                if (this.name == 'date') {
+                    in_date = this.value;
+                } else if (this.name == 'sp') {
+                    in_sp = this.value;
+                }
+
             }
         });
+
 
 
         $th = $(this);
@@ -514,13 +602,15 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $('span#' + $textblock_id).text($new_val);
+
         $.ajax({
 
             url: "/vendor/didrive_mod/items/1/ajax.php",
-            data: uri_query+"&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
             cache: false,
             dataType: "json",
             type: "post",
+            async: false,
             beforeSend: function () {
 
                 $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
@@ -532,6 +622,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
                 //                $("#ok_but_stat").show('slow');
                 //                $("#ok_but").hide();
+
+
             }
             ,
             success: function ($j) {
@@ -545,68 +637,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 } else {
 
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
-                    // $('span#' + $textblock_id).css('color', 'darkgreen');
-
-                    // console.log($new_val);
-                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
-                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-
-                    setTimeout(function () {
-                        //calculateSummAllGraph();
-
-                        console.log('$textblock_id', $textblock_id);
-                        // alert($textblock_id);
-
-                        calcSummMoneySmena($textblock_id);
-
-                    }, 100);
-                    //$(document).one( calculateSummAllGraph );
-
-                }
-
-
-            }
-
-        });
-
-        return false;
-    }
- 
-// не использую
-    function jobdesc__plus_minus_hour_ajax( uri_query, $hour_id , $new_val , $textblock_id , $s, $textblock_id, $new_val ) {
-
-        $.ajax({
-
-            url: "/vendor/didrive_mod/items/1/ajax.php",
-            data: uri_query+"&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
-            cache: false,
-            dataType: "json",
-            type: "post",
-            beforeSend: function () {
-
-                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
-                $('span#' + $textblock_id).css('font-weight', 'bold');
-                //if (typeof $div_hide !== 'undefined') {
-                //$('#' + $div_hide).hide();
-                //}
-
-                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
-                //                $("#ok_but_stat").show('slow');
-                //                $("#ok_but").hide();
-            }
-            ,
-            success: function ($j) {
-
-                // alert($j.status);
-
-                if ($j.status == 'error') {
-
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
-                    // $('span#' + $textblock_id).css('color', 'darkred');
-
-                } else {
+                    ocenka_clear(in_sp, in_date);
 
                     $('span#' + $textblock_id).css('border-bottom', '2px solid green');
                     // $('span#' + $textblock_id).css('color', 'darkgreen');
@@ -616,16 +647,20 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
                     // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
 
-                    setTimeout(function () {
-                        //calculateSummAllGraph();
 
-                        console.log('$textblock_id', $textblock_id);
-                        // alert($textblock_id);
+                    // $.debounce( 1000, calcSummMoneySmena2 );
+                    calcSummMoneySmena2($textblock_id);
 
-                        calcSummMoneySmena($textblock_id);
-
-                    }, 100);
-                    //$(document).one( calculateSummAllGraph );
+//                    setTimeout( function () {
+//                        //calculateSummAllGraph();
+//
+//                        console.log('$textblock_id', $textblock_id);
+//                        // alert($textblock_id);
+//
+//                        calcSummMoneySmena($textblock_id);
+//
+//                    }, 100);
+//                    //$(document).one( calculateSummAllGraph );
 
                 }
 
@@ -635,8 +670,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
 
         return false;
-    }
- 
+    });
+
+
+
 
     $('body').on('change', '.select_edit_item_dop2', function () {
 
@@ -656,6 +693,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         setTimeout(function () {
             calculateSummAllGraph();
         }, 2000);
+        
     })
 
 
@@ -673,6 +711,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         });
     });
+
     $('body').on('click', '.show_job_tab', function (event) {
 
 // alert('2323');

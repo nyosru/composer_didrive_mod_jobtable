@@ -622,10 +622,10 @@ class JobDesc {
 // minus
         if (1 == 1) {
 
-            \f\timer_start(7);
+            // \f\timer_start(7);
 
             // если нет переменной то не пишем кеш
-            // $var_cash_minus = 'jobdesc__money_minus_mod' . self::$mod_minus . '_datestart' . $date_start . '_datefinish' . $date_finish;
+            $var_cash_minus = 'jobdesc__money_minus_mod' . self::$mod_minus . '_datestart' . $date_start . '_datefinish' . $date_finish;
 
             $return['money_minus'] = [];
 
@@ -653,7 +653,7 @@ class JobDesc {
                     \f\Cash::setVar($var_cash_minus, $return['money_minus']);
             }
 
-            echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
+             // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
 
 
 
