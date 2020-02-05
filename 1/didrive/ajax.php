@@ -2160,6 +2160,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
             \Nyos\mod\items::addNewSimple($db, 'jobman_send_on_sp', $d);
         }
 
+        \f\Cash::deleteKeyPoFilter(['getListJobsPeriod']);
+        
         \f\end2('добавили', true);
 //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
     }
