@@ -196,7 +196,7 @@ class JobDesc {
         if (!empty($cash_var))
             $return = \f\Cash::getVar($cash_var);
 
-        if (!empty($return)) {
+        if ( !empty($return) && !empty($return['hours_all'])  ) {
             if (isset($show_timer) && $show_timer === true)
                 echo '<br/>#' . __LINE__ . ' данные из кеша';
         } else {
@@ -245,18 +245,23 @@ class JobDesc {
                     }
 
                     $return['hours_all'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
+
                 }
             }
 
             self::clearTempClassVars();
 
-            if (!empty($return))
-                \f\Cash::setVar($cash_var, [ 'hours_calc_auto' => $return['hours_calc_auto'], 'hours_all' => $return['hours_all'] ], ( $cash_time_sec ?? 0));
+            if (!empty($return)){
+                // \f\Cash::setVar($cash_var, [ 'hours_calc_auto' => $return['hours_calc_auto'], 'hours_all' => $return['hours_all'] ], ( $cash_time_sec ?? 0));
+                \f\Cash::setVar( $cash_var, $return , ( $cash_time_sec ?? 0) );
+            }
         }
 
         if (isset($show_timer) && $show_timer === true)
             echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
 
+        // \f\pa($return);
+        
         return \f\end3('окей', true, $return);
     }
 

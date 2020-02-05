@@ -103,23 +103,15 @@ if (1 == 1) {
 //    \f\pa($shifts, 2, '', '$shifts');
 //}
 
-    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 10) );
-    
-    $jobs_all['data']['where_job__workman_date'] = [];
-    
-    \f\pa($jobs_all, 12,'','jobs_all');
-    //\f\pa($jobs_all['data']['where_job__workman_date'], 12,'','jobs_all');
-
+$jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 10));
+// $jobs_all['data']['where_job__workman_date'] = [];
+// \f\pa($jobs_all, 2,'','jobs_all');
+//\f\pa($jobs_all['data']['where_job__workman_date'], 12,'','jobs_all');
 //    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24 * 40) );
 //    \f\pa($jobs_all, 12,'','jobs_all');
 
 
-
-
-
-
-
-
+\f\timer_start(123);
 
 foreach ($sps as $k => $v) {
 
@@ -147,7 +139,65 @@ foreach ($sps as $k => $v) {
         }
 
         echo '<br/>' . $v['head'] . ' ' . $date . ' оценка ' . ( $need_estimation === true ? 'нужна++' : 'не нужна --' );
+
+        if ($need_estimation === true) {
+
+//            https://adomik.dev.uralweb.info/vendor/didrive_mod/jobdesc/1/didrive/ajax.php
+//            t=1&action=calc_full_ocenka_day&id=1_0&id2=1&s=a82539c2c6b3da5997cda9ad9665b70b&s2=e4fd78c868945c9c4fedcd13d67d3703&show_timer=da&sp=1&date=2020-02-01
+
+
+
+            $u = [
+//                'action' => 'bonus_record_month',
+//                'date' => date('Y-m-d', $_SERVER['REQUEST_TIME']),
+//                'sp' => $v['id']
+//                'id' => '1_0',
+//                'id2' => 1,
+//                's' => md5(),
+//                's2' => md5(),
+//                'show_timer' => 'da',
+
+                'action' => 'calc_full_ocenka_day',
+                'sp' => $v['id'],
+                'date' => $date,
+                'sp_s' => \Nyos\Nyos::creatSecret($v['id'] . $date),
+            ];
+            $link = 'http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($u);
+
+            //инициализация сеанса
+            if ($curl = curl_init()) {
+                // $curl
+                // curl_setopt($curl, CURLOPT_URL, 'http://webcodius.ru/'); //указываем адрес страницы
+                //указываем адрес страницы
+                curl_setopt($curl, CURLOPT_URL, $link);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                // curl_setopt ($curl, CURLOPT_POST, true);
+                // curl_setopt ($curl, CURLOPT_POSTFIELDS, "i=1");
+                curl_setopt($curl, CURLOPT_HEADER, 0);
+                $result = curl_exec($curl); //выполнение запроса
+//                \f\pa($result, '', '', 'result');
+//                \f\pa( json_decode($result,true) );
+                curl_close($curl); //закрытие сеанса
+            }
+
+//            $timer = \f\timer_stop(123, 'ar');
+//            \f\pa($timer,'','','timer');
+//            echo '<br/>timer' . \f\timer_stop(123);
+//            die( '#'.__LINE__ );
+        }
+
+        // echo '<br/>timer' . \f\timer_stop(123);
+
+        $timer = \f\timer_stop(123, 'ar');
+        echo '<br/>timer sec: ' . round($timer['sec'], 2);
+        if ($timer['sec'] > 20)
+            break;
     }
+
+    $timer = \f\timer_stop(123, 'ar');
+    echo '<br/>timer sec: ' . round($timer['sec'], 2);
+    if ($timer['sec'] > 20)
+        break;
 }
 
 exit;

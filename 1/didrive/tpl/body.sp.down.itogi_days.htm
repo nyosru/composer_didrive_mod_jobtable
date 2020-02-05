@@ -16,7 +16,7 @@
         {% for i in range(low=0, high=35, step=1) %}  
 
             {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-            {% if date_finish >= now_date2 %}
+            {% if date_finish >= now_date2 and now_date2 < "now"|date('Y-m-d') %}
 
                 <div class="tcell text-center" id="hoursday_{{ now_date2 }}" >
 

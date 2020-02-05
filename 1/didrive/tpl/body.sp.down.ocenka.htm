@@ -47,7 +47,7 @@
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
 
             {#% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %#}
-            {% if now_date2|date("Y-m-d") < "now"|date_modify("-1 day")|date("Y-m-d") 
+            {% if now_date2|date("Y-m-d") < "now"|date("Y-m-d") 
                 and now_date2|date("Y-m-d") <= date_finish|date("Y-m-d") %}
 
                 <div class="tcell tr{{sp_now}}ras" >

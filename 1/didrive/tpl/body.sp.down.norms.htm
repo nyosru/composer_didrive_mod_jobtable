@@ -206,7 +206,7 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
 
                                         <input class="input-norms on_change_show_block" 
                                                on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                               type="number" min="1" max="50" step="0.5"
+                                               type="number" min="1" max="50" step="0.1"
                                                name="procent_oplata_truda_on_oborota"
                                                {% if norms_day[now_date]['procent_oplata_truda_on_oborota'] is defined %}
                                                    value="{{ norms_day[now_date]['procent_oplata_truda_on_oborota'] }}"
