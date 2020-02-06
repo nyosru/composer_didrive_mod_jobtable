@@ -225,13 +225,15 @@
 
                        class="set_end_now_jobs dropdown-item btn-light"
 
-                       need_answer="Последний день работы сотрудника в данной должности ?"
+                       need_answer="Последний день работы (увольняем) сотрудника в данной должности ?"
 
-                       work_id="{{ now_job.id }}"
-                       wm_s="{{ creatSecret( now_job.id ) }}"
+                       xwork_id="{{ now_dolgn.id }}{{ i }}"
+                       xwm_s="{{ creatSecret( now_dolgn.id ~ i ) }}"
+
+                       work_id="{{ now_dolgn.id }}"
+                       wm_s="{{ creatSecret( now_dolgn.id ) }}"
 
                        date_finish="{{ date }}"
-
                        res_to="res{{ sp_now }}{{ man }}{{ date }}remove_job"
 
                        {#                                                         
@@ -286,6 +288,7 @@
         {% if 1 == 2 %}
             pa(now_dolgn) должность сегодня
             {{ pa(now_dolgn) }}
+            {{ pa(i) }}
         {% endif %}
 
         {# смены работы #}

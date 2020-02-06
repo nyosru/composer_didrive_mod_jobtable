@@ -55,6 +55,12 @@ class JobDesc {
     public static $mod_dolgn = '061.dolgnost';
 
     /**
+     * список модулей
+     * Связь данных по времени ожидания с точками продаж
+     */
+    public static $mod_sp_link_timeo = '074.time_expectations_links_to_sp';
+
+    /**
      * модуль - проведённые оплаты
      */
     public static $mod_buh_oplats = '075.buh_oplats';

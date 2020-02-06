@@ -1,7 +1,6 @@
 {% spaceless %}
 
     {# итого за день #}
-
     <div class="trow" >
 
         <div class="tcell stick-left bg-white" >
@@ -11,9 +10,9 @@
                 <br/>
                 Всего:
             </div>
-        </div>         
+        </div>
 
-        {% for i in range(low=0, high=35, step=1) %}  
+        {% for i in range(low=0, high=35, step=1) %}
 
             {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
             {% if date_finish >= now_date2 and now_date2 < "now"|date('Y-m-d') %}

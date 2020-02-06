@@ -1280,7 +1280,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
 // echo '</div>';
 //\f\pa($hours,'','','hours');
-            
+
             if (isset($hours['status']) && $hours['status'] == 'error') {
                 throw new \Exception($hours['html'], 19);
             }
@@ -2048,7 +2048,31 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'set_end_now_jobs')
 //            'sale_point' => $_REQUEST['sp']
 //        ));
 
-        \f\end2('ок', true);
+        \f\Cash::deleteKeyPoFilter(['getListJobsPeriod']);
+
+        $dnow = date('Y-m-d', strtotime($_REQUEST['date_end']));
+        $dfin = date('Y-m-d');
+
+        $clears_cash = [];
+        
+        if ($dnow <= $dfin) {
+            for ($i = 0; $i <= 50; $i++) {
+
+                $dnow2 = date('Y-m-d', strtotime($dnow . ' +' . $i . ' day'));
+
+                if ($dnow2 > $dfin)
+                    break;
+
+                // echo '<br/>td - '.$dnow2;
+                $clears_cash[] = [$dnow2];
+                
+            }
+        }
+        
+        $ee = \f\Cash::deleteKeyPoFilterMnogo($clears_cash);
+        // \f\pa($ee);
+
+        \f\end2('ок', true, $ee );
     }
 //
     catch (\Exception $ex) {
@@ -2161,7 +2185,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         }
 
         \f\Cash::deleteKeyPoFilter(['getListJobsPeriod']);
-        
+
         \f\end2('добавили', true);
 //return \f\end2('Обнаружены ошибки: ' . $ex->getMessage() . ' <Br/>' . $text, false, array( 'error' => $ex->getMessage() ) );        
     }
