@@ -11,17 +11,14 @@
     {{ pa(time_ex,2) }}
     #}
 
-
     {#% set timer_show = 'on1' %#}
 
     <div class="trow" onclick="$('#tr{{sp_now}}times').toggle('slow');" style="cursor:pointer;">
 
         <div class="tcell stick-left bg-white"   >
-
             <nobr>
                 <b style="color:blue;">Время ожидания</b>
             </nobr>
-
         </div>
 
         {% for i in range(low=0, high=35, step=1) %}  
@@ -33,57 +30,57 @@
                 <div class="tcell" >
 
                     {% if norms_day[now_date2]['time_wait_norm_cold'] is not defined %}
-                        
+
                         <center style="color:gray" >заполните нормы&nbsp;дня</center>
-                        
+
                     {% else %}
-                    
-                    {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
 
-                        {#{ pa(norms_day) }#}
-                        {#{ pa(norms_day[now_date2]) }#}
+                        {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
 
-                        <div class='text-center' xstyle="color:gray;">
+                            {#{ pa(norms_day) }#}
+                            {#{ pa(norms_day[now_date2]) }#}
 
-                            {% if time_ex[now_date2]['cold_hand'] is defined and time_ex[now_date2]['cold_hand'] > 0 %}
-                                {{ time_ex[now_date2]['cold_hand'] }}
-                            {% elseif time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
-                                {{ time_ex[now_date2]['cold'] }}
-                            {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
-                            {% else %}-{% endif %}
+                            <div class='text-center' xstyle="color:gray;">
 
-                            /
-
-                            {% if norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
-                                -
-                            {% else %}
-
-                                {% if time_ex[now_date2]['hot_hand'] is defined and time_ex[now_date2]['hot_hand'] > 0 %}
-                                    {{ time_ex[now_date2]['hot_hand'] }}
-                                {% elseif time_ex[now_date2]['hot'] is defined and time_ex[now_date2]['hot'] > 0 %}
-                                    {{ time_ex[now_date2]['hot'] }}
-                                {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
+                                {% if time_ex[now_date2]['cold_hand'] is defined and time_ex[now_date2]['cold_hand'] > 0 %}
+                                    {{ time_ex[now_date2]['cold_hand'] }}
+                                {% elseif time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
+                                    {{ time_ex[now_date2]['cold'] }}
+                                {% elseif time_ex_default['cold'] is defined %}<font color="gray" >{{ time_ex_default['cold'] }}</font>
                                 {% else %}-{% endif %}
 
-                            {% endif %}
+                                /
 
-                            /
+                                {% if norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
+                                    -
+                                {% else %}
 
-                            {% if norms_day[now_date2]['time_wait_norm_delivery'] is not defined %}
-                                -
-                            {% else %}
+                                    {% if time_ex[now_date2]['hot_hand'] is defined and time_ex[now_date2]['hot_hand'] > 0 %}
+                                        {{ time_ex[now_date2]['hot_hand'] }}
+                                    {% elseif time_ex[now_date2]['hot'] is defined and time_ex[now_date2]['hot'] > 0 %}
+                                        {{ time_ex[now_date2]['hot'] }}
+                                    {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
+                                    {% else %}-{% endif %}
 
-                                {% if time_ex[now_date2]['delivery_hand'] is defined and time_ex[now_date2]['delivery_hand'] > 0 %}
-                                    {{ time_ex[now_date2]['delivery_hand'] }}
-                                {% elseif time_ex[now_date2]['delivery'] is defined and time_ex[now_date2]['delivery'] > 0 %}
-                                    {{ time_ex[now_date2]['delivery'] }}
-                                {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
-                                {% else %}-{% endif %}
+                                {% endif %}
 
-                            {% endif %}
+                                /
 
-                        </div>
-                    {% endif %}
+                                {% if norms_day[now_date2]['time_wait_norm_delivery'] is not defined %}
+                                    -
+                                {% else %}
+
+                                    {% if time_ex[now_date2]['delivery_hand'] is defined and time_ex[now_date2]['delivery_hand'] > 0 %}
+                                        {{ time_ex[now_date2]['delivery_hand'] }}
+                                    {% elseif time_ex[now_date2]['delivery'] is defined and time_ex[now_date2]['delivery'] > 0 %}
+                                        {{ time_ex[now_date2]['delivery'] }}
+                                    {% elseif time_ex_default['delivery'] is defined %}<font color="gray" >{{ time_ex_default['delivery'] }}</font>
+                                    {% else %}-{% endif %}
+
+                                {% endif %}
+
+                            </div>
+                        {% endif %}
 
                     {% endif %}
 
@@ -98,8 +95,52 @@
     <div class="trow timeo_tr" id="tr{{sp_now}}times" style="display:none;">
         <div class="tcell stick-left bg-white" >
 
-            <div style="float:right; display:inline-block;" class="option_img" ><i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
-                    return false;' class="fa fa-cog"></i></div>
+
+            <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+            </div>
+
+            <div class="dropdown-menu">
+
+                {# универсальное модальное окошко используем #}
+                {#
+                <a 
+                    href="#" 
+                    class="dropdown-item btn-light base_modal_go"
+                    data-toggle="modal" data-target="#di_modal" 
+
+                    modal_header='считаем среднее время ожидания за день'
+                    ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                    ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
+
+                    >
+                    грузим и считаем время за день
+                </a>
+                #}
+                {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+
+                    <a 
+                        href="#" 
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='считаем среднее время ожидания за день'
+                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                        ajax_vars='action=remove_hand_time_edit&sp={{ sp_now }}&date_month={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}'
+
+                        >
+                        удалить ручные изменения времени ожидания за месяц
+                    </a>
+                {% endif %}
+
+            </div>
+
+            {% if 1 == 2 %}
+                <div style="float:right; display:inline-block;" class="option_img" >
+                    <i onclick='$("body .timeo_{{ sp_now }}_{{ man.id }}").toggle("slow");
+                            return false;' class="fa fa-cog"></i>
+                </div>
+            {% endif %}
 
             Холодный цех
 
@@ -109,24 +150,26 @@
             <br/>
             Доставка
 
-            <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
-                <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
-                   style="display:block;"
+            {% if 1 == 2 %}
+                <div class="timeo_{{ sp_now }}_{{ man.id }} " style="display:none;" > 
+                    <a href="#" class="yadom_time_expectation__get_timeo_for_sp" 
+                       style="display:block;"
 
-                   forajax_action="load_data_from_server" 
-                   forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
-                   forajax_show_timer="da" 
+                       forajax_action="load_data_from_server" 
+                       forajax_s="{{ creatSecret('load_checks_for_1jobman') }}" 
+                       forajax_show_timer="da" 
 
-                   forajax_sp="{{ sp_now }}" 
-                   {#forajax_jobman="{{ man.id }}" #}
-                   forajax_date_start="{{ date_start }}"  
-                   forajax_date_fin="{{ date_finish }}" 
-                   res_to_id="timeo_{{ sp_now }}"
-                   answer="Грузим данные времени ожидания ?"
-                   >загрузить время ожидания</a>
-            </div>
+                       forajax_sp="{{ sp_now }}" 
+                       {#forajax_jobman="{{ man.id }}" #}
+                       forajax_date_start="{{ date_start }}"  
+                       forajax_date_fin="{{ date_finish }}" 
+                       res_to_id="timeo_{{ sp_now }}"
+                       answer="Грузим данные времени ожидания ?"
+                       >загрузить время ожидания</a>
+                </div>
 
-            <div id="timeo_{{ sp_now }}" ></div>
+                <div id="timeo_{{ sp_now }}" ></div>
+            {% endif %}
 
         </div>         
 
@@ -138,47 +181,47 @@
 
 
                 <div class="tcell timeo_td" >
-                    
-            {% if 1 == 1 %}
 
-                <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                    <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
-                </div>
+                    {% if 1 == 1 %}
 
-                <div class="dropdown-menu">
-                    
-                    {# универсальное модальное окошко используем #}
-                    {#
-                    <a 
-                        href="#" 
-                        class="dropdown-item btn-light base_modal_go"
-                        data-toggle="modal" data-target="#di_modal" 
+                        <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                            <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                        </div>
 
-                        modal_header='считаем среднее время ожидания за день'
-                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
-                        ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
+                        <div class="dropdown-menu">
 
-                        >
-                        грузим и считаем время за день
-                    </a>
-                    #}
-                    
-                    <a 
-                        href="#" 
-                        class="dropdown-item btn-light base_modal_go"
-                        data-toggle="modal" data-target="#di_modal" 
+                            {# универсальное модальное окошко используем #}
+                            {#
+                            <a 
+                                href="#" 
+                                class="dropdown-item btn-light base_modal_go"
+                                data-toggle="modal" data-target="#di_modal" 
+        
+                                modal_header='считаем среднее время ожидания за день'
+                                ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                                ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
+        
+                                >
+                                грузим и считаем время за день
+                            </a>
+                            #}
 
-                        modal_header='считаем среднее время ожидания за день'
-                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
-                        ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&resave_res=da&xview=html&xshow_dop_info=12'
+                            <a 
+                                href="#" 
+                                class="dropdown-item btn-light base_modal_go"
+                                data-toggle="modal" data-target="#di_modal" 
 
-                        >
-                        считаем время и записываем если отличается
-                    </a>
-                        
-                </div>
-            {% endif %}
-                    
+                                modal_header='считаем среднее время ожидания за день'
+                                ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                                ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&resave_res=da&xview=html&xshow_dop_info=12'
+
+                                >
+                                считаем время и записываем если отличается
+                            </a>
+
+                        </div>
+                    {% endif %}
+
                     {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}                    
                         <div class='text-center'>
 
@@ -283,8 +326,8 @@
 
                             {% endif %}
 
-                            
-                            
+
+
                             <Br/>
 
 

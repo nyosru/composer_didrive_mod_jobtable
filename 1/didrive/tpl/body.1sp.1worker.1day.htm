@@ -4,7 +4,6 @@
     {# глобальный большой массив #}
     {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
 
-
     {# если было новое назначение #}
     {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
         {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
@@ -111,6 +110,41 @@
                         ></i></div>
 
                 <div class="dropdown-menu">
+
+
+                    {% if metkis is not defined %}
+                        {% set metkis = site__get_metki() %}
+                    {% endif %}
+
+                    {% for k,v in metkis %}
+                        
+                        <a href="" 
+
+                           xclass="put_var_in_modal btn btn-xs btn-light" 
+                           class="put_var_in_modal2 dropdown-item btn-light"
+
+                           data-toggle2="modal" 
+                           data-target2="#add_jobday_for_jobman" 
+
+                           jobman="{{ man }}"
+                           salepoint="{{ sp_now }}"
+
+                           toform_sp="{{ sp_now }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
+
+                           toform_jobman="{{ man }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
+
+                           date="{{ date }}"
+                           print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}"
+
+                           {% set ss = sp_now ~ man %}
+                           id2="{{ ss }}"
+                           s2="{{ creatSecret( ss ) }}"
+
+                           ><nobr><span class="fa fa-plus" ></span> метку <span class="metka_text" >{{ v }}</span></nobr></a>
+
+                    {% endfor %}
 
                     <a href="" 
 
@@ -314,8 +348,8 @@
 
         {% endfor %}
 
-        
-        
+
+
         {# плюсы #}
         {% for k, item in getListJobsPeriodAll.data.money_bonus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}

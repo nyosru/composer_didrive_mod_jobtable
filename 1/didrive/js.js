@@ -592,6 +592,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
 
+        if ($cifra > 20)
+            $cifra = 20;
+
         console.log($('span#' + $textblock_id).text());
         console.log($cifra);
 
@@ -695,7 +698,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         setTimeout(function () {
             calculateSummAllGraph();
         }, 2000);
-        
+
     })
 
 

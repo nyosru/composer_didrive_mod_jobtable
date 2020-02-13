@@ -23,7 +23,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 
 
-
+$msg = 'Запущен расчёт оценок за 45 прошедших дней';
 
 // --------------------------------- //
 // защита от повторного срабатывания в секундах
@@ -180,6 +180,13 @@ foreach ($sps as $k => $v) {
                 curl_close($curl); //закрытие сеанса
             }
 
+//                \f\pa($result, '', '', 'result');
+//                \f\pa( json_decode($result,true),'','','$result2' );
+            $ar = json_decode($result, true);
+
+            if (isset($ar['data']['ocenka']))
+                $msg .= PHP_EOL . $v['head'] . ' ' . $date . ' > ' . ( $ar['data']['ocenka'] ?? '-' );
+
 //            $timer = \f\timer_stop(123, 'ar');
 //            \f\pa($timer,'','','timer');
 //            echo '<br/>timer' . \f\timer_stop(123);
@@ -199,6 +206,12 @@ foreach ($sps as $k => $v) {
     if ($timer['sec'] > 20)
         break;
 }
+
+if (1 == 1 && !empty($msg) && class_exists('\Nyos\Msg')) {
+    \Nyos\Msg::sendTelegramm($msg, null, 2);
+}
+
+
 
 exit;
 

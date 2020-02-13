@@ -50,6 +50,12 @@ class JobDesc {
 
     /**
      * список модулей
+     * метки на день
+     */
+    public static $mod_metki = '072.metki';
+
+    /**
+     * список модулей
      * должности
      */
     public static $mod_dolgn = '061.dolgnost';
@@ -173,7 +179,6 @@ class JobDesc {
             $ar[] = 'sp' . $sp_id;
 
         \f\Cash::deleteKeyPoFilter($ar);
-        
     }
 
     /**
@@ -202,7 +207,7 @@ class JobDesc {
         if (!empty($cash_var))
             $return = \f\Cash::getVar($cash_var);
 
-        if ( !empty($return) && !empty($return['hours_all'])  ) {
+        if (!empty($return) && !empty($return['hours_all'])) {
             if (isset($show_timer) && $show_timer === true)
                 echo '<br/>#' . __LINE__ . ' данные из кеша';
         } else {
@@ -251,15 +256,14 @@ class JobDesc {
                     }
 
                     $return['hours_all'] += (!empty($v['hour_on_job_hand']) ? $v['hour_on_job_hand'] : ( $v['hour_on_job'] ?? 0 ) );
-
                 }
             }
 
             self::clearTempClassVars();
 
-            if (!empty($return)){
+            if (!empty($return)) {
                 // \f\Cash::setVar($cash_var, [ 'hours_calc_auto' => $return['hours_calc_auto'], 'hours_all' => $return['hours_all'] ], ( $cash_time_sec ?? 0));
-                \f\Cash::setVar( $cash_var, $return , ( $cash_time_sec ?? 0) );
+                \f\Cash::setVar($cash_var, $return, ( $cash_time_sec ?? 0));
             }
         }
 
@@ -267,7 +271,7 @@ class JobDesc {
             echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
 
         // \f\pa($return);
-        
+
         return \f\end3('окей', true, $return);
     }
 
@@ -634,7 +638,6 @@ class JobDesc {
         if (1 == 1) {
 
             // \f\timer_start(7);
-
             // если нет переменной то не пишем кеш
             $var_cash_minus = 'jobdesc__money_minus_mod' . self::$mod_minus . '_datestart' . $date_start . '_datefinish' . $date_finish;
 
@@ -664,7 +667,7 @@ class JobDesc {
                     \f\Cash::setVar($var_cash_minus, $return['money_minus']);
             }
 
-             // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
+            // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
 
 
 
@@ -4375,9 +4378,12 @@ class JobDesc {
             $tyty = 'hot';
 
             $text .= PHP_EOL . '<br/>время ожидания ' . $tyty;
-            if (empty($ar['norm_time_wait_norm_' . $tyty])) {
-                $text .= ' параметра не указано, оценка максимум ( 5 )';
-                $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
+            if (1 == 1) {
+                $text .= ' не участвует в оценке';
+                $return['txt'] .= '<br/>цех ' . $tyty . ' не участвует в оценке';
+//            if ( empty($ar['norm_time_wait_norm_' . $tyty])) {
+//                $text .= ' параметра не указано, оценка максимум ( 5 )';
+//                $return['txt'] .= '<br/>время (нормы) цеха ' . $tyty . ' не указано, не считаем';
             } else {
                 if (!empty($ar['timeo_' . $tyty]) && !empty($ar['norm_time_wait_norm_' . $tyty]) && $ar['timeo_' . $tyty] <= $ar['norm_time_wait_norm_' . $tyty]) {
                     $text .= ' норм ( 5 )';

@@ -3,7 +3,14 @@
     <div class="trow" id="user_tr_{{ sp_now }}_{{ user5 }}" >
 
         <div class="tcell stick-left bg-white">
-
+            
+            {#{ pa(constant('\\Nyos\\Nyos::$menu')) }#}
+            {#{ pa(menu_all) }#}
+            {#{ pa(level_all) }}
+            {{ pa(now_level) }#}
+            {#{ pa(site__get_metki()) }#}
+            
+            
             {# шестерёнка у сотрудника #}
 
             {% if 1 == 1 %}
@@ -87,6 +94,14 @@
 
         {#{ pa(now_dolgn) }#}
 
+        
+        
+        
+        
+        
+        
+        
+        
         {% for i in range(low=0, high=31, step=1) %}  
 
             {#% set now_spec_nazn_nn = 0 %}
