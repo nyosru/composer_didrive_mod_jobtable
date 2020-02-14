@@ -51,7 +51,7 @@
 
                                 /
 
-                                {% if norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
+                                {% if 1 == 2 and norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
                                     -
                                 {% else %}
 
@@ -96,44 +96,46 @@
         <div class="tcell stick-left bg-white" >
 
 
-            <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
-            </div>
+            {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                    <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                </div>
 
-            <div class="dropdown-menu">
+                <div class="dropdown-menu">
 
-                {# универсальное модальное окошко используем #}
-                {#
-                <a 
-                    href="#" 
-                    class="dropdown-item btn-light base_modal_go"
-                    data-toggle="modal" data-target="#di_modal" 
-
-                    modal_header='считаем среднее время ожидания за день'
-                    ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
-                    ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
-
-                    >
-                    грузим и считаем время за день
-                </a>
-                #}
-                {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
-
+                    {# универсальное модальное окошко используем #}
+                    {#
                     <a 
                         href="#" 
                         class="dropdown-item btn-light base_modal_go"
                         data-toggle="modal" data-target="#di_modal" 
-
+    
                         modal_header='считаем среднее время ожидания за день'
                         ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
-                        ajax_vars='action=remove_hand_time_edit&sp={{ sp_now }}&date_month={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}'
-
+                        ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
+    
                         >
-                        удалить ручные изменения времени ожидания за месяц
+                        грузим и считаем время за день
                     </a>
-                {% endif %}
+                    #}
+                    {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
 
-            </div>
+                        <a 
+                            href="#" 
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal" 
+
+                            modal_header='считаем среднее время ожидания за день'
+                            ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
+                            ajax_vars='action=remove_hand_time_edit&sp={{ sp_now }}&date_month={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}'
+
+                            >
+                            удалить ручные изменения времени ожидания за месяц
+                        </a>
+                    {% endif %}
+
+                </div>
+            {% endif %}
 
             {% if 1 == 2 %}
                 <div style="float:right; display:inline-block;" class="option_img" >
@@ -179,10 +181,10 @@
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
             {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
-
                 <div class="tcell timeo_td" >
 
-                    {% if 1 == 1 %}
+                    {# отключил так как нет пунктов для автива#}
+                    {% if 1 == 2 and session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
 
                         <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                             <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
@@ -206,6 +208,8 @@
                             </a>
                             #}
 
+                            {# старая штука #}
+                            {#
                             <a 
                                 href="#" 
                                 class="dropdown-item btn-light base_modal_go"
@@ -218,6 +222,7 @@
                                 >
                                 считаем время и записываем если отличается
                             </a>
+                            #}
 
                         </div>
                     {% endif %}
@@ -246,31 +251,31 @@
                             {% endif %}
 
 
+                            {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                                {% set pole7 = 'cold_hand' %}
+                                <input type="number" max="300" min="0" 
 
-                            {% set pole7 = 'cold_hand' %}
-                            <input type="number" max="300" min="0" 
+                                       placeholder=".."
+                                       title="холодный цех"
 
-                                   placeholder=".."
-                                   title="холодный цех"
-
-                                   value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                   class="form-control didrive__edit_items_dop_pole"
+                                       class="form-control didrive__edit_items_dop_pole"
 
-                                   edit_item_id="{{ time_ex[now_date2]['id'] }}"
-                                   edit_dop_name="{{ pole7 }}"
-                                   edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                       edit_dop_name="{{ pole7 }}"
+                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
 
-                                   pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
-                                   text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
 
-                                   delete_ocenka_sp="{{ sp_now }}"
-                                   delete_ocenka_date="{{ now_date2 }}"
-                                   delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+                                       delete_ocenka_sp="{{ sp_now }}"
+                                       delete_ocenka_date="{{ now_date2 }}"
+                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
 
-                                   />                            
-
+                                       />                            
+                            {% endif %}
 
 
                             <Br/>
@@ -298,31 +303,31 @@
                                 {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
                                 {% else %}-{% endif %}
 
+                                {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                                    {% set pole7 = 'hot_hand' %}
+                                    <input type="number" max="300" min="0" 
 
+                                           placeholder=".."
+                                           title="горячий цех"
 
-                                {% set pole7 = 'hot_hand' %}
-                                <input type="number" max="300" min="0" 
-
-                                       placeholder=".."
-                                       title="горячий цех"
-
-                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                           value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                       class="form-control didrive__edit_items_dop_pole"
+                                           class="form-control didrive__edit_items_dop_pole"
 
-                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
-                                       edit_dop_name="{{ pole7 }}"
-                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+                                           edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                           edit_dop_name="{{ pole7 }}"
+                                           edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
 
-                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
-                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+                                           pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                           text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
 
-                                       delete_ocenka_sp="{{ sp_now }}"
-                                       delete_ocenka_date="{{ now_date2 }}"
-                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+                                           delete_ocenka_sp="{{ sp_now }}"
+                                           delete_ocenka_date="{{ now_date2 }}"
+                                           delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
 
-                                       />
+                                           />
+                                {% endif %}
 
                             {% endif %}
 
@@ -358,29 +363,31 @@
 
 
 
-                                {% set pole7 = 'delivery_hand' %}
-                                <input type="number" max="300" min="0" 
+                                {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                                    {% set pole7 = 'delivery_hand' %}
+                                    <input type="number" max="300" min="0" 
 
-                                       placeholder=".."
-                                       title="доставка"
+                                           placeholder=".."
+                                           title="доставка"
 
-                                       value="{% if time_ex[now_date2][ pole7 ] is defined 
+                                           value="{% if time_ex[now_date2][ pole7 ] is defined 
                                             and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
-                                       class="form-control didrive__edit_items_dop_pole"
+                                           class="form-control didrive__edit_items_dop_pole"
 
-                                       edit_item_id="{{ time_ex[now_date2]['id'] }}"
-                                       edit_dop_name="{{ pole7 }}"
-                                       edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
+                                           edit_item_id="{{ time_ex[now_date2]['id'] }}"
+                                           edit_dop_name="{{ pole7 }}"
+                                           edit_s="{{ creatSecret( time_ex[now_date2]['id']~ pole7 ) }}"
 
-                                       pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
-                                       text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
+                                           pole_price_id="a_timeo_{{ sp_now }}_{{ now_date2 }}"
+                                           text_in_pole_price_id="<br/><center>время ожидания изменили, текущая автооценка удалена</center>"
 
-                                       delete_ocenka_sp="{{ sp_now }}"
-                                       delete_ocenka_date="{{ now_date2 }}"
-                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+                                           delete_ocenka_sp="{{ sp_now }}"
+                                           delete_ocenka_date="{{ now_date2 }}"
+                                           delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
 
-                                       />
+                                           />
+                                {% endif %}
 
                             {% endif %}
 

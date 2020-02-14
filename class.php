@@ -3101,6 +3101,38 @@ class JobDesc {
         if ($show_comment === true)
             \f\timer_start(47);
 
+
+
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date >= :d '
+                . ' AND mid.value_date <= :d2 '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'sale_point\' '
+                . ' AND mid2.value = :sp '
+//                . ' INNER JOIN `mitems-dops` mid3 '
+//                . ' ON mid3.id_item = mi.id '
+//                . ' AND mid3.name = \'jobman\' '
+//                . ' AND mid3.value = :jm '
+        ;
+        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $_sp;
+        \Nyos\mod\items::$var_ar_for_1sql[':d'] = $date_start;
+        \Nyos\mod\items::$var_ar_for_1sql[':d2'] = $date_finish;
+//        \Nyos\mod\items::$var_ar_for_1sql[':jm'] = $jm;
+        $metki0 = \Nyos\mod\items::get($db, self::$mod_metki);
+        // \f\pa($metki,'','','metki');
+
+        $metki_sp_jm_date_type = [];
+
+        foreach ($metki0 as $k => $v) {
+            $metki_sp_jm_date_type[$v['sale_point']][$v['jobman']][$v['date']][$v['type']] = 1;
+        }
+
+
+
         \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start_checks = date('Y-m-d 08:00:00', strtotime($date_start . ' -1 day'));
         \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_finish_checks = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
 
@@ -3333,6 +3365,10 @@ class JobDesc {
 
                     if (!empty($premiya)) {
 //                echo '<Br/>pr ' . $premiya;
+
+                        // проверяем есть нет блок метками на бонусы
+                        if (isset($metki_sp_jm_date_type[$_sp][$v['jobman']][$date]['no_autobonus']))
+                            continue;
 
                         if (!isset($no_repeat_adds[$_sp][$v['jobman']][$date])) {
                             $no_repeat_adds[$_sp][$v['jobman']][$date] = 1;

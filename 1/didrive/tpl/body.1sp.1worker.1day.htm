@@ -1,6 +1,17 @@
 {% spaceless %}
 
-
+    {# 
+    <Br/>
+    date - {{ date }} 
+    <Br/>
+    avtor - jm - {{ session.now_user_di.id }}
+    <Br/>
+    jm - {{ user_v['jobman'] }}
+    <Br/>
+    sp - {{ sp_now }}
+    <Br/>
+    #}
+    
     {# глобальный большой массив #}
     {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
 
@@ -8,7 +19,6 @@
     {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
         {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
     {% endif %}
-
 
     {# всякие глобальные штуки - спец назначение#}    
     {% if 1 == 1 %}
@@ -121,8 +131,9 @@
                         <a href="" 
 
                            xclass="put_var_in_modal btn btn-xs btn-light" 
-                           class="put_var_in_modal2 dropdown-item btn-light"
+                           class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
 
+                           {#
                            data-toggle2="modal" 
                            data-target2="#add_jobday_for_jobman" 
 
@@ -141,8 +152,17 @@
                            {% set ss = sp_now ~ man %}
                            id2="{{ ss }}"
                            s2="{{ creatSecret( ss ) }}"
+#}
 
-                           ><nobr><span class="fa fa-plus" ></span> метку <span class="metka_text" >{{ v }}</span></nobr></a>
+                            data-toggle="modal" data-target="#di_modal" 
+
+                            modal_header='Добавляем метку'
+                            ajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                            ajax_vars='action=add_new&id={{ user_v['jobman']~k~date }}&s={{ creatSecret(user_v['jobman']~k~date) }}&add_module=072.metki&add[type]={{ k }}&add[head]={{ v }}&add[jobman]={{ user_v['jobman'] }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                            
+                            reload_page_after_ok="da"
+                            
+                           ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
 
                     {% endfor %}
 
@@ -318,6 +338,8 @@
 
         {# всякие глобальные штуки - назначение, конец работы, спец назначение#}    
         {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.dolgnost.htm' %}
+        
+        {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.metki.htm' %}
 
         {% if 1 == 2 %}
             pa(now_dolgn) должность сегодня
@@ -347,8 +369,6 @@
             {% endif %}
 
         {% endfor %}
-
-
 
         {# плюсы #}
         {% for k, item in getListJobsPeriodAll.data.money_bonus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}

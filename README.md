@@ -1,6 +1,17 @@
 # composer_didrive_mod_job_load_time_expectation
 работа с загрузкой и обработкой времени ожидания
 
+
+
+
+-------- блокировочный экран JS ----------
+    $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
+
+
+
+
+
+
 храним ключи в мемкеш
 dolgnosti - [ 'data' => [ dolgnosti ], 'sort' => [ dolg отсортированные по полю сортировки ] ]
 в twig функции > jobdesc__get_dolgnosti
