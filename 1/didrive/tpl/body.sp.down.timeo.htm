@@ -106,16 +106,18 @@
                     {# универсальное модальное окошко используем #}
                     {#
                     <a 
+
                         href="#" 
                         class="dropdown-item btn-light base_modal_go"
                         data-toggle="modal" data-target="#di_modal" 
-    
+
                         modal_header='считаем среднее время ожидания за день'
                         ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.php'
                         ajax_vars='action=get_times_noajax&sp={{ sp_now }}&date_start={{ now_date2 }}&date_finish={{ now_date2 }}&view=html&show_dop_info=12'
-    
+
                         >
                         грузим и считаем время за день
+
                     </a>
                     #}
                     {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}

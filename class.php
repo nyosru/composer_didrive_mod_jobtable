@@ -793,8 +793,11 @@ class JobDesc {
                         }
                     }
 
-                    $now_smena = $spec_job ?? $now_job;
+                    $now_smena = $spec_job ?? $now_job ?? null;
 
+                    if( $now_smena === null )
+                    continue;
+                    
                     // если нет переменной то не пишем кеш
                     // $var_cash_salary = 'salary_dolgnost' . $now_smena['dolgnost'] . '_sp' . $now_smena['sale_point'] . '_date' . $now_date;
 
@@ -1628,7 +1631,8 @@ class JobDesc {
 
         if (empty(self::$cash['salarys'])) {
 
-            self::$cash['salarys'] = \Nyos\mod\items::get($db, $module_salary);
+            // self::$cash['salarys'] = \Nyos\mod\items::get($db, $module_salary);
+            self::$cash['salarys'] = \Nyos\mod\items::get($db, self::$mod_salary );
             usort(self::$cash['salarys'], "\\f\\sort_ar_date");
 
             if (isset($show_info) && $show_info === true) {

@@ -128,7 +128,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ocenka_clear') {
     \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
             . ' ON mid.id_item = mi.id '
             . ' AND mid.name = \'date\' '
-            . ' AND mid.value_date = :d '
+            . ' AND mid.value_date ' . (!empty($_REQUEST['clear_to_now']) ? ' >= ' : ' = ' ) . ' :d '
             . ' INNER JOIN `mitems-dops` mid2 '
             . ' ON mid2.id_item = mi.id '
             . ' AND mid2.name = \'sale_point\' '
@@ -143,9 +143,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ocenka_clear') {
     // \f\pa($ocenka);
     if (!empty($ocenka))
         foreach ($ocenka as $k => $v) {
+
             if (!empty($v['id'])) {
                 $res = \Nyos\mod\items::deleteId($db, $v['id']);
-                \f\pa($res);
+                // \f\pa($res);
             }
         }
 

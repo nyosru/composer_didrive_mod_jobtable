@@ -1,20 +1,42 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
 
-    function ocenka_clear($sp, $date) {
 
-        $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
+    $.fn.ocenka_clear2 = function ($sp, $date, $clear_to_now = '') {
+        ocenka_clear($sp, $date, $clear_to_now);
+    }
 
-        console.log('стираем 2', $sp, $date);
+
+    function ocenka_clear($sp, $date, $clear_to_now = '') {
+
+
+// если не пусто то трём все даты начиная с указанной
+        if ($clear_to_now != '') {
+
+            $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
+            console.log('стираем все даты, начиная с указанной', $sp, $date);
+
+        }
+// если пусто то трём дату указанную
+        else {
+
+            $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
+            console.log('стираем 1 дату', $sp, $date);
+
+        }
+
 
         $.ajax({
 
             url: "/vendor/didrive_mod/jobdesc/1/ajax.php",
-            data: "action=ocenka_clear&sp=" + $sp + "&date=" + $date,
+            data: "action=ocenka_clear&sp=" + $sp + "&date=" + $date + "&clear_to_now=" + $clear_to_now,
+
             cache: false,
             dataType: "json",
+
             type: "post",
             async: false,
+
 //            beforeSend: function () {
 //
 //                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
@@ -547,10 +569,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
 
-    /**
-     * кликаем по кнопам плюс минус час
-     */
-
+    // кликаем по кнопам плюс минус час
 
     // $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
 
@@ -651,7 +670,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
                     $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
                     // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-
 
                     // $.debounce( 1000, calcSummMoneySmena2 );
                     calcSummMoneySmena2($textblock_id);
