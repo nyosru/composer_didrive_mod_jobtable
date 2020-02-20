@@ -122,7 +122,7 @@
                     </a>
                     #}
 
-                    {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+                    {% if 1 == 2 and ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
 
                         <a 
                             href="#" 
@@ -152,6 +152,21 @@
                         >
                         Загрузить время ожидания с сервера и показать
                     </a>
+
+                    {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                        <a 
+                            href="#" 
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal" 
+
+                            modal_header='грузим время ожидания с сервера'
+                            ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.load_and_save_timeo.php'
+                            ajax_vars='show=table&sp={{ sp_now }}&date={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}&delete_old=da'
+                            {# ajax_vars='action=remove_hand_time_edit&sp={{ sp_now }}&date_month={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}' #}
+                            >
+                            (админу) Загрузить время ожидания с сервера и показать (принудительно всё старое удалить)
+                        </a>
+                    {% endif %}
 
                 </div>
             {% endif %}
@@ -272,7 +287,7 @@
 
 
                             {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
-                                
+
                                 {% set pole7 = 'cold_hand' %}
                                 <input type="number" max="300" min="0" 
 
@@ -322,7 +337,7 @@
                                 {% elseif time_ex[now_date2]['hot'] > 0 %}
                                     {{ time_ex[now_date2]['hot'] }}
                                 {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
-                                    
+
                                 {% else %}-{% endif %}
 
                                 {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
@@ -332,8 +347,7 @@
                                            placeholder=".."
                                            title="горячий цех"
 
-                                           value="{% if time_ex[now_date2][ pole7 ] is defined 
-                                            and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
+                                           value="{% if time_ex[now_date2][ pole7 ] is defined and time_ex[now_date2][ pole7 ] > 0 %}{{ time_ex[now_date2][ pole7 ] }}{% endif %}"
 
                                            class="form-control didrive__edit_items_dop_pole"
 
