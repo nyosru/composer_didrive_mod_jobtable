@@ -46,8 +46,10 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                 выручка на 1 руки
                 <br/>
                 время ожидания хол. цех
+                {#
                 <br/>
                 время ожидания гор. цех
+                #}
                 <br/>
                 время ожидания доставка
                 <br/>
@@ -164,6 +166,7 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                    value="{{ norms_day[now_date]['vuruchka_on_1_hand'] }}" 
                                                {% else %}
                                                {% endif %}
+                                               required="required"
                                                >
 
                                         <br/>
@@ -176,22 +179,31 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                    value="{{ norms_day[now_date]['time_wait_norm_cold'] }}"
                                                {% else %}
                                                {% endif %}
+                                               required="required"
                                                >
 
                                         <br/>
 
+                                        {#
                                         <input class="input-norms on_change_show_block" 
                                                on_change_show_block="#form{{sp_now}}{{ now_date }}" 
                                                type="number" min="1" max="200" step="1"
                                                name="time_wait_norm_hot"
+                                               
+                                               disabled="disabled"
+                                               title='этот параметр не участвует в расчёте оценки дня'
+                                               placeholder='гор. не считаем'
+                                               
                                                {% if norms_day[now_date]['time_wait_norm_hot'] is defined %}
                                                    value="{{ norms_day[now_date]['time_wait_norm_hot'] }}"
                                                {% else %}
                                                {% endif %}
+                                               
                                                >
 
                                         <br/>
-
+                                        #}
+                                        
                                         <input class="input-norms on_change_show_block" 
                                                on_change_show_block="#form{{sp_now}}{{ now_date }}"
                                                type="number" min="1" max="200" step="1"
@@ -212,6 +224,7 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                    value="{{ norms_day[now_date]['procent_oplata_truda_on_oborota'] }}"
                                                {% else %}
                                                {% endif %}
+                                               required="required"
                                                >
 
                                         <br/>
@@ -222,6 +235,7 @@ or norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                {% if norms_day[now_date]['kolvo_hour_in1smena'] is defined %}
                                                    value="{{ norms_day[now_date]['kolvo_hour_in1smena'] }}"
                                                {% endif %}
+                                               required="required"
                                                >
 
                                         {% if norms_day[now_date]['type'] is defined and norms_day[now_date]['type'] == 'copy' %}

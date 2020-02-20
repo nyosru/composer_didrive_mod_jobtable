@@ -96,7 +96,8 @@
         <div class="tcell stick-left bg-white" >
 
 
-            {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+            {% if 1 == 1 or session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+
                 <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                     <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
                 </div>
@@ -120,6 +121,7 @@
 
                     </a>
                     #}
+
                     {% if  ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
 
                         <a 
@@ -134,7 +136,22 @@
                             >
                             удалить ручные изменения времени ожидания за месяц
                         </a>
+
                     {% endif %}
+
+                    <a 
+                        href="#" 
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal" 
+
+                        modal_header='грузим время ожидания с сервера'
+                        ajax_link='/vendor/didrive_api/yadom_time_expectation/ajax.load_and_save_timeo.php'
+                        ajax_vars='show=table&sp={{ sp_now }}&date={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}'
+                        {# ajax_vars='action=remove_hand_time_edit&sp={{ sp_now }}&date_month={{ date_start }}&s={{ creatSecret(sp_now~date_start) }}' #}
+
+                        >
+                        Загрузить время ожидания с сервера и показать
+                    </a>
 
                 </div>
             {% endif %}
@@ -247,13 +264,15 @@
                             {% elseif time_ex[now_date2]['cold'] is defined and time_ex[now_date2]['cold'] > 0 %}
                                 {{ time_ex[now_date2]['cold'] }}
                             {% elseif time_ex_default['cold'] is defined %}
-                                <font color="gray" >{{ time_ex_default['cold'] }}</font>
+                                {# <font color="gray" >{{ time_ex_default['cold'] }}</font> #}
+                                -
                             {% else %}
                                 -
                             {% endif %}
 
 
                             {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                                
                                 {% set pole7 = 'cold_hand' %}
                                 <input type="number" max="300" min="0" 
 
@@ -282,7 +301,7 @@
 
                             <Br/>
 
-                            {% if norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
+                            {% if 1 == 2 and norms_day[now_date2]['time_wait_norm_hot'] is not defined %}
                                 -
                             {% else %}
 
@@ -303,6 +322,7 @@
                                 {% elseif time_ex[now_date2]['hot'] > 0 %}
                                     {{ time_ex[now_date2]['hot'] }}
                                 {% elseif time_ex_default['hot'] is defined %}<font color="gray" >{{ time_ex_default['hot'] }}</font>
+                                    
                                 {% else %}-{% endif %}
 
                                 {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
@@ -340,7 +360,7 @@
 
 
 
-                            {% if norms_day[now_date2]['time_wait_norm_delivery'] is not defined %}
+                            {% if 1 == 2 and norms_day[now_date2]['time_wait_norm_delivery'] is not defined %}
                                 -
                             {% else %}
 

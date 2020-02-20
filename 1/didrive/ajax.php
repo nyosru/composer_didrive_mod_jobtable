@@ -793,16 +793,15 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
     echo '<br/>для показа обновлённых значений <a href = "" >обновите страницу</a><br/>';
 
     $now_month = ceil(date('m', strtotime($_REQUEST['date'])));
-
 // \f\pa($_REQUEST);
 
     $new_data = array(
 // 'vuruchka' => $_REQUEST['vuruchka'],
         'vuruchka_on_1_hand' => $_REQUEST['vuruchka_on_1_hand'],
         'time_wait_norm_cold' => $_REQUEST['time_wait_norm_cold'],
-        'time_wait_norm_hot' => $_REQUEST['time_wait_norm_hot'],
-        'time_wait_norm_delivery' => $_REQUEST['time_wait_norm_delivery'],
-        'procent_oplata_truda_on_oborota' => $_REQUEST['procent_oplata_trud a_on_oborota'],
+        'time_wait_norm_hot' => ( $_REQUEST['time_wait_norm_hot'] ?? '' ),
+        'time_wait_norm_delivery' => ( $_REQUEST['time_wait_norm_delivery'] ?? '' ),
+        'procent_oplata_truda_on_oborota' => $_REQUEST['procent_oplata_truda_on_oborota'],
         'kolvo_hour_in1smena' => $_REQUEST['kolvo_hour_in1smena']
     );
 
@@ -864,7 +863,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
     $indbs = [];
 
-    echo 'Записали нормы по датам:';
+    echo '<script> window.location.reload(); $("body").append("<div id=\'body_block\' class=\'body_block\' >пару секунд вычисляем<br/><span id=\'body_block_465\'></span></div>"); </script>Записали нормы по датам:';
 
     foreach ($save_day as $k => $v) {
 

@@ -1,12 +1,6 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
 
-
-    $.fn.ocenka_clear2 = function ($sp, $date, $clear_to_now = '') {
-        ocenka_clear($sp, $date, $clear_to_now);
-    }
-
-
     function ocenka_clear($sp, $date, $clear_to_now = '') {
 
 
