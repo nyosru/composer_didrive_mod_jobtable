@@ -690,14 +690,12 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
 
 //            echo ' onclick="ocenka_clear( ' . $v['sale_point'] . ' , ' . $v['date'] . ' );" ';
             echo ' run_ocenka_clear="day" ';
-            
         }
 // если норм назначение
         else {
 
 //            echo ' onclick="ocenka_clear( ' . $v['sale_point'] . ' , ' . $v['date'] . ' , 123 );" ';
             echo ' run_ocenka_clear="days" ';
-            
         }
 
         echo '
@@ -1466,10 +1464,20 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
         if (5 == 5) {
 
             \f\timer_start(2);
-            $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
+            try {
+                
+                $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
+                //\f\pa($return['oborot'],'','','oborot');
 
-            if (empty($return['oborot'])) {
-                $return['oborot'] = \Nyos\mod\IikoOborot::loadFromServerSaveItems($db, $return['sp'], $return['date']);
+                if (empty($return['oborot'])) {
+                    $return['oborot'] = \Nyos\mod\IikoOborot::loadFromServerSaveItems($db, $return['sp'], $return['date']);
+                }
+                
+            } catch (\Exception $exc) {
+
+                echo $exc->getTraceAsString();
+                $return['oborot'] = 0;
+
             }
 
             $return['time'] .= '<br/> достали обороты за день'
