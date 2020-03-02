@@ -50,6 +50,12 @@ class JobDesc {
 
     /**
      * список модулей
+     * плюсы минусы сотруднику в конце месяца
+     */
+    public static $mod_buh_pm = '003_money_buh_pm';
+
+    /**
+     * список модулей
      * метки на день
      */
     public static $mod_metki = '072.metki';
