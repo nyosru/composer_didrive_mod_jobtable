@@ -39,10 +39,12 @@
                                 {% set type = 'cold' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 
                                 {% if time > 0 %}{{ time }}{% else %}-{% endif %}
+                                {#
                                 /
                                 {% set type = 'hot' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 
                                 {% if time > 0 %}{{ time }}{% else %}-{% endif %}
+                                #}
                                 /
                                 {% set type = 'delivery' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 
