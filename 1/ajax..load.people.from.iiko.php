@@ -4,21 +4,23 @@ ini_set('display_errors', 'On'); // сообщения с ошибками бу�
 error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 
 
-//if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.dev.uralweb.info'
-//) {
-//    date_default_timezone_set("Asia/Omsk");
-//} else {
-//    date_default_timezone_set("Asia/Yekaterinburg");
-//}
+if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
+) {
+    date_default_timezone_set("Asia/Omsk");
+} else {
+    date_default_timezone_set("Asia/Yekaterinburg");
+}
 
 define('IN_NYOS_PROJECT', true);
-
-// die('<br/>#'.__LINE__.' '.__FILE__);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 
+
 \f\timer_start(1);
+
+
+
 
 // если нужно не обращать внимания на кеш
 if (!empty($_GET['no_load_cash']))
@@ -26,12 +28,6 @@ if (!empty($_GET['no_load_cash']))
 
 $e = \Nyos\api\Iiko::loadIikoPeople();
 // \f\pa($e, 2, '', ' результат загрузки');
-// \f\pa($e['data'], 2, '', ' результат загрузки');
-
-//die('<br/>#' . __LINE__ . ' ' . __FILE__);
-
-//die('<br/>#' . __LINE__ . ' ' . __FILE__);
-
 //                // если кеш есть
 //                if (isset($e['file_cash_est']) && $e['file_cash_est'] == 'da') {
 //                    echo '<br/>#' . __LINE__;
@@ -43,8 +39,6 @@ $e = \Nyos\api\Iiko::loadIikoPeople();
 
 $e2 = \Nyos\api\Iiko::saveIikoPeople($db, $e['data']);
 // \f\pa($e2, 2, '', ' результат выполнения загрузки и проверки данных');
-
-// die('<br/>#' . __LINE__ . ' ' . __FILE__);
 
 $msg2 = '';
 

@@ -192,7 +192,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
         . '<td class="r" >' . ( $v['date_finish'] ?? '-' ) . '</td>'
         . '<td colspan=2 >' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
 //                . '<td>&nbsp;</td>'
-        . '<td>' . $v['status'] . '</td>'
+        . '<td>'
+        . ( $v['status'] == 'show' ? 'норм' : ( $v['status'] == 'hide' ? 'отменено' : ( $v['status'] ?? 'x' ) ) )
+        . '</td>'
         . '</tr>';
     }
 
@@ -225,7 +227,49 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
                 . '<td colspan=2 >' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
 //                . '<td>&nbsp;</td>'
 //                . '<td>&nbsp;</td>'
-                . '<td>' . $v['status'] . '</td>'
+                . '<td>';
+                // $v['status'] 
+
+                if ($v['status'] == 'show') {
+                    echo 'норм';
+                } else if ($v['status'] == 'hide') {
+                    echo 'отменено';
+                }
+
+                // echo ( $v['status'] == 'show' ? 'норм' : ( $v['status'] == 'hide' ? 'отменено' : ( $v['status'] ?? 'x' ) ) );
+
+
+                echo '            
+                                        <span class="action">
+                                            <div onclick=\'$("#but_{{ v1.id }}").show();\' >
+
+                                                <b>Статус:</b>
+                                                <span id="' . $v['id'] . '" >'
+                . ( $v['status'] == 'show' ? 'видно' :
+                        ( $v['status'] == 'hide' ? 'отменено' :
+                                ( $v['status'] == 'delete' ? 'удалено' : ( $v['status'] ?? 'x' ) )
+                        ) )
+                . '</span>
+
+                                            </div>
+
+                                            <input class="edit_item" type="button" alt="status" rev="show" '
+                . ' value="показать" '
+                . ' rel="' . $v['id'] . '" '
+                . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                . ' for_res="shows' . $v['id'] . '" '
+                . ' />
+                                            <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="hide" value="скрыть"  s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}"  />
+                                            <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="delete" s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}" value="Удалить" />
+
+                                        </span>
+';
+
+
+
+
+
+                echo '</td>'
                 . '</tr>';
             }
         }
@@ -257,7 +301,54 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
                 (!empty($v['ocenka']) ? '<strike style="color:gray;" >' . ( $v['ocenka_auto'] ?? '-' ) . '</strike> <b>' . $v['ocenka'] . '</b>' : ( $v['ocenka_auto'] ?? '-' )
                 ) . '</td>'
 //                . '<td>&nbsp;</td>'
-                . '<td>' . ( $v['status'] == 'show' ? 'норм' : $v['status'] ) . '</td>'
+                . '<td>'
+                // . ( $v['status'] == 'show' ? 'норм' : $v['status'] )
+                . '            
+                                        <span class="action">
+                                            <div onclick=\'$("#but_{{ v1.id }}").show();\' >
+
+                                                <b>Статус:</b>
+                                                <span id="shows_22_' . $v['id'] . '" >'
+                . ( $v['status'] == 'show' ? 'норм' :
+                        ( $v['status'] == 'hide' ? 'отменено' :
+                                ( $v['status'] == 'delete' ? 'удалено' : ( $v['status'] ?? 'x' ) )
+                        ) )
+                . '</span>'
+
+                .' <div id="shows_22r_' . $v['id'] . '" class="bg-warning" style="padding:5px 10px;display:none;" ><a href="">обновите страницу</a> для просмотра изменений в графике</div>'
+
+                                            .'</div>
+
+                                            <input class="edit_item" type="button" alt="status" '
+                . ' rev="show" '
+                . ' value="показать" '
+                . ' rel="' . $v['id'] . '" '
+                . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                . ' for_res="shows_22_' . $v['id'] . '" '
+                . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+                . ' />
+                                            <input class="edit_item" type="button" '
+                . ' value="скрыть" '
+                . ' alt="status" rev="hide" '
+                . ' rel="' . $v['id'] . '" '
+                . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                . ' for_res="shows_22_' . $v['id'] . '" '
+                . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+                . ' />
+                    '
+//                   .' <input class="edit_item" type="button" '
+//                . ' alt="status" '
+//                . ' rev="delete" '
+//                . ' value="Удалить" '
+//                . ' rel="' . $v['id'] . '" '
+//                . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+//                . ' for_res="shows_22_' . $v['id'] . '" '
+//                . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+//                . ' /> '
+
+                        .' </span>
+'
+                . '</td>'
                 . '</tr>';
             }
         }
@@ -1465,19 +1556,16 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
 
             \f\timer_start(2);
             try {
-                
+
                 $return['oborot'] = \Nyos\mod\IikoOborot::getDayOborot($db, $return['sp'], $return['date']);
-                //\f\pa($return['oborot'],'','','oborot');
 
                 if (empty($return['oborot'])) {
                     $return['oborot'] = \Nyos\mod\IikoOborot::loadFromServerSaveItems($db, $return['sp'], $return['date']);
                 }
-                
             } catch (\Exception $exc) {
 
                 echo $exc->getTraceAsString();
                 $return['oborot'] = 0;
-
             }
 
             $return['time'] .= '<br/> достали обороты за день'
