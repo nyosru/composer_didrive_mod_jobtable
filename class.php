@@ -50,12 +50,6 @@ class JobDesc {
 
     /**
      * список модулей
-     * плюсы минусы сотруднику в конце месяца
-     */
-    public static $mod_buh_pm = '003_money_buh_pm';
-
-    /**
-     * список модулей
      * метки на день
      */
     public static $mod_metki = '072.metki';
@@ -159,6 +153,20 @@ class JobDesc {
      */
     public static $mod_comments = '073.comments';
 
+    /**
+     * модуль пратежи сотруднику от бух плюсы минусы
+     * @var строка
+     */
+    public static $mod_buh_pm = '003_money_buh_pm';
+
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * чистим переменные что дополнительные
      * возвращаем параметры со старта
@@ -562,10 +570,6 @@ class JobDesc {
                 return \f\end3('окей (кеш)', true, $e);
         }
 
-
-
-
-
 //            $e = \f\Cash::deleteKeyPoFilter( [ 'all' , 'jobdesc' , 'sp'.$_REQUEST['sale_point'], 'date'.$_REQUEST['delete_cash_start_date'] ] );
 //            \f\pa($e);
         // если финиша нет, то ставим финиш последним днём месяца
@@ -588,8 +592,6 @@ class JobDesc {
         $mans = \Nyos\mod\items::get($db, self::$mod_jobman);
         $dolgn = \Nyos\mod\items::get($db, self::$mod_dolgn);
 
-
-
         // \f\pa($return['norm']);
         // return [];
 
@@ -608,6 +610,14 @@ class JobDesc {
                         $return['job_on_sp'][$v['sale_point']][$v['jobman']] = [
                             'jobman' => $v['jobman'],
                             'fio' => ( $mans[$v['jobman']]['firstName'] ?? '-' ) . ' ' . ( $mans[$v['jobman']]['lastName'] ?? '-' ),
+                            //'fio21' => ( $mans[$v['jobman']] ?? '-' ),
+                            
+                            'fio2' =>
+                            ( $mans[$v['jobman']]['lastName'] ?? '' ) . ' '
+                            . ( $mans[$v['jobman']]['firstName'] ?? '' ) . ' '
+                            . ( $mans[$v['jobman']]['middleName'] ?? '' )
+                            ,
+                            
                             'dolgnost' => $v['dolgnost'],
                             'dolgnost_name' => ( $dolgn[$v['dolgnost']]['head'] ?? '-' )
                         ];
@@ -801,9 +811,9 @@ class JobDesc {
 
                     $now_smena = $spec_job ?? $now_job ?? null;
 
-                    if( $now_smena === null )
-                    continue;
-                    
+                    if ($now_smena === null)
+                        continue;
+
                     // если нет переменной то не пишем кеш
                     // $var_cash_salary = 'salary_dolgnost' . $now_smena['dolgnost'] . '_sp' . $now_smena['sale_point'] . '_date' . $now_date;
 
@@ -1638,7 +1648,7 @@ class JobDesc {
         if (empty(self::$cash['salarys'])) {
 
             // self::$cash['salarys'] = \Nyos\mod\items::get($db, $module_salary);
-            self::$cash['salarys'] = \Nyos\mod\items::get($db, self::$mod_salary );
+            self::$cash['salarys'] = \Nyos\mod\items::get($db, self::$mod_salary);
             usort(self::$cash['salarys'], "\\f\\sort_ar_date");
 
             if (isset($show_info) && $show_info === true) {
@@ -3375,7 +3385,6 @@ class JobDesc {
 
                     if (!empty($premiya)) {
 //                echo '<Br/>pr ' . $premiya;
-
                         // проверяем есть нет блок метками на бонусы
                         if (isset($metki_sp_jm_date_type[$_sp][$v['jobman']][$date]['no_autobonus']))
                             continue;

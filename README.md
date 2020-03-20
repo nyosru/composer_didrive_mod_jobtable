@@ -30,12 +30,9 @@ dolgnosti - [ 'data' => [ dolgnosti ], 'sort' => [ dolg отсортирован
 
 работа с кешем
 
-    // если нет переменной то не пишем кеш            
-    $cash_var = 'jobdesc__money_mp_buh__' . \Nyos\mod\JobDesc::$mod_buh_pm . '_jm' . $user . '_date' . $date;
-    // если не указали время жизни то оно бесконечно    
-    // $cash_time_sec = 3600*24;
-    // если есть таймер то показываем таймер выполнения
-    $show_timer = rand(0, 9999);
+        // если нет переменной то не пишем кеш            
+        // если есть то показываем и считает время и память
+        $show_timer = rand(0, 9999);
 
         if (!empty($show_timer)) {
             \f\timer_start($timer_rand);
@@ -45,30 +42,15 @@ dolgnosti - [ 'data' => [ dolgnosti ], 'sort' => [ dolg отсортирован
 
         $return = [];
 
-        if (!empty($cash_var)) {
-
-            if (!empty($show_timer)) {
-                echo '<br/>#' . __LINE__ . ' var ' . $cash_var;
-                \f\timer_start($show_timer);
-            }
-
+        if (!empty($show_timer)) {
+            echo '<br/>#' . __LINE__ . ' var ' . $cash_var;
             $return = \f\Cash::getVar($cash_var);
         }
 
         if (!empty($return)) {
-
             if (!empty($show_timer))
                 echo '<br/>#' . __LINE__ . ' данные из кеша';
-
-            if (isset($return[0]) && $return[0] == 'mc_skip') {
-                if (!empty($show_timer))
-                    echo '<br/>#' . __LINE__ . ' данных нет, возвращаем null';
-                unset($return);
-            }
-
         } else {
-
-            $return = [];
 
             if (!empty($show_timer))
                 echo '<br/>#' . __LINE__ . ' считаем данные и пишем в кеш';
@@ -77,17 +59,9 @@ dolgnosti - [ 'data' => [ dolgnosti ], 'sort' => [ dolg отсортирован
 
             // тут супер код делающий $return конец
 
-            if (!empty($return)) {
+            if (!empty($return))
                 \f\Cash::setVar($cash_var, $return, ( $cash_time_sec ?? 0));
-            } else {
-                \f\Cash::setVar($cash_var, [0 => 'mc_skip'], ( $cash_time_sec ?? 0));
-                if (!empty($show_timer))
-                    echo '<br/>#' . __LINE__ . ' нет данных ничего не пишем в кеш';
-            }
-    
         }
 
         if (!empty($show_timer))
             echo '<br/>#'.__LINE__.' '.\f\timer_stop ($show_timer);
-
-        return $return ?? [];
