@@ -7,7 +7,7 @@
             pa(now_job) 
             {{ pa(now_job) }}
         {% endif %}
-        
+
         {% if 1 == 2 %}
             pa(now_dolgn) 
             {{ pa(now_dolgn) }}
@@ -50,12 +50,12 @@
 
     {% endif %}
 
-    
+
     {%  set rand_d = random() %}
     {# rand {{ rand_d }} #}
 
-    
-    
+
+
 
 
 
@@ -119,12 +119,12 @@
 
                 {% endif %}
 
-                
-                
-                
-                
-                
-                
+
+
+
+
+
+
                 {#{ pa(check) }#}
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
@@ -151,12 +151,12 @@
                                     {% set hours_on_job = 0 %}
                                 {% endif %}
 
-                                
-                                
-                                
+
+
+
                                 {% if check.status == 'show' and check.payed is not defined %}
                                     <i class="fa fa-minus ajax_hour_action" 
-                                       
+
                                        type_action="-" 
                                        hour_id="{{ check.id }}" 
                                        block="hour_{{ check.id }}" 
@@ -167,12 +167,12 @@
                                        cash_delete1_2="{{ date }}"
                                        cash_delete1_3name="sp"
                                        cash_delete1_3="{{ sp_now }}"
-                                       
+
                                        sp="{{ sp_now }}"
                                        date="{{ date }}"
-                                       
+
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
-                                       
+
                                        ></i>
                                 {% endif %}
 
@@ -183,7 +183,7 @@
                                       {# для динамичного показа суммы за смену - #}
 
                                       xstyle="display: inline-block; width:40px; border:1px solid green;"
-                                      
+
                                       title="{{ check.start|date("d.m H:i") }} - {{ check.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ check.hour_on_job }}"
                                       {% if check.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
                                       >{{ hours_on_job }}</span>
@@ -195,18 +195,18 @@
                                        hour_id="{{ check.id }}" 
                                        block="hour_{{ check.id }}" 
                                        s="{{ creatSecret('hour_'~check.id) }}" 
-                                       
+
                                        cash_delete1_1="hoursonjob"
                                        cash_delete1_2name="date"
                                        cash_delete1_2="{{ date }}"
                                        cash_delete1_3name="sp"
                                        cash_delete1_3="{{ sp_now }}"
-                                       
+
                                        sp="{{ sp_now }}"
                                        date="{{ date }}"
-                                       
+
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
-                                       
+
                                        ></i> 
 
                                     <a href="#"  class="but_show_option" 
@@ -265,6 +265,14 @@
                                 </div>
                                 #}
 
+                                {#% if date == '2020-03-01' %}
+                                    <div style="text-align:left;" >
+                                        check
+                                        {{  pa(check) }}
+                                        now_dolgn
+                                        {{  pa(now_dolgn) }}
+                                    </div>
+                                {% endif %#}
 
                                 <select name="ocenka" 
                                         class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
@@ -273,7 +281,7 @@
                                         smena_price_{{ check.id }}
                                         {# для динамичного показа суммы за смену - #}
                                         " 
-                                        
+
                                         action="edit_dop_pole"
                                         folder="{{ folder }}"
                                         module="050.chekin_checkout"
@@ -315,7 +323,8 @@
                                                             {%  set price_hour1_now = price_hour %}
                                                         {% endif %}
 
-                                                    {% elseif check.ocenka_auto is defined and check.ocenka_auto == i and check.ocenka is not defined %}
+                                                    {#% elseif check.ocenka_auto is defined and check.ocenka_auto == i and check.ocenka is not defined %#}
+                                                    {% elseif check.ocenka_auto is defined and check.ocenka_auto == i %}
 
                                                         {%  set price_hour_now = price_hour %}
 
