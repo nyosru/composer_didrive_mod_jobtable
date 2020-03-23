@@ -2314,15 +2314,17 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_job
     try {
 
         $ff = $db->prepare('DELETE FROM `mitems-dops` WHERE `id_item` = :id AND name = \'date_finish\' ');
-        $ff->execute(array(':id' => (int) $_REQUEST[' work_id']));
+        $ff->execute(array(':id' => (int) $_REQUEST['work_id']));
 
+        \f\Cash::allClear();
+        
 // \f\pa($_REQUEST);
 //        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(
 //            'jobman' => $_REQUEST['workman'],
 //            'sale_point' => $_REQUEST['sp']
 //        ));
 
-        \f\end2('ок', true);
+        \f\end2('ок '.'<script> window.location.reload(); $("body").append("<div id=\'body_block\' class=\'body_block\' >пару секунд вычисляем<br/><span id=\'body_block_465\'></span></div>"); </script>', true);
     }
 //
     catch (\Exception $ex) {
