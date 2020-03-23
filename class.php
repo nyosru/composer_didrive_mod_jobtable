@@ -159,14 +159,6 @@ class JobDesc {
      */
     public static $mod_buh_pm = '003_money_buh_pm';
 
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * чистим переменные что дополнительные
      * возвращаем параметры со старта
@@ -554,9 +546,6 @@ class JobDesc {
      */
     public static function getListJobsPeriodAll($db, $date_start, $date_finish = null) {
 
-
-
-
 //        echo '<br/>#'.__LINE__.' '.__FUNCTION__;
 //        return [];
         // если есть то пишем кеш
@@ -611,13 +600,11 @@ class JobDesc {
                             'jobman' => $v['jobman'],
                             'fio' => ( $mans[$v['jobman']]['firstName'] ?? '-' ) . ' ' . ( $mans[$v['jobman']]['lastName'] ?? '-' ),
                             //'fio21' => ( $mans[$v['jobman']] ?? '-' ),
-                            
                             'fio2' =>
                             ( $mans[$v['jobman']]['lastName'] ?? '' ) . ' '
                             . ( $mans[$v['jobman']]['firstName'] ?? '' ) . ' '
                             . ( $mans[$v['jobman']]['middleName'] ?? '' )
                             ,
-                            
                             'dolgnost' => $v['dolgnost'],
                             'dolgnost_name' => ( $dolgn[$v['dolgnost']]['head'] ?? '-' )
                         ];
@@ -876,9 +863,6 @@ class JobDesc {
         }
 
 
-
-
-
         // тащим смены и расставляем зарплату
         if (1 == 1) {
 
@@ -909,6 +893,9 @@ class JobDesc {
 
                 if (!isset($return['where_job__workman_date'][$v['jobman']][$dn]))
                     continue;
+
+                if (isset($v['ocenka']) && empty($v['ocenka']))
+                    unset($v['ocenka']);
 
                 // временная переменная для простоты
                 $ii = $return['where_job__workman_date'][$v['jobman']][$dn];
