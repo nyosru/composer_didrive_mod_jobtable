@@ -7,9 +7,9 @@
 -------- блокировочный экран JS ----------
     $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
 
-
-
-
+----- перезагрузка и блок -----
+    location.reload();
+    $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
 
 
 храним ключи в мемкеш
