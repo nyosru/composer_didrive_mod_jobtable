@@ -214,7 +214,6 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
         . '<td colspan=5 >' . $date_now . '</td>'
         . '</tr>';
 
-
         foreach ($naznach as $k => $v) {
             if ($v['date'] == $date_now) {
                 echo '<tr>'

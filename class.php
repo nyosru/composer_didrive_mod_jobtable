@@ -839,12 +839,14 @@ class JobDesc {
         }
 
 
-        // если считаем всё с бонусами
-        if ($calc_no_bonus !== true) {
 
 //        if (isset($return['salary']))
 //            unset($return['salary']);
 // \f\pa($return['salary']);
+
+        
+        
+        
 // тащим оплаты что были
             if (1 == 1) {
 
@@ -873,7 +875,7 @@ class JobDesc {
                 }
             }
             
-        }
+        
 
         // тащим смены и расставляем зарплату
         if (1 == 1) {
