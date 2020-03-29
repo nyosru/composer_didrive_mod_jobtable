@@ -160,6 +160,12 @@ class JobDesc {
     public static $mod_buh_pm = '003_money_buh_pm';
 
     /**
+     * модуль выбор какая точка главная в период оплаты для сотрудника
+     * @var строка
+     */
+    public static $mod_buh_head_sp = '005_money_buh_head_sp';
+
+    /**
      * чистим переменные что дополнительные
      * возвращаем параметры со старта
      */
@@ -595,6 +601,17 @@ class JobDesc {
 
 
 
+
+        
+        
+
+
+
+
+
+
+
+
         $jobman_in_sql = '';
 
         // составляем выборку в БД $jobman_in_sql по сотрудникам
@@ -617,6 +634,12 @@ class JobDesc {
                             'dolgnost_name' => ( $dolgn[$v['dolgnost']]['head'] ?? '-' )
                         ];
 
+                    
+                    if( isset($ar__head_sp__jobman_sp[$v['jobman']]) 
+                            && $ar__head_sp__jobman_sp[$v['jobman']] == $v['sale_point'] )
+                    $return['job_on_sp'][$v['sale_point']][$v['jobman']]['head_sp'] = 'da';
+                        
+                        
                     if (!isset($return['jobmans'][$v['jobman']])) {
                         $return['jobmans'][$v['jobman']] = 1;
                         $jobman_in_sql .= (!empty($jobman_in_sql) ? ',' : '' ) . $v['jobman'];
@@ -843,39 +866,35 @@ class JobDesc {
 //        if (isset($return['salary']))
 //            unset($return['salary']);
 // \f\pa($return['salary']);
-
-        
-        
-        
 // тащим оплаты что были
-            if (1 == 1) {
+        if (1 == 1) {
 
-                \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                        . ' ON mid.id_item = mi.id '
-                        . ' AND mid.name = \'date\' '
-                        . ' AND mid.value_date >= :ds '
-                        . ' AND mid.value_date <= :df '
-                ;
-                \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
-                \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
-                $return['oplats'] = \Nyos\mod\items::get($db, self::$mod_buh_oplats);
+            \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                    . ' ON mid.id_item = mi.id '
+                    . ' AND mid.name = \'date\' '
+                    . ' AND mid.value_date >= :ds '
+                    . ' AND mid.value_date <= :df '
+            ;
+            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
+            \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
+            $return['oplats'] = \Nyos\mod\items::get($db, self::$mod_buh_oplats);
 
-                foreach ($return['oplats'] as $k => $v) {
+            foreach ($return['oplats'] as $k => $v) {
 
-                    // \f\pa($v);
+                // \f\pa($v);
 
-                    if (!isset($v['sale_point']) || !isset($v['jobman']))
-                        continue;
+                if (!isset($v['sale_point']) || !isset($v['jobman']))
+                    continue;
 
-                    if (!isset($return['money_oplats'][$v['sale_point']][$v['jobman']])) {
-                        $return['money_oplats'][$v['sale_point']][$v['jobman']] = $v['summa'];
-                    } else {
-                        $return['money_oplats'][$v['sale_point']][$v['jobman']] += $v['summa'];
-                    }
+                if (!isset($return['money_oplats'][$v['sale_point']][$v['jobman']])) {
+                    $return['money_oplats'][$v['sale_point']][$v['jobman']] = $v['summa'];
+                } else {
+                    $return['money_oplats'][$v['sale_point']][$v['jobman']] += $v['summa'];
                 }
             }
-            
-        
+        }
+
+
 
         // тащим смены и расставляем зарплату
         if (1 == 1) {
