@@ -602,8 +602,8 @@ class JobDesc {
 
 
 
-        
-        
+
+
 
 
 
@@ -634,12 +634,11 @@ class JobDesc {
                             'dolgnost_name' => ( $dolgn[$v['dolgnost']]['head'] ?? '-' )
                         ];
 
-                    
-                    if( isset($ar__head_sp__jobman_sp[$v['jobman']]) 
-                            && $ar__head_sp__jobman_sp[$v['jobman']] == $v['sale_point'] )
-                    $return['job_on_sp'][$v['sale_point']][$v['jobman']]['head_sp'] = 'da';
-                        
-                        
+
+                    if (isset($ar__head_sp__jobman_sp[$v['jobman']]) && $ar__head_sp__jobman_sp[$v['jobman']] == $v['sale_point'])
+                        $return['job_on_sp'][$v['sale_point']][$v['jobman']]['head_sp'] = 'da';
+
+
                     if (!isset($return['jobmans'][$v['jobman']])) {
                         $return['jobmans'][$v['jobman']] = 1;
                         $jobman_in_sql .= (!empty($jobman_in_sql) ? ',' : '' ) . $v['jobman'];
@@ -780,6 +779,8 @@ class JobDesc {
 // собираем должности кто где работает и считаем сколько денег за смену заработал выводим цену часа
         if (1 == 1) {
 
+
+
             foreach ($return['jobmans'] as $wman => $v0) {
 
                 for ($i = 0; $i <= 31; $i ++) {
@@ -788,6 +789,11 @@ class JobDesc {
 
                     if ($now_date > $date_finish)
                         break;
+
+
+
+
+
 
                     foreach ($return['spec']['data'] as $k => $v) {
                         if ($v['date'] == $now_date && $v['jobman'] == $wman) {
@@ -809,8 +815,15 @@ class JobDesc {
                     // если не было спец назначения в этот день
                     else {
 
+
+
+
+
+
+
                         // ищем последнюю дату до даты старта периода
                         if ($i == 0) {
+
                             foreach ($return['norm']['data'][$wman] as $k => $v) {
                                 if ($v['date'] > $now_date)
                                     continue;
@@ -818,6 +831,10 @@ class JobDesc {
                                     $now_job = $v;
                             }
                         }
+
+
+
+
 
                         // проверяем текущую дату
                         else {
@@ -832,6 +849,8 @@ class JobDesc {
 
                     if ($now_smena === null)
                         continue;
+
+
 
                     // если нет переменной то не пишем кеш
                     // $var_cash_salary = 'salary_dolgnost' . $now_smena['dolgnost'] . '_sp' . $now_smena['sale_point'] . '_date' . $now_date;
@@ -860,6 +879,8 @@ class JobDesc {
                 }
             }
         }
+
+
 
 
 
@@ -1646,7 +1667,224 @@ class JobDesc {
         return $summa ?? false;
     }
 
-    public static function getSalaryJobman($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_salary = '071.set_oplata') {
+    /**
+     * получаем массив с размером оплат
+     * $ar_sp_dolgn_date
+     * @param type $db
+     * @return array
+     */
+    public static function getAllSalary($db) {
+
+        $cash_var = self::$mod_salary . '_all_ar_salary';
+        // \f\timer_start(123);
+
+        if (!empty($cash_var))
+            $ar_sp_dolgn_date = \f\Cash::getVar($cash_var);
+
+        if (!empty($ar_sp_dolgn_date)) {
+            
+        } else {
+
+
+            $ff1 = ' SELECT '
+                    . ' mi.id, '
+                    . ' mi.head, '
+                    . ' mi.sort, '
+                    . ' mi.status, '
+                    // .' midop.name, '
+                    // .' midop.id_item id, '
+                    // .' midop.id dops_id, '
+                    . ' midop.* '
+                    // . ', '
+//                . ' midop.`name`, '
+//                .' midop.`value`, '
+//                .' midop.`value_date`, '
+//                .' midop.`value_datetime`, '
+//                .' midop.`value_text` '
+                    // . self::$select_var1 
+                    . ' FROM '
+                    . ' `mitems-dops` midop '
+                    // . ( self::$join_where ?? '' )
+                    . ' INNER JOIN `mitems` mi ON '
+                    . ' mi.`module` = :module '
+                    . ' AND mi.status = \'show\' '
+                    . ' AND mi.id = midop.id_item '
+            //
+//                . ' INNER JOIN `mitems-dops` mid1 '
+//                . ' ON mid1.id_item = mi.id '
+//                . ' AND mid1.name = \'date\' '
+//                // . ' AND mid.value_date >= :ds '
+//                . ' AND mid1.value_date <= :df '
+            //
+//                . ' INNER JOIN `mitems-dops` mid2 '
+//                . ' ON mid2.id_item = mi.id '
+//                . ' AND mid2.name = \'sale_point\' '
+//                . ' AND '
+//                . ' ( '
+//                . ' mid2.value = :sp '
+//                . ' OR mid2.value = :sp_def '
+//                . ' )'
+//                . ' WHERE '
+//                . ' midop.status = \'show\' '
+            // . ( self::$where2 ?? '' )
+            // . self::$sql_order ?? ''
+            ;
+
+            $ff = $db->prepare($ff1);
+
+            $ar_for_sql = [
+                ':module' => self::$mod_salary,
+//            ':sp' => $sp,
+//            ':sp_def' => $sp_default,
+//            ':df' => $date
+            ];
+//    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+
+            $ff->execute($ar_for_sql);
+
+            $ee = $ff->fetchAll();
+            // \f\pa($ee);
+
+            $res_items = [];
+
+            foreach ($ee as $k => $v) {
+
+                $dd = (!empty($v['value']) ? $v['value'] :
+                        (!empty($v['value_date']) ? $v['value_date'] :
+                        (!empty($v['value_datetime']) ? $v['value_datetime'] :
+                        (!empty($v['value_int']) ? $v['value_int'] :
+                        (!empty($v['value_text']) ? $v['value_text'] : null )
+                        )
+                        )
+                        )
+                        );
+
+                if (!empty($dd))
+                    $res_items[$v['id_item']][$v['name']] = $dd;
+            }
+
+            usort($res_items, "\\f\\sort_ar_date_desc");
+
+            // \f\pa($res_items);
+            $ar_sp_dolgn_date = [];
+
+            foreach ($res_items as $k => $v) {
+
+                if (!empty($v['sale_point']) && !empty($v['dolgnost']) && !empty($v['date']))
+                    $ar_sp_dolgn_date[$v['sale_point']][$v['dolgnost']][$v['date'] . '-' . $k] = $v;
+            }
+
+            // unset($res_items);
+
+            \f\Cash::setVar($cash_var, $ar_sp_dolgn_date);
+        }
+
+        // \f\pa($ar_sp_dolgn_date);
+
+        return $ar_sp_dolgn_date;
+    }
+
+    /**
+     * получаем что за за на должности в точке тогда-то
+     * @param type $db
+     * @param type $sp
+     * @param type $dolgn
+     * @param type $date
+     * @param type $module_sp
+     * @param type $module_salary
+     * @return type
+     */
+    public static function getSalaryJobman($db, int $sp, int $dolgn, string $date) {
+
+        $cash_var = \Nyos\mod\JobDesc::$mod_salary . '_sp' . $sp . '_dolgn' . $dolgn . '_date' . $date;
+        // $cash_time = 60 * 60 * 20;
+
+        // \f\timer_start(123);
+
+        $salary = false;
+
+        if (!empty($cash_var))
+            $salary = \f\Cash::getVar($cash_var);
+
+        if ($salary !== false) {
+            
+        } else {
+
+            $sp_default = self::getDefaultSpId($db);
+
+            $ww = self::getAllSalary($db);
+            // \f\pa($ww, 2);
+
+            $salary = [];
+
+            if (isset($ww[$sp][$dolgn])) {
+                foreach ($ww[$sp][$dolgn] as $k => $v) {
+
+                    if (!empty($v['date']) && $date >= $v['date']) {
+
+                        // если есть ограничения по бюджету
+                        if (!empty($v['oborot_sp_last_monht_bolee']) || !empty($v['oborot_sp_last_monht_menee'])) {
+
+                            $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
+                            // \f\pa($oborot);
+
+                            if (
+                                    (!empty($v['oborot_sp_last_monht_bolee']) && $oborot >= $v['oborot_sp_last_monht_bolee'] ) ||
+                                    (!empty($v['oborot_sp_last_monht_menee']) && $oborot <= $v['oborot_sp_last_monht_menee'] )
+                            ) {
+                                $v['oborot'] = $oborot;
+                                $salary = $v;
+                                break;
+                            }
+                        }
+                        // если нет ограничений
+                        else {
+                            $salary = $v;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (empty($salary) && isset($ww[$sp_default][$dolgn])) {
+                foreach ($ww[$sp_default][$dolgn] as $k => $v) {
+                    if (!empty($v['date']) && $date >= $v['date']) {
+                        // если есть ограничения по бюджету
+                        if (!empty($v['oborot_sp_last_monht_bolee']) || !empty($v['oborot_sp_last_monht_menee'])) {
+
+                            $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
+
+                            if (
+                                    (!empty($v['oborot_sp_last_monht_bolee']) && $oborot >= $v['oborot_sp_last_monht_bolee'] ) ||
+                                    (!empty($v['oborot_sp_last_monht_menee']) && $oborot <= $v['oborot_sp_last_monht_menee'] )
+                            ) {
+                                $v['oborot'] = $oborot;
+                                $salary = $v;
+                                break;
+                            }
+                        }
+                        // если нет ограничений
+                        else {
+                            $salary = $v;
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+            \f\Cash::setVar($cash_var, $salary, ( $cash_time ?? 0));
+        }
+
+        // \f\pa($salary,'','','salary');
+        return $salary;
+    }
+
+    public static function getSalaryJobman_old($db, $sp, $dolgn, $date, $module_sp = 'sale_point', $module_salary = '071.set_oplata') {
+
+
+
+
 
 //        echo '<br/>sp: ' . $sp;
 //        echo '<br/>d: ' . $dolgn;
@@ -1659,7 +1897,6 @@ class JobDesc {
             return self::$cash['salary_now'][$sp][$dolgn][$date];
 
         $sp_default = self::getDefaultSpId($db);
-
 
         if (isset($show_info) && $show_info === true) {
             \f\pa(self::$cash['salarys']);
