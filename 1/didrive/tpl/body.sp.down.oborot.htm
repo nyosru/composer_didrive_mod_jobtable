@@ -3,9 +3,9 @@
     <style> .td_inf_{{sp_now}}obr{ display:none; } </style>
 
     <div class="trow" 
-     xdata-aos="fade-up"
-     xdata-aos-anchor-placement="bottom-bottom" 
-    >
+         xdata-aos="fade-up"
+         xdata-aos-anchor-placement="bottom-bottom" 
+         >
 
         <div class="tcell stick-left bg-white" >
 
@@ -14,11 +14,11 @@
                 <a href="#" onclick="$('.td_inf_{{sp_now}}obr').toggle('slow');
                         return false;" >
                 #}
-                    <b>Оборот</b>
-                    {#скрыть/показать#}
-                    {#
-                </a>
-                    #}
+                <b>Оборот</b>
+                {#скрыть/показать#}
+                {#
+            </a>
+                #}
             </nobr>
 
             {# 
@@ -65,27 +65,54 @@
 
                                 <span 
                                     {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
-                                    style="color:gray;" 
+                                        style="color:gray;" 
                                     {% endif %}
                                     >
-                                {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">
-                                        <a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
-                                        vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
-                                        res_to="{{ sp_now }}_{{ i }}_res_ob2"
-                                        xtarget="_blank"
-                                        class="load_ajaxjson_to_id"
-                                        >
-                                        А
-                                        </a>
-                                    </abbr></sup>
+                                    {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">
+                                            <a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
+                                               vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
+                                               res_to="{{ sp_now }}_{{ i }}_res_ob2"
+                                               xtarget="_blank"
+                                               class="load_ajaxjson_to_id"
+                                               >
+                                                А
+                                            </a>
+                                        </abbr></sup>
                                 </span>
 
-
-
-
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
-                                
-                                
+
+
+
+                                <input type="number" max="1000000" min="0" 
+
+                                       placeholder="уточнить"
+                                       title="укажите точную сумму оборота"
+
+                                       {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
+                                           value="{{ oborots[now_date2]['oborot_hand'] }}" 
+                                       {% else %}
+                                           value="" 
+                                       {% endif %}
+
+                                       style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
+                                       class="form-control didrive__edit_items_dop_pole"
+
+                                       edit_item_id="{{ oborots[now_date2]['id'] }}"
+                                       edit_dop_name="oborot_hand"
+                                       edit_s="{{ creatSecret( oborots[now_date2]['id']~"oborot_hand") }}"
+
+                                       pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
+                                       text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
+
+                                       delete_ocenka_sp="{{ sp_now }}"
+                                       delete_ocenka_date="{{ now_date2 }}"
+                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                       />
+
+
+
                             {% else %}
 
                                 <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
@@ -112,32 +139,7 @@
 
                             {% endif %}
 
-                            <input type="number" max="1000000" min="0" 
 
-                                   placeholder="уточнить"
-                                   title="укажите точную сумму оборота"
-
-                                   {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
-                                       value="{{ oborots[now_date2]['oborot_hand'] }}" 
-                                   {% else %}
-                                       value="" 
-                                   {% endif %}
-
-                                   style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
-                                   class="form-control didrive__edit_items_dop_pole"
-
-                                   edit_item_id="{{ oborots[now_date2]['id'] }}"
-                                   edit_dop_name="oborot_hand"
-                                   edit_s="{{ creatSecret( oborots[now_date2]['id']~"oborot_hand") }}"
-
-                                   pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
-                                   text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
-
-                                    delete_ocenka_sp="{{ sp_now }}"
-                                    delete_ocenka_date="{{ now_date2 }}"
-                                    delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
-                                   
-                                   />
                         </div>
 
                     </div>
