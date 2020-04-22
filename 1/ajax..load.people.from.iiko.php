@@ -40,12 +40,13 @@ $e = \Nyos\api\Iiko::loadIikoPeople();
 //                    echo '<br/>#' . __LINE__;
 //                }
 
-$e2 = \Nyos\api\Iiko::saveIikoPeople($db, $e['data']);
+if (!empty($e['data']))
+    $e2 = \Nyos\api\Iiko::saveIikoPeople($db, $e['data']);
 
 // \f\pa($e2, 2, '', ' результат выполнения загрузки и проверки данных');
 
-$msg2 = ( (!empty($e2['error_txt'])) ? 'Обнаружена ошибка:' . $e2['error_txt'] . PHP_EOL : '' ) . 'Добавлено пользователей: ' . $e2['new_items']
-        . PHP_EOL . 'Обновлено параметров: ' . $e2['new_dops_kolvo'];
+$msg2 = ( (!empty($e['error_txt'])) ? 'Обнаружена ошибка:' . $e['error_txt'] . PHP_EOL : '' ) . 'Добавлено пользователей: ' . ( $e2['new_items'] ?? 0 )
+        . PHP_EOL . 'Обновлено параметров: ' . ( $e2['new_dops_kolvo'] ?? 0 );
 
 //die('<br/>#' . __LINE__);
 //
