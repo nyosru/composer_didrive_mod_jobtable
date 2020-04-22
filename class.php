@@ -1076,7 +1076,8 @@ class JobDesc {
                     $return['checks'][$k]['salary_hour'] = $ii['salary']['ocenka-hour-base'];
                 }
                 // 
-                elseif (!empty($v['ocenka_auto']) && isset($ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )])) {
+                // elseif ( !empty($v['ocenka_auto']) && isset($ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )])) {
+                elseif ( ( !empty($v['ocenka_auto']) || !empty($v['ocenka']) ) && isset($ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )])) {
                     $return['checks'][$k]['salary_hour'] = $ii['salary']['ocenka-hour-' . ( $v['ocenka'] ?? $v['ocenka_auto'] )];
                 }
 
