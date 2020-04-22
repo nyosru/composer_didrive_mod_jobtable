@@ -42,9 +42,9 @@ $e = \Nyos\api\Iiko::loadIikoPeople();
 
 $e2 = \Nyos\api\Iiko::saveIikoPeople($db, $e['data']);
 
-\f\pa($e2, 2, '', ' результат выполнения загрузки и проверки данных');
+// \f\pa($e2, 2, '', ' результат выполнения загрузки и проверки данных');
 
-$msg2 = 'Добавлено пользователей: ' . $e2['new_items'] 
+$msg2 = ( (!empty($e2['error_txt'])) ? 'Обнаружена ошибка:' . $e2['error_txt'] . PHP_EOL : '' ) . 'Добавлено пользователей: ' . $e2['new_items']
         . PHP_EOL . 'Обновлено параметров: ' . $e2['new_dops_kolvo'];
 
 //die('<br/>#' . __LINE__);
