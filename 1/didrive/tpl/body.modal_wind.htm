@@ -862,25 +862,20 @@
 
                             {% endif %}
 
-                            
-                            
-                            
-                            
-                            
 
                             фильтр списка<br/>
                             
                             <input type="text" class="form-control" id="filtr_specfio" >
                             
-                            
-                            
-                            {% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}
+                            {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %#}
+                            {% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
                             {#{ pa(jobmans_on_add) }#}
 
                             <select class="form-control select_addspec" name="user" id="add_person1day__user" required="requiered" >
                                 <option value="">выберите сотрудника</option>
                                 {% for u, u_da in jobmans_on_add %}
-                                    <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option>
+                                    {# <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option> #}
+                                    <option value="{{ u_da.user_id }}" sp="{{ u_da.sp_id }}" {# dolgn="{{ u_da.dolgnost }}" #} >[{{ u_da.sp }}] {{ u_da.fio }} {{ u_da.bd ?? '' }}</option>
                                 {% endfor %}
                             </select>
 
