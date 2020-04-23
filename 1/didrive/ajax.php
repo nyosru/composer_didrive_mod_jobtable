@@ -1004,7 +1004,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e = [
         'datas' => ( $ww['data']['adds'] ?? [] ),
         'timer' => \f\timer_stop(3),
-        'kolvo' => sizeof($ww['data']['adds']),
+        'kolvo' => ( !empty($ww['data']['adds']) ? sizeof($ww['data']['adds']) : 0 ),
     ];
 
 //\f\pa($e,2);
