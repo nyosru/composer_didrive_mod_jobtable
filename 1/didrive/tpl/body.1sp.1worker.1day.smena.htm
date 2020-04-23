@@ -324,7 +324,7 @@
                                                         {% endif %}
 
                                                     {#% elseif check.ocenka_auto is defined and check.ocenka_auto == i and check.ocenka is not defined %#}
-                                                    {% elseif check.ocenka_auto is defined and check.ocenka_auto == i %}
+                                                    {% elseif check.ocenka is not defined and check.ocenka_auto is defined and check.ocenka_auto == i %}
 
                                                         {%  set price_hour_now = price_hour %}
 
