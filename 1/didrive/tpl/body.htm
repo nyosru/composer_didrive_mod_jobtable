@@ -1,7 +1,7 @@
 {% spaceless %}
 
     {%  set timer_show = 'off' %}
-    {%  set timer_show = 'on1' %}
+    {%  if 1 == 2 %}{%  set timer_show = 'on' %}{% endif %}
 
     {# считаем общее время #}
     {{ didrive_f__timer_start(99) }}
@@ -9,93 +9,43 @@
     <script src="/js/numberformat.js" ></script>
 
 
+
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set sps = items__get( db, 'sale_point' )  %}
     {#{ pa(sps) }#}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 sale_point - {{ didrive_f__timer_stop(5) }} {% endif %}
+
 
     {# использую в списке точек что можем выбрать #}
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set sps_sort = items__get( db, 'sale_point', 'show', 'sort_asc' )  %}
     {#{ pa(sps_sort) }#}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 sale_point sort - {{ didrive_f__timer_stop(5) }} {% endif %}
 
+
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set mans = items__get( db, '070.jobman' )  %}
     {#{ pa(mans) }#}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 070.jobman - {{ didrive_f__timer_stop(5) }} {% endif %}
 
 
-    {#{  pa(getListJobsPeriodAll) }#}
-
-
-
-
-
-
-    {#% set sp = items__readItems( db, 'sale_point', null, 'sort_asc' )  %#}
-    {#{ pa(sp.data) }#}
-
-
-    {#{ didrive_f__timer_start(991) }#}
-    {#{ f__timer_start(11) }#}
-
-    {#% if 1 == 2 %}
-        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-        {% set job_in = readItems( '050.job_in_sp', null )  %}
-        {% if timer_show == 'on' %} <br/>время 04 - {{ didrive_f__timer_stop(5) }} {% endif %}
-    {% endif %#}
-
-    {% if 1 == 2 %}
-        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-        {% set job_in = items__get( db, '050.job_in_sp', null )  %}
-        {#{ pa(job_in,2) }#}
-        {% if timer_show == 'on' %} <br/>время 06 - {{ didrive_f__timer_stop(5) }} {% endif %}
-    {% endif %}
-
-    {#{ f__timer_stop(11) }#}
-
-    {#
-    dd {{ didrive_f__timer_stop(991) }#}
-
-    {#{ didrive_f__timer_start(991) }}
-    {% set job_in = items__get( db, '050.job_in_sp' )  %}
-    {{ pa(job_in) }}
-    dd {{ didrive_f__timer_stop(991) }#}
-
-
-
-    {% if timer_show == 'on' %} {{ didrive_f__timer_start(15) }}     {% endif %}
-
-    {#% set mans = readItems( '070.jobman', null )  %#}
-
-    {#% set mans = items__get( db, '070.jobman' )  %#}
-
-    {#{ pa(mans) }#}
-    {#% set mans = items__get( db, '070.jobman', null )  %#}
-    {% if timer_show == 'on' %} <br/>время 02 - {{ didrive_f__timer_stop(15) }} {% endif %}
-
-
-    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set dolgn = jobdesc__get_dolgnosti( db, '061.dolgnost' )  %}
     {#{ pa(dolgn,2) }#}
-    {#cash - {{ dolgn.cash }}
-    <br/>
-    {{ pa(dolgn,2) }#}
-    {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-    {#% if 1 == 2 %}
-        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-        {% set dolgn = readItems( '061.dolgnost', null )  %}
-        {{ pa(dolgn,2) }}
-        {% if timer_show == 'on' %} <br/>время 01 - {{ didrive_f__timer_stop(5) }} {% endif %}
-    {% endif %#}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
 
 
 
 
 
-
+    {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% if session.now_user_di.access == 'moder' %}
         {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
     {% else %}
         {% set access_to_sp = false %}
     {% endif %}
+    {% if 2 == 1 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {#    
     <br/>timer1: {{ didrive_f__timer_stop(99) }}
@@ -162,16 +112,16 @@
 
                 {% endif %}
 
-                {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
                 {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
-                {% if timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
+                {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
 
                 {# верхние кнопки даты и скрыть показать даты #}
                 {% if 1 == 1 %}
 
                     {#{ pa(session) }#}
 
-                    {% if 1 == 1 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+                    {% if 1 == 2 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
 
                         <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                             {# <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i> #}
@@ -221,7 +171,7 @@
 
 
 
-                            {% if 1 == 1 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+                            {% if 1 == 2 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
                                 <a 
                                     href="#" 
                                     style="float:right;"
@@ -346,8 +296,11 @@
 
 
                             {# заготовка модальных окошек #}
+                            {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(51) }}     {% endif %}
+                            <div style="padding:10px; border: 1px solid gray;" >
                             {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
-
+                            </div>
+                            {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - body.modal_wind.htm {{ didrive_f__timer_stop(51) }} {% endif %}
 
                             {# <br/>timer2: {{ didrive_f__timer_stop(99) }} #}              
 
@@ -358,25 +311,33 @@
                             {% endif %#}
 
                             {% if 1 == 1 %}
-                                {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                                
                                 {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
                                 {#{ pa(spec_jobs_on_sp) }#}
-                                {% if timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
+                                
+                                {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
                             {% endif %}
 
-                            {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                            
+                            
+                            {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                            
                             {# если модератор то выводим исписок точек к оторым есть доступ #}    
                             {% set sp_access = jobdesc__get__access_moders( db )  %}
                             {# <br/> pa(sp_access) {{ pa(sp_access) }} #}
-                            {% if timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
+                            
+                            {% if 1 == 2 or timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
 
                             {% if 1 == 1 %}
 
-                                {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                                
                                 {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
                                 {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
-                                {% if timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
+                                
+                                {% if 1 == 2 or timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
                             {% endif %}
 

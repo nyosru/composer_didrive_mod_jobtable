@@ -295,7 +295,6 @@ class JobDesc {
     public static function getListJobmans($db) {
 
         // echo '<br/>' . __FILE__ . ' #' . __LINE__;
-
 //        if (strpos($_SERVER['HTTP_HOST'], 'dev') != false)
 //            $timer_on = true;
 //
@@ -304,7 +303,6 @@ class JobDesc {
 
         $cash_var = 'getListJobmans__list_jobmans';
         // $cash_time = 60 * 60 * 6;
-
 // \f\timer_start(123);
 
         $return = false;
@@ -410,9 +408,6 @@ class JobDesc {
 //            echo '<br/>' . __FUNCTION__
 //            . '<br/>' . __FILE__ . ' #' . __LINE__
 //            . '<br/>' . \f\timer_stop(7);
-
-
-
 // \f\pa($return);
         return $return;
 
@@ -5790,6 +5785,67 @@ class JobDesc {
             \f\Cash::setVar($cash_var, $rr, $cash_time);
 
         return $rr;
+    }
+
+    /**
+     * получаем обороты точки с даты по дату
+     * @param type $db
+     * @param int $sp
+     * @param string $date_start
+     * @param string $date_stop
+     * @return array
+     */
+    public static function get_oborots($db, int $sp, string $date_start, string $date_stop) {
+
+        $return = [];
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'date\' '
+                . ' AND mid.value_date >= :ds '
+                . ' AND mid.value_date <= :df '
+                . ' INNER JOIN `mitems-dops` mid2 '
+                . ' ON mid2.id_item = mi.id '
+                . ' AND mid2.name = \'sale_point\' '
+                . ' AND mid2.value = :sp '
+
+        ;
+        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
+        \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_stop;
+
+        // \Nyos\mod\items::$where2dop = ' AND ( name ';
+
+        $oborots = \Nyos\mod\items::get($db, 'sale_point_oborot');
+        // \f\pa($oborots);
+
+        $re = ['summa' => 0];
+
+        foreach ($oborots as $k => $v) {
+            $re[$v['date']] = $v;
+            if (isset($v['oborot_hand']) && $v['oborot_hand'] > 0) {
+                $re['summa'] += $v['oborot_hand'];
+            } elseif (isset($v['oborot_server']) && $v['oborot_server'] > 0) {
+                $re['summa'] += $v['oborot_server'];
+            }
+        }
+
+        // \f\pa($r);
+
+        for ($i = 0; $i <= 40; $i++) {
+
+            // $date_start
+            $date_now = date('Y-m-d', strtotime($date_start . ' +' . $i . ' day'));
+
+            if ($date_now > $date_stop)
+                break;
+
+            if (!isset($re[$date_now]))
+                $re[$date_now] = [];
+        }
+
+
+        return $re;
     }
 
     /**

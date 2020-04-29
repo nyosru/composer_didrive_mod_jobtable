@@ -31,7 +31,14 @@ require( $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php' );
 if (
         (
         !empty($_REQUEST['action']) &&
-        ( $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days' || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month' || $_REQUEST['action'] == 'show_dolgn' )
+        (
+        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
+        // тащим цифры времени ожидания для построения графика
+        || $_REQUEST['action'] == 'timeo_show_vars' 
+        // тащим цифры oborot для построения графика
+        || $_REQUEST['action'] == 'oborot_show_vars' 
+        //
+        || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month' || $_REQUEST['action'] == 'show_dolgn' )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
@@ -313,10 +320,8 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
                                 ( $v['status'] == 'delete' ? 'удалено' : ( $v['status'] ?? 'x' ) )
                         ) )
                 . '</span>'
-
-                .' <div id="shows_22r_' . $v['id'] . '" class="bg-warning" style="padding:5px 10px;display:none;" ><a href="">обновите страницу</a> для просмотра изменений в графике</div>'
-
-                                            .'</div>
+                . ' <div id="shows_22r_' . $v['id'] . '" class="bg-warning" style="padding:5px 10px;display:none;" ><a href="">обновите страницу</a> для просмотра изменений в графике</div>'
+                . '</div>
 
                                             <input class="edit_item" type="button" alt="status" '
                 . ' rev="show" '
@@ -344,8 +349,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
 //                . ' for_res="shows_22_' . $v['id'] . '" '
 //                . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
 //                . ' /> '
-
-                        .' </span>
+                . ' </span>
 '
                 . '</td>'
                 . '</tr>';
@@ -366,6 +370,76 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
     \f\end2($r, true);
 }
 
+
+// тащим время ожидания для аякс показа
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'timeo_show_vars') {
+
+   // ob_start('ob_gzhandler');
+
+    $ar = [];
+
+    // \f\pa($_REQUEST);
+    foreach ($_REQUEST['d'] as $k => $v) {
+
+        // echo '<Br/>'.$v['sp'] .' - '. $v['date'];
+        $ar[$v['sp']][] = $v['date'];
+    }
+
+    $res = [];
+    
+    foreach( $ar as $sp_id => $v ){
+        // $select[$k] = [ 'max' => max($v), 'min' => min($v) ];
+        $res[$sp_id] = \Nyos\api\JobExpectation::getTimerExpectation(  $db, $sp_id, min($v), max($v) );
+    }
+
+//    $r = ob_get_contents();
+//    ob_end_clean();
+
+    \f\end2( 'ок', true, [ 'res' => $res
+//            , 're' => $_REQUEST
+//            , 'select' => $select 
+            ] );
+}
+
+// тащим oborot для аякс показа
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'oborot_show_vars') {
+
+//    ob_start('ob_gzhandler');
+
+    $ar = [];
+
+    // \f\pa($_REQUEST);
+    foreach ($_REQUEST['d'] as $k => $v) {
+        if( !empty($v['date_start']) && !empty($v['date_stop']) && !empty($v['sp']) )
+        $ar[$v['sp']] = [ 'date_start' => $v['date_start'], 'date_stop' => $v['date_stop'] ];
+    }
+
+    $res = [];
+
+    foreach( $ar as $sp_id => $v ){
+        // $select[$k] = [ 'max' => max($v), 'min' => min($v) ];
+        // $res[$sp_id] = \Nyos\api\JobExpectation::getTimerExpectation(  $db, $sp_id, min($v), max($v) );
+        $res[$sp_id] = \Nyos\mod\JobDesc::get_oborots($db, $sp_id, $v['date_start'], $v['date_stop']);
+    }
+
+//    $r = ob_get_contents();
+//    ob_end_clean();
+
+    \f\end2( 'ок', true, [ 'res' => $res
+//            , 're' => $_REQUEST
+//            , 'select' => $select 
+            ] );
+}
+
+// бланк
+elseif (1 == 2) {
+
+    ob_start('ob_gzhandler');
+
+    $r = ob_get_contents();
+    ob_end_clean();
+    \f\end2($r, true);
+}
 
 // показ должностей и оплат
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_dolgn') {
@@ -1004,7 +1078,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e = [
         'datas' => ( $ww['data']['adds'] ?? [] ),
         'timer' => \f\timer_stop(3),
-        'kolvo' => ( !empty($ww['data']['adds']) ? sizeof($ww['data']['adds']) : 0 ),
+        'kolvo' => (!empty($ww['data']['adds']) ? sizeof($ww['data']['adds']) : 0 ),
     ];
 
 //\f\pa($e,2);
@@ -2316,8 +2390,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_end_now_job
         $ff->execute(array(':id' => (int) $_REQUEST['work_id']));
 
         // \f\Cash::allClear();
-        \f\Cash::deleteKeyPoFilter( [date('Y-m-01',strtotime( $_REQUEST['date_end'] ) )] );
-        \f\Cash::deleteKeyPoFilter( [date('Y-m-d',strtotime( $_REQUEST['date_end'] ) )] );
+        \f\Cash::deleteKeyPoFilter([date('Y-m-01', strtotime($_REQUEST['date_end']))]);
+        \f\Cash::deleteKeyPoFilter([date('Y-m-d', strtotime($_REQUEST['date_end']))]);
 
 // \f\pa($_REQUEST);
 //        \Nyos\mod\items::deleteItemsSimple($db, 'jobman_send_on_sp', array(

@@ -9,14 +9,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
             console.log('стираем все даты, начиная с указанной', $sp, $date);
-
         }
 // если пусто то трём дату указанную
         else {
 
             $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
             console.log('стираем 1 дату', $sp, $date);
-
         }
 
 
@@ -24,13 +22,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             url: "/vendor/didrive_mod/jobdesc/1/ajax.php",
             data: "action=ocenka_clear&sp=" + $sp + "&date=" + $date + "&clear_to_now=" + $clear_to_now,
-
             cache: false,
             dataType: "json",
-
             type: "post",
             async: false,
-
 //            beforeSend: function () {
 //
 //                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
@@ -89,7 +84,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
     }
 
 
@@ -103,14 +97,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function put_workman_on_sp($th) {
 
-        // console.log('function put_workman_on_sp( ' + $sp + ', ' + $workman + ', ' + $dolgnost + ', ' + $date_start + ' )');
+// console.log('function put_workman_on_sp( ' + $sp + ', ' + $workman + ', ' + $dolgnost + ', ' + $date_start + ' )');
         var data = $($th).serialize();
 //        console.log($th);
 //        console.log('111 ',data);
 
         dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
         sp_from = $('#add_person1day__user option:selected').attr('sp');
-
         $.ajax({
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -170,14 +163,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
     }
 
     function delete_workman_from_sp($sp, $workman, $wm_s, $res_to) {
 
         console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
-
         // var data = $($th).serialize();
         // console.log('111 '+data);
 
@@ -185,10 +175,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
             data: "action=delete_workman_from_sp&sp=" + $sp + "&workman=" + $workman + "&id=" + $workman + "&s=" + $wm_s,
-
             cache: false,
             dataType: "json",
-
             type: "post",
             beforeSend: function () {
 
@@ -218,8 +206,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
     }
 
 
@@ -234,7 +220,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     function set_end_now_jobs($work_id, $wm_s, $date_end) {
 
         console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-
         // return false;
 
         // var data = $($th).serialize();
@@ -244,15 +229,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
             data: "action=set_end_now_jobs&id=" + $work_id + "&s=" + $wm_s + "&work_id=" + $work_id + "&wm_s=" + $wm_s + "&date_end=" + $date_end,
-
             cache: false,
             dataType: "json",
-
             type: "post",
             beforeSend: function () {
 
                 $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
-
                 /*
                  if (typeof $div_hide !== 'undefined') {
                  $('#' + $div_hide).hide();
@@ -280,8 +262,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
     }
 
     /**
@@ -294,7 +274,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     function cancel_end_now_jobs($work_id, $wm_s, $date_end) {
 
         console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-
         // return false;
 
         // var data = $($th).serialize();
@@ -304,10 +283,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
             data: "action=cancel_end_now_jobs&id=" + $work_id + "&s=" + $wm_s + "&work_id=" + $work_id + "&wm_s=" + $wm_s + "&date_end=" + $date_end,
-
             cache: false,
             dataType: "json",
-
             type: "post",
             beforeSend: function () {
 
@@ -339,8 +316,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
-
     }
 
 // перебор div
@@ -465,7 +440,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-    // calculateSummAllGraph();
+// calculateSummAllGraph();
 
 
 
@@ -498,11 +473,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     function calcSummMoneySmena2(id = null) {
 
-        //alert( id );
-        //console.log('calcSummMoneySmena', id);
+//alert( id );
+//console.log('calcSummMoneySmena', id);
 
         $('body .smena_summa').html('..');
-
         $('body .job_hours').each(function (i, elem) {
 
             $id = $(elem).attr('id_smena');
@@ -520,9 +494,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $price = $('.smena_price_' + $id + ' option:selected').attr('price');
                     // console.log('цена - '+$price);
                     console.log($id + ' / ' + $hours + ' / ' + $price);
-
                     $sum = $hours * $price;
-
                     if ($sum > 0) {
                         $('body .smena_summa_' + $id).html($sum + 'р');
                     } else {
@@ -532,16 +504,15 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     if ($('.smena_oplacheno_' + $id).length) {
 
                         $summa_oplat = $('.smena_oplacheno_' + $id).attr('summ');
-
                         // если выплачено и начислено сходится, убираем начислено
                         if ($sum == $summa_oplat) {
-                            // console.log($sum + ' бб ' + $summa_oplat);
+// console.log($sum + ' бб ' + $summa_oplat);
                             $('body .smena_summa_' + $id).hide();
                         }
                     }
 
                 }
-                //
+//
                 else {
                     console.log('пропускаем');
                 }
@@ -564,9 +535,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
 
-    // кликаем по кнопам плюс минус час
+// кликаем по кнопам плюс минус час
 
-    // $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
+// $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
 
     $('body').on('click', '.ajax_hour_action', function () {
 
@@ -574,12 +545,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var in_sp = '';
 //        clearTdSummAllGraph();
         var uri_query = '';
-
         $.each(this.attributes, function () {
             if (this.specified) {
                 //console.log(1, this.name, this.value);
                 uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
-
                 if (this.name == 'date') {
                     in_date = this.value;
                 } else if (this.name == 'sp') {
@@ -588,9 +557,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             }
         });
-
-
-
         $th = $(this);
         $znak = $th.attr('type_action'); // - || +
         // console.log($znak); // - || +
@@ -605,13 +571,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // console.log($textblock_id);
 
         $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
-
         if ($cifra > 20)
             $cifra = 20;
-
         console.log($('span#' + $textblock_id).text());
         console.log($cifra);
-
         if ($znak == '-') {
             var $new_val = +$cifra - +0.5;
         }
@@ -621,7 +584,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $('span#' + $textblock_id).text($new_val);
-
         $.ajax({
 
             url: "/vendor/didrive_mod/items/1/ajax.php",
@@ -657,7 +619,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 } else {
 
                     ocenka_clear(in_sp, in_date);
-
                     $('span#' + $textblock_id).css('border-bottom', '2px solid green');
                     // $('span#' + $textblock_id).css('color', 'darkgreen');
 
@@ -668,7 +629,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     // $.debounce( 1000, calcSummMoneySmena2 );
                     calcSummMoneySmena2($textblock_id);
-
 //                    setTimeout( function () {
 //                        //calculateSummAllGraph();
 //
@@ -686,13 +646,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         return false;
     });
-
-
-
-
     $('body').on('change', '.select_edit_item_dop2', function () {
 
         console.log(2);
@@ -701,8 +656,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }, 100);
         console.log(3);
     });
-
-
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
@@ -711,7 +664,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         setTimeout(function () {
             calculateSummAllGraph();
         }, 2000);
-
     })
 
 
@@ -729,7 +681,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         });
     });
-
     $('body').on('click', '.show_job_tab', function (event) {
 
 // alert('2323');
@@ -823,12 +774,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     $('body').on('submit', '.put_workman_on_sp', function (event) {
 
         event.preventDefault();
-
         // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
         put_workman_on_sp(this);
-
         return false;
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -839,13 +787,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     $('body').on('click', '.delete_workman_from_sp', function (event) {
 
-        // event.preventDefault();
-        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
-        // put_workman_on_sp( this );
+// event.preventDefault();
+// put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+// put_workman_on_sp( this );
         console.log('delete_workman_from_sp');
         $answer = '';
         $wm_s = '';
-
         $.each(this.attributes, function () {
             //console.log(this.name, this.value);
 
@@ -861,7 +808,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 $answer = this.value;
             }
         });
-
         if ($answer != '') {
             if (!confirm($answer)) {
                 return false;
@@ -869,7 +815,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $res = delete_workman_from_sp($sp, $work_id, $wm_s, $date_end);
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -882,9 +827,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     $('body').on('click', '.set_end_now_jobs', function (event) {
 
-        // event.preventDefault();
-        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
-        // put_workman_on_sp( this );
+// event.preventDefault();
+// put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+// put_workman_on_sp( this );
         console.log('set_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
@@ -893,7 +838,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $.each(this.attributes, function () {
             console.log(this.name, this.value);
-
             if (this.name == 'work_id') {
                 $work_id = this.value;
             } else if (this.name == 'sp') {
@@ -909,7 +853,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         if ($need_answer != '') {
             if (!confirm($need_answer)) {
                 return false;
@@ -917,9 +860,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $res = set_end_now_jobs($work_id, $wm_s, $date_end);
-
         return false;
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -931,9 +872,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     $('body').on('click', '.cancel_end_now_jobs', function (event) {
 
-        // event.preventDefault();
-        // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
-        // put_workman_on_sp( this );
+// event.preventDefault();
+// put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
+// put_workman_on_sp( this );
         console.log('cancel_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
@@ -942,7 +883,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $.each(this.attributes, function () {
             console.log(this.name, this.value);
-
             if (this.name == 'work_id') {
                 $work_id = this.value;
             } else if (this.name == 'sp') {
@@ -958,7 +898,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         if ($need_answer != '') {
             if (!confirm($need_answer)) {
                 return false;
@@ -966,9 +905,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $res = cancel_end_now_jobs($work_id, $wm_s, $date_end);
-
         return false;
-
     });
     // else {
     // alert(i + ': ' + $(elem).text());
@@ -1306,8 +1243,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-
-
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1486,9 +1421,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
             }
         });
-
         return false;
-
         if ($(this).prop('data-target2').length()) {
             console.log($(this).prop('data-target2'));
         }
@@ -1564,7 +1497,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
 // alert('2323');
@@ -1646,8 +1578,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-
-
     $('body').on('click', '.set_end_jobs_uvolen', function (event) {
 
 // alert('2323');
@@ -1729,7 +1659,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-
     // else {
     // alert(i + ': ' + $(elem).text());
     // }
@@ -1760,10 +1689,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var showid = 0;
         var hidethis = 0;
         var answer = 0;
-
         var resto = 0;
         var resto1 = 0;
-
         var showid = 0;
         $.each(this.attributes, function () {
 
@@ -1822,7 +1749,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 $string = '';
                 $html = '';
-
                 if ($j['status'] == 'ok') {
 
                     if ($j['data']['ocenka'] == 5) {
@@ -1844,7 +1770,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     }
 
                     $(resto).html($html + '<br/><center><button class="btn btn-xs btn-info" onclick="$(\'#' + resto1 + '\').toggle(\'slow\');" >показать/скрыть расчёты</button></center><br/><div id="' + resto1 + '" style="display: none;background-color: rgba(0,0,255,0.2);padding:10px;" ><nobr><b>расчёт оценки</b>' + $j['data']['txt'] + '</nobr></div>');
-
                 } else {
 
                     // alert('11');
@@ -1861,19 +1786,15 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-
-
     $('body').on('click', '.jobdesc__record__auto_bonus_zp__m', function (event) {
 
         var $th = $(this);
-
 //        var sp = $th.attr('sp');
 //        var date = $th.attr('date');
 
 //         alert( sp + ' ' + date );
 
         var answer = 0;
-
 //        $uri_query = '';
 
         $.each(this.attributes, function () {
@@ -1902,9 +1823,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
         console.log($uri_query);
-
         if (answer != 0) {
 
             if (!confirm(answer)) {
@@ -1925,7 +1844,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 $("body").append("<div id='body_block' class='body_block' >пару секунд вычисляем<br/><span id='body_block_465'></span></div>");
                 $(resto).html('<img src="/img/load.gif" alt="" border=0 />');
-
 //                if (hidethis == 1) {
 //                    $th.hide();
 //                }
@@ -1945,41 +1863,19 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     $(resto).html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
                     $('#body_block_465').html('<div style="background-color:rgba(0,250,0,0.3);color:black;padding:5px;">( бонусов ' + $j['kolvo'] + ')' + $j['html'] + '</div>');
-
                     setTimeout(function () {
                         location.reload();
                     }, 1000);
-
                 } else {
 
                     $(resto).html('<div style="background-color:rgba(250,0,0,0.3);color:black;padding:5px;">ошибка: ' + $j['html'] + '</div>');
                     $('#body_block').remove();
-
                 }
 
             }
 
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return false;
-
         // alert('2323');
 //        $(this).removeClass("show_job_tab");
 //        $(this).addClass("show_job_tab2");
@@ -2048,12 +1944,261 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //        alert($uri_query);
 //        return false;
 
-        // console.log($vars['resto']);
+// console.log($vars['resto']);
 
-        // console.log($uri_query);
-        //$(this).html("тут список");
+// console.log($uri_query);
+//$(this).html("тут список");
         var $th = $(this);
     });
+// вставляем перменные времени ожидания
+    if (1 == 1) {
+        /**
+         * получаем массив доступных ячеек для времени ожидания (для аякс вставки)
+         * @returns {Array}
+         */
+        function get_timeo_td_from_html() {
+
+// timeo.ajax + аякс загрузка данных
+
+            var n = 1;
+            var vars = [];
+            $('div.timeo_data_td').each(function (i, elem) {
+
+// var date = '';
+                var date = $(this).attr('timeo_date');
+                // var sp = '';
+                var sp = $(this).attr('timeo_sp');
+                if (!!sp) {
+// console.log('timeo 1 ajax', date, sp);
+                    if (!!date) {
+                        console.log('все переменные есть', date, sp, n);
+                        vars = vars + '&d[' + n + '][date]=' + date + '&d[' + n + '][sp]=' + sp;
+                        // vars.push([date, sp]);
+
+                        n++;
+                    }
+                }
+
+            });
+//        console.log('результат', vars);
+
+            return vars;
+        }
+
+
+// вставляем перменные времени ожидания
+        if (1 == 1) {
+
+            var vars = get_timeo_td_from_html();
+            $.ajax({
+
+                url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+                data: "action=timeo_show_vars&" + vars,
+                cache: false,
+                dataType: "json",
+                type: "post",
+                beforeSend: function () {
+
+                    $('div.timeo_data_td').html('.. загружаем ..');
+                },
+                success: function ($j) {
+
+                    $('div.timeo_data_td').html('-');
+// переберём массив arr
+                    $.each($j['res'], function (sp, value) {
+                        $.each(value, function (date, value2) {
+//                        console.log('sp', sp
+//                                , 'date', date
+//                                , 'c', (value2['cold'] || '')
+//                                , 'h', (value2['hot'] || '')
+//                                , 'd', (value2['delivery'] || '')
+//                                );
+
+                            $('#timeo_data_td__' + date + '__' + sp).html(
+                                    (value2['cold'] || '-')
+                                    + ' / '
+                                    + (value2['hot'] || '-')
+                                    + ' / '
+                                    + (value2['delivery'] || '-')
+                                    );
+                            $('#timeo_data_td__str__' + date + '__' + sp).html(
+                                    (value2['cold'] || '-') + '<br/>'
+                                    + (value2['hot'] || '-') + '<br/>'
+                                    + (value2['delivery'] || '-')
+                                    );
+                        });
+                    });
+                }
+
+            });
+        }
+    }
+
+
+
+
+
+
+    /**
+     * вставляем значения оборотов
+     */
+    if (1 == 1) {
+        /**
+         * получаем массив доступных ячеек для времени ожидания (для аякс вставки)
+         * @returns {Array}
+         */
+        function get_oborot_td_from_html() {
+
+// timeo.ajax + аякс загрузка данных
+
+            var n = 1;
+            var vars = [];
+            $('div.loaded_ajax_oborot_vars').each(function (i, elem) {
+
+                var sp = $(this).attr('sp');
+                var date_start = $(this).attr('date_start');
+                var date_stop = $(this).attr('date_stop');
+                if (!!sp && !!date_start && !!date_stop) {
+// console.log('все переменные есть', date, sp, n);
+                    vars = vars + '&d[' + n + '][date_start]=' + date_start + '&d[' + n + '][date_stop]=' + date_stop + '&d[' + n + '][sp]=' + sp;
+                    // vars.push([date, sp]);
+
+                    n++;
+                }
+
+            });
+//        console.log('результат', vars);
+
+            return vars;
+        }
+
+        if (1 == 1) {
+
+            var vars = get_oborot_td_from_html();
+            $.ajax({
+
+                url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+                data: "action=oborot_show_vars&" + vars,
+                cache: false,
+                dataType: "json",
+                type: "post",
+                beforeSend: function () {
+
+                    $('div.oborot_data_td').html('.. загружаем ..');
+                },
+                success: function ($j) {
+
+                    $('div.oborot_data_td').html('-');
+                    ii = 1;
+                    // переберём массив arr
+                    $.each($j['res'], function (sp, value) {
+                        $.each(value, function (date, value2) {
+
+                            console.log(sp, date, value2);
+
+
+                            if (!!value2['oborot_hand']) {
+                                val_hand = value2['oborot_hand'];
+                            } else {
+                                val_hand = '';
+                            }
+
+                            input_oborot_hand = '<input type="number" max="1000000" min="0" '
+                                    + ' placeholder="уточнить"'
+                                    + ' title="укажите точную сумму оборота"'
+
+                                    + ' value="' + val_hand + '" '
+
+                                    + ' style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" '
+                                    + ' class="form-control didrive__edit_items_dop_pole2" '
+
+                                    + ' edit_item_id="' + value2['id'] +'"'
+                                    + ' edit_dop_name="oborot_hand"'
+                                    + ' edit_s="' + value2['s_hand'] +'"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
+
+                                    + ' pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"'
+                                    + ' text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"'
+
+                                    + ' delete_ocenka_sp="{{ sp_now }}"'
+                                    + ' delete_ocenka_date="{{ now_date2 }}"'
+                                    + ' delete_ocenka_s="{{ creatSecret(sp_now~now_date2) }}"'
+
+                                    + ' />';
+
+
+
+                            // if (!!value2['oborot_hand'] && value2['oborot_hand'] > 0) {
+                            if (!!value2['oborot_server']) {
+
+                                $('#data_obr_' + date + '__' + sp).html(
+                                        (value2['oborot_server'] ?
+                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+                                                number_format(value2['oborot_server'], 0, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+                                                : 'x')
+                                        + '<br/>'
+
+                                        + input_oborot_hand
+
+//                                        + '<input type="number" min="0" max="900000" step="0.01" '
+//                                        + ' class="number_oborot_tochnee" '
+//                                        + ' value="' + val_hand + '" '
+//                                        + ' />'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        );
+                            } else {
+
+                                $('#data_obr_' + date + '__' + sp).html(
+                                        '<sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" '
+                                        + ' vars="date=' + date + '&hide_form=da&action=get_oborot_for_sps&get_sp_load=' + sp + '" '
+                                        + ' res_to="' + sp + '_' + ii + '_res_ob2"'
+                                        + ' xtarget="_blank"'
+                                        + ' class="load_ajaxjson_to_id"'
+                                        + ' >загрузить с ИИКО</a></sup>'
+
+                                        + ' <div id="' + sp + '_' + ii + '_res_ob2" ></div>'
+
+//                                        + (value2['oborot_server'] ?
+//                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                number_format(value2['oborot_server'] / 1000, 1, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                : 'x')
+//
+//                                        + '<br/>'
+
+                                        // + (value2['oborot_hand'] ?? '-1')
+
+//                                    + '<br/>'
+//                                    + (value2['delivery'] || '-')
+                                        );
+                                ii++;
+                            }
+
+
+                        }
+                        );
+                    });
+                }
+
+            });
+        }
+    }
 
 
 

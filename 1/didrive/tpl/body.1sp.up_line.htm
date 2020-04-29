@@ -114,7 +114,7 @@
                     <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
 
                         <a href="#" 
-                           xtype="button" xclass="btn btn-info btn-xs" 
+                           xtype="button" class="btn btn-light xbtn-xs" 
                            data-toggle="modal" data-target="#setSpecNaznach" 
 
                            onclick="
@@ -132,7 +132,10 @@
                                    $('#add_person1day__user option').show();
                                    $('#add_person1day__user option[sp={{ sp_now }}]').hide();
                            "
-                           >назначить сотрудника (1 день) с&nbsp;другой точки продаж</a>
+                           ><span class="fa fa-plus" ></span>&nbsp;<b>спец.назначение</b><br/>
+                            назначить сотрудника (1&nbsp;день)<br/>
+                            с&nbsp;другой точки продаж
+                           </a>
                     </div>
 
                 </div>
