@@ -1,0 +1,92 @@
+{% spaceless %}
+
+    {#{ sp_now }#}
+    {#{ kk }} - {{ sp_now }#}
+
+    {#% set spoint = sp.data[sp_now] %#}
+    {% set spoint = sps[sp_now] %}
+    {#{ pa(spoint) }#}
+
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(47) }} {% endif %}
+    {% set jobmans_on_job = jobdesc__getMansOnJobsPeriod( db, date_start, date_finish, sp_now ) %}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время 35 jobdesc__getMansOnJobsPeriod - {{ didrive_f__timer_stop(47) }} {% endif %}
+
+    {% if 1 == 2 %}
+        jobmans_on_job
+        <br/><br/>{{ pa(jobmans_on_job,2) }}
+    {% endif %}
+
+
+
+    {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
+
+    {#
+        mans
+        {{ pa(mans) }}
+    #}    
+
+    {%  for kk1, sort1 in dolgn.sort %}
+
+        {% if 1 == 2 %}
+            sort
+            {{  pa(sort1) }}
+        {% endif %}
+
+        {% for user_id, user_v in jobmans_on_job if user_v[0]['dolgnost'] is defined and user_v[0]['dolgnost'] == sort1.id %}
+
+            {#% for user5, user_v in jobmans_on_job %#}
+            {#
+                    user_v
+                    {{ pa(user_v) }}
+            #}
+
+
+            {% if 1 == 1 %}
+                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+                {% include dir_mod_now_mod_ditpl~'body.1.1sp.1worker.htm' %}
+                {% if 1 == 2 or timer_show == 'on' %} <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+            {% endif %}
+
+        {%  endfor %}
+    {%  endfor %}
+
+
+
+    {% if 1 == 2 %}
+        {% if 1 == 1 and get.hide_body is not defined %}        
+
+            {% set hour_summ = [] %}
+
+            {%  for kk1, sort1 in dolgn.sort %}
+
+                {% for user5, user_v in getListJobsPeriodAll.data.job_on_sp[sp_now] if user_v.dolgnost == sort1.id %}
+
+                    {% set man = mans['data'][user5] %}
+                    {#{ pa(man) }#}
+
+                    {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, user_v.jobman, date_start ) %}
+
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+                    {% include dir_mod_now_mod_ditpl~'body.1.1sp.1worker.htm' %}
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+                {% endfor %}
+
+            {% endfor %}
+
+        {% endif %}
+    {% endif %}
+
+
+
+
+
+    {# итого за день строчки #}
+
+    {#% set timer_show = 'on' %#}
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% include dir_mod_now_mod_ditpl~'body.1.1sp.down.htm' %}
+    {% if timer_show == 'on' %} <br/>время 24 tpl body.sp.down.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {#% set timer_show = 'off1' %#}
+
+{% endspaceless %}

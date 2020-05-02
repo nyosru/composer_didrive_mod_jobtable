@@ -166,6 +166,292 @@ class JobDesc {
     public static $mod_buh_head_sp = '005_money_buh_head_sp';
 
     /**
+     * получаем список всех работников что работали на точках
+     * 2004300126
+     * @param type $db
+     * @param string $date_start
+     * @param string $date_finish
+     * @param type $sp_id
+     * id точки если указан то показываем только выбранные
+     * @return type
+     */
+    public static function getPeriodWhereJobMans($db, string $date_start, string $date_finish, $sp_id = null) {
+
+//        if ( strpos($_SERVER['HTTP_HOST'], 'dev') != false)
+//            $timer_on = true;
+
+        if (isset($timer_on) && $timer_on === true) {
+            echo '<hr>';
+            echo '<br/>#' . __LINE__ . ' ' . __FILE__;
+            echo '<br/>#' . __LINE__ . ' ' . __FUNCTION__;
+            echo '<br/>#' . __LINE__ . ' ' . $date_start;
+            echo '<br/>#' . __LINE__ . ' ' . $date_finish;
+            echo '<br/>#' . __LINE__ . ' ' . $sp_id;
+            \f\timer_start(234);
+        }
+
+//        $cash_var = 'getListJobmans__list_jobmans';
+//         $cash_time = 60 * 60 * 6;
+
+        $return = false;
+
+        if (!empty($cash_var))
+            $return = \f\Cash::getVar($cash_var);
+
+        if ($return !== false) {
+            
+        } else {
+
+
+
+            if (1 == 2) {
+                $sql = 'SELECT '
+                        . ' i_jobon.id jobon_id '
+//                    . ' , i_jobon.* '
+//                    . ' , d_jobon.id d_id '
+                        // . ' , d_jobon.* '
+//                    . ' , CONCAT( d_jobon.value , d_jobon.value_date, d_jobon.value_datetime, d_jobon.value_int, d_jobon.value_text  ) as d_val  '
+                        . ' , d_jobon_date.value_date date '
+                        . ' , d_jobon_dolgn.value dolgn_id '
+                        . ' , d_jobon_jm.value jobman '
+                        . ' , d_jobon_sp.value sp_id '
+                        . ' FROM `mitems-dops` d_jobon '
+                        // . ' FROM `mitems-dops` d_jobon '
+                        //
+                        . ' INNER JOIN `mitems` i_jobon ON '
+                        . ' i_jobon.`module` = :mod_job_on '
+                        . ' AND i_jobon.id = d_jobon.id_item '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_date ON '
+                        . ' d_jobon_date.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_date.name = \'date\' '
+                        // . ' AND d_jobon_date.value_date BETWEEN :date_start and :date_fin '
+                        . ' AND d_jobon_date.value_date <= :date_fin '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_dolgn ON '
+                        . ' d_jobon_dolgn.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_dolgn.name = \'dolgnost\' '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_sp ON '
+                        . ' d_jobon_sp.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_sp.name = \'sale_point\' '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_jm ON '
+                        . ' d_jobon_jm.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_jm.name = \'jobman\' '
+                        //
+                        . ' WHERE '
+                        . ' d_jobon.status IS NULL '
+                        . ' GROUP BY i_jobon.id '
+                ;
+
+                $sql_vars = [];
+                $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
+                //$sql_vars[':date_start'] = date('Y-m-d', strtotime($date_start));
+                $sql_vars[':date_fin'] = date('Y-m-d', strtotime($date_finish));
+                // $sql_vars[':status'] = 'show';
+                // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
+                // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
+// \f\pa($ff1);
+
+                $ff = $db->prepare($sql);
+                $ff->execute($sql_vars);
+
+// $return = [];
+                // $return = $ff->fetchAll();
+                // echo '<div style="padding:10px; border: 1px solid green;" >';
+
+                $return = $return1 = [];
+
+                while ($v = $ff->fetch()) {
+                    //foreach ($return as $k => $v) {
+                    // echo '<br/>' . $v['jobman'] . ' - ' . $v['jobon_date'] . ' + ' . $v['sp_id'];
+                    $return1[$v['jobman']]['date'][] = $v;
+                    // $return1[$v['jobman']]['job_on_sp'][$v['sp_id']] = 1;
+                }
+            } // закрыли копию для спец назначений
+
+            $return = $return1 = [];
+
+            // тащим спец назначения
+            // \f\timer_start(231);
+            if (1 == 1) {
+
+                if (!empty($sp_id))
+                    \Nyos\mod\items::$search['sale_point'] = $sp_id;
+
+                \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($date_start)), date('Y-m-d', strtotime($date_finish))];
+                $spec = \Nyos\mod\items::get2($db, \Nyos\mod\JobDesc::$mod_spec_jobday);
+
+                // \f\pa($spec, '', '', 'spec');
+
+                foreach ($spec as $k => $v) {
+                    $v['sp_id'] = $v['sale_point'];
+                    $v['type'] = 'spec';
+                    $return1[$v['jobman']]['date'][] = $v;
+                }
+                unset($spec);
+            }
+            // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(231) . ' ' . __FILE__;
+            // $return1[$v['jobman']]['date'][] = $v;
+            // \f\pa($return1);
+            // \f\timer_start(231);
+            if (1 == 1) {
+                $sql = 'SELECT '
+                        . ' i_jobon.id jobon_id '
+//                    . ' , i_jobon.* '
+//                    . ' , d_jobon.id d_id '
+                        // . ' , d_jobon.* '
+//                    . ' , CONCAT( d_jobon.value , d_jobon.value_date, d_jobon.value_datetime, d_jobon.value_int, d_jobon.value_text  ) as d_val  '
+                        . ' , d_jobon_date.value_date date '
+                        . ' , d_jobon_dolgn.value dolgnost '
+                        . ' , d_jobon_jm.value jobman '
+                        . ' , d_jobon_sp.value sp_id '
+                        . ' FROM `mitems-dops` d_jobon '
+                        // . ' FROM `mitems-dops` d_jobon '
+                        //
+                        . ' INNER JOIN `mitems` i_jobon ON '
+                        . ' i_jobon.`module` = :mod_job_on '
+                        . ' AND i_jobon.id = d_jobon.id_item '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_date ON '
+                        . ' d_jobon_date.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_date.name = \'date\' '
+                        // . ' AND d_jobon_date.value_date BETWEEN :date_start and :date_fin '
+                        . ' AND d_jobon_date.value_date <= :date_fin '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_dolgn ON '
+                        . ' d_jobon_dolgn.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_dolgn.name = \'dolgnost\' '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_sp ON '
+                        . ' d_jobon_sp.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_sp.name = \'sale_point\' '
+                        //
+                        . ' INNER JOIN `mitems-dops` d_jobon_jm ON '
+                        . ' d_jobon_jm.id_item = d_jobon.id_item '
+                        . ' AND d_jobon_jm.name = \'jobman\' '
+                        //
+                        . ' WHERE '
+                        . ' d_jobon.status IS NULL '
+                        . ' GROUP BY i_jobon.id '
+                ;
+
+                $sql_vars = [];
+                $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
+                //$sql_vars[':date_start'] = date('Y-m-d', strtotime($date_start));
+                $sql_vars[':date_fin'] = date('Y-m-d', strtotime($date_finish));
+                // $sql_vars[':status'] = 'show';
+                // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
+                // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
+// \f\pa($ff1);
+
+                $ff = $db->prepare($sql);
+                $ff->execute($sql_vars);
+
+// $return = [];
+                // $return = $ff->fetchAll();
+                // echo '<div style="padding:10px; border: 1px solid green;" >';
+                // $return = $return1 = [];
+
+                while ($v = $ff->fetch()) {
+                    //foreach ($return as $k => $v) {
+                    // echo '<br/>' . $v['jobman'] . ' - ' . $v['jobon_date'] . ' + ' . $v['sp_id'];
+                    $return1[$v['jobman']]['date'][] = $v;
+                    // $return1[$v['jobman']]['job_on_sp'][$v['sp_id']] = 1;
+                }
+            } // тащим назначения норм за период
+            // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(231) . ' ' . __FILE__;
+            // echo '</div>';
+            // \f\pa($return1, 2, '', 'return1');
+
+            $ds = date('Y-m-d', strtotime($date_start));
+            $df = date('Y-m-d', strtotime($date_finish));
+
+            foreach ($return1 as $jm => $vv) {
+
+
+                // echo '<hr>';
+                $new = [];
+
+                // работает или нет на точке сотрудник в этот период
+                $job_on_sp = false;
+
+                if (!empty($vv['date'])) {
+
+                    // \f\pa($vv['date'],'','','$vv');
+
+
+                    $e = $vv['date'];
+
+                    //usort($e, "\\f\\sort_ar_date_desc");
+                    usort($e, "\\f\\sort_ar_date");
+                    // $new = [];
+
+                    foreach ($e as $k => $v2) {
+
+                        if (!empty($v2['date'])) {
+                            if ($v2['date'] <= $ds) {
+                                $new = [0 => $v2];
+                            }
+                            //
+                            elseif ($v2['date'] <= $df) {
+                                $new[] = $v2;
+                            }
+                        }
+
+                        // \f\pa($v2);
+                    }
+
+//                    if( !empty($new) > 1 )
+//                    \f\pa($new);
+                }
+
+                $return[$jm] = $new;
+            }
+
+            // echo '<br/>#'.__LINE__.' '.__FILE__.' '.\f\timer_stop(234);
+
+            if (!empty($cash_var))
+                \f\Cash::setVar($cash_var, $return, ( $cash_time ?? 0));
+        }
+
+
+        if (!empty($sp_id)) {
+
+            $re = [];
+            foreach ($return as $jm => $v) {
+
+                $add = false;
+
+                foreach ($v as $k1 => $v1) {
+
+                    if (!empty($v1['sp_id']) && $v1['sp_id'] == $sp_id) {
+                        // $re[$jm] = $v;
+                        $add = true;
+                    }
+                }
+
+                if ($add === true)
+                    $re[$jm] = $v;
+            }
+
+            // \f\pa($re,'','','re result');
+        }
+
+
+        if (isset($timer_on) && $timer_on === true)
+            echo '<br/>#' . __LINE__ . ' ' . __FILE__
+            . '<br/>' . 'f:' . __FUNCTION__ . ' ' . \f\timer_stop(234);
+
+        // если искали 1 sp
+        if (!empty($re))
+            return $re;
+
+        return $return;
+    }
+
+    /**
      * чистим переменные что дополнительные
      * возвращаем параметры со старта
      */

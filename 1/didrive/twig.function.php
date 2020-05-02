@@ -1,5 +1,16 @@
 <?php
 
+
+/**
+ * тащим список людей кто в указанный период был на работе в этой точке
+ */
+$function = new Twig_SimpleFunction('jobdesc__getMansOnJobsPeriod', function ( $db, string $date_start, string $date_finish, $sp_id = null ) {
+
+    return \Nyos\mod\JobDesc::getPeriodWhereJobMans( $db, $date_start, $date_finish, $sp_id );
+});
+$twig->addFunction($function);
+
+
 /**
   определение функций для TWIG
  */
