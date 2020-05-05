@@ -24,13 +24,16 @@
             {# 
             {% set t = didrive_f__timer_start() %} 
             #}
+
             {#% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %#}
             {#{ sp_now }#}
-
+            
+            {# <div style="border: 1px solid green; padding: 5px; margin: 5px;" > #}
             {% set oborots = iiko_oborot__get_oborots_on_sp( db, sp_now, date_start, date_finish ) %}
+            {# </div> #}
 
             {#{ sp_now }#}
-            {#{ pa(oborots) }#}
+            {#{ pa(oborots,2) }#}
 
             <abbr title="суммарный оборот за месяц" style="color: gray; float:right;" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>
 

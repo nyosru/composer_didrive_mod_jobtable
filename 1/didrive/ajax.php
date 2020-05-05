@@ -34,11 +34,18 @@ if (
         (
         $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
         // тащим цифры времени ожидания для построения графика
-        || $_REQUEST['action'] == 'timeo_show_vars' 
+        || $_REQUEST['action'] == 'timeo_show_vars'
         // тащим цифры oborot для построения графика
-        || $_REQUEST['action'] == 'oborot_show_vars' 
+        || $_REQUEST['action'] == 'oborot_show_vars'
+        // тащим цифры oborot для построения графика
+        || $_REQUEST['action'] == 'ajax_in_smens'
         //
-        || $_REQUEST['action'] == 'bonus_record' || $_REQUEST['action'] == 'bonus_record_month' || $_REQUEST['action'] == 'show_dolgn' )
+        || $_REQUEST['action'] == 'bonus_record'
+        //
+        || $_REQUEST['action'] == 'bonus_record_month'
+        //
+        || $_REQUEST['action'] == 'show_dolgn'
+        )
         ) || (
         isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
@@ -81,7 +88,102 @@ else {
 
 
 // показ смен одного сотрудника за месяц или весь срок
-if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
+
+    $d_start = '';
+    $d_finish = '';
+
+    foreach ($_REQUEST['d'] as $k => $v) {
+
+        if (empty($d_start))
+            $d_start = $v['date_start'];
+
+        if (empty($d_finish))
+            $d_finish = $v['date_stop'];
+
+        if (!empty($d_start) && !empty($v['date_start']) && $d_start > $v['date_start'])
+            $d_start = $v['date_start'];
+
+        if (!empty($d_finish) && !empty($v['date_stop']) && $d_finish < $v['date_stop'])
+            $d_finish = $v['date_stop'];
+    }
+
+    if (!empty($d_start) && !empty($d_finish))
+        \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
+
+    $sp = '';
+
+    $sps_list = [];
+
+    $jobmans = [];
+    
+    foreach ($_REQUEST['d'] as $k => $v) {
+
+        if (!isset($sps_list[$v['sp']]))
+            $sps_list[$v['sp']] = 1;
+
+        if (empty($sp) && isset($v['sp']))
+            $sp = $v['sp'];
+
+        // \f\pa($v);
+        if (isset($v['jobman'])){
+            
+            \Nyos\mod\items::$search['jobman'][] = $v['jobman'];
+
+            $jobmans[$v['jobman']] = 1;
+            
+        }
+    }
+
+    // \f\pa(\Nyos\mod\items::$search);
+    // \Nyos\mod\items::$show_sql = true;
+    $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+
+    // \f\pa($checks0);
+
+    $checks = [];
+
+    foreach ($checks0 as $k => $v) {
+
+        $v['sp'] = $sp;
+        $v['s'] = \Nyos\Nyos::creatSecret('hour_' . $v['id']);
+        $checks[date('Y-m-d', strtotime($v['start']))][] = $v;
+    }
+
+    $job_on = [];
+    foreach ($sps_list as $sp => $v) {
+        $job_on[$sp] = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $d_start, $d_finish, $sp);
+    }
+
+    
+//    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+    $dolgn = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
+
+    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+    $salary0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary);
+
+    foreach ($salary0 as $k => $v) {
+        $salary[$v['dolgnost']][$v['date']] = $v;
+    }
+
+    
+    
+    
+    
+    \f\end2('ок', true, [
+        'checks' => $checks,
+        'job_on' => $job_on,
+        'dolgn' => $dolgn,
+        'dolgn_money' => $salary
+    ]);
+
+    \f\pa($sps);
+
+
+
+
+
+
 
     ob_start('ob_gzhandler');
 
@@ -374,7 +476,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_smens') {
 // тащим время ожидания для аякс показа
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'timeo_show_vars') {
 
-   // ob_start('ob_gzhandler');
+    // ob_start('ob_gzhandler');
 
     $ar = [];
 
@@ -386,19 +488,19 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'timeo_show_vars') 
     }
 
     $res = [];
-    
-    foreach( $ar as $sp_id => $v ){
+
+    foreach ($ar as $sp_id => $v) {
         // $select[$k] = [ 'max' => max($v), 'min' => min($v) ];
-        $res[$sp_id] = \Nyos\api\JobExpectation::getTimerExpectation(  $db, $sp_id, min($v), max($v) );
+        $res[$sp_id] = \Nyos\api\JobExpectation::getTimerExpectation($db, $sp_id, min($v), max($v));
     }
 
 //    $r = ob_get_contents();
 //    ob_end_clean();
 
-    \f\end2( 'ок', true, [ 'res' => $res
+    \f\end2('ок', true, ['res' => $res
 //            , 're' => $_REQUEST
 //            , 'select' => $select 
-            ] );
+    ]);
 }
 
 // тащим oborot для аякс показа
@@ -410,13 +512,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'oborot_show_vars')
 
     // \f\pa($_REQUEST);
     foreach ($_REQUEST['d'] as $k => $v) {
-        if( !empty($v['date_start']) && !empty($v['date_stop']) && !empty($v['sp']) )
-        $ar[$v['sp']] = [ 'date_start' => $v['date_start'], 'date_stop' => $v['date_stop'] ];
+        if (!empty($v['date_start']) && !empty($v['date_stop']) && !empty($v['sp']))
+            $ar[$v['sp']] = ['date_start' => $v['date_start'], 'date_stop' => $v['date_stop']];
     }
 
     $res = [];
 
-    foreach( $ar as $sp_id => $v ){
+    foreach ($ar as $sp_id => $v) {
         // $select[$k] = [ 'max' => max($v), 'min' => min($v) ];
         // $res[$sp_id] = \Nyos\api\JobExpectation::getTimerExpectation(  $db, $sp_id, min($v), max($v) );
         $res[$sp_id] = \Nyos\mod\JobDesc::get_oborots($db, $sp_id, $v['date_start'], $v['date_stop']);
@@ -425,10 +527,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'oborot_show_vars')
 //    $r = ob_get_contents();
 //    ob_end_clean();
 
-    \f\end2( 'ок', true, [ 'res' => $res
+    \f\end2('ок', true, ['res' => $res
 //            , 're' => $_REQUEST
 //            , 'select' => $select 
-            ] );
+    ]);
 }
 
 // бланк

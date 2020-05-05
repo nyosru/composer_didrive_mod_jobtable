@@ -281,7 +281,7 @@ class JobDesc {
                     \Nyos\mod\items::$search['sale_point'] = $sp_id;
 
                 \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($date_start)), date('Y-m-d', strtotime($date_finish))];
-                $spec = \Nyos\mod\items::get2($db, \Nyos\mod\JobDesc::$mod_spec_jobday);
+                $spec = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_spec_jobday);
 
                 // \f\pa($spec, '', '', 'spec');
 

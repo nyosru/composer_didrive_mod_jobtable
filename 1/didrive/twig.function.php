@@ -1443,7 +1443,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, 
                 $re[$v['dop']['date']]['id'] = $v['id'];
             }
         }
-    } else {
+    } 
+    //
+    else {
 
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                 . ' ON mid.id_item = mi.id '
@@ -1456,7 +1458,10 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, 
                 . ' AND mid2.value = \'' . $sp . '\' '
 
         ;
+        
+        // \Nyos\mod\items::$show_sql = true;
         $ocenki = \Nyos\mod\items::get($db, 'sp_ocenki_job_day');
+        
 //\f\pa($ocenki);
 
         $re = [];

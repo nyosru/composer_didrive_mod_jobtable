@@ -2034,14 +2034,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
     }
 
-
-
-
-
-
-    /**
-     * вставляем значения оборотов
-     */
+// вставляем значения оборотов
     if (1 == 1) {
         /**
          * получаем массив доступных ячеек для времени ожидания (для аякс вставки)
@@ -2095,8 +2088,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                         $.each(value, function (date, value2) {
 
                             console.log(sp, date, value2);
-
-
                             if (!!value2['oborot_hand']) {
                                 val_hand = value2['oborot_hand'];
                             } else {
@@ -2112,9 +2103,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                                     + ' style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" '
                                     + ' class="form-control didrive__edit_items_dop_pole2" '
 
-                                    + ' edit_item_id="' + value2['id'] +'"'
+                                    + ' edit_item_id="' + value2['id'] + '"'
                                     + ' edit_dop_name="oborot_hand"'
-                                    + ' edit_s="' + value2['s_hand'] +'"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
+                                    + ' edit_s="' + value2['s_hand'] + '"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
 
                                     + ' pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"'
                                     + ' text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"'
@@ -2124,9 +2115,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                                     + ' delete_ocenka_s="{{ creatSecret(sp_now~now_date2) }}"'
 
                                     + ' />';
-
-
-
                             // if (!!value2['oborot_hand'] && value2['oborot_hand'] > 0) {
                             if (!!value2['oborot_server']) {
 
@@ -2201,5 +2189,864 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
 
+
+
+// получаем атрибуты со всех блоков что содержат класс
+    function get_blocks_attr(classes) {
+
+// timeo.ajax + аякс загрузка данных
+
+        var n = 1;
+        var arr = [];
+        var string = '';
+        $(classes).each(function () {
+
+// var arr[n] = [];
+
+            $.each(this.attributes, function () {
+// this.attributes is not a plain object, but an array
+// of attribute nodes, which contain both the name and value
+                if (this.specified) {
+                    console.log(this.name, this.value);
+                    // пропускаем аттр
+                    if (this.name == 'class' || this.name == 'href') {
+                    }
+// обрабатываем аттр
+                    else {
+
+                        string = string + '&d[' + n + '][' + this.name + ']=' + this.value;
+                        // arr.push({ n : { this.name : this.value } });
+                    }
+                }
+            });
+            n++;
+        });
+        return {'string': string, 'ar': arr};
+        /*
+         
+         $(classes).each(function (i, elem) {
+         
+         var sp = $(this).attr('sp');
+         var date_start = $(this).attr('date_start');
+         var date_stop = $(this).attr('date_stop');
+         if (!!sp && !!date_start && !!date_stop) {
+         // console.log('все переменные есть', date, sp, n);
+         vars = vars + '&d[' + n + '][date_start]=' + date_start + '&d[' + n + '][date_stop]=' + date_stop + '&d[' + n + '][sp]=' + sp;
+         // vars.push([date, sp]);
+         
+         n++;
+         }
+         
+         });
+         //        console.log('результат', vars);
+         */
+        // return vars;
+    }
+
+// добавляем смены в график
+    if (2 == 2) {
+
+        function creat_html_1smena(ar) {
+
+            ret = '';
+
+            // показывать или нет сумму часов и выбор цены
+            var show_hours = false;
+
+            var now_date = false;
+
+//            ret += '<div style="text-align:left;" ><small>';
+//            $.each(ar, function (k2, a2) {
+//                ret += '<br/>' + k2 + ': ' + a2;
+//            });
+//            ret += '</small></div>';
+
+
+
+            ret += ' <div class="text-center show_down_hiden smena1 '
+
+                    /*
+                     { % if check.status == 'hide' % }
+                     smena_cancel
+                     
+                     { % elseif check.status == 'show' % }
+                     
+                     {# чел начал смену и не закончил #}
+                     { % if check.who_add_item is defined and check.who_add_item == 'user' % }
+                     
+                     { % if check.error_added is defined and check.error_added == 'yes' % }
+                     { % set user_smena_status = 'add_error' % }
+                     smena_started_error                                 
+                     { % elseif check.start is defined and check.fin is not defined % }
+                     { % set user_smena_status = 'add' % }
+                     smena_started
+                     { % elseif check.start is defined and check.fin is defined % }
+                     { % set user_smena_status = 'add_ok' % }
+                     */
+//                     + ' smena_started_ok '
+                    + ' smena_ok '
+                    /*
+                     { % endif % }
+                     */
+                    + ' "> ';
+
+            /*
+             
+             {#{ pa(check) }#}
+             
+             */
+
+            if (typeof ar['who_add_item'] !== 'undefined' && ar['who_add_item'] == 'iiko') {
+                /* <nobr>
+                 { % if check.who_add_item is defined and check.who_add_item == 'iiko' % }
+                 */
+                ret += ' <abbr title="загружено с сервера ИИКО #{{  check.id }}" ><small style="float:left;">iiko</small></abbr> '
+                        + ' <br clear="all" /> ';
+            } else {
+                // { % elseif check.who_add_item is defined and check.who_add_item == 'admin' % }
+
+                ret += ' <abbr title="добавлено вручную #{{  check.id }}" ><small style="float:left;">вручную</small></abbr> '
+                        + ' <br clear="all" /> ';
+            }
+            /*
+             { % endif % }
+             
+             {#{ pa(check) }#}
+             */
+            ret += ' <div '
+//    xstyle="display:inline-block;" 
+                    + ' class="point_div text-center" > ';
+
+// если есть такая переменная
+            if (typeof ar['start'] !== 'undefined') {
+
+// если есть такая переменная
+                if (typeof ar['fin'] !== 'undefined') {
+
+                    // показывать или нет сумму часов и выбор цены
+                    var show_hours = true;
+                    var now_date = ar['start'].slice(11, -3);
+
+                    ret += '<abbr class="job_timer" >'
+                            + ar['start'].slice(11, -3) + ' - ' + ar['fin'].slice(11, -3) + '<br/>'
+                            + '</abbr>';
+                }
+                // если старт есть и финиша нет
+                else {
+
+                    ret += ar['start'].slice(11, -3) + ' - ...'; // {{ check.start | date("H:i") }} - ...
+                }
+            }
+
+
+
+            if (show_hours = true) {
+
+                ret += '<nobr>';
+
+//             { % if check.hour_on_job_hand is defined and check.hour_on_job_hand > 0 % }
+//             { % set hours_on_job = check.hour_on_job_hand % }
+//             { % elseif check.hour_on_job is defined and check.hour_on_job > 0 % }
+//             { % set hours_on_job = check.hour_on_job % }
+//             { % else % }
+//             { % set hours_on_job = 0 % }
+//             { % endif % }
+
+                ret += '<i class="fa fa-minus ajax_hour_action"  '
+
+                        + ' type_action="-" '
+                        + ' hour_id="' + ar['id'] + '" '
+                        + ' block="hour_' + ar['id'] + '" '
+                        + ' s="' + ar['s'] + '" '
+
+//                        + ' cash_delete1_1="hoursonjob" '
+//                        + ' cash_delete1_2name="date" '
+//                        + ' cash_delete1_2="' + now_date + '" '
+//                        + ' cash_delete1_3name="sp" '
+//                        + ' cash_delete1_3="' + ar['sp'] + '" '
+
+                        + ' sp="' + ar['sp'] + '" '
+                        + ' date="' + now_date + '" '
+
+                        //+ ' onclick="$(\'#hoursday_' + now_date + '\').html(\'<div class="bg-warning" style="padding:5px;" >Значение изменено</div>\');" '
+
+                        + '></i>';
+                // { % endif % }
+
+                ret += '<span id="hour_' + ar['id'] + '" '
+
+                        // {# для динамичного показа суммы за смену + #}
+                        + ' class="job_hours" id_smena="' + ar['id'] + '" '
+                        // {# для динамичного показа суммы за смену - #}
+                        // xstyle="display: inline-block; width:40px; border:1px solid green;"
+
+                        + ' title="{{ check.start | date("d.m H:i") }} - {{ check.fin | date("d.m H:i") }} отработано часов (авторасчет):' + ar['hour_on_job'] + '" '
+
+                        // { % if check.hour_on_job_hand is defined % } style="font-weight: bold;" { % endif % } 
+                        
+                        + ( typeof ar['hour_on_job_hand'] !== 'undefined' ? ' style="font-weight: bold;" ' : '' )
+                        
+                        + ' >' + ( typeof ar['hour_on_job_hand'] !== 'undefined' ? ar['hour_on_job_hand'] : ar['hour_on_job'] ) + '</span>';
+
+                ret += '<i class="fa fa-plus ajax_hour_action" '
+                        + ' type_action="+" '
+                        + ' hour_id="' + ar['id'] + '" '
+                        + ' block="hour_' + ar['id'] + '" '
+                        + ' s="' + ar['s'] + '" '
+
+//                        + ' cash_delete1_1="hoursonjob" '
+//                        + ' cash_delete1_2name="date" '
+//                        + ' cash_delete1_2="' + now_date + '" '
+//                        + ' cash_delete1_3name="sp" '
+//                        + ' cash_delete1_3="' + ar['sp'] + '" '
+
+                        + ' sp="' + ar['sp'] + '" '
+                        + ' date="' + now_date + '" '
+
+                        // + ' onclick="$(\'#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');" '
+
+                        + ' ></i> ';
+
+                ret += '<a href="#"  class="but_show_option" '
+                        // + ' onclick="$('#drop2_{{ rand_d }},.drop2_{{ rand_d }}').toggle('slow'); '
+                        + ' return false;" '
+                        + ' >'
+                        + ' <span class="fa fa-caret-down" ></span>'
+                        + ' </a>';
+
+                ret += '</nobr><br/>';
+            }
+
+
+            /*       
+             {# если нет финиша #}
+             { % if check.start is defined and check.fin is not defined % }
+             
+             {# если есть финиш #}
+             { % else % }
+             
+             <abbr class="job_hour" >
+             <nobr>
+             
+             { % if check.hour_on_job_hand is defined and check.hour_on_job_hand > 0 % }
+             { % set hours_on_job = check.hour_on_job_hand % }
+             { % elseif check.hour_on_job is defined and check.hour_on_job > 0 % }
+             { % set hours_on_job = check.hour_on_job % }
+             { % else % }
+             { % set hours_on_job = 0 % }
+             { % endif % }
+             
+             { % if check.status == 'show' and check.payed is not defined % }
+             <i class="fa fa-minus ajax_hour_action" 
+             
+             type_action="-" 
+             hour_id="{{ check.id }}" 
+             block="hour_{{ check.id }}" 
+             s="{{ creatSecret('hour_'~check.id) }}"
+             
+             cash_delete1_1="hoursonjob"
+             cash_delete1_2name="date"
+             cash_delete1_2="{{ date }}"
+             cash_delete1_3name="sp"
+             cash_delete1_3="{{ sp_now }}"
+             
+             sp="{{ sp_now }}"
+             date="{{ date }}"
+             
+             onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+             
+             ></i>
+             { % endif % }
+             
+             typeof variable !== 'undefined'
+             
+             +++          
+             <span id="hour_{{ check.id }}" 
+             
+             {# для динамичного показа суммы за смену + #}
+             class="job_hours" id_smena="{{ check.id }}" 
+             {# для динамичного показа суммы за смену - #}
+             
+             xstyle="display: inline-block; width:40px; border:1px solid green;"
+             
+             title="{{ check.start | date("d.m H:i") }} - {{ check.fin | date("d.m H:i") }} отработано часов (авторасчет):{{ check.hour_on_job }}"
+             { % if check.hour_on_job_hand is defined % } style="font-weight: bold;" { % endif % } 
+             >{{ hours_on_job }}</span>
+             
+             +++            
+             
+             { % if check.status == 'show' and check.payed is not defined % }
+             
+             <i class="fa fa-plus ajax_hour_action" 
+             type_action="+" 
+             hour_id="{{ check.id }}" 
+             block="hour_{{ check.id }}" 
+             s="{{ creatSecret('hour_'~check.id) }}" 
+             
+             cash_delete1_1="hoursonjob"
+             cash_delete1_2name="date"
+             cash_delete1_2="{{ date }}"
+             cash_delete1_3name="sp"
+             cash_delete1_3="{{ sp_now }}"
+             
+             sp="{{ sp_now }}"
+             date="{{ date }}"
+             
+             onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+             
+             ></i> 
+             
+             <a href="#"  class="but_show_option" 
+             onclick="$('#drop2_{{ rand_d }},.drop2_{{ rand_d }}').toggle('slow');
+             return false;" 
+             >
+             <span class="fa fa-caret-down" ></span>
+             </a>
+             { % endif % }
+             
+             </nobr>
+             
+             <br/>
+             </abbr>
+             
+             { % endif % }
+             
+             
+             
+             { % if check.status == 'show' % }
+             
+             { % set summa_day = 0 % }
+             
+             <input 
+             xtype="text" 
+             type="hidden" 
+             class="hours_kolvo" 
+             value="{ % if check.hour_on_job_hand is defined % }{{ check.hour_on_job_hand }}{ % else % }{{ check.hour_on_job_calc }}{ % endif % }" >
+             
+             <center>
+             
+             { % if data_on_workman_day['salary']['ocenka-hour-base'] is defined % }
+             
+             { % if (now_dolgn.smoke is defined and now_dolgn.smoke == 'da') or (now_job.smoke is defined and now_job.smoke == 'da') % }
+             { % set price_hour = data_on_workman_day['salary']['ocenka-hour-base'] + data_on_workman_day['salary']['if_kurit'] % }
+             { % else % }
+             { % set price_hour = data_on_workman_day['salary']['ocenka-hour-base'] % }
+             { % endif % }
+             
+             <input 
+             type="hidden" 
+             class="price_hour_{{ date }}_{{ sp_now }}" 
+             value="{{ price_hour }}" 
+             >
+             
+             {{ price_hour }}р/ч
+             
+             { % set summa_day = hours_on_job * price_hour % }
+             
+             { % else % }
+             
+             
+             {#
+             <div class="text-left" >
+             {{ pa(now_job) }}
+             {{ pa(salar) }}
+             </div>
+             #}
+             
+             {# % if date == '2020-03-01' % }
+             <div style="text-align:left;" >
+             check
+             {{  pa(check) }}
+             now_dolgn
+             {{  pa(now_dolgn) }}
+             </div>
+             { % endif % #}
+             
+             
+             
+             
+             <select name="ocenka" 
+             class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
+             
+             {# для динамичного показа суммы за смену + #}
+             smena_price_{{ check.id }}
+             {# для динамичного показа суммы за смену - #}
+             " 
+             
+             action="edit_dop_pole"
+             folder="{{ folder }}"
+             module="050.chekin_checkout"
+             dop_name="ocenka"
+             item_id="{{ check.id }}"
+             s="{{ creatSecret('050.chekin_checkout'~'ocenka'~check.id) }}" 
+             
+             { % if check.payed is defined % } disabled="disabled" { % endif % }
+             >
+             <option price="0" value="">Оценка</option>
+             
+             {#{ pa(salar) }#}
+             
+             { % set price_hour1_now = '' % }
+             
+             { % for i in range(low = 5, high = 2, step = - 1) % }    {#{ i }#}
+             
+             { % set price_hour = 0 % }
+             
+             { % if salar['ocenka-hour-'~i] is defined % }> 
+             { % if (now_dolgn.smoke is defined and now_dolgn.smoke == 'da') or (now_job.smoke is defined and now_job.smoke == 'da') % }
+             { % set price_hour = salar['ocenka-hour-'~i] + salar['if_kurit'] % }
+             { % else % }
+             { % set price_hour = salar['ocenka-hour-'~i] % }
+             { % endif % }
+             { % endif % }
+             
+             { % if price_hour > 0 % }
+             <option value="{{ i }}" 
+             
+             {# для динамичного показа суммы за смену + #}
+             price="{{price_hour}}" 
+             {# для динамичного показа суммы за смену - #}
+             
+             { % if check.ocenka is defined and check.ocenka == i % }
+             selected="selected"
+             
+             { % if price_hour1_now == '' % }
+             { % set price_hour1_now = price_hour % }
+             { % endif % }
+             
+             {# % elseif check.ocenka_auto is defined and check.ocenka_auto == i and check.ocenka is not defined % #}
+             { % elseif check.ocenka is not defined and check.ocenka_auto is defined and check.ocenka_auto == i % }
+             
+             { % set price_hour_now = price_hour % }
+             
+             { % if price_hour1_now == '' % }
+             { % set price_hour1_now = price_hour % }
+             { % endif % }
+             
+             selected="selected"
+             { % endif % } 
+             
+             xprice="{{price_hour}}" 
+             >
+             
+             {{ i }} 
+             
+             { % if check.ocenka_auto is defined and check.ocenka_auto == i % }
+             (А)
+             { % endif % } 
+             
+             {# % if check.ocenka_auto is defined and check.ocenka_auto == i % }
+             (Р)
+             { % endif % #} 
+             
+             { % if price_hour > 0 % }
+             > {{price_hour}} р/ч
+             { % endif % }
+             
+             {# pr1 {{ price_hour1_now }} #}
+             
+             </option>
+             
+             { % endif % }
+             
+             { % endfor % }
+             
+             {#
+             <option value="4" { % if check.ocenka is defined and check.ocenka == 4 % }selected="selected"{ % endif % } >4 { % if salar['ocenka-hour-4'] is defined % }> {{ salar['ocenka-hour-4'] }}р/ч{ % endif % }</option>
+             <option value="3" { % if check.ocenka is defined and check.ocenka == 3 % }selected="selected"{ % endif % } >3 { % if salar['ocenka-hour-3'] is defined % }> {{ salar['ocenka-hour-3'] }}р/ч{ % endif % }</option>
+             <option value="2" { % if check.ocenka is defined and check.ocenka == 2 % }selected="selected"{ % endif % } >2 { % if salar['ocenka-hour-2'] is defined % }> {{ salar['ocenka-hour-2'] }}р/ч{ % endif % }</option>
+             #}
+             
+             </select>
+             
+             { % if price_hour1_now != '' % }
+             { % set summa_day = hours_on_job * price_hour1_now % }
+             { % endif % }
+             
+             { % endif % }
+             
+             
+             </center>
+             
+             { % endif % }
+             
+             
+             {# для динамичного показа суммы за смену 1911 + #}
+             */
+            +'<div class="smena_summa smena_summa_{{ check.id }}" title="сумма за смену">'
+
+                    /*
+                     { % if summa_day is defined and summa_day != 0 % }
+                     {{ summa_day }}
+                     { % else % }
+                     ...
+                     { % endif % }
+                     */
+                    + '</div>'
+
+                    /*
+                     {# < div class = "smena_summa smena_summa_{{ check.id }}" title = "сумма за смену" > {{ price_hour * price_hour_now }} < /div>#}
+                     {# для динамичного показа суммы за смену 1911 - #}
+                     
+                     {#
+                     <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a> < br / >
+                     #}
+                     */
+                    + '</div>'
+                    /*
+                     
+                     { % if user_smena_status == 'add' % }
+                     {# % if user_smena_status == '' or user_smena_status == 'add_error' or user_smena_status == 'add' % #}
+                     { % else % }
+                     
+                     { % if check.status == 'hide' % }
+                     <span class="hide_down" >
+                     удалённая смена
+                     </span>
+                     
+                     { % elseif check.status == 'show' % }
+                     
+                     { % if check.pay_check == 'yes' % }
+                     
+                     <span class="hide_down" >
+                     отправлено в бух. ожидает оплаты
+                     </span>
+                     
+                     <a href="#" class="btn3 edit_items_dop_values drop2_{{ rand_d }}" 
+                     style='display:none;'
+                     {# действие после вопроса #}
+                     comit_answer="Отменить разрешение на оплату смены ?"
+                     
+                     {# замена доп параметра #}
+                     action="edit_dop_item"
+                     
+                     {# модуль итемов #}
+                     itemsmod="050.chekin_checkout"
+                     {# id итема #}
+                     item_id="{{ rand_d }}"
+                     {# название доп параметра #}
+                     dop_name="pay_check"
+                     {# новое значение параметра #}
+                     dop_new_value="no"
+                     
+                     {# секрет #}
+                     s3="{{ creatSecret('050.chekin_checkout-'~rand_d~'-pay_check-no') }}" 
+                     
+                     {# скрыть ссылку после клика #}
+                     hidethis="da" 
+                     {# сделать видимым блок по id #}
+                     show_id="ares{{ rand_d }}" 
+                     {# id куда печатаем результат #}
+                     res_to_id="ares{{ rand_d }}" 
+                     {# сообщение печатаем если всё ок #}
+                     msg_to_success="Отменено"
+                     
+                     {# print_res_to_id = "ares{{ rand_d }}" #}
+                     
+                     >Отозвать разрешение на оплату</a>
+                     
+                     
+                     { % else % }
+                     
+                     { % if 1 == 2 % }
+                     <a href="#" class="btn3 edit_items_dop_values" 
+                     
+                     {# действие после вопроса #}
+                     comit_answer="Отправляем на оплату ?"
+                     
+                     {# замена доп параметра #}
+                     action="edit_dop_item"
+                     
+                     {# модуль итемов #}
+                     itemsmod="050.chekin_checkout"
+                     {# id итема #}
+                     item_id="{{ rand_d }}"
+                     {# название доп параметра #}
+                     dop_name="pay_check"
+                     {# новое значение параметра #}
+                     dop_new_value="yes"
+                     
+                     {# секрет #}
+                     s3="{{ creatSecret('050.chekin_checkout-'~rand_d~'-pay_check-yes') }}" 
+                     
+                     {# скрыть ссылку после клика #}
+                     hidethis="da" 
+                     {# сделать видимым блок по id #}
+                     show_id="ares{{ rand_d }}" 
+                     {# id куда печатаем результат #}
+                     res_to_id="ares{{ rand_d }}" 
+                     {# сообщение печатаем если всё ок #}
+                     msg_to_success="Отправили на оплату, спасибо"
+                     
+                     {# print_res_to_id = "ares{{ rand_d }}" #}
+                     
+                     >Отправить на оплату 2</a>
+                     { % endif % }
+                     { % endif % }
+                     
+                     {# { pa(check) } #}
+                     
+                     { % endif % }
+                     { % endif % }
+                     
+                     <span class="xhide_down" style="display:none;" id="drop2_{{ rand_d }}">
+                     
+                     { % if check.status == 'hide' % }
+                     
+                     {#
+                     <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
+                     
+                     action="recover_smena" 
+                     go_answer="Хотите восстановить смену ?"
+                     id2="{{ rand_d }}" 
+                     s2="{{ creatSecret(rand_d) }}" 
+                     resto="ares{{ rand_d }}" 
+                     show_id="ares{{ rand_d }}" 
+                     hidethis="da" 
+                     
+                     >восстановить</a>
+                     #}
+                     
+                     { % elseif check.status == 'show' % }
+                     
+                     
+                     
+                     <a href="#" class="act act_smena btn3" 
+                     go_answer="Хотите удалить смену ?"
+                     action="delete_smena" id2="{{ check.id }}" s2="{{ creatSecret(check.id) }}" resto="ares{{ check.id }}" show_id="ares{{ check.id }}" hidethis="da" >удалить смену</a>
+                     
+                     { % if 1 == 2 % }
+                     <a href="#" class="act act_smena btn3" 
+                     
+                     
+                     {# действие после вопроса #}
+                     comit_answer="Отправляем на оплату ?"
+                     
+                     {# замена доп параметра #}
+                     action="edit_dop_item"
+                     
+                     {# модуль итемов #}
+                     itemsmod="050.chekin_checkout"
+                     {# id итема #}
+                     item_id="{{ rand_d }}"
+                     {# название доп параметра #}
+                     dop_name="pay_check"
+                     {# новое значение параметра #}
+                     dop_new_value="yes"
+                     
+                     {# секрет #}
+                     s3="{{ creatSecret('050.chekin_checkout-'~rand_d~'-pay_check-yes') }}" 
+                     
+                     {# скрыть ссылку после клика #}
+                     hidethis="da" 
+                     {# сделать видимым блок по id #}
+                     show_id="ares{{ rand_d }}" 
+                     {# id куда печатаем результат #}
+                     res_to_id="ares{{ rand_d }}" 
+                     {# сообщение печатаем если всё ок #}
+                     msg_to_success="Отправили на оплату, спасибо"
+                     
+                     >редактировать смену</a>
+                     { % endif % }
+                     { % endif % }
+                     
+                     </span>
+                     
+                     <div id="ares{{ rand_d }}" style="display:none;"></div>
+                     
+                     
+                     { % if check.payed is defined % }
+                     
+                     { % set pay_all = 0 % }
+                     { % set pay_string = '' % }
+                     
+                     { % for k2, v2 in check.payed % }
+                     
+                     { % set pay_all = pay_all + v2.summa % }
+                     { % set pay_string = pay_string~' / '~v2.summa % }
+                     
+                     { % endfor % }
+                     
+                     { % if pay_all != 0 % }
+                     
+                     <abbr class="pole_oplacheno 
+                     
+                     {# для динамичного показа суммы за смену + #}
+                     smena_oplacheno_{{ check.id }}
+                     {# для динамичного показа суммы за смену - #}
+                     
+                     " 
+                     
+                     {# для динамичного показа суммы за смену + #}
+                     summ="{{ pay_all }}" 
+                     {# для динамичного показа суммы за смену - #}
+                     
+                     title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all | number_format(0, '.', '`') }}&nbsp;₽</abbr>
+                     
+                     { % endif % }
+                     
+                     { % endif % }
+                     
+                     {# { pa(check) } #}
+                     
+                     </nobr>
+                     */
+                    + ' </div> ';
+
+            return ret;
+        }
+
+
+
+
+
+
+
+
+        $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
+
+        var ert = [];
+        ert = get_blocks_attr('div.load_job_man_1sp_smens');
+        console.log('результат', ert);
+
+        $.ajax({
+
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=ajax_in_smens&" + ert['string'],
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
+
+                // $('div.graph_cell_1sp_man_day .smens').html('&nbsp;');
+                $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
+
+            },
+            success: function ($j) {
+
+                $('div.graph_cell_1sp_man_day .smens').removeClass('ajax_loaded');
+
+                $.each($j['checks'], function (date, value) {
+                    // console.log('1', date, value);
+                    $.each(value, function (k1, ar) {
+
+                        $hh = creat_html_1smena(ar);
+                        $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
+                        // sp_man_day_d{{ date }}_sp{{sp_now}}_u{{ user_id }}
+                        // console.log('1', date, value1);
+
+                    });
+                });
+//                    $('div.oborot_data_td').html('-');
+//                    ii = 1;
+//                    // переберём массив arr
+//                    $.each($j['res'], function (sp, value) {
+//                        $.each(value, function (date, value2) {
+//
+//                            console.log(sp, date, value2);
+//
+//
+//                            if (!!value2['oborot_hand']) {
+//                                val_hand = value2['oborot_hand'];
+//                            } else {
+//                                val_hand = '';
+//                            }
+//
+//                            input_oborot_hand = '<input type="number" max="1000000" min="0" '
+//                                    + ' placeholder="уточнить"'
+//                                    + ' title="укажите точную сумму оборота"'
+//
+//                                    + ' value="' + val_hand + '" '
+//
+//                                    + ' style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" '
+//                                    + ' class="form-control didrive__edit_items_dop_pole2" '
+//
+//                                    + ' edit_item_id="' + value2['id'] + '"'
+//                                    + ' edit_dop_name="oborot_hand"'
+//                                    + ' edit_s="' + value2['s_hand'] + '"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
+//
+//                                    + ' pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"'
+//                                    + ' text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"'
+//
+//                                    + ' delete_ocenka_sp="{{ sp_now }}"'
+//                                    + ' delete_ocenka_date="{{ now_date2 }}"'
+//                                    + ' delete_ocenka_s="{{ creatSecret(sp_now~now_date2) }}"'
+//
+//                                    + ' />';
+//
+//
+//
+//                            // if (!!value2['oborot_hand'] && value2['oborot_hand'] > 0) {
+//                            if (!!value2['oborot_server']) {
+//
+//                                $('#data_obr_' + date + '__' + sp).html(
+//                                        (value2['oborot_server'] ?
+//                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                number_format(value2['oborot_server'], 0, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                : 'x')
+//                                        + '<br/>'
+//
+//                                        + input_oborot_hand
+//
+////                                        + '<input type="number" min="0" max="900000" step="0.01" '
+////                                        + ' class="number_oborot_tochnee" '
+////                                        + ' value="' + val_hand + '" '
+////                                        + ' />'
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                                        );
+//                            } else {
+//
+//                                $('#data_obr_' + date + '__' + sp).html(
+//                                        '<sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" '
+//                                        + ' vars="date=' + date + '&hide_form=da&action=get_oborot_for_sps&get_sp_load=' + sp + '" '
+//                                        + ' res_to="' + sp + '_' + ii + '_res_ob2"'
+//                                        + ' xtarget="_blank"'
+//                                        + ' class="load_ajaxjson_to_id"'
+//                                        + ' >загрузить с ИИКО</a></sup>'
+//
+//                                        + ' <div id="' + sp + '_' + ii + '_res_ob2" ></div>'
+//
+////                                        + (value2['oborot_server'] ?
+////                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+////                                                number_format(value2['oborot_server'] / 1000, 1, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+////                                                : 'x')
+////
+////                                        + '<br/>'
+//
+//                                        // + (value2['oborot_hand'] ?? '-1')
+//
+////                                    + '<br/>'
+////                                    + (value2['delivery'] || '-')
+//                                        );
+//                                ii++;
+//                            }
+//
+//
+//                        }
+//                        );
+//                    });
+            }
+
+        });
+
+    }
 
 });
