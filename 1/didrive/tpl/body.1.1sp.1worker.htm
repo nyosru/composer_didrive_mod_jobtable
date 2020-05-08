@@ -3,12 +3,12 @@
     {%  set man = mans[user_id] %}
 
     <div class="trow load_job_man_1sp_smens" id="user_tr_{{ sp_now }}_{{ user_id }}" 
-         
+
          sp="{{ sp_now }}"
          jobman="{{ user_id }}"
          date_start="{{ date_start }}"
          date_stop="{{ date_finish }}"
-         
+
          >
 
         <div class="tcell stick-left bg-white">
@@ -87,8 +87,6 @@
           #}  
 
 
-
-
         {% for i in range(low=0, high=31, step=1) %}  
 
             {#% set now_spec_nazn_nn = 0 %}
@@ -98,31 +96,11 @@
 
             {% if date <= date_finish %}
 
-                {# если было новое назначение #}
-                {#
-                {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
-                    {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
-                {% endif %}
-                #}
-
-                <div class="tcell graph_cell graph_cell_1sp_man_day" id="sp_man_day_d{{ date }}_sp{{sp_now}}_u{{ user_id }}" >
-
-                    <div class="smens xajax_loaded" >&nbsp;</div>
-                    
-                    {#% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %#}
-                    {% if 1 == 2 %}
-                        {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.htm' %}
-                    {% endif %}
-
-                </div>
+                {% include dir_mod_now_mod_ditpl~'body.1.1sp.1worker.1day.htm' %}
 
             {% endif %}
 
         {% endfor %}
-
-
-
-
 
     </div>
 

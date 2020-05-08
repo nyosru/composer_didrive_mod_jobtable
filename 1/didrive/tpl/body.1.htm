@@ -31,12 +31,10 @@
     {#{ pa(mans) }#}
     {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 070.jobman - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-    {% if 1 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set dolgn = jobdesc__get_dolgnosti( db, '061.dolgnost' )  %}
     {#{ pa(dolgn,2) }#}
-    {% if 1 == 1 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {% if 1 == 2 %}
 
@@ -382,6 +380,8 @@
         </div>
 
 
+        {% set run_js = false %}                
+
         {#{ pa(access_to_sp) }#}
 
         {% if get.sp is not defined %}
@@ -419,6 +419,8 @@
                     {% include dir_mod_now_mod_ditpl~'body.1.up_line.htm' %}
 
                     {% for kk, sp_now_nn in access_to_sp.data if get.sp is defined and sp_now_nn.head != 'default' and ( get.sp == 'all' or get.sp == sp_now_nn.id ) %}
+
+                        {% set run_js = true %}                
 
                         {# отключил 2005010325 #}
                         {% if 1 == 2  %}
@@ -464,6 +466,22 @@
 
                 </div>
             </div>
+
+        {% endif %}
+
+
+        {% if run_js == true %}
+            <div id='run_load_data' start="da" ></div>
+
+            {#
+            <script>
+                // вся мaгия пoслe зaгрузки стрaницы
+                $(document).ready(function () { 
+                    // грузим все данные
+                    run_load__aj_get_minus_plus_coment();
+                });
+            </script>
+            #}
 
         {% endif %}
 

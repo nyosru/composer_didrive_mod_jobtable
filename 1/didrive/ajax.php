@@ -40,6 +40,8 @@ if (
         // тащим цифры oborot для построения графика
         || $_REQUEST['action'] == 'ajax_in_smens'
         //
+        || $_REQUEST['action'] == 'aj_get_minus_plus_coment'
+        //
         || $_REQUEST['action'] == 'bonus_record'
         //
         || $_REQUEST['action'] == 'bonus_record_month'
@@ -93,20 +95,21 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
     $d_start = '';
     $d_finish = '';
 
-    foreach ($_REQUEST['d'] as $k => $v) {
+    if (!empty($_REQUEST['d']))
+        foreach ($_REQUEST['d'] as $k => $v) {
 
-        if (empty($d_start))
-            $d_start = $v['date_start'];
+            if (empty($d_start))
+                $d_start = $v['date_start'];
 
-        if (empty($d_finish))
-            $d_finish = $v['date_stop'];
+            if (empty($d_finish))
+                $d_finish = $v['date_stop'];
 
-        if (!empty($d_start) && !empty($v['date_start']) && $d_start > $v['date_start'])
-            $d_start = $v['date_start'];
+            if (!empty($d_start) && !empty($v['date_start']) && $d_start > $v['date_start'])
+                $d_start = $v['date_start'];
 
-        if (!empty($d_finish) && !empty($v['date_stop']) && $d_finish < $v['date_stop'])
-            $d_finish = $v['date_stop'];
-    }
+            if (!empty($d_finish) && !empty($v['date_stop']) && $d_finish < $v['date_stop'])
+                $d_finish = $v['date_stop'];
+        }
 
     if (!empty($d_start) && !empty($d_finish))
         \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
@@ -116,24 +119,24 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
     $sps_list = [];
 
     $jobmans = [];
-    
-    foreach ($_REQUEST['d'] as $k => $v) {
 
-        if (!isset($sps_list[$v['sp']]))
-            $sps_list[$v['sp']] = 1;
+    if (!empty($_REQUEST['d']))
+        foreach ($_REQUEST['d'] as $k => $v) {
 
-        if (empty($sp) && isset($v['sp']))
-            $sp = $v['sp'];
+            if (!isset($sps_list[$v['sp']]))
+                $sps_list[$v['sp']] = 1;
 
-        // \f\pa($v);
-        if (isset($v['jobman'])){
-            
-            \Nyos\mod\items::$search['jobman'][] = $v['jobman'];
+            if (empty($sp) && isset($v['sp']))
+                $sp = $v['sp'];
 
-            $jobmans[$v['jobman']] = 1;
-            
+            // \f\pa($v);
+            if (isset($v['jobman'])) {
+
+                \Nyos\mod\items::$search['jobman'][] = $v['jobman'];
+
+                $jobmans[$v['jobman']] = 1;
+            }
         }
-    }
 
     // \f\pa(\Nyos\mod\items::$search);
     // \Nyos\mod\items::$show_sql = true;
@@ -145,6 +148,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
     foreach ($checks0 as $k => $v) {
 
+        if (!isset($v['start']))
+            continue;
+
         $v['sp'] = $sp;
         $v['s'] = \Nyos\Nyos::creatSecret('hour_' . $v['id']);
         $checks[date('Y-m-d', strtotime($v['start']))][] = $v;
@@ -155,26 +161,24 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
         $job_on[$sp] = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $d_start, $d_finish, $sp);
     }
 
-    
+
 //    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
     $dolgn = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
 
-    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
-    $salary0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary);
+    if (!empty($d_start) && !empty($d_finish)) {
+        \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+        $salary0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary);
 
-    foreach ($salary0 as $k => $v) {
-        $salary[$v['dolgnost']][$v['date']] = $v;
+        foreach ($salary0 as $k => $v) {
+            $salary[$v['dolgnost']][$v['date']] = $v;
+        }
     }
 
-    
-    
-    
-    
     \f\end2('ок', true, [
         'checks' => $checks,
         'job_on' => $job_on,
         'dolgn' => $dolgn,
-        'dolgn_money' => $salary
+        'dolgn_money' => ( $salary ?? null )
     ]);
 
     \f\pa($sps);
@@ -470,6 +474,177 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
     ob_end_clean();
 
     \f\end2($r, true);
+}
+
+// показ смен одного сотрудника за месяц или весь срок
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'aj_get_minus_plus_coment') {
+
+    $d_start = '';
+    $d_finish = '';
+
+    foreach ($_REQUEST['d'] as $k => $v) {
+
+        if (empty($d_start))
+            $d_start = $v['date_start'];
+
+        if (empty($d_finish))
+            $d_finish = $v['date_stop'];
+
+        if (!empty($d_start) && !empty($v['date_start']) && $d_start > $v['date_start'])
+            $d_start = $v['date_start'];
+
+        if (!empty($d_finish) && !empty($v['date_stop']) && $d_finish < $v['date_stop'])
+            $d_finish = $v['date_stop'];
+    }
+
+    if (!empty($d_start) && !empty($d_finish))
+        \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
+
+    $sp = '';
+
+    $sps_list = [];
+
+    $jobmans = [];
+
+    foreach ($_REQUEST['d'] as $k => $v) {
+
+        if (!isset($sps_list[$v['sp']]))
+            $sps_list[$v['sp']] = 1;
+
+        if (empty($sp) && isset($v['sp']))
+            $sp = $v['sp'];
+
+        // \f\pa($v);
+        if (isset($v['jobman'])) {
+            if (!isset($jobmans0[$v['jobman']])) {
+                $jobmans[] = $v['jobman'];
+                $jobmans0[$v['jobman']] = 1;
+            }
+        }
+    }
+
+    $return = [];
+
+    // \Nyos\mod\items::$show_sql = true;
+    \Nyos\mod\items::$search['jobman'] = $jobmans;
+    \Nyos\mod\items::$search['sale_point'] = $sp;
+    \Nyos\mod\items::$between_date['date_now'] = [$d_start, $d_finish];
+    \Nyos\mod\items::$between_datetime = [];
+    // $return['minus'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_minus);
+    $r = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_minus);
+    
+    
+    $return['minus'] = [
+        'cfg' => [
+            'module' => \Nyos\mod\JobDesc::$mod_bonus
+        ],
+        'data' => []
+    ];
+    
+    foreach ($r as $k => $v) {
+
+        // $v['del_action'] = 'delete';
+        $v['s'] = \Nyos\Nyos::creatSecret( $v['id'] );
+
+        $return['minus']['data'][] = $v;
+    }
+    
+
+    // \Nyos\mod\items::$show_sql = true;
+    \Nyos\mod\items::$search['jobman'] = $jobmans;
+    \Nyos\mod\items::$search['sale_point'] = $sp;
+    \Nyos\mod\items::$between_date['date_now'] = [$d_start, $d_finish];
+    //$return['bonus'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+    $r = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+    
+    $return['bonus'] = [
+        'cfg' => [
+            'module' => \Nyos\mod\JobDesc::$mod_bonus
+        ],
+        'data' => []
+    ];
+    
+    foreach ($r as $k => $v) {
+
+        // $v['del_action'] = 'delete';
+        $v['s'] = \Nyos\Nyos::creatSecret( $v['id'] );
+
+        $return['bonus']['data'][] = $v;
+    }
+    
+    // \f\pa($return['bonus'],'','','bonus');
+
+    \Nyos\mod\items::$search['jobman'] = $jobmans;
+    \Nyos\mod\items::$search['sale_point'] = $sp;
+    \Nyos\mod\items::$between_date['date_to'] = [$d_start, $d_finish];
+    
+    $r = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_comments);
+    
+    $return['comment'] = [
+        'cfg' => [
+            'module' => \Nyos\mod\JobDesc::$mod_comments
+        ],
+        'data' => []
+    ];
+    
+    foreach ($r as $k => $v) {
+
+        // $v['del_action'] = 'delete';
+        $v['s'] = \Nyos\Nyos::creatSecret( $v['id'] );
+
+        $return['comment']['data'][] = $v;
+    }
+
+    \f\end2('ок', true, $return);
+
+
+
+
+
+
+
+    // \f\pa(\Nyos\mod\items::$search);
+    // \Nyos\mod\items::$show_sql = true;
+    $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+
+    // \f\pa($checks0);
+
+    $checks = [];
+
+    foreach ($checks0 as $k => $v) {
+
+        $v['sp'] = $sp;
+        $v['s'] = \Nyos\Nyos::creatSecret('hour_' . $v['id']);
+        $checks[date('Y-m-d', strtotime($v['start']))][] = $v;
+    }
+
+    $job_on = [];
+    foreach ($sps_list as $sp => $v) {
+        $job_on[$sp] = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $d_start, $d_finish, $sp);
+    }
+
+
+//    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+    $dolgn = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
+
+    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+    $salary0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary);
+
+    foreach ($salary0 as $k => $v) {
+        $salary[$v['dolgnost']][$v['date']] = $v;
+    }
+
+    \f\end2('ок', true, [
+        'checks' => $checks,
+        'job_on' => $job_on,
+        'dolgn' => $dolgn,
+        'dolgn_money' => $salary
+    ]);
+
+//    \f\pa($sps);
+//    ob_start('ob_gzhandler');
+//    $r = ob_get_contents();
+//    ob_end_clean();
 }
 
 
@@ -2792,7 +2967,8 @@ elseif (
         elseif ($_POST['action'] == 'add_comment') {
 
 // удаляем запись кеша главного массива данных
-            $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
+            if (!empty($_REQUEST['delete_cash_start_date']))
+                $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
 // \f\pa($e);
 
             $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
