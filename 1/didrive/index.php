@@ -25,6 +25,7 @@ $vv['tpl_body'] = \f\like_tpl('body', dir_site_module_nowlev_tpldidr, dir_mods_m
 /**
  * быстрый поиск в списке
  */
+// $vv['in_body_end'][] = '<script src="/vendor/didrive_mod/jobdesc/1/didrive/timeo.js" />';
 $vv['in_body_end'][] = '<script>
     
         //jQuery extension method:

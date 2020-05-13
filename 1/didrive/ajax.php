@@ -686,6 +686,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'oborot_show_vars')
     $ar = [];
 
     // \f\pa($_REQUEST);
+    if( !empty($_REQUEST['d']) )
     foreach ($_REQUEST['d'] as $k => $v) {
         if (!empty($v['date_start']) && !empty($v['date_stop']) && !empty($v['sp']))
             $ar[$v['sp']] = ['date_start' => $v['date_start'], 'date_stop' => $v['date_stop']];

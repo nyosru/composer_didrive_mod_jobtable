@@ -2917,12 +2917,35 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 },
                 success: function ($j) {
 
+                    if( typeof  document.nyos !== 'undefined' ){}else{
+                        document['nyos'] = [];
+                    }
+                    
+                    if( typeof document['nyos']['dolgn'] !== 'undefined' ){}else{
+                        document['nyos']['dolgn'] = $j['dolgn']
+                    }
+                    
+                    if( typeof document.nyos.dolgn_money !== 'undefined' ){}else{
+                        document.nyos.dolgn_money = $j.dolgn_money
+                    }
+                    
+                    if( typeof document.nyos.job_on !== 'undefined' ){}else{
+                        document.nyos.job_on = $j.job_on
+                    }
+                    
+                    console.log('doc', document);
+                    
+
                     add_new_dolg_in_graph($j);
+                    
                     $.each($j['checks'], function (date, value) {
                         // console.log('1', date, value);
                         $.each(value, function (k1, ar) {
 
+                            console.log('1day', date, ar);
+
                             $hh = creat_html_1smena(ar);
+                            
                             $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
 
 //                            var $b = $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens');
@@ -3096,7 +3119,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // console.log('123', $j);
                     nn1 = [];
                     $b = 0;
-                    $('div.graph_cell_1sp_man_day div.in_bonus').empty().hide();
+                    $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
+                    $b1.empty().hide();
 
                     $.each($j['bonus']['data'], function (n, ar) {
 
