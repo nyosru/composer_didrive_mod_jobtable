@@ -1,20 +1,19 @@
 <?php
 
-if (isset($_GET['newtype']{0})) {
+if (isset($_GET['newtype']{
+                0})) {
     $_SESSION['newtype'] = $_GET['newtype'];
     \f\redirect('/', 'i.didrive.php');
 }
 
 
 //\f\pa($_POST);
-
 //echo '<br/>';
 //echo '<br/>';
 //echo '<br/>';
 //echo '<br/>';
 //echo '<br/>';
 //\f\pa($_SESSION);
-
 // \f\Cash::allClear();
 // $vv['tpl_body'] = '';
 
@@ -70,3 +69,37 @@ $vv['in_body_end'][] = '<script>
 // $vv['in_body_end'][] = '<script src="' . DS . 'vendor' . DS . 'didrive' . DS . 'base' . DS . 'js.lib' . DS . 'jquery.debounce-1.0.5.js"></script>';
 $vv['in_body_end'][] = '<script defer="defer" src="' . DS . 'vendor' . DS . 'didrive' . DS . 'base' . DS . 'js.lib' . DS . 'jquery.ba-throttle-debounce.min.js"></script>';
 
+
+if (!empty($_REQUEST['sp'])) {
+    if (empty($vv['dihead']))
+        $vv['dihead'] = '';
+
+    echo '<div style="position: fixed; bottom: 100px; left: 50px;" >';
+    
+// echo '<br/>#'.__LINE__.' '.__DIR__;
+    if (is_dir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'css' . DS)) {
+        $list_f = scandir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'css' . DS);
+        foreach ($list_f as $v) {
+            if (strpos($v, '.css') !== false && strpos($v, 'app.') !== false) {
+                // echo '<br/>#'.__LINE__.' '.$v;
+                $vv['dihead'] .= '<link href="/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/css/' . $v . '" rel="stylesheet">';
+            }
+        }
+    }
+// $vv['dihead'] .= '<link href="/assets/css/app.640f582b232504c57832.css" rel="stylesheet">';
+
+    if (is_dir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS)) {
+        $list_f = scandir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS);
+        foreach ($list_f as $v) {
+            if (strpos($v, '.js') !== false && (strpos($v, 'app.') !== false || strpos($v, 'vendors.') !== false)) {
+                // echo '<br/>#' . __LINE__ . ' ' . $v;
+                $vv['in_body_end'][] = '<script type="text/javascript" defer="defer" src="/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/js/' . $v . '"></script>';
+            }
+        }
+    }
+// $vv['in_body_end'][] = '<script type="text/javascript" src="/assets/js/vendors.f2e79c865ce2172cb7cb.js"></script>';
+// $vv['in_body_end'][] = '<script type="text/javascript" src="/assets/js/app.caac25aa43296c4b8c6d.js"></script>';
+    
+    echo '</div>';
+    
+}

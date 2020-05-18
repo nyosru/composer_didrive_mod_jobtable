@@ -1,5 +1,8 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
+    
+// console.log('123')
+
 // window.nyos = [ 'dolgn' , 123 ];
 
 //    $.cache[98]['wer'] = 123;
@@ -1962,8 +1965,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                             $('#timeo_data_td__' + date + '__' + sp).html(
                                     (value2['cold'] || '-')
-                                    + ' / '
-                                    + (value2['hot'] || '-')
+                                    // + ' / '
+                                    // + (value2['hot'] || '-')
                                     + ' / '
                                     + (value2['delivery'] || '-')
                                     );
@@ -3146,7 +3149,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
                     $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
-                    $b.hide().empty();
+                    $b1.hide().empty();
 
                     $.each($j['minus']['data'], function (n, ar) {
 
