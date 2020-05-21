@@ -44,7 +44,8 @@
                         modal_header='назначения сотрудника'
                         ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
                         {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
-                        ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+                        {# ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}' #}
+                        ajax_vars='{{  { 'action':'ajax_in_smens_jm', 'date_start': date_start , 'view' : 'html' , 'jobman' : user_v['jobman'], 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
 
                         >
                         смены в этом месяце

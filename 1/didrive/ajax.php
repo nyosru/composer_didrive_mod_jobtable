@@ -485,9 +485,8 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens_jm') {
 
     // \f\end2('ok', true, [ 'res' => $_REQUEST ] );
     
-    
     $d_start = $_REQUEST['date_start'];
-    $d_finish = $_REQUEST['date_finish'];
+    $d_finish = $_REQUEST['date_finish'] ?? date('Y-m-d',date( strtotime($_REQUEST['date_start'].' +1 month ') ));
 //    $d_start = '';
 //    $d_finish = '';
 //
@@ -572,15 +571,15 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens_jm') {
         }
     }
 
-    \f\end2('ок', true, [
-        'in' => $_REQUEST,
-        'checks' => $checks,
-        'job_on' => $job_on,
-        'dolgn' => $dolgn,
-        'dolgn_money' => ( $salary ?? null )
-    ]);
-
-    \f\pa($sps);
+//    \f\end2('ок', true, [
+//        'in' => $_REQUEST,
+//        'checks' => $checks,
+//        'job_on' => $job_on,
+//        'dolgn' => $dolgn,
+//        'dolgn_money' => ( $salary ?? null )
+//    ]);
+//
+//    \f\pa($sps);
 
     ob_start('ob_gzhandler');
 
