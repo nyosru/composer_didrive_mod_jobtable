@@ -1320,20 +1320,19 @@ class JobDesc {
 // ищем последнюю дату до даты старта периода
                         if ($i == 0) {
 
+                            if(isset($return['norm']['data'][$wman]) ) 
                             foreach ($return['norm']['data'][$wman] as $k => $v) {
                                 if ($v['date'] > $now_date)
                                     continue;
                                 if ($v['date'] <= $now_date)
                                     $now_job = $v;
                             }
+                            
                         }
-
-
-
-
 
 // проверяем текущую дату
                         else {
+                            if(isset($return['norm']['data'][$wman]) ) 
                             foreach ($return['norm']['data'][$wman] as $k => $v) {
                                 if ($v['date'] == $now_date)
                                     $now_job = $v;
@@ -1346,8 +1345,6 @@ class JobDesc {
                     if ($now_smena === null)
                         continue;
 
-
-
 // если нет переменной то не пишем кеш
 // $var_cash_salary = 'salary_dolgnost' . $now_smena['dolgnost'] . '_sp' . $now_smena['sale_point'] . '_date' . $now_date;
 
@@ -1355,10 +1352,13 @@ class JobDesc {
                         $salary = \f\Cash::getVar($var_cash_salary);
 
                     if (!empty($salary)) {
+
                         $now_smena['salary'] = $salary;
+
                     } else {
 
 // $now_smena['salary'] = [];
+
                         $now_smena['salary'] = self::getSalaryJobman($db,
                                         $now_smena['sale_point'],
                                         $now_smena['dolgnost'],
@@ -1366,12 +1366,14 @@ class JobDesc {
 
                         if (!empty($var_cash_salary))
                             \f\Cash::setVar($var_cash_salary, $now_smena);
+
                     }
 
                     $return['where_job__workman_date'][$wman][$now_date] = $now_smena;
 
                     if (isset($spec_job))
                         unset($spec_job);
+
                 }
             }
         }

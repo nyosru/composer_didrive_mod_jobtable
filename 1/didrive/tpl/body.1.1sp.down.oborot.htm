@@ -1,7 +1,5 @@
 {% spaceless %}
 
-    <style> .td_inf_{{sp_now}}obr{ display:none; } </style>
-
     <div class="trow" 
          xdata-aos="fade-up"
          xdata-aos-anchor-placement="bottom-bottom" 
@@ -10,42 +8,16 @@
         <div class="tcell stick-left bg-white" >
 
             <nobr>
-                {#
-                <a href="#" onclick="$('.td_inf_{{sp_now}}obr').toggle('slow');
-                        return false;" >
-                #}
                 <b>Оборот</b>
-                {#скрыть/показать#}
-                {#
-            </a>
-                #}
             </nobr>
 
-            {# 
-            {% set t = didrive_f__timer_start() %} 
-            #}
-            {#% set oborots = get_oborots( db, sp_now, date_start, date_finish ) %#}
-            {#{ sp_now }#}
-
             {% set oborots = iiko_oborot__get_oborots_on_sp( db, sp_now, date_start, date_finish ) %}
-
             {#{ sp_now }#}
             {#{ pa(oborots) }#}
 
-            <abbr title="суммарный оборот за месяц" style="color: gray; float:right;" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>
+            <abbr title="суммарный оборот за месяц" class="oborot_all_summ" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>
 
-            {#            {% set t = didrive_f__timer_stop() %}
-                        <br/>oborot {{ t }}
-            #}
         </div>
-
-        {#
-        <div class="tcell stick-left bg-white" >
-            <nobr>
-                руб
-            </nobr>
-        </div>         
-        #}
 
         {% for i in range(low=0, high=35, step=1) %}  
 
@@ -55,7 +27,7 @@
 
                 {% if now_date2|date("U") < "now"|date_modify("-1 day")|date("U") %}
 
-                    <div class="tcell td_inf_{{sp_now}}obr" >
+                    <div class="tcell " >
 
                         <div class='text-center'>
 
@@ -65,7 +37,7 @@
 
                                 <span 
                                     {% if oborots[now_date2]['oborot_hand'] is defined and oborots[now_date2]['oborot_hand'] > 0 %}
-                                        style="color:gray;" 
+                                        class="oborot-gray" 
                                     {% endif %}
                                     >
                                     {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">
@@ -82,8 +54,6 @@
 
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
-
-
                                 <input type="number" max="1000000" min="0" 
 
                                        placeholder="уточнить"
@@ -95,8 +65,7 @@
                                            value="" 
                                        {% endif %}
 
-                                       style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
-                                       class="form-control didrive__edit_items_dop_pole"
+                                       class="form-control didrive__edit_items_dop_pole oborot_edit_pole"
 
                                        edit_item_id="{{ oborots[now_date2]['id'] }}"
                                        edit_dop_name="oborot_hand"
@@ -125,20 +94,6 @@
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
                             {% endif %}
-
-                            {% if 1 == 2 %}
-
-                                нет данных <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
-                                                   vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
-                                                   res_to="{{ sp_now }}_{{ i }}_res_ob"
-                                                   xtarget="_blank"
-                                                   class="load_ajaxjson_to_id"
-                                                   >загрузить</a></sup>
-
-                                <div id="{{ sp_now }}_{{ i }}_res_ob" ></div>
-
-                            {% endif %}
-
 
                         </div>
 

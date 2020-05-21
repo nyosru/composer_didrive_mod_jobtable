@@ -31,9 +31,15 @@
 
             <nobr>
 
+                <a href="#" 
+                   style="float:right;"
+                   onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) { console.log('123'); $(this).trigger('click'); }); return false; " >
+                    <span class="fa fa-refresh" title="обновить оценки за месяц" ></span>
+                </a>
                 {# <a href="#" onclick="$('.tr{{sp_now}}ras').toggle('slow'); return false;" > #}
                 <b>Расчёт оценки дня</b>
                 {# </a> #}
+
 
             </nobr>
 

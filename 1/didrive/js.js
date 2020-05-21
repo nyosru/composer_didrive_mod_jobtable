@@ -17,13 +17,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         if ($clear_to_now != '') {
 
             $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
-            console.log('стираем все даты, начиная с указанной', $sp, $date);
+            // console.log('стираем все даты, начиная с указанной', $sp, $date);
         }
 // если пусто то трём дату указанную
         else {
 
             $('#a_price_' + $sp + '_' + $date).html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');
-            console.log('стираем 1 дату', $sp, $date);
+            // console.log('стираем 1 дату', $sp, $date);
         }
 
 
@@ -175,7 +175,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     function delete_workman_from_sp($sp, $workman, $wm_s, $res_to) {
 
-        console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
+        // console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
         // var data = $($th).serialize();
         // console.log('111 '+data);
 
@@ -226,7 +226,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function set_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+        // console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
         // return false;
 
         // var data = $($th).serialize();
@@ -280,7 +280,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function cancel_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+        // console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
         // return false;
 
         // var data = $($th).serialize();
@@ -349,7 +349,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                alert("Остановлено на " + i + "-м пункте списка.");
 //                return false;
 //            } else {
-            console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
+            // console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
 //            }
 
         });
@@ -466,7 +466,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     $price = $('.smena_price_' + $id + ' option:selected').attr('price');
                     // console.log('цена - '+$price);
-                    console.log($id + ' / ' + $hours + ' / ' + $price);
+                    // console.log($id + ' / ' + $hours + ' / ' + $price);
                     $sum = $hours * $price;
                     if ($sum > 0) {
                         $('body .smena_summa_' + $id).html($sum + 'р');
@@ -487,7 +487,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
 //
                 else {
-                    console.log('пропускаем');
+                    // console.log('пропускаем');
                 }
             }
 
@@ -538,8 +538,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
         if ($cifra > 20)
             $cifra = 20;
-        console.log($('span#' + $textblock_id).text());
-        console.log($cifra);
+        // console.log($('span#' + $textblock_id).text());
+        // console.log($cifra);
         if ($znak == '-') {
             var $new_val = +$cifra - +0.5;
         }
@@ -615,11 +615,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     });
     $('body').on('change', '.select_edit_item_dop2', function () {
 
-        console.log(2);
+        // console.log(2);
         setTimeout(function () {
             calculateSummAllGraph();
         }, 100);
-        console.log(3);
+        // console.log(3);
     });
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
     $('body').on('change', 'select.select_edit_item_dop', function () {
@@ -661,7 +661,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if (this.name == 'res_to') {
                     $vars['resto'] = '#' + this.value + ' tbody';
-                    console.log($vars['resto']);
+                    // console.log($vars['resto']);
                     // alert($res_to);
                 }
 
@@ -672,8 +672,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-        console.log($vars['resto']);
-        console.log($uri_query);
+        // console.log($vars['resto']);
+        // console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
         $.ajax({
@@ -753,7 +753,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        console.log('delete_workman_from_sp');
+        // console.log('delete_workman_from_sp');
         $answer = '';
         $wm_s = '';
         $.each(this.attributes, function () {
@@ -793,14 +793,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        console.log('set_end_now_jobs');
+        // console.log('set_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
 // set_end_now_jobs( $now_job_id, $s, $res_to ) {
 
         $.each(this.attributes, function () {
-            console.log(this.name, this.value);
+            // console.log(this.name, this.value);
             if (this.name == 'work_id') {
                 $work_id = this.value;
             } else if (this.name == 'sp') {
@@ -838,14 +838,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        console.log('cancel_end_now_jobs');
+        // console.log('cancel_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
 // set_end_now_jobs( $now_job_id, $s, $res_to ) {
 
         $.each(this.attributes, function () {
-            console.log(this.name, this.value);
+            // console.log(this.name, this.value);
             if (this.name == 'work_id') {
                 $work_id = this.value;
             } else if (this.name == 'sp') {
@@ -1133,10 +1133,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // создание массива объектов из данных формы
         var data1 = $(this).serializeArray();
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        console.log('Входящие данные');
+        // console.log('Входящие данные');
         $.each(data1, function () {
 
-            console.log(this.name + '=' + this.value);
+            // console.log(this.name + '=' + this.value);
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -1211,10 +1211,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         // создание массива объектов из данных формы
         var data1 = $(this).serializeArray();
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        console.log('Входящие данные');
+        // console.log('Входящие данные');
         $.each(data1, function () {
 
-            console.log(this.name + '=' + this.value);
+            // console.log(this.name + '=' + this.value);
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -1285,16 +1285,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     });
     $('body').on('submit', '#add_minus', function (event) {
 
-        console.log('добавляем премию');
+        // console.log('добавляем премию');
 
         event.preventDefault();
         // создание массива объектов из данных формы
         var data1 = $(this).serializeArray();
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        console.log('Входящие данные');
+        // console.log('Входящие данные');
         $.each(data1, function () {
 
-            console.log(this.name + '=' + this.value);
+            // console.log(this.name + '=' + this.value);
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -1370,16 +1370,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             if (this.specified) {
 
-                console.log(this.name, this.value);
+                // console.log(this.name, this.value);
                 // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 
                 if (this.name == 'data-target2') {
                     var $id_modal = this.value;
-                    console.log(this.value);
+                    // console.log(this.value);
                     $(this.value).modal('toggle');
                     // $id_modal.modal('toggle');
                 } else {
-                    console.log(2, this.value);
+                    // console.log(2, this.value);
                     if ($("input").is("#" + this.name)) {
                         $("input#" + this.name).val(this.value);
                     }
@@ -1388,14 +1388,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
         if ($(this).prop('data-target2').length()) {
-            console.log($(this).prop('data-target2'));
+            // console.log($(this).prop('data-target2'));
         }
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                console.log(this.name, this.value);
+                // console.log(this.name, this.value);
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -1419,16 +1419,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             if (this.specified) {
 
-                console.log(this.name, this.value);
+                // console.log(this.name, this.value);
                 // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 
                 if (this.name == 'data-target2') {
                     var $id_modal = this.value;
-                    console.log(this.value);
+                    // console.log(this.value);
                     $(this.value).modal('toggle');
                     // $id_modal.modal('toggle');
                 } else {
-                    console.log(2, this.value);
+                    // console.log(2, this.value);
                     if ($("input").is("#" + this.name)) {
                         $("input#" + this.name).val(this.value);
                     }
@@ -1437,14 +1437,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
         if ($(this).prop('data-target2').length()) {
-            console.log($(this).prop('data-target2'));
+            // console.log($(this).prop('data-target2'));
         }
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                console.log(this.name, this.value);
+                // console.log(this.name, this.value);
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -1477,7 +1477,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if (this.name == 'res_to') {
                     $vars['resto'] = '#' + this.value + ' tbody';
-                    console.log($vars['resto']);
+                    // console.log($vars['resto']);
                     // alert($res_to);
                 }
 
@@ -1488,8 +1488,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-        console.log($vars['resto']);
-        console.log($uri_query);
+        // console.log($vars['resto']);
+        // console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
         $.ajax({
@@ -1558,7 +1558,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if (this.name == 'res_to') {
                     $vars['resto'] = '#' + this.value + ' tbody';
-                    console.log($vars['resto']);
+                    // console.log($vars['resto']);
                     // alert($res_to);
                 }
 
@@ -1569,8 +1569,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-        console.log($vars['resto']);
-        console.log($uri_query);
+        // console.log($vars['resto']);
+        // console.log($uri_query);
         //$(this).html("тут список");
         var $th = $(this);
         $.ajax({
@@ -1647,7 +1647,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if (this.name.indexOf("forajax_") != -1) {
                     $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
-                    console.log(this.name, this.value);
+                    // console.log(this.name, this.value);
                 }
 
                 if (this.name == 'hidethis') {
@@ -1772,7 +1772,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-        console.log($uri_query);
+        // console.log($uri_query);
         if (answer != 0) {
 
             if (!confirm(answer)) {
@@ -1846,7 +1846,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 if (this.name.indexOf("forajax_") != -1) {
                     $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
-                    console.log(this.name, this.value);
+                    // console.log(this.name, this.value);
                 }
 
 
@@ -1920,7 +1920,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 if (!!sp) {
 // console.log('timeo 1 ajax', date, sp);
                     if (!!date) {
-                        console.log('все переменные есть', date, sp, n);
+                        // console.log('все переменные есть', date, sp, n);
                         vars = vars + '&d[' + n + '][date]=' + date + '&d[' + n + '][sp]=' + sp;
                         // vars.push([date, sp]);
 
@@ -2035,7 +2035,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $.each($j['res'], function (sp, value) {
                         $.each(value, function (date, value2) {
 
-                            console.log(sp, date, value2);
+                            // console.log(sp, date, value2);
                             if (!!value2['oborot_hand']) {
                                 val_hand = value2['oborot_hand'];
                             } else {
@@ -2152,7 +2152,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // this.attributes is not a plain object, but an array
 // of attribute nodes, which contain both the name and value
                 if (this.specified) {
-                    console.log(this.name, this.value);
+                    // console.log(this.name, this.value);
                     // пропускаем аттр
                     if (this.name == 'class' || this.name == 'href') {
                     }
@@ -2905,7 +2905,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
             var ert = [];
             ert = get_blocks_attr('div.load_job_man_1sp_smens');
-            console.log('результат', ert);
+            // console.log('результат', ert);
             $.ajax({
 
                 url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -2936,7 +2936,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                         document.nyos.job_on = $j.job_on
                     }
                     
-                    console.log('doc', document);
+                    // console.log('doc', document);
                     
 
                     add_new_dolg_in_graph($j);
@@ -2945,7 +2945,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                         // console.log('1', date, value);
                         $.each(value, function (k1, ar) {
 
-                            console.log('1day', date, ar);
+                            // console.log('1day', date, ar);
 
                             $hh = creat_html_1smena(ar);
                             
@@ -2969,7 +2969,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
 // добавляем минусы плюсы бонусы
-    if (2 == 2) {
+    if (2 == 1) {
 
         function creat_html_bonus(ar) {
 
@@ -3103,7 +3103,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
             var ert = [];
             ert = get_blocks_attr('div.load_job_man_1sp_smens');
-            console.log('результат 2', ert);
+            // console.log('результат 2', ert);
             $.ajax({
 
                 url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -3316,6 +3316,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
 
+
+
+if( 1 == 2 ){
+    
 // если есть этот блок то грузим всю аякс
     var $e = $('#run_load_data').attr('start');
     if ($e == 'da') {
@@ -3333,6 +3337,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         creat__timeo();
 //        run_load__aj_get_minus_plus_coment();
     }
+
+}
 
 });
 

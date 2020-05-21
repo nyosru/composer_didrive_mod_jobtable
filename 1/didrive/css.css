@@ -412,3 +412,7 @@ span.job_hours{ display: inline-block; width:30px; xborder:1px solid green; }
 .smens.ajax_loaded{
     background-color: rgba(0,0,0,0.05);
 }
+
+.oborot_all_summ{ color: gray; float:right; }
+.oborot_edit_pole{ width:120px; padding: 3px; margin: 0 auto; text-align:center; }
+.oborot-gray { color:gray; }
