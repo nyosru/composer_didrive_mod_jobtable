@@ -2,13 +2,13 @@
 
     
     
-    {% set timer_show = 'on' %}
+    {% set timer_show = 'on1' %}
 
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set time_ex = ApiYadom_time_ex_get_timer_on_sp( db, sp_now, date_start, date_finish ) %}
     {% if timer_show == 'on' %} <br/>время 06 ApiYadom_time_ex_get_timer_on_sp - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-    { time_ex {{ pa(time_ex,2) }} }
+    {# time_ex {{ pa(time_ex,2) }} #}
 
     {% set timer_show = 'on1' %}
     
@@ -41,10 +41,12 @@
                                 {% set type = 'cold' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 
                                 {% if time > 0 %}{{ time }}{% else %}-{% endif %}
+                                {#
                                 /
                                 {% set type = 'hot' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 
                                 {% if time > 0 %}{{ time }}{% else %}-{% endif %}
+                                #}
                                 /
                                 {% set type = 'delivery' %} 
                                 {% set time = time_ex[now_date2][type~'_hand'] ?? time_ex[now_date2][type] ?? 0 %} 

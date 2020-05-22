@@ -1,91 +1,91 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
 
-        function run_load__aj_get_minus_plus_coment() {
+    function run_load__aj_get_minus_plus_coment() {
 
-            var ert = [];
-            ert = get_blocks_attr('div.load_job_man_1sp_smens');
-            // console.log('результат 2', ert);
-            $.ajax({
+        var ert = [];
+        ert = get_blocks_attr('div.load_job_man_1sp_smens');
+        // console.log('результат 2', ert);
+        $.ajax({
 
-                url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-                data: "action=aj_get_minus_plus_coment&" + ert['string'],
-                cache: false,
-                dataType: "json",
-                type: "post",
-                beforeSend: function () {
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            data: "action=aj_get_minus_plus_coment&" + ert['string'],
+            cache: false,
+            dataType: "json",
+            type: "post",
+            beforeSend: function () {
 
-                    // $('div.graph_cell_1sp_man_day .smens').html('&nbsp;');
-                    // $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
+                // $('div.graph_cell_1sp_man_day .smens').html('&nbsp;');
+                // $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
 
-                },
-                success: function ($j) {
+            },
+            success: function ($j) {
 
-                    // console.log('123', $j);
-                    nn1 = [];
-                    $b = 0;
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
-                    $b1.empty().hide();
+                // console.log('123', $j);
+                nn1 = [];
+                $b = 0;
+                $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
+                $b1.empty().hide();
 
-                    $.each($j['bonus']['data'], function (n, ar) {
+                $.each($j['bonus']['data'], function (n, ar) {
 
-                        // console.log('1', ar);
-                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_bonus');
-                        //$b.hide();
+                    // console.log('1', ar);
+                    $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_bonus');
+                    //$b.hide();
 //                        console.log('nn1', nn1);
 
-                            // $b.html('x');
+                    // $b.html('x');
 //                            $b.empty();
-                            // nn1 = 2;
+                    // nn1 = 2;
 //                            console.log('nn1', nn1);
 
-                        $hh = creat_html_bonus(ar);
-                        $b.append($hh);
+                    $hh = creat_html_bonus(ar);
+                    $b.append($hh);
 
-                        //$b.show('slow');
+                    //$b.show('slow');
 
-                    });
+                });
 
-                    $b1.show('slow');
+                $b1.show('slow');
 
 
 
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
-                    $b1.hide().empty();
+                $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
+                $b1.hide().empty();
 
-                    $.each($j['minus']['data'], function (n, ar) {
+                $.each($j['minus']['data'], function (n, ar) {
 
-                        $hh = creat_html_minus(ar);
-                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_minus');
-                        //$b.hide();
-                        // $b.html($hh);
-                        $b.append($hh);
-                        // $b.show('slow');
+                    $hh = creat_html_minus(ar);
+                    $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_minus');
+                    //$b.hide();
+                    // $b.html($hh);
+                    $b.append($hh);
+                    // $b.show('slow');
 
-                    });
+                });
 
-                    $b1.show('slow');
+                $b1.show('slow');
 
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
-                    $b1.hide().empty();
+                $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
+                $b1.hide().empty();
 
-                    $.each($j['comment']['data'], function (n, ar) {
+                $.each($j['comment']['data'], function (n, ar) {
 
-                        $hh = creat_html_comment(ar, $j['comment']['cfg']);
-                        $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
+                    $hh = creat_html_comment(ar, $j['comment']['cfg']);
+                    $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
 
 //                        ret = '<div style="text-align:left;" ><small>';
 //                        $.each(ar, function (k2, a2) {
 //                            ret += '<br/>' + k2 + ': ' + a2;
 //                        });
 //                        ret += '</small></div>';
-                        // $b.html(ret + $hh);
+                    // $b.html(ret + $hh);
 
-                        // $b.html($hh);
-                        $b.append($hh);
-                    });
+                    // $b.html($hh);
+                    $b.append($hh);
+                });
 
-                    $b1.show('slow');
+                $b1.show('slow');
 
 
 //                add_new_dolg_in_graph($j);
@@ -211,14 +211,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                        }
 //                        );
 //                    });
-                }
+            }
 
-            });
-        }
-        
+        });
+    }
 
 
-    
+
+
 // console.log('123')
 
 // window.nyos = [ 'dolgn' , 123 ];
@@ -1501,7 +1501,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-    
+
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
@@ -3058,27 +3058,31 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 },
                 success: function ($j) {
 
-                    if( typeof  document.nyos !== 'undefined' ){}else{
+                    if (typeof document.nyos !== 'undefined') {
+                    } else {
                         document['nyos'] = [];
                     }
-                    
-                    if( typeof document['nyos']['dolgn'] !== 'undefined' ){}else{
+
+                    if (typeof document['nyos']['dolgn'] !== 'undefined') {
+                    } else {
                         document['nyos']['dolgn'] = $j['dolgn']
                     }
-                    
-                    if( typeof document.nyos.dolgn_money !== 'undefined' ){}else{
+
+                    if (typeof document.nyos.dolgn_money !== 'undefined') {
+                    } else {
                         document.nyos.dolgn_money = $j.dolgn_money
                     }
-                    
-                    if( typeof document.nyos.job_on !== 'undefined' ){}else{
+
+                    if (typeof document.nyos.job_on !== 'undefined') {
+                    } else {
                         document.nyos.job_on = $j.job_on
                     }
-                    
+
                     // console.log('doc', document);
-                    
+
 
                     add_new_dolg_in_graph($j);
-                    
+
                     $.each($j['checks'], function (date, value) {
                         // console.log('1', date, value);
                         $.each(value, function (k1, ar) {
@@ -3086,7 +3090,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                             // console.log('1day', date, ar);
 
                             $hh = creat_html_1smena(ar);
-                            
+
                             $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
 
 //                            var $b = $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens');
@@ -3106,43 +3110,43 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
     }
 
-if( 1 == 2 ){
+    if (1 == 2) {
 // добавляем минусы плюсы бонусы
-    if (2 == 1) {
+        if (2 == 1) {
 
-        function creat_html_bonus(ar) {
+            function creat_html_bonus(ar) {
 
-            ret = '<div class="'
-                    // +'xtext-center '
-                    + 'show_down_hiden plus show">'
+                ret = '<div class="'
+                        // +'xtext-center '
+                        + 'show_down_hiden plus show">'
 
-                    + '<a '
-                    + ' href="#" '
+                        + '<a '
+                        + ' href="#" '
 
-                    + ' class="base__send_to_ajax hide_down" '
-                    + ' style="float:right;" '
+                        + ' class="base__send_to_ajax hide_down" '
+                        + ' style="float:right;" '
 
-                    + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
+                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
 
-                    + ' hidethis="da" '
-                    + ' answer="удалить ?" '
+                        + ' hidethis="da" '
+                        + ' answer="удалить ?" '
 
-                    + ' action="remove_item" '
-                    + ' aj_id="' + ar['id'] + '" '
-                    + ' aj_s="' + ar['s'] + '" '
+                        + ' action="remove_item" '
+                        + ' aj_id="' + ar['id'] + '" '
+                        + ' aj_s="' + ar['s'] + '" '
 
-                    + ' res_to_id="plus' + ar['id'] + '" '
-                    + ' after_click_showid="plus' + ar['id'] + '" '
-                    + ' msg_to_success="бонус удалён" '
+                        + ' res_to_id="plus' + ar['id'] + '" '
+                        + ' after_click_showid="plus' + ar['id'] + '" '
+                        + ' msg_to_success="бонус удалён" '
 
-                    + '><i class="fa fa-times"></i></a>'
+                        + '><i class="fa fa-times"></i></a>'
 
-                    + '<b>+'
-                    + ar['summa']
-                    + '</b> &nbsp;'
-                    + '<small>'
-                    + ar['text']
-                    + '</small>'
+                        + '<b>+'
+                        + ar['summa']
+                        + '</b> &nbsp;'
+                        + '<small>'
+                        + ar['text']
+                        + '</small>'
 //                    + '<span class="hide_down">'
 //                    + '<a href="#" class="btn3 edit_items_dop_values drop2_ btn btn-xs btn-light" '
 //                    + 'xstyle="display:none;" '
@@ -3152,43 +3156,43 @@ if( 1 == 2 ){
 //                    + 'show_id="ares97789" res_to_id="ares97789" '
 //                    + 'msg_to_success="Отменено">Отменить премию</a></span>'
 //                    + '<div id="ares97789" style="display:none;"></div>'
-                    + '<div id="plus' + ar['id'] + '" style="display:none;"></div>';
-            +'</div>';
-            return ret;
-        }
+                        + '<div id="plus' + ar['id'] + '" style="display:none;"></div>';
+                +'</div>';
+                return ret;
+            }
 
-        function creat_html_minus(ar) {
+            function creat_html_minus(ar) {
 
-            var ret = '<div class="xtext-center show_down_hiden minus show">'
+                var ret = '<div class="xtext-center show_down_hiden minus show">'
 
 
-                    + '<a '
-                    + ' href="#" '
+                        + '<a '
+                        + ' href="#" '
 
-                    + ' class="base__send_to_ajax hide_down" '
-                    + ' style="float:right;" '
+                        + ' class="base__send_to_ajax hide_down" '
+                        + ' style="float:right;" '
 
-                    + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
+                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
 
-                    + ' hidethis="da" '
-                    + ' answer="удалить ?" '
+                        + ' hidethis="da" '
+                        + ' answer="удалить ?" '
 
-                    + ' action="remove_item" '
-                    + ' aj_id="' + ar['id'] + '" '
-                    + ' aj_s="' + ar['s'] + '" '
+                        + ' action="remove_item" '
+                        + ' aj_id="' + ar['id'] + '" '
+                        + ' aj_s="' + ar['s'] + '" '
 
-                    + ' res_to_id="minus' + ar['id'] + '" '
-                    + ' after_click_showid="minus' + ar['id'] + '" '
-                    // + ' msg_to_success="Комментарий удалён" '
+                        + ' res_to_id="minus' + ar['id'] + '" '
+                        + ' after_click_showid="minus' + ar['id'] + '" '
+                        // + ' msg_to_success="Комментарий удалён" '
 
-                    + '><i class="fa fa-times"></i></a>'
+                        + '><i class="fa fa-times"></i></a>'
 
-                    + '<b>'
-                    + '-' + ar['summa']
-                    + '</b> &nbsp; '
-                    + '<small>'
-                    + ar['text']
-                    + '</small>'
+                        + '<b>'
+                        + '-' + ar['summa']
+                        + '</b> &nbsp; '
+                        + '<small>'
+                        + ar['text']
+                        + '</small>'
 //                    + '<span class="hide_down">'
 //                    + '<a href="#" '
 //                    + ' class="btn3 edit_items_dop_values drop2_ btn btn-xs btn-light" '
@@ -3200,56 +3204,70 @@ if( 1 == 2 ){
 //                    + '</span>'
 //                    + '<div id="ares99244" style="display:none;"></div>'
 
-                    + '<div id="minus' + ar['id'] + '" style="display:none;"></div>';
+                        + '<div id="minus' + ar['id'] + '" style="display:none;"></div>';
 
-            +'</div>';
-            return ret;
+                +'</div>';
+                return ret;
+            }
+
+            function creat_html_comment(ar, cfg) {
+
+                var ret = '<div class="show_1comment">'
+
+                        + '<a '
+                        + ' href="#" '
+
+                        + ' class="base__send_to_ajax" '
+                        + ' style="float:right;" '
+
+                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
+
+                        + ' hidethis="da" '
+                        + ' answer="удалить комментарий ?" '
+
+                        + ' action="remove_item" '
+                        + ' aj_id="' + ar['id'] + '" '
+                        + ' aj_s="' + ar['s'] + '" '
+
+                        + ' res_to_id="com' + ar['id'] + '" '
+                        + ' after_click_showid="com' + ar['id'] + '" '
+                        + ' msg_to_success="Комментарий удалён" '
+
+                        + '><i class="fa fa-times"></i></a>'
+
+                        + ar['comment']
+
+                        + '<div id="com' + ar['id'] + '" style="display:none;"></div>';
+                +'</div>'
+                return ret;
+            }
+
         }
 
-        function creat_html_comment(ar, cfg) {
+        if (1 == 2) {
 
-            var ret = '<div class="show_1comment">'
-
-                    + '<a '
-                    + ' href="#" '
-
-                    + ' class="base__send_to_ajax" '
-                    + ' style="float:right;" '
-
-                    + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
-
-                    + ' hidethis="da" '
-                    + ' answer="удалить комментарий ?" '
-
-                    + ' action="remove_item" '
-                    + ' aj_id="' + ar['id'] + '" '
-                    + ' aj_s="' + ar['s'] + '" '
-
-                    + ' res_to_id="com' + ar['id'] + '" '
-                    + ' after_click_showid="com' + ar['id'] + '" '
-                    + ' msg_to_success="Комментарий удалён" '
-
-                    + '><i class="fa fa-times"></i></a>'
-
-                    + ar['comment']
-
-                    + '<div id="com' + ar['id'] + '" style="display:none;"></div>';
-            +'</div>'
-            return ret;
-        }
-
-    }
-
-if( 1 == 2 ){
-    
 // если есть этот блок то грузим всю аякс
-    var $e = $('#run_load_data').attr('start');
-    if ($e == 'da') {
-        // alert('123');
-        creat__oborot_show_vars();
-        creat__ajax_in_smens();
-        run_load__aj_get_minus_plus_coment();
+            var $e = $('#run_load_data').attr('start');
+            if ($e == 'da') {
+                // alert('123');
+                creat__oborot_show_vars();
+                creat__ajax_in_smens();
+                run_load__aj_get_minus_plus_coment();
+            }
+
+
+//// запуск загрузки времени ожидания
+//    var $e1 = $('#run_load_timeo').attr('start');
+//    if ($e1 == 'da') {
+////        alert('123');
+////        creat__oborot_show_vars();
+//        creat__timeo();
+////        run_load__aj_get_minus_plus_coment();
+//    }
+
+        }
     }
+
 
 // запуск загрузки времени ожидания
     var $e1 = $('#run_load_timeo').attr('start');
@@ -3260,12 +3278,9 @@ if( 1 == 2 ){
 //        run_load__aj_get_minus_plus_coment();
     }
 
-}
-}
-
-/**
- * добавляем взыскание
- */
+    /**
+     * добавляем взыскание
+     */
 
     $('body').on('submit', '#add_minus', function (event) {
 
@@ -3274,7 +3289,7 @@ if( 1 == 2 ){
         event.preventDefault();
         // создание массива объектов из данных формы        
         var data1 = $(this).serializeArray();
-        
+
         // console.log( 'добавляем минус', data1 );
 
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
