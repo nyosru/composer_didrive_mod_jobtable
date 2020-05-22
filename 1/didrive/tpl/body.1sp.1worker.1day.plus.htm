@@ -1,5 +1,4 @@
 {% spaceless %}
-
     
     <div class="xtext-center show_down_hiden plus {{ item.status }}" >
         <b>+{{ item.summa|number_format(0, '.', '`') }}</b> &nbsp;
@@ -87,10 +86,13 @@
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
+                   
                    {# сделать видимым блок по id #}
                    show_id="ares{{ item.id }}" 
+                   
                    {# id куда печатаем результат #}
                    res_to_id="ares{{ item.id }}" 
+                   
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Отменено"
 

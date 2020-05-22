@@ -54,7 +54,7 @@
                             {% endif %}
 
                             {# новая версия 200429 #}
-                            {% if 1 == 1 %}                            
+                            {% if 1 == 2 %}                            
 
                                 {#{ pa(mans,2) }#}
                                 <select class="form-control select_filtered" name="user" id="add_person__user" required="requiered" 
@@ -63,6 +63,20 @@
                                     <option value="">выберите сотрудника</option>
                                     {% for u, u_da in mans %}
                                         <option value="{{ u_da.id }}">{{ u_da.head }} \ {{ u_da.dop.birthday }} \ iiko: {{ u_da.dop.iiko_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% endif %}
+
+                            {# новая версия 200521 #}
+                            {% if 1 == 1 %}                            
+
+                                {#{ pa(mans,2) }#}
+                                <select class="form-control select_filtered" name="user" id="add_person__user" required="requiered" 
+                                        data-live-search="true"
+                                        >
+                                    <option value="">выберите сотрудника</option>
+                                    {% for u, u_da in mans %}
+                                        <option value="{{ u_da.id }}">+ {{ u_da.head }} \ {{ u_da.birthday }} \ iiko: {{ u_da.iiko_name }}</option>
                                     {% endfor %}
                                 </select>
                             {% endif %}

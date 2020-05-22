@@ -1,5 +1,223 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
+
+        function run_load__aj_get_minus_plus_coment() {
+
+            var ert = [];
+            ert = get_blocks_attr('div.load_job_man_1sp_smens');
+            // console.log('результат 2', ert);
+            $.ajax({
+
+                url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+                data: "action=aj_get_minus_plus_coment&" + ert['string'],
+                cache: false,
+                dataType: "json",
+                type: "post",
+                beforeSend: function () {
+
+                    // $('div.graph_cell_1sp_man_day .smens').html('&nbsp;');
+                    // $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
+
+                },
+                success: function ($j) {
+
+                    // console.log('123', $j);
+                    nn1 = [];
+                    $b = 0;
+                    $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
+                    $b1.empty().hide();
+
+                    $.each($j['bonus']['data'], function (n, ar) {
+
+                        // console.log('1', ar);
+                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_bonus');
+                        //$b.hide();
+//                        console.log('nn1', nn1);
+
+                            // $b.html('x');
+//                            $b.empty();
+                            // nn1 = 2;
+//                            console.log('nn1', nn1);
+
+                        $hh = creat_html_bonus(ar);
+                        $b.append($hh);
+
+                        //$b.show('slow');
+
+                    });
+
+                    $b1.show('slow');
+
+
+
+                    $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
+                    $b1.hide().empty();
+
+                    $.each($j['minus']['data'], function (n, ar) {
+
+                        $hh = creat_html_minus(ar);
+                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_minus');
+                        //$b.hide();
+                        // $b.html($hh);
+                        $b.append($hh);
+                        // $b.show('slow');
+
+                    });
+
+                    $b1.show('slow');
+
+                    $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
+                    $b1.hide().empty();
+
+                    $.each($j['comment']['data'], function (n, ar) {
+
+                        $hh = creat_html_comment(ar, $j['comment']['cfg']);
+                        $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
+
+//                        ret = '<div style="text-align:left;" ><small>';
+//                        $.each(ar, function (k2, a2) {
+//                            ret += '<br/>' + k2 + ': ' + a2;
+//                        });
+//                        ret += '</small></div>';
+                        // $b.html(ret + $hh);
+
+                        // $b.html($hh);
+                        $b.append($hh);
+                    });
+
+                    $b1.show('slow');
+
+
+//                add_new_dolg_in_graph($j);
+//
+//                $.each($j['checks'], function (date, value) {
+//                    // console.log('1', date, value);
+//                    $.each(value, function (k1, ar) {
+//
+//                        $hh = creat_html_1smena(ar);
+//                        $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
+//
+//                        // sp_man_day_d{{ date }}_sp{{sp_now}}_u{{ user_id }}
+//                        // console.log('1', date, value1);
+//
+//                    });
+//                });
+//
+//                $('div.graph_cell_1sp_man_day .smens').removeClass('ajax_loaded');
+
+//                    $('div.oborot_data_td').html('-');
+//                    ii = 1;
+//                    // переберём массив arr
+//                    $.each($j['res'], function (sp, value) {
+//                        $.each(value, function (date, value2) {
+//
+//                            console.log(sp, date, value2);
+//
+//
+//                            if (!!value2['oborot_hand']) {
+//                                val_hand = value2['oborot_hand'];
+//                            } else {
+//                                val_hand = '';
+//                            }
+//
+//                            input_oborot_hand = '<input type="number" max="1000000" min="0" '
+//                                    + ' placeholder="уточнить"'
+//                                    + ' title="укажите точную сумму оборота"'
+//
+//                                    + ' value="' + val_hand + '" '
+//
+//                                    + ' style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" '
+//                                    + ' class="form-control didrive__edit_items_dop_pole2" '
+//
+//                                    + ' edit_item_id="' + value2['id'] + '"'
+//                                    + ' edit_dop_name="oborot_hand"'
+//                                    + ' edit_s="' + value2['s_hand'] + '"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
+//
+//                                    + ' pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"'
+//                                    + ' text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"'
+//
+//                                    + ' delete_ocenka_sp="{{ sp_now }}"'
+//                                    + ' delete_ocenka_date="{{ now_date2 }}"'
+//                                    + ' delete_ocenka_s="{{ creatSecret(sp_now~now_date2) }}"'
+//
+//                                    + ' />';
+//
+//
+//
+//                            // if (!!value2['oborot_hand'] && value2['oborot_hand'] > 0) {
+//                            if (!!value2['oborot_server']) {
+//
+//                                $('#data_obr_' + date + '__' + sp).html(
+//                                        (value2['oborot_server'] ?
+//                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                number_format(value2['oborot_server'], 0, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+//                                                : 'x')
+//                                        + '<br/>'
+//
+//                                        + input_oborot_hand
+//
+////                                        + '<input type="number" min="0" max="900000" step="0.01" '
+////                                        + ' class="number_oborot_tochnee" '
+////                                        + ' value="' + val_hand + '" '
+////                                        + ' />'
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                                        );
+//                            } else {
+//
+//                                $('#data_obr_' + date + '__' + sp).html(
+//                                        '<sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" '
+//                                        + ' vars="date=' + date + '&hide_form=da&action=get_oborot_for_sps&get_sp_load=' + sp + '" '
+//                                        + ' res_to="' + sp + '_' + ii + '_res_ob2"'
+//                                        + ' xtarget="_blank"'
+//                                        + ' class="load_ajaxjson_to_id"'
+//                                        + ' >загрузить с ИИКО</a></sup>'
+//
+//                                        + ' <div id="' + sp + '_' + ii + '_res_ob2" ></div>'
+//
+////                                        + (value2['oborot_server'] ?
+////                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+////                                                number_format(value2['oborot_server'] / 1000, 1, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
+////                                                : 'x')
+////
+////                                        + '<br/>'
+//
+//                                        // + (value2['oborot_hand'] ?? '-1')
+//
+////                                    + '<br/>'
+////                                    + (value2['delivery'] || '-')
+//                                        );
+//                                ii++;
+//                            }
+//
+//
+//                        }
+//                        );
+//                    });
+                }
+
+            });
+        }
+        
+
+
     
 // console.log('123')
 
@@ -1283,87 +1501,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-    $('body').on('submit', '#add_minus', function (event) {
-
-        // console.log('добавляем премию');
-
-        event.preventDefault();
-        // создание массива объектов из данных формы
-        var data1 = $(this).serializeArray();
-        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        // console.log('Входящие данные');
-        $.each(data1, function () {
-
-            // console.log(this.name + '=' + this.value);
-            if (this.name == 'print_res_to_id') {
-                $print_res_to = $('#' + this.value);
-            }
-
-            if (this.name == 'data-target2') {
-                $modal_id = this.value;
-            }
-
-        });
-        // alert('123');
-        // return false;
-
-        $.ajax({
-
-            type: 'POST',
-            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            dataType: 'json',
-            data: data1,
-            // сoбытиe дo oтпрaвки
-            beforeSend: function ($data) {
-                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
-                // $this.css({"border": "2px solid orange"});
-            },
-            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
-            success: function ($data) {
-
-                //alert('123');
-
-                // eсли oбрaбoтчик вeрнул oшибку
-                if ($data['status'] == 'error')
-                {
-                    // alert($data['error']); // пoкaжeм eё тeкст
-                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid red"});
-
-                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
-                }
-                // eсли всe прoшлo oк
-                else
-                {
-                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid green"});
-
-                    //$($print_res_to).append($data['html']);
-                    run_load__aj_get_minus_plus_coment();
-                }
-
-                //$($modal_id).modal('hide');
-                $('.modal').modal('hide');
-            }
-            ,
-            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
-            error: function (xhr, ajaxOptions, thrownError) {
-                // пoкaжeм oтвeт сeрвeрa
-                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
-            }
-
-            // сoбытиe пoслe любoгo исхoдa
-            // ,complete: function ($data) {
-            // в любoм случae включим кнoпку oбрaтнo
-            // $form.find('input[type="submit"]').prop('disabled', false);
-            // }
-
-        }); // ajax-
-
-
-        return false;
-    });
+    
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
@@ -2968,6 +3106,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
     }
 
+if( 1 == 2 ){
 // добавляем минусы плюсы бонусы
     if (2 == 1) {
 
@@ -3099,224 +3238,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             return ret;
         }
 
-        function run_load__aj_get_minus_plus_coment() {
-
-            var ert = [];
-            ert = get_blocks_attr('div.load_job_man_1sp_smens');
-            // console.log('результат 2', ert);
-            $.ajax({
-
-                url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-                data: "action=aj_get_minus_plus_coment&" + ert['string'],
-                cache: false,
-                dataType: "json",
-                type: "post",
-                beforeSend: function () {
-
-                    // $('div.graph_cell_1sp_man_day .smens').html('&nbsp;');
-                    // $('div.graph_cell_1sp_man_day .smens').addClass('ajax_loaded');
-
-                },
-                success: function ($j) {
-
-                    // console.log('123', $j);
-                    nn1 = [];
-                    $b = 0;
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
-                    $b1.empty().hide();
-
-                    $.each($j['bonus']['data'], function (n, ar) {
-
-                        // console.log('1', ar);
-                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_bonus');
-                        //$b.hide();
-//                        console.log('nn1', nn1);
-
-                            // $b.html('x');
-//                            $b.empty();
-                            // nn1 = 2;
-//                            console.log('nn1', nn1);
-
-                        $hh = creat_html_bonus(ar);
-                        $b.append($hh);
-
-                        //$b.show('slow');
-
-                    });
-
-                    $b1.show('slow');
-
-
-
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
-                    $b1.hide().empty();
-
-                    $.each($j['minus']['data'], function (n, ar) {
-
-                        $hh = creat_html_minus(ar);
-                        $b = $('#sp_man_day_d' + ar['date_now'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_minus');
-                        //$b.hide();
-                        // $b.html($hh);
-                        $b.append($hh);
-                        // $b.show('slow');
-
-                    });
-
-                    $b1.show('slow');
-
-                    $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
-                    $b1.hide().empty();
-
-                    $.each($j['comment']['data'], function (n, ar) {
-
-                        $hh = creat_html_comment(ar, $j['comment']['cfg']);
-                        $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
-
-//                        ret = '<div style="text-align:left;" ><small>';
-//                        $.each(ar, function (k2, a2) {
-//                            ret += '<br/>' + k2 + ': ' + a2;
-//                        });
-//                        ret += '</small></div>';
-                        // $b.html(ret + $hh);
-
-                        // $b.html($hh);
-                        $b.append($hh);
-                    });
-
-                    $b1.show('slow');
-
-
-//                add_new_dolg_in_graph($j);
-//
-//                $.each($j['checks'], function (date, value) {
-//                    // console.log('1', date, value);
-//                    $.each(value, function (k1, ar) {
-//
-//                        $hh = creat_html_1smena(ar);
-//                        $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
-//
-//                        // sp_man_day_d{{ date }}_sp{{sp_now}}_u{{ user_id }}
-//                        // console.log('1', date, value1);
-//
-//                    });
-//                });
-//
-//                $('div.graph_cell_1sp_man_day .smens').removeClass('ajax_loaded');
-
-//                    $('div.oborot_data_td').html('-');
-//                    ii = 1;
-//                    // переберём массив arr
-//                    $.each($j['res'], function (sp, value) {
-//                        $.each(value, function (date, value2) {
-//
-//                            console.log(sp, date, value2);
-//
-//
-//                            if (!!value2['oborot_hand']) {
-//                                val_hand = value2['oborot_hand'];
-//                            } else {
-//                                val_hand = '';
-//                            }
-//
-//                            input_oborot_hand = '<input type="number" max="1000000" min="0" '
-//                                    + ' placeholder="уточнить"'
-//                                    + ' title="укажите точную сумму оборота"'
-//
-//                                    + ' value="' + val_hand + '" '
-//
-//                                    + ' style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" '
-//                                    + ' class="form-control didrive__edit_items_dop_pole2" '
-//
-//                                    + ' edit_item_id="' + value2['id'] + '"'
-//                                    + ' edit_dop_name="oborot_hand"'
-//                                    + ' edit_s="' + value2['s_hand'] + '"' // {{ creatSecret(oborots[now_date2][\'id\']~"oborot_hand") }}"'
-//
-//                                    + ' pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"'
-//                                    + ' text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"'
-//
-//                                    + ' delete_ocenka_sp="{{ sp_now }}"'
-//                                    + ' delete_ocenka_date="{{ now_date2 }}"'
-//                                    + ' delete_ocenka_s="{{ creatSecret(sp_now~now_date2) }}"'
-//
-//                                    + ' />';
-//
-//
-//
-//                            // if (!!value2['oborot_hand'] && value2['oborot_hand'] > 0) {
-//                            if (!!value2['oborot_server']) {
-//
-//                                $('#data_obr_' + date + '__' + sp).html(
-//                                        (value2['oborot_server'] ?
-//                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
-//                                                number_format(value2['oborot_server'], 0, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
-//                                                : 'x')
-//                                        + '<br/>'
-//
-//                                        + input_oborot_hand
-//
-////                                        + '<input type="number" min="0" max="900000" step="0.01" '
-////                                        + ' class="number_oborot_tochnee" '
-////                                        + ' value="' + val_hand + '" '
-////                                        + ' />'
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//                                        );
-//                            } else {
-//
-//                                $('#data_obr_' + date + '__' + sp).html(
-//                                        '<sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" '
-//                                        + ' vars="date=' + date + '&hide_form=da&action=get_oborot_for_sps&get_sp_load=' + sp + '" '
-//                                        + ' res_to="' + sp + '_' + ii + '_res_ob2"'
-//                                        + ' xtarget="_blank"'
-//                                        + ' class="load_ajaxjson_to_id"'
-//                                        + ' >загрузить с ИИКО</a></sup>'
-//
-//                                        + ' <div id="' + sp + '_' + ii + '_res_ob2" ></div>'
-//
-////                                        + (value2['oborot_server'] ?
-////                                                // ( value2['oborot_server'] || '-' ) + '<sup><abbr title="Авто значение с сервера">A</abbr></sup>'
-////                                                number_format(value2['oborot_server'] / 1000, 1, '.', '`') + ' <sup><abbr title="Авто значение с сервера">A</abbr></sup>'
-////                                                : 'x')
-////
-////                                        + '<br/>'
-//
-//                                        // + (value2['oborot_hand'] ?? '-1')
-//
-////                                    + '<br/>'
-////                                    + (value2['delivery'] || '-')
-//                                        );
-//                                ii++;
-//                            }
-//
-//
-//                        }
-//                        );
-//                    });
-                }
-
-            });
-        }
     }
-
-
-
 
 if( 1 == 2 ){
     
@@ -3339,6 +3261,96 @@ if( 1 == 2 ){
     }
 
 }
+}
+
+/**
+ * добавляем взыскание
+ */
+
+    $('body').on('submit', '#add_minus', function (event) {
+
+        // console.log('добавляем минус');
+
+        event.preventDefault();
+        // создание массива объектов из данных формы        
+        var data1 = $(this).serializeArray();
+        
+        // console.log( 'добавляем минус', data1 );
+
+        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
+        // console.log('Входящие данные');
+        $.each(data1, function () {
+
+            // console.log(this.name + '=' + this.value);
+            if (this.name == 'print_res_to_id') {
+                $print_res_to = $('#' + this.value);
+            }
+
+            if (this.name == 'data-target2') {
+                $modal_id = this.value;
+            }
+
+        });
+        // alert('123');
+        // return false;
+
+        $.ajax({
+
+            type: 'POST',
+            // xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            dataType: 'json',
+            data: data1,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($data['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    $print_res_to.append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    $print_res_to.append($data['html']);
+                    // run_load__aj_get_minus_plus_coment();
+                }
+
+                //$($modal_id).modal('hide');
+                $('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+
+
+        return false;
+    });
 
 });
 

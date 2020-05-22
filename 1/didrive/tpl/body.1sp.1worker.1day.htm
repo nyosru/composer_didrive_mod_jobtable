@@ -240,7 +240,8 @@
                        toform_jobman_name="{{ mans[man]['head'] }}"
 
                        date="{{ date }}"
-                       print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}"
+                       {# print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}" #}
+                       print_res_to_id="sp{{ sp_now }}_jm{{ man }}_minus{{ date }}"
 
                        {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
@@ -265,7 +266,8 @@
                        toform_jobman_name="{{ mans[man]['head'] }}"
 
                        date="{{ date }}"
-                       print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus"
+                       {# print_res_to_id="res{{ sp_now }}{{ man }}{{ date }}{{ rr }}plus" #}
+                       print_res_to_id="sp{{ sp_now }}_jm{{ man }}_plus{{ date }}"
 
                        {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
@@ -370,18 +372,24 @@
 
         {% endfor %}
 
+        
+        
         {# плюсы #}
         {% for k, item in getListJobsPeriodAll.data.money_bonus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.plus.htm' %}
         {% endfor %}
-
-
+        <div id="sp{{ sp_now }}_jm{{ man }}_plus{{ date }}" ></div>
+        
+        
+        
         {# минусы #}
         {% for k, item in getListJobsPeriodAll.data.money_minus if item.jobman == man and item.date_now == date %}
             {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.minus.htm' %}
         {% endfor %}
+        <div id="sp{{ sp_now }}_jm{{ man }}_minus{{ date }}" ></div>
 
-
+        
+        
         {# комментарии #}
         {#{ pa( getListJobsPeriodAll.data.comments ) }#}
         {% for k, item in getListJobsPeriodAll.data.comments if item.jobman == man and item.date_to == date %}
@@ -729,6 +737,7 @@
                     {% endfor %}
                 {% endif %}
 
+                
                 {#{ pa(now_job) }#}
 
             {% endif %}

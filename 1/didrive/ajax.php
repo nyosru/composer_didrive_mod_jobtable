@@ -744,29 +744,27 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens_jm') {
 
 
                 echo '            
-                                        <span class="action">
-                                            <div onclick=\'$("#but_{{ v1.id }}").show();\' >
+                <span class="action">
+                    <div onclick=\'$("#but_{{ v1.id }}").show();\' >
 
-                                                <b>Статус:</b>
-                                                <span id="' . $v['id'] . '" >'
-                . ( $v['status'] == 'show' ? 'видно' :
+                        <b>Статус:</b>
+                        <span id="' . $v['id'] . '" >'
+                    . ( $v['status'] == 'show' ? 'видно' :
                         ( $v['status'] == 'hide' ? 'отменено' :
                                 ( $v['status'] == 'delete' ? 'удалено' : ( $v['status'] ?? 'x' ) )
                         ) )
                 . '</span>
+                    </div>
 
-                                            </div>
-
-                                            <input class="edit_item" type="button" alt="status" rev="show" '
+                        <input class="edit_item" type="button" alt="status" rev="show" '
                 . ' value="показать" '
                 . ' rel="' . $v['id'] . '" '
                 . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
                 . ' for_res="shows' . $v['id'] . '" '
-                . ' />
-                                            <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="hide" value="скрыть"  s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}"  />
-                                            <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="delete" s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}" value="Удалить" />
-
-                                        </span>
+                . ' />11
+                    <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="hide" value="скрыть"  s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}"  />
+                    <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="delete" s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}" value="Удалить" />
+                </span>
 ';
 
 
