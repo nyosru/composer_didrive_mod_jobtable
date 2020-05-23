@@ -1155,7 +1155,7 @@ class JobDesc {
         }
 
 // если считаем всё с бонусами
-        if ($calc_no_bonus !== true) {
+        if ( 1 == 1 || $calc_no_bonus !== true) {
 
 // minus
             if (1 == 1) {
@@ -1188,6 +1188,7 @@ class JobDesc {
 
                     if (!empty($var_cash_minus))
                         \f\Cash::setVar($var_cash_minus, $return['money_minus']);
+
                 }
 
 // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
