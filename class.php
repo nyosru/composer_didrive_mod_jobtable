@@ -1041,6 +1041,7 @@ class JobDesc {
 
             if (!empty($e))
                 return \f\end3('окей (кеш)', true, $e);
+            
         }
 
 //            $e = \f\Cash::deleteKeyPoFilter( [ 'all' , 'jobdesc' , 'sp'.$_REQUEST['sale_point'], 'date'.$_REQUEST['delete_cash_start_date'] ] );
@@ -1062,10 +1063,8 @@ class JobDesc {
             'checks' => [],
         ];
 
-
-
-
-
+        // \f\pa($return['norm'],2);
+        // \f\pa($return['spec'],2);
 
 //        \f\timer_start(771);
 //        $mans = \Nyos\mod\items::get($db, self::$mod_jobman);
@@ -1273,10 +1272,10 @@ class JobDesc {
             }
         }
 
+        // \f\pa($return['money_minus'],2,'','money_minus');
+        
 // собираем должности кто где работает и считаем сколько денег за смену заработал выводим цену часа
         if (1 == 1) {
-
-
 
             foreach ($return['jobmans'] as $wman => $v0) {
 
@@ -1286,11 +1285,6 @@ class JobDesc {
 
                     if ($now_date > $date_finish)
                         break;
-
-
-
-
-
 
                     foreach ($return['spec']['data'] as $k => $v) {
                         if ($v['date'] == $now_date && $v['jobman'] == $wman) {
