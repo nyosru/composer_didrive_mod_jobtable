@@ -461,6 +461,439 @@ class JobDesc {
     }
 
     /**
+     * получаем смены, назначения и зарплаты сотрудников на точке
+     * @param type $db
+     * @param type $d_start
+     * @param type $d_finish
+     * @param type $sp
+     */
+    public static function getSmensJobmansOnSp($db, $date_start, $date_finish, $sp_id) {
+
+        try {
+            
+            if (empty($_REQUEST['date_start']))
+                throw new Exception('не определена дата выборки', __LINE__);
+
+            if (empty($_REQUEST['sp']))
+                throw new Exception('не определена точка продаж', __LINE__);
+
+            $d_start = $_REQUEST['date_start'];
+            $d_finish = $_REQUEST['date_finish'] ?? date('Y-m-d', date(strtotime($_REQUEST['date_start'] . ' +1 month ')));
+
+            $result = [
+                // 'in' => $_REQUEST
+            ];
+
+            $result['who_is_job'] = self::getPeriodWhereJobMans($db, $date_start, $date_finish, $sp_id);
+            $result['jobmans'] = array_keys($result['who_is_job']);
+
+            
+            \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
+            \Nyos\mod\items::$search['jobman'] = $result['jobmans'];
+            $result['checks'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+            
+            return \f\end3( $r ?? 'x' , true, $result );
+            
+        } catch (Exception $ex) {
+
+            return \f\end3($ex->message, false);
+        }
+
+
+
+
+
+
+
+
+
+        // \f\end2('ok', true, [ 'res' => $_REQUEST ] );
+        //    $d_start = '';
+        //    $d_finish = '';
+        //
+        //    if (!empty($_REQUEST['d']))
+        //        foreach ($_REQUEST['d'] as $k => $v) {
+        //
+        //            if (empty($d_start))
+        //                $d_start = $v['date_start'];
+        //
+        //            if (empty($d_finish))
+        //                $d_finish = $v['date_stop'];
+        //
+        //            if (!empty($d_start) && !empty($v['date_start']) && $d_start > $v['date_start'])
+        //                $d_start = $v['date_start'];
+        //
+        //            if (!empty($d_finish) && !empty($v['date_stop']) && $d_finish < $v['date_stop'])
+        //                $d_finish = $v['date_stop'];
+        //        }
+
+        if (!empty($d_start) && !empty($d_finish))
+            \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
+
+        $sp = '';
+
+        $sps_list = [];
+
+
+
+
+
+        if (strpos($_REQUEST['jobman'], '|') !== false) {
+
+            // \f\pa($_REQUEST['jobman'],'','','jobmans');
+            $jmans = explode('|', $_REQUEST['jobman']);
+            // \f\pa($e, '', '', 'jobmans');
+
+            foreach ($jmans as $k) {
+                \Nyos\mod\items::$search['jobman'][$k] = 1;
+            }
+        } else {
+
+            $jobmans = [];
+
+            if (!empty($_REQUEST['d']))
+                foreach ($_REQUEST['d'] as $k => $v) {
+
+                    if (!isset($sps_list[$v['sp']]))
+                        $sps_list[$v['sp']] = 1;
+
+                    if (empty($sp) && isset($v['sp']))
+                        $sp = $v['sp'];
+
+                    // \f\pa($v);
+                    if (isset($v['jobman'])) {
+
+                        \Nyos\mod\items::$search['jobman'][] = $v['jobman'];
+                        $jobmans[$v['jobman']] = 1;
+                    }
+                }
+
+            \Nyos\mod\items::$search['jobman'] = $_REQUEST['jobman'];
+        }
+
+        // \f\pa(\Nyos\mod\items::$search);
+        // \Nyos\mod\items::$show_sql = true;
+        $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+
+        // \f\pa($checks0);
+
+        $checks = [];
+
+        foreach ($checks0 as $k => $v) {
+
+            if (!isset($v['start']))
+                continue;
+
+            $v['sp'] = $sp;
+            $v['s'] = \Nyos\Nyos::creatSecret('hour_' . $v['id']);
+            $checks[date('Y-m-d', strtotime($v['start']))][] = $v;
+        }
+
+        $job_on = [];
+        foreach ($sps_list as $sp => $v) {
+            $job_on[$sp] = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $d_start, $d_finish, $sp);
+        }
+
+
+        //    \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+        $dolgn = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
+
+        if (!empty($d_start) && !empty($d_finish)) {
+            \Nyos\mod\items::$between_date['date'] = [date('Y-m-d', strtotime($d_start . ' -6 month')), $d_finish];
+            $salary0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary);
+
+            foreach ($salary0 as $k => $v) {
+                $salary[$v['dolgnost']][$v['date']] = $v;
+            }
+        }
+
+        //    \f\end2('ок', true, [
+        //        'in' => $_REQUEST,
+        //        'checks' => $checks,
+        //        'job_on' => $job_on,
+        //        'dolgn' => $dolgn,
+        //        'dolgn_money' => ( $salary ?? null )
+        //    ]);
+        //
+        //    \f\pa($sps);
+
+        ob_start('ob_gzhandler');
+
+        // \f\pa($_REQUEST);
+
+        $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
+        // \f\pa($sps,2);
+
+        $d = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_dolgn);
+        // \f\pa($d,2);
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'jobman\' '
+                . ' AND mid.value = :user ';
+        \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
+        $naznach = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp, '');
+        // \f\pa($e,2,'','nazn');
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'jobman\' '
+                . ' AND mid.value = :user ';
+        \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
+        $spec = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_spec_jobday, '');
+        // \f\pa($spec, 2, '', 'spec');
+
+        foreach ($spec as $k => $v) {
+            $v['type'] = 'spec';
+            $naznach[] = $v;
+        }
+
+        usort($naznach, "\\f\\sort_ar_date");
+
+        //\f\pa($naznach, 2, '', '$naznach');
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                . ' ON mid.id_item = mi.id '
+                . ' AND mid.name = \'jobman\' '
+                . ' AND mid.value = :user ';
+        \Nyos\mod\items::$var_ar_for_1sql[':user'] = $_REQUEST['user'];
+
+        // echo $_REQUEST['date_start'];
+        if (isset($_REQUEST['date_start'])) {
+
+            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
+                    . ' ON mid2.id_item = mi.id '
+                    . ' AND mid2.name = \'start\' '
+                    . ' AND mid2.value_datetime >= :ds '
+                    . ' AND mid2.value_datetime <= :df ';
+            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-01 05:00:00', strtotime($_REQUEST['date_start']));
+            \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d 03:00:00', strtotime(\Nyos\mod\items::$var_ar_for_1sql[':ds'] . ' +1 month'));
+        }
+
+        $checks = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks, '');
+        usort($checks, "\\f\\sort_ar_date");
+
+        echo
+        // '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
+
+        '<style> '
+        . ' .d345 th, '
+        . ' .d345 tbody td{ text-align: center; } '
+        . ' .d345 tbody td.r{ text-align: right; } '
+        . '</style>'
+        . '<table class="table table-bordered d345" >'
+        . '<thead>'
+        . '<tr>'
+
+        //    . '<th>статус записи</th>'
+        //    . '<th>тип</th>'
+        //    . '<th>точка продаж</th>'
+        //    . '<th>должность</th>'
+        //    . '<th>принят</th>'
+        //    . '<th>уволен</th>'
+        . '<th>старт</th>'
+        . '<th>конец</th>'
+        . '<th>длительность (авто/вручную)</th>'
+        . '<th>оценка (авто/вручную)</th>'
+        . '<th>тех. статус</th>'
+        . '</tr>'
+        . '</thead>'
+        . '<tbody>';
+
+        $date_start = date('Y-m-01', strtotime($_REQUEST['date_start']));
+        $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+
+        $last_dolgn = [];
+
+        foreach ($naznach as $k => $v) {
+
+            if (isset($v['type']) && $v['type'] == 'spec')
+                continue;
+
+            if ($v['date'] < $date_start) {
+                $last_dolgn = $v;
+                //\f\pa($v);
+            }
+        }
+
+
+        if (!empty($last_dolgn)) {
+            $v = $last_dolgn;
+            echo '<tr>'
+
+            //                . '<td>' . ( isset($v['status']) && $v['status'] == 'show' ? 'вкл' : ( isset($v['status']) && $v['status'] == 'hide' ? 'выкл' : ( isset($v['status']) && $v['status'] == 'delete' ? 'удалено' : 'x' ) ) ) . '</td>'
+            . '<td>' . $v['date'] . ' ' . ((isset($v['type']) && $v['type'] == 'spec') ? 'спец. назначение' : 'приём на должность') . '</td>'
+            //                . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
+            //                . '<td class="r" >' . $v['date'] . '</td>'
+            . '<td class="r" >' . ($v['date_finish'] ?? '-') . '</td>'
+            . '<td colspan=2 >' . ($d[$v['dolgnost']]['head'] ?? '- - -') . '</td>'
+            //                . '<td>&nbsp;</td>'
+            . '<td>'
+            . ($v['status'] == 'show' ? 'норм' : ($v['status'] == 'hide' ? 'отменено' : ($v['status'] ?? 'x')))
+            . '</td>'
+            . '</tr>';
+        }
+
+        for ($nn = 0; $nn <= 31; $nn++) {
+
+            $date_now = date('Y-m-d', strtotime($date_start . ' +' . $nn . ' day'));
+            /**
+             * старт дня ( дата время )
+             */
+            $datetime_start = $date_now . ' 08:00:00';
+            /**
+             * конец дня ( дата время )
+             */
+            $datetime_finish = date('Y-m-d 03:00:00', strtotime($datetime_start . ' +1 day'));
+
+            echo '<tr>'
+            . '<td colspan=5 >' . $date_now . '</td>'
+            . '</tr>';
+
+            foreach ($naznach as $k => $v) {
+                if ($v['date'] == $date_now) {
+                    echo '<tr>'
+
+                    //                . '<td>' . ( isset($v['status']) && $v['status'] == 'show' ? 'вкл' : ( isset($v['status']) && $v['status'] == 'hide' ? 'выкл' : ( isset($v['status']) && $v['status'] == 'delete' ? 'удалено' : 'x' ) ) ) . '</td>'
+                    . '<td>' . $v['date'] . ' ' . ((isset($v['type']) && $v['type'] == 'spec') ? 'спец. назначение' : 'приём на должность') . '</td>'
+                    //                . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
+                    //                . '<td class="r" >' . $v['date'] . '</td>'
+                    . '<td class="r" >' . ($v['date_finish'] ?? '-') . '</td>'
+                    . '<td colspan=2 >' . ($d[$v['dolgnost']]['head'] ?? '- - -') . '</td>'
+                    //                . '<td>&nbsp;</td>'
+                    //                . '<td>&nbsp;</td>'
+                    . '<td>';
+                    // $v['status']
+
+                    if ($v['status'] == 'show') {
+                        echo 'норм';
+                    } else if ($v['status'] == 'hide') {
+                        echo 'отменено';
+                    }
+
+                    // echo ( $v['status'] == 'show' ? 'норм' : ( $v['status'] == 'hide' ? 'отменено' : ( $v['status'] ?? 'x' ) ) );
+
+
+                    echo '
+                <span class="action">
+                    <div onclick=\'$("#but_{{ v1.id }}").show();\' >
+
+                        <b>Статус:</b>
+                        <span id="' . $v['id'] . '" >'
+                    . ($v['status'] == 'show' ? 'видно' : ($v['status'] == 'hide' ? 'отменено' : ($v['status'] == 'delete' ? 'удалено' : ($v['status'] ?? 'x'))))
+                    . '</span>
+                    </div>
+
+                        <input class="edit_item" type="button" alt="status" rev="show" '
+                    . ' value="показать" '
+                    . ' rel="' . $v['id'] . '" '
+                    . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                    . ' for_res="shows' . $v['id'] . '" '
+                    . ' />11
+                    <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="hide" value="скрыть"  s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}"  />
+                    <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="delete" s=\'{{ creatSecret(v1.id) }}\' for_res="shows{{ v1.id }}" value="Удалить" />
+                </span>';
+
+                    echo '</td>'
+                    . '</tr>';
+                }
+            }
+
+            foreach ($checks as $k => $v) {
+                if ($v['start'] >= $datetime_start && $v['start'] <= $datetime_finish) {
+
+                    // \f\pa($v);
+                    echo '<tr>'
+                    //        . '<td>' . ( isset($v['status']) && $v['status'] == 'show' ? 'вкл' : ( isset($v['status']) && $v['status'] == 'hide' ? 'выкл' : ( isset($v['status']) && $v['status'] == 'delete' ? 'удалено' : 'x' ) ) ) . '</td>'
+                    //        . '<td>' . ( ( isset($v['type']) && $v['type'] == 'spec' ) ? 'спец. назначение' : 'приём' ) . '</td>'
+                    //        . '<td>' . ( $sps[$v['sale_point']]['head'] ?? 'не определена' ) . '</td>'
+                    //        . '<td>' . ( $d[$v['dolgnost']]['head'] ?? '- - -' ) . '</td>'
+                    //        . '<td class="r" >' . $v['date'] . '</td>'
+                    //                . '<td xclass="r" >';
+                    //                \f\pa($v);
+                    //                echo '</td>'
+                    . '<td class="c" >'
+                    . ($v['start'] ?? '-')
+                    . '</td>'
+                    // . '<td class="r" >'
+                    . '<td class="c" >'
+                    . ($v['fin'] ?? 'x')
+                    . '</td>'
+                    . '<td class="r" >' . (!empty($v['hour_on_job_hand']) ? '<strike style="color:gray;" >' . ($v['hour_on_job'] ?? '-') . '</strike> <b>' . $v['hour_on_job_hand'] . '</b>' : ($v['hour_on_job'] ?? 'x')) . '</td>'
+                    . '<td class="r" >' .
+                    (!empty($v['ocenka']) ? '<strike style="color:gray;" >' . ($v['ocenka_auto'] ?? '-') . '</strike> <b>' . $v['ocenka'] . '</b>' : ($v['ocenka_auto'] ?? '-')) . '</td>'
+                    //                . '<td>&nbsp;</td>'
+                    . '<td>'
+                    // . ( $v['status'] == 'show' ? 'норм' : $v['status'] )
+                    . '
+                                        <span class="action">
+                                            <div onclick=\'$("#but_{{ v1.id }}").show();\' >
+
+                                                <b>Статус:</b>
+                                                <span id="shows_22_' . $v['id'] . '" >'
+                    . ($v['status'] == 'show' ? 'норм' : ($v['status'] == 'hide' ? 'отменено' : ($v['status'] == 'delete' ? 'удалено' : ($v['status'] ?? 'x'))))
+                    . '</span>'
+                    . ' <div id="shows_22r_' . $v['id'] . '" class="bg-warning" style="padding:5px 10px;display:none;" ><a href="">обновите страницу</a> для просмотра изменений в графике</div>'
+                    . '</div>
+
+                                            <input class="edit_item" type="button" alt="status" '
+                    . ' rev="show" '
+                    . ' value="показать" '
+                    . ' rel="' . $v['id'] . '" '
+                    . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                    . ' for_res="shows_22_' . $v['id'] . '" '
+                    . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+                    . ' />
+                                            <input class="edit_item" type="button" '
+                    . ' value="скрыть" '
+                    . ' alt="status" rev="hide" '
+                    . ' rel="' . $v['id'] . '" '
+                    . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                    . ' for_res="shows_22_' . $v['id'] . '" '
+                    . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+                    . ' />
+                    '
+                    //                   .' <input class="edit_item" type="button" '
+                    //                . ' alt="status" '
+                    //                . ' rev="delete" '
+                    //                . ' value="Удалить" '
+                    //                . ' rel="' . $v['id'] . '" '
+                    //                . ' s=\'' . \Nyos\Nyos::creatSecret($v['id']) . '\' '
+                    //                . ' for_res="shows_22_' . $v['id'] . '" '
+                    //                . ' onclick="$(\'#shows_22r_' . $v['id'] . '\').show(\'slow\');" '
+                    //                . ' /> '
+                    . ' </span>
+'
+                    . '</td>'
+                    . '</tr>';
+                }
+            }
+        }
+
+
+        echo '</tbody></table>'
+        . '<center>'
+        . '<p>Если у записи нет увольнения, датой уволнениния считается дата ( -1 день назад ) от следующего приёма на работу</p>'
+        . '</center>';
+
+
+        $r = ob_get_contents();
+        ob_end_clean();
+
+        $timer = \f\timer_stop(78);
+
+
+
+
+
+
+
+
+        return \f\end3('смены сотрудников на точке за период времени', true, $result);
+    }
+
+    /**
      * удаляем кеш если что то меняли
      * / кеш суммы часов за сутки
      * @param type $date
@@ -1041,7 +1474,6 @@ class JobDesc {
 
             if (!empty($e))
                 return \f\end3('окей (кеш)', true, $e);
-            
         }
 
 //            $e = \f\Cash::deleteKeyPoFilter( [ 'all' , 'jobdesc' , 'sp'.$_REQUEST['sale_point'], 'date'.$_REQUEST['delete_cash_start_date'] ] );
@@ -1065,7 +1497,6 @@ class JobDesc {
 
         // \f\pa($return['norm'],2);
         // \f\pa($return['spec'],2);
-
 //        \f\timer_start(771);
 //        $mans = \Nyos\mod\items::get($db, self::$mod_jobman);
 //        echo '<br/>#' . __LINE__ . ' mans ' . self::$mod_jobman .' '. \f\timer_stop(771);
@@ -1136,7 +1567,14 @@ class JobDesc {
 //echo '<br/>$jobman_in_sql ' . $jobman_in_sql;
 
             foreach ($return['spec']['data'] as $k => $v) {
-
+// job_on_sp
+//                \f\pa($date_start);
+//                \f\pa($date_finish);
+//                \f\pa($return['spec']['data']);
+                
+//                if($v['date'] < $date_start && $v['date'] > $date_finish )
+//                    continue;
+                
                 if (!isset($return['job_on_sp'][$v['sale_point']][$v['jobman']]))
                     $return['job_on_sp'][$v['sale_point']][$v['jobman']] = [
                         'jobman' => $v['jobman'],
@@ -1150,11 +1588,12 @@ class JobDesc {
                     $return['jobmans'][$v['jobman']] = 1;
                     $jobman_in_sql .= (!empty($jobman_in_sql) ? ',' : '' ) . $v['jobman'];
                 }
+                
             }
         }
 
 // если считаем всё с бонусами
-        if ( 1 == 1 || $calc_no_bonus !== true) {
+        if (1 == 1 || $calc_no_bonus !== true) {
 
 // minus
             if (1 == 1) {
@@ -1187,7 +1626,6 @@ class JobDesc {
 
                     if (!empty($var_cash_minus))
                         \f\Cash::setVar($var_cash_minus, $return['money_minus']);
-
                 }
 
 // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(7);
@@ -1273,7 +1711,6 @@ class JobDesc {
         }
 
         // \f\pa($return['money_minus'],2,'','money_minus');
-        
 // собираем должности кто где работает и считаем сколько денег за смену заработал выводим цену часа
         if (1 == 1) {
 
@@ -1315,23 +1752,22 @@ class JobDesc {
 // ищем последнюю дату до даты старта периода
                         if ($i == 0) {
 
-                            if(isset($return['norm']['data'][$wman]) ) 
-                            foreach ($return['norm']['data'][$wman] as $k => $v) {
-                                if ($v['date'] > $now_date)
-                                    continue;
-                                if ($v['date'] <= $now_date)
-                                    $now_job = $v;
-                            }
-                            
+                            if (isset($return['norm']['data'][$wman]))
+                                foreach ($return['norm']['data'][$wman] as $k => $v) {
+                                    if ($v['date'] > $now_date)
+                                        continue;
+                                    if ($v['date'] <= $now_date)
+                                        $now_job = $v;
+                                }
                         }
 
 // проверяем текущую дату
                         else {
-                            if(isset($return['norm']['data'][$wman]) ) 
-                            foreach ($return['norm']['data'][$wman] as $k => $v) {
-                                if ($v['date'] == $now_date)
-                                    $now_job = $v;
-                            }
+                            if (isset($return['norm']['data'][$wman]))
+                                foreach ($return['norm']['data'][$wman] as $k => $v) {
+                                    if ($v['date'] == $now_date)
+                                        $now_job = $v;
+                                }
                         }
                     }
 
@@ -1349,7 +1785,6 @@ class JobDesc {
                     if (!empty($salary)) {
 
                         $now_smena['salary'] = $salary;
-
                     } else {
 
 // $now_smena['salary'] = [];
@@ -1361,14 +1796,12 @@ class JobDesc {
 
                         if (!empty($var_cash_salary))
                             \f\Cash::setVar($var_cash_salary, $now_smena);
-
                     }
 
                     $return['where_job__workman_date'][$wman][$now_date] = $now_smena;
 
                     if (isset($spec_job))
                         unset($spec_job);
-
                 }
             }
         }

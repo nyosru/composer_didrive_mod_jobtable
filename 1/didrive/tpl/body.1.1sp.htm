@@ -1,7 +1,7 @@
 {% spaceless %}
 
-    
-    
+
+
 
     {#{ sp_now }#}
     {#{ kk }} - {{ sp_now }#}
@@ -10,23 +10,43 @@
     {% set spoint = sps[sp_now] %}
     {#{ pa(spoint) }#}
 
-    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(47) }} {% endif %}
+    {% if 1 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(47) }} {% endif %}
     {% set jobmans_on_job = jobdesc__getMansOnJobsPeriod( db, date_start, date_finish, sp_now ) %}
-    {% if 1 == 2 or timer_show == 'on' %} <br/>время 35 jobdesc__getMansOnJobsPeriod - {{ didrive_f__timer_stop(47) }} {% endif %}
+    {% if 1 == 1 or timer_show == 'on' %} <br/>время 35 jobdesc__getMansOnJobsPeriod - {{ didrive_f__timer_stop(47) }} {% endif %}
 
     {% if 1 == 2 %}
         jobmans_on_job
-        <br/><br/>{{ pa(jobmans_on_job,2) }}
+        <br/><br/>{{ pa(jobmans_on_job,12) }}
     {% endif %}
 
+    
+    {% set jms = '' %}
 
-    
-    
-{% if 1 == 7 %}
-    {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
-{% endif %}
-    
+    {% for user_id, user_v in jobmans_on_job %}
+        {# = {{ loop.index }} =<br/> #}
+        {#{ user_id }}+ #}
+        {% if loop.index == 1 %}
+        {% set jms = user_id %}
+        {% else %}
+        {% set jms = jms ~ '|' ~ user_id %}
+        {% endif %}
+    {% endfor %}
 
+<pre>
+    jobmans="{{ jms }}"
+</pre>
+
+<workers_smens
+    sp="{{ sp_now }}"
+    jobman="{{ jms }}"
+    dstart="{{ date_start }}"
+    dfinish="{{ date_finish }}"
+    ></workers_smens>
+    
+    
+    {% if 1 == 1 %}
+        {% include dir_mod_now_mod_ditpl~'body.1sp.up_line.htm' %}
+    {% endif %}
 
     {#
         mans
@@ -47,7 +67,6 @@
                     user_v
                     {{ pa(user_v) }}
             #}
-
 
             {% if 1 == 1 %}
                 {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
