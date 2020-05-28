@@ -17,7 +17,57 @@
     {% endif %}
 
     
-    
+            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.dolgnost.htm' %}
+
+            
+            
+            
+            
+            
+            
+        {# всякие глобальные штуки - спец назначение#}    
+        {% if 1 == 1 %}
+
+            {#% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.spec.htm' %#}
+
+            {% set spec_out = null %}
+            {% set spec_in = null %}
+
+            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point == sp_now and spec0.date == date %}
+
+                {% set spec_in = spec0 %}
+
+                {#
+                спец
+                {{ pa(spec) }}
+                #}
+
+                <div class="alert-warning text-center" style="padding: 5px 2px;" >
+                    основная работа: {{ sps[now_dolgn.sale_point]['head'] }} {{ dolgn.data[now_dolgn.dolgnost]['head'] }}
+                    <br/>
+                    спец. назначение в {{ sps[spec_in.sale_point]['head'] }} {{ dolgn.data[spec_in.dolgnost]['head'] }}
+                </div>
+
+                {#{ pa(spec) }#}
+
+            {% endfor %}
+
+            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point != sp_now and spec0.date == date %}
+
+                {% set spec_out = spec0 %}
+
+                <div class="alert-warning text-center" style="padding: 5px 2px;" >
+                    спец. назначение сегодня <u>работает на {{ sps[spec_out.sale_point]['head'] }}</u>
+                </div>
+
+            {% endfor %}
+
+            {% if spec != 0 %}
+                ++++ спец ++++
+                {{ pa(spec) }}
+            {% endif %}
+
+        {% endif %}
     
     {# включить выключить показ шестерёнки дня #}
 
@@ -280,9 +330,6 @@
     {% else %}    {#% if show_option_day == true %#}
 
 
-            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.dolgnost.htm' %}
-
-            
             
 
         {# 
@@ -300,51 +347,6 @@
         {# глобальный большой массив #}
         {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
 
-
-        {# всякие глобальные штуки - спец назначение#}    
-        {% if 1 == 1 %}
-
-            {#% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.spec.htm' %#}
-
-            {% set spec_out = null %}
-            {% set spec_in = null %}
-
-            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point == sp_now and spec0.date == date %}
-
-                {% set spec_in = spec0 %}
-
-                {#
-                спец
-                {{ pa(spec) }}
-                #}
-
-                <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                    основная работа: {{ sps[now_dolgn.sale_point]['head'] }} {{ dolgn.data[now_dolgn.dolgnost]['head'] }}
-                    <br/>
-                    спец. назначение в {{ sps[spec_in.sale_point]['head'] }} {{ dolgn.data[spec_in.dolgnost]['head'] }}
-                </div>
-
-                {#{ pa(spec) }#}
-
-            {% endfor %}
-
-            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point != sp_now and spec0.date == date %}
-
-                {% set spec_out = spec0 %}
-
-                <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                    спец. назначение сегодня <u>работает на {{ sps[spec_out.sale_point]['head'] }}</u>
-                </div>
-
-            {% endfor %}
-
-            {% if spec != 0 %}
-                ++++ спец ++++
-                {{ pa(spec) }}
-            {% endif %}
-
-
-        {% endif %}
 
         {% if 1 == 2 %}
             pa(now_dolgn) 
