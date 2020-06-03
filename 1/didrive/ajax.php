@@ -47,17 +47,21 @@ if (
         //
         || $_REQUEST['action'] == 'bonus_record_month'
         //
-        || $_REQUEST['action'] == 'show_dolgn')) || (isset($_REQUEST['id']{
-                0}) && isset($_REQUEST['s']{
-                5}) &&
-        \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true) || (isset($_REQUEST['user']{
-                0}) && isset($_REQUEST['s']{
-                5}) &&
-        \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['user']) === true) || (isset($_REQUEST['id2']{
-                0}) && isset($_REQUEST['s2']{
-                5}) &&
-        \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true) || (isset($_REQUEST['sp']{
-                0}) && isset($_REQUEST['sp_s']{
+        || $_REQUEST['action'] == 'show_dolgn')) 
+        || 
+        (
+            isset($_REQUEST['id']{0}) 
+            && isset($_REQUEST['s']{5}) 
+            && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
+        ) || (
+            isset($_REQUEST['user']{0}) && 
+            isset($_REQUEST['s']{5}) &&
+            \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['user']) === true 
+        ) || (
+            isset($_REQUEST['id2']{0}) 
+            && isset($_REQUEST['s2']{5}) &&
+            \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
+        ) || (isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{
                 5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true) || (
         // action == 'delete_ocenka'
@@ -1995,6 +1999,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             sp="' . $v['sale_point'] . '"
             date="' . $v['date'] . '"
 
+            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
+
             ';
 
         // если спец назначение
@@ -2022,8 +2028,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             for_res="shows' . $v['id'] . '"
             before_success_show_id="shows' . $v['id'] . '"
 
-sp="' . $v['sale_point'] . '"
-date="' . $v['date'] . '"
+            sp="' . $v['sale_point'] . '"
+            date="' . $v['date'] . '"
+
+            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
 
             ';
 
@@ -2039,16 +2047,16 @@ date="' . $v['date'] . '"
         }
 
         echo '
-
             />
 
-
         <input class="edit_item" type="button" rel="' . $v['id'] . '" alt="status" rev="delete" s="' . \Nyos\Nyos::creatSecret($v['id']) . '" for_res="shows' . $v['id'] . '" value="Удалить"
-                before_success_show_id="shows' . $v['id'] . '"
+            before_success_show_id="shows' . $v['id'] . '"
 
-sp="' . $v['sale_point'] . '"
-date="' . $v['date'] . '"
+            sp="' . $v['sale_point'] . '"
+            date="' . $v['date'] . '"
 
+            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
+    
             ';
 
         // если спец назначение
@@ -3610,6 +3618,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         $d['dolgnost'] = $_REQUEST['dolgn'];
         $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
 
+        
+        \f\Cash::deleteKeyPoFilter([date('Y-m-01', strtotime($_REQUEST['date']))]);
+        
         if (!empty($_REQUEST['smoke']))
             $d['smoke'] = 'da';
 
