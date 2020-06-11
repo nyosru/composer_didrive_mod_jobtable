@@ -470,7 +470,7 @@ class JobDesc {
     public static function getSmensJobmansOnSp($db, $date_start, $date_finish, $sp_id) {
 
         try {
-            
+
             if (empty($_REQUEST['date_start']))
                 throw new Exception('не определена дата выборки', __LINE__);
 
@@ -481,19 +481,18 @@ class JobDesc {
             $d_finish = $_REQUEST['date_finish'] ?? date('Y-m-d', date(strtotime($_REQUEST['date_start'] . ' +1 month ')));
 
             $result = [
-                // 'in' => $_REQUEST
+                    // 'in' => $_REQUEST
             ];
 
             $result['who_is_job'] = self::getPeriodWhereJobMans($db, $date_start, $date_finish, $sp_id);
             $result['jobmans'] = array_keys($result['who_is_job']);
 
-            
+
             \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
             \Nyos\mod\items::$search['jobman'] = $result['jobmans'];
             $result['checks'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
-            
-            return \f\end3( $r ?? 'x' , true, $result );
-            
+
+            return \f\end3($r ?? 'x', true, $result);
         } catch (Exception $ex) {
 
             return \f\end3($ex->message, false);
@@ -956,6 +955,9 @@ class JobDesc {
                 $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . (int) $v['jobman'] . '\' ';
             }
 
+            if( empty($sql2) )
+                return false;
+            
             if (1 == 1) {
                 \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                         . ' ON mid.id_item = mi.id '
@@ -970,6 +972,7 @@ class JobDesc {
                 \Nyos\mod\items::$var_ar_for_1sql[':date1'] = $date . ' 08:00:00';
                 \Nyos\mod\items::$var_ar_for_1sql[':date2'] = date('Y-m-d 03:00:00', strtotime($date . ' +1day'));
 
+                //\Nyos\mod\items::$show_sql = true;
                 $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
 
                 \Nyos\mod\items::$show_sql = false;
@@ -1326,7 +1329,7 @@ class JobDesc {
 
 // если нет переменной то не пишем кеш
         $cash_var = 'jobdesc__getListJobsPeriod_mod' . self::$mod_man_job_on_sp . '_datestart' . $date_start . '_datefinish' . $date_finish;
-// $cash_time_sec = 60 * 5;
+        $cash_time_sec = 60;
 
         $return = [];
 
@@ -1343,40 +1346,6 @@ class JobDesc {
 
             if (isset($show_timer) && $show_timer === true)
                 echo '<br/>#' . __LINE__ . ' собираем данные в кеш';
-
-
-
-
-
-
-
-
-// старая версия
-            if (1 == 2) {
-                \f\timer_start(12);
-
-                \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                        . ' ON mid.id_item = mi.id '
-                        . ' AND mid.name = \'date\' '
-// . ' AND mid.value_date >= :ds '
-                        . ' AND mid.value_date <= :df '
-//                . ' INNER JOIN `mitems-dops` mid2 '
-//                . ' ON mid2.id_item = mi.id '
-//                . ' AND mid2.name = \'sale_point\' '
-//                . ' AND mid2.value = :sp '
-
-                ;
-// \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
-// \Nyos\mod\items::$var_ar_for_1sql[':ds'] = '2019-04-01';
-                \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
-                $send_on_job = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp);
-
-                usort($send_on_job, "\\f\\sort_ar_date");
-
-                \f\pa($send_on_job, 2, '', '$send_on_job');
-
-                echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(12);
-            }
 
 // новая от 200412
             if (1 == 1) {
@@ -1423,16 +1392,27 @@ class JobDesc {
 
 
 
-
+            /**
+             * проходимся по масссиву и формируем массив кого показываем и какие есть назначения в период показа
+             */
             foreach ($send_on_job as $v) {
-// if ($v['date'] <= $date_start ) {
-                if ($v['date'] <= $date_start && (!isset($v['date_finish']) || (isset($v['date_finish']) && $v['date_finish'] >= $date_start ) )) {
-                    $return[$v['jobman']] = [$v['date'] => $v];
-//$return[$v['jobman']] = [$date_start => $v];
-// $r['job_on_sp'][$v['sale_point']][$v['jobman']] = 1;
-                } elseif ($v['date'] > $date_start) {
+
+                if ($v['date'] <= $date_start) {
+
+                    // если уволен позже срока старта показа то начинаем ветку чтобы чела не было в массиве
+                    if (!isset($v['date_finish']) || (isset($v['date_finish']) && $v['date_finish'] >= $date_start )) {
+                        $return[$v['jobman']] = [$v['date'] => $v];
+                    }
+                    // если уволен раньше срока показа то удаляем ветку чтобы чела не было в массиве
+                    else {
+                        if (isset($return[$v['jobman']]))
+                            unset($return[$v['jobman']]);
+                    }
+                }
+                // если дата старта после даты старта и меньше финиша, то добавляем в массив для показа
+                elseif ($v['date'] > $date_start && (!isset($v['date_finish']) || (isset($v['date_finish']) && $v['date_finish'] <= $date_finish ))) {
+
                     $return[$v['jobman']][$v['date']] = $v;
-// $r['job_on_sp'][$v['sale_point']][$v['jobman']] = 1;
                 }
             }
 
@@ -1571,10 +1551,9 @@ class JobDesc {
 //                \f\pa($date_start);
 //                \f\pa($date_finish);
 //                \f\pa($return['spec']['data']);
-                
 //                if($v['date'] < $date_start && $v['date'] > $date_finish )
 //                    continue;
-                
+
                 if (!isset($return['job_on_sp'][$v['sale_point']][$v['jobman']]))
                     $return['job_on_sp'][$v['sale_point']][$v['jobman']] = [
                         'jobman' => $v['jobman'],
@@ -1588,7 +1567,6 @@ class JobDesc {
                     $return['jobmans'][$v['jobman']] = 1;
                     $jobman_in_sql .= (!empty($jobman_in_sql) ? ',' : '' ) . $v['jobman'];
                 }
-                
             }
         }
 

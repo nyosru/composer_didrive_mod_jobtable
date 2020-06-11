@@ -71,10 +71,9 @@ $vv['in_body_end'][] = '<script defer="defer" src="' . DS . 'vendor' . DS . 'did
 
 
 // if (!empty($_REQUEST['sp'])) {
-
 // if (1 == 1) {
-if ( isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1 ) {
-    
+if (isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1) {
+
     if (empty($vv['dihead']))
         $vv['dihead'] = '';
 
@@ -85,6 +84,8 @@ if ( isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1 ) {
         __DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/js/',
         __DIR__ . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/css/',
         __DIR__ . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/js/',
+        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/css/',
+        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/js/',
     ];
 
     foreach ($dirs_for_scan as $d => $dir_local) {
@@ -95,9 +96,9 @@ if ( isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1 ) {
             $list_f = scandir($d);
             foreach ($list_f as $v) {
 
-                if( !isset($v{5}) )
-                continue;
-                
+                if (!isset($v{5}))
+                    continue;
+
                 // echo '<br/>#' . __LINE__ . ' ++1++ ' . $v;
 
                 if (strpos($v, '.css') !== false && strpos($v, 'app.') !== false) {
@@ -105,7 +106,7 @@ if ( isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1 ) {
                     $vv['dihead'] .= '<link href="' . $dir_local . $v . '" rel="stylesheet">';
                 }
 
-                if (strpos($v, '.js') !== false && ( strpos($v, 'app.') !== false || strpos($v, 'chunk') !== false ) ) {
+                if (strpos($v, '.js') !== false && ( strpos($v, 'app.') !== false || strpos($v, 'chunk') !== false )) {
                     echo '<br/>#' . __LINE__ . ' ' . $v;
                     $vv['in_body_end'][] = '<script type="text/javascript" defer="defer" src="' . $dir_local . $v . '"></script>';
                 }
