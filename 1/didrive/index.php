@@ -17,7 +17,8 @@ if (isset($_GET['newtype']{
 // \f\Cash::allClear();
 // $vv['tpl_body'] = '';
 
-
+$vv['user_id'] = $_SESSION['now_user_di']['id'];
+$vv['user_id_secret'] = \Nyos\Nyos::creatSecret($_SESSION['now_user_di']['id']);
 
 $vv['tpl_body'] = \f\like_tpl('body', dir_site_module_nowlev_tpldidr, dir_mods_mod_vers_didrive_tpl, DR);
 

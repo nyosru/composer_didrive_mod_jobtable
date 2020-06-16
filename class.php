@@ -166,6 +166,30 @@ class JobDesc {
     public static $mod_buh_head_sp = '005_money_buh_head_sp';
 
     /**
+     * массив люди чеки ( при расчёте автобонусов )
+     * @var type 
+     */
+    public static $ar_jm_date_checks = [];
+
+    /**
+     * кто где работает ( при расчёте автобонусов )
+     * @var type 
+     */
+    public static $WhereJobMans = [];
+
+    /**
+     * какие метки есть
+     * @var type 
+     */
+    public static $ar_metki_jm_date_sp_type = [];
+
+    /**
+     * зарплаты все
+     * @var type 
+     */
+    public static $ar_salaris_sp_dolgn_date = [];
+
+    /**
      * получаем список всех работников что работали на точках
      * 2004300126
      * @param type $db
@@ -955,9 +979,9 @@ class JobDesc {
                 $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' mid2.value = \'' . (int) $v['jobman'] . '\' ';
             }
 
-            if( empty($sql2) )
+            if (empty($sql2))
                 return false;
-            
+
             if (1 == 1) {
                 \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
                         . ' ON mid.id_item = mi.id '
@@ -1264,9 +1288,11 @@ class JobDesc {
      * @param type $date_start
      * @param type $date_finish
      * @param type $sp_id
+     * @param массив $jobmans
+     * список для поиска в базе
      * @return string
      */
-    public static function getListJobsPeriodSpec($db, $date_start, $date_finish, $sp_id = null) {
+    public static function getListJobsPeriodSpec($db, $date_start, $date_finish, $sp_id = null, $jobmans = []) {
 
 // $show_timer = true;
 
@@ -1300,6 +1326,10 @@ class JobDesc {
 // \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
             \Nyos\mod\items::$var_ar_for_1sql[':ds'] = date('Y-m-d', strtotime($date_start));
             \Nyos\mod\items::$var_ar_for_1sql[':df'] = date('Y-m-d', strtotime($date_finish));
+
+            if (!empty($jobmans))
+                \Nyos\mod\items::$search['jobman'] = $jobmans;
+
             $return = \Nyos\mod\items::get($db, self::$mod_spec_jobday);
 
             if (!empty($return))
@@ -1428,6 +1458,7 @@ class JobDesc {
 
     /**
      * получаем полный расклад за месяц
+     * таблица на графике 200616
      * @param type $db
      * @param type $date_start
      * @param type $date_finish
@@ -1435,6 +1466,7 @@ class JobDesc {
      */
     public static function getListJobsPeriodAll($db, $date_start, $date_finish = null) {
 
+        // echo '<br/>#'.__LINE__.' '.__FUNCTION__;
 // echo '<br/>['.$date_finish.']';
 
         /**
@@ -1694,7 +1726,7 @@ class JobDesc {
 
             foreach ($return['jobmans'] as $wman => $v0) {
 
-                for ($i = 0; $i <= 31; $i ++) {
+                for ($i = 0; $i <= 31; $i++) {
 
                     $now_date = date('Y-m-d', strtotime($date_start . ' +' . $i . ' day'));
 
@@ -2581,7 +2613,9 @@ class JobDesc {
 
         if (!empty($ar_sp_dolgn_date)) {
             
-        } else {
+        }
+        //
+        else {
 
 
             $ff1 = ' SELECT '
@@ -3722,14 +3756,93 @@ class JobDesc {
 
     /**
      * получаем массив по датам когда кто сколько получает
+     * на выходе только должности что катят под вход параметры
+     * creatAutoBonusMonth 200615
      * @param type $db
-     * @param type $date_start
-     * @param type $date_finish
-     * @param type $module_man_job_on_sp
-     * @param type $mod_spec_jobday
+     * @param int $sp
+     * @param int $dolgn
+     * @param string $date
      * @return type
      */
-    public static function getSalarisNow($db, int $sp, int $dolgn, string $date, $mod_dolgn = '061.dolgnost', $mod_salary = '071.set_oplata') {
+    public static function getSalarisNow($db, int $sp, int $dolgn, string $date) {
+
+        //salarys
+        if (1 == 1 && empty(self::$ar_salaris_sp_dolgn_date)) {
+
+            $salaris0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+            $salaris0_kolvo = sizeof($salaris0);
+
+            foreach ($salaris0 as $k => $v) {
+                if (!empty($v['sale_point']) && !empty($v['dolgnost']) && !empty($v['date']))
+                    self::$ar_salaris_sp_dolgn_date[$v['sale_point']][$v['dolgnost']][$v['date']][] = $v;
+            }
+
+            unset($salaris0);
+        }
+
+        // \f\pa(self::$ar_salaris_sp_dolgn_date);
+//        if (isset(self::$ar_salaris_sp_dolgn_date[$sp][$dolgn])) {
+//            \f\pa(self::$ar_salaris_sp_dolgn_date[$sp][$dolgn]);
+//        }
+
+        $salary = [];
+        foreach (self::$ar_salaris_sp_dolgn_date[$sp][$dolgn] as $k => $v) {
+            if ($k <= $date)
+                $salary = $v;
+        }
+
+        if ( sizeof($salary) > 0 ) {
+
+
+            // echo '<br/>#' . __LINE__;
+
+
+            $uslovie_oborot_month = false;
+            $uslovie_oborot_day = false;
+
+
+            foreach ($salary as $v) {
+                if (!empty($v['oborot_sp_last_monht_bolee'])) {
+                    $uslovie_oborot_month = true;
+                }
+            }
+
+            // если есть условия по обороту месяца на зп
+            // ищем 
+            if ($uslovie_oborot_month === true) {
+
+                $oborot = \Nyos\mod\IikoOborot::getOborotMonth($db, $sp, $date);
+
+                foreach ($salary as $v) {
+                    if (( $v['oborot_sp_last_monht_bolee'] ?? 0 ) >= $oborot) {
+                        return $v;
+                    }
+                }
+            }
+
+            foreach ($salary as $v) {
+                return $v;
+            }
+
+
+
+
+
+
+
+            if (1 == 1) {
+
+                if (!empty($v['oborot_sp_last_monht_bolee'])) {
+
+                    // self::getOborotSp($db, $sp, $date);
+                    // $v['oborot_sp_last_monht_bolee'] > \Nyos\mod\IikoOborot::getOborotMonth($db, $sp, $date);
+                }
+            }
+        }
+
+
+        return $salary;
+
 
 // echo '[' . $sp . '|' . $date . '|' . $dolgn . ']';
         $d = date('Y-m-d', strtotime($date));
@@ -4250,8 +4363,82 @@ class JobDesc {
 // return $return;
     }
 
+    /**
+     * где работает работник
+     * @param type $db
+     * @param type $sp_id
+     * @param type $user_id
+     * @param type $jobs
+     * список назначений сотрудника
+     * @param type $date_start
+     * дата старта
+     * @param type $date_finish
+     * дата финища
+     */
+    public static function whereJobJobman($db, $sp_id, $user_id, $jobs, $date_start, $date_finish) {
+
+        if (empty(self::$WhereJobMans))
+            throw new \Exception('капец нет инфы');
+
+        $return_date_jobs = [];
+
+        // \f\pa($jobs,2,'','jj');
+        usort($jobs, "\\f\\sort_ar_date");
+        // \f\pa($jobs,2,'','jj');
+
+        $now_job = [];
+
+        foreach ($jobs as $j) {
+            if ($j['date'] < $date_start)
+                $now_job = $j;
+        }
+
+        for ($n = 0; $n <= 32; $n++) {
+
+            $now_spec = [];
+            $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+
+            if ($date_now > $date_finish)
+                break;
+
+            foreach ($jobs as $v2) {
+
+                if ($v2['date'] == $date_now) {
+
+                    if (!empty($v2['type']) && $v2['type'] == 'spec') {
+                        $now_spec[$v2['id']] = $v2;
+                    } else {
+                        $now_job = $v2;
+                    }
+
+                    if ($user_id == 187)
+                        \f\pa($v2, 2, '', 'job v2');
+                }
+            }
+
+            $return_date_jobs[$date_now] = [
+                'job' => $now_job ?? [],
+                'spec' => $now_spec ?? [],
+                'metki' => self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$sp_id] ?? []
+            ];
+        }
+
+        return $return_date_jobs;
+    }
+
+    /**
+     * считаем автобонусы на 1 точке всем сотрудникам
+     * @param type $db
+     * @param type $_sp
+     * @param type $dt0
+     * @return type
+     */
     public static function creatAutoBonusMonth($db, $_sp, $dt0) {
 
+
+//        $show_html = true;
+//        $show_html = false;
+        
         $show_comment = true;
         $show_comment = false;
 
@@ -4261,67 +4448,391 @@ class JobDesc {
         $ds = date('Y-m-d 05:00:00', $dt);
         $df = date('Y-m-d 04:00:00', $dt + 3600 * 24);
 
+
 // старт и конец месяца
         $date_start = date('Y-m-01', $dt);
         $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
+
         /**
          * удаляем все смены что были ранее
          */
-        $ww1 = \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_sp, $date_start);
-//        \f\pa($ww1);
+        $ww1 = \Nyos\mod\JobDesc::deleteAutoBonusMonth($db, $_sp, $_d);
+        // \f\pa($ww1,'','','\Nyos\mod\JobDesc::deleteAutoBonusMonth');
 //        exit;
 
         if ($show_comment === true)
             \f\timer_start(47);
 
+        // data 
+        if (1 == 1) {
+
+            // $date_finish = date( 'Y-m-d', strtotime( date('Y-m-01',$date_start).' +1 month -1 day' ) );
+            // $e = self::getListJobsPeriodAll($db, $date_start);
+            self::$WhereJobMans = self::getPeriodWhereJobMans($db,
+                            $date_start,
+                            $date_finish,
+                            $_sp);
+
+            // $salaris = self::getAllSalary($db);
+            // bonus_proc_from_oborot: 1.5
+            //\f\pa(self::$WhereJobMans,2,'','self::$WhereJobMans');
+// checks
+            if (1 == 1) {
 
 
+                if (empty(self::$ar_jm_date_checks)) {
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'date\' '
-                . ' AND mid.value_date >= :d '
-                . ' AND mid.value_date <= :d2 '
-                . ' INNER JOIN `mitems-dops` mid2 '
-                . ' ON mid2.id_item = mi.id '
-                . ' AND mid2.name = \'sale_point\' '
-                . ' AND mid2.value = :sp '
+                    \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start_checks = date('Y-m-d 08:00:00', strtotime($date_start . ' -1 day'));
+                    \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_finish_checks = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
+
+                    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                            . ' `md`.`id_item` = mi.id '
+                            . 'AND `md`.`name` = \'start\' '
+                            . 'AND `md`.`value_datetime` >= :ds '
+                            . 'AND `md`.`value_datetime` <= :df ';
+                    \Nyos\mod\items::$search['jobman'] = array_keys(self::$WhereJobMans);
+                    $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+
+                    $checks0_kolvo = sizeof($checks0);
+
+                    // self::$ar_jm_date_checks = [];
+
+                    foreach ($checks0 as $k => $v) {
+                        if (isset($v['jobman']))
+                            $now_check_date = date('Y-m-d', strtotime($v['start'] . ' -4 hour'));
+
+                        self::$ar_jm_date_checks[$v['jobman']][$now_check_date][] = $v;
+                    }
+
+                    unset($checks0);
+                }
+
+                // \f\pa(self::$ar_jm_date_checks, 2, '', 'self::$ar_jm_date_checks');
+            }
+
+            if ($show_comment === true)
+                echo '<br/>get checks (' . __LINE__ . '): ' . \f\timer_stop(47);
+
+            //metki
+            if (1 == 1) {
+                // metki
+                if (empty(self::$ar_metki_jm_date_sp_type)) {
+                    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+                            . ' ON mid.id_item = mi.id '
+                            . ' AND mid.name = \'date\' '
+                            . ' AND mid.value_date >= :d '
+                            . ' AND mid.value_date <= :d2 '
+                            . ' INNER JOIN `mitems-dops` mid2 '
+                            . ' ON mid2.id_item = mi.id '
+                            . ' AND mid2.name = \'sale_point\' '
+                            . ' AND mid2.value = :sp '
 //                . ' INNER JOIN `mitems-dops` mid3 '
 //                . ' ON mid3.id_item = mi.id '
 //                . ' AND mid3.name = \'jobman\' '
 //                . ' AND mid3.value = :jm '
-        ;
-        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $_sp;
-        \Nyos\mod\items::$var_ar_for_1sql[':d'] = $date_start;
-        \Nyos\mod\items::$var_ar_for_1sql[':d2'] = $date_finish;
+                    ;
+                    \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $_sp;
+                    \Nyos\mod\items::$var_ar_for_1sql[':d'] = $date_start;
+                    \Nyos\mod\items::$var_ar_for_1sql[':d2'] = $date_finish;
 //        \Nyos\mod\items::$var_ar_for_1sql[':jm'] = $jm;
-        $metki0 = \Nyos\mod\items::get($db, self::$mod_metki);
+                    $metki0 = \Nyos\mod\items::get($db, self::$mod_metki);
 // \f\pa($metki,'','','metki');
 
-        $metki_sp_jm_date_type = [];
+                    self::$ar_metki_jm_date_sp_type = [];
 
-        foreach ($metki0 as $k => $v) {
-            $metki_sp_jm_date_type[$v['sale_point']][$v['jobman']][$v['date']][$v['type']] = 1;
+                    foreach ($metki0 as $k => $v) {
+                        self::$ar_metki_jm_date_sp_type[$v['jobman']][$v['date']][$v['sale_point']][$v['type']] = 1;
+                    }
+
+                    unset($metki0);
+                }
+            }
+
+            // \f\pa(self::$ar_metki_jm_date_sp_type,2,'','self::$ar_metki_jm_date_sp_type');
+//        $spec0 = self::getListJobsPeriodSpec($db, $date_start, $date_finish, null, array_keys($WhereJobMans));
+//        $spec_kolvo = sizeof($spec0);
+//
+//        $ar__jm_date_spec = [];
+//
+//        foreach ($spec0['data'] as $k => $v) {
+//            $ar__jm_date_spec[$v['jobman']][$v['date']][] = $v;
+//        }
+//        unset($spec0);
         }
 
 
 
-        \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start_checks = date('Y-m-d 08:00:00', strtotime($date_start . ' -1 day'));
-        \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_finish_checks = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
-                . ' `md`.`id_item` = mi.id '
-                . 'AND `md`.`name` = \'start\' '
-                . 'AND `md`.`value_datetime` >= :ds '
-                . 'AND `md`.`value_datetime` <= :df ';
+        // if (isset($_REQUEST['show']) && $_REQUEST['show'] == 'html') {
+        if ( 1 == 1 ) {
 
-        $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+            echo '<html><head><style>
+                
+                ul{ 
+                    background: rgba(150,150,0,0.2};
+                    }
+                li{ 
+                    background-color: rgba(150,150,0,0.2};
+                    padding-left: 15px; 
+                    margin-left: 15px;
+                    margin-bottom: 3px;
+                    }
 
-        if ($show_comment === true)
-            echo '<br/>get checks (' . __LINE__ . '): ' . \f\timer_stop(47);
+                </style></head><body>';
 
-        $dd = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_salary, 'show', 'date_asc');
+            echo '<h2>Трали вали</h2>';
+
+            echo '<ul>';
+
+            echo '<li>перебор сотрудников';
+
+            // \f\pa(self::$WhereJobMans,2,'','self::$WhereJobMans');
+
+            echo '<ul>';
+
+            $bonus_adds = [];
+
+            foreach (self::$WhereJobMans as $user_id => $list_jobs) {
+
+//                if ($user_id != 33216)
+//                if (
+//                        $user_id == 187 || 
+//                        $user_id == 101362
+//                ) {
+//                    
+//                } else {
+//                    continue;
+//                }
+
+                echo '<li>';
+                // \f\pa($list_jobs, 2, '', 'инфа о назначениях пользователя');
+
+                $jobs_date_list = self::whereJobJobman($db, $_sp, $user_id, $list_jobs, $date_start, $date_finish);
+
+                // \f\pa($jobs_date_list, 2,'','$jobs_date_list');
+                // self::$ar_jm_date_checks
+
+
+                for ($n = 0; $n <= 32; $n++) {
+
+                    $now_spec = [];
+                    $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+
+                    // echo '<h3 style="background-color: orange;" >date: ' . $date_now . '</h3>';
+
+                    if ($date_now >= $date_finish)
+                        break;
+
+                    if (!empty(self::$ar_jm_date_checks[$user_id][$date_now])) {
+
+
+//                        if( !empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]) )
+//                        \f\pa(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]);
+                        
+                        // если есть метка нет автобонусу ... то пропускаем
+                        if( !empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]['no_autobonus']) )
+                            continue;
+                        
+//                        echo '<fieldset>';
+//                        \f\pa($jobs_date_list[$date_now]);
+//                        // \f\pa(self::$ar_jm_date_checks[$user_id][$date_now]);
+//                        echo '</fieldset>';
+
+                        if (empty($jobs_date_list[$date_now]['job']) && empty($jobs_date_list[$date_now]['spec'])) {
+                            echo '<br/>' . __LINE__ . ' ' . $date_now . ' пропускаем чеки';
+                            continue;
+                        }
+
+                        // echo '<h3>#' . __LINE__ . '</h3>';
+
+                        $now_dolgnost = $jobs_date_list[$date_now]['spec']['dolgnost'] ?? $jobs_date_list[$date_now]['job']['dolgnost'] ?? null;
+
+                        // \f\pa($now_dolgnost, '', '', '$now_dolgnost');
+
+                        $bonus_put = false;
+                        $dop_text = '';
+                        $bonus_summa = 0;
+
+                        foreach (self::$ar_jm_date_checks[$user_id][$date_now] as $check) {
+
+                            if( empty($now_dolgnost) )
+                                continue;
+                            
+                            $salary = self::getSalarisNow($db, $_sp, $now_dolgnost, $date_now);
+//                            \f\pa($salary, '', '', '$salary');
+//                            \f\pa($check, 2, '', '$check');
+
+
+                            // bonus_proc_from_oborot
+                            // бонус в % от дневного оборота
+                            if (!empty($salary['bonus_proc_from_oborot'])) {
+
+                                $bonus_put = true;
+
+                                $oborot = \Nyos\mod\IikoOborot::getDayOborot($db, $_sp, $date_now);
+                                //\f\pa($oborot, 2, '', '$oborot day');
+
+                                // $dop_text = ' ' . $salary['bonus_proc_from_oborot'] . '% от ' . $oborot;
+                                $dop_text = ' (' . $salary['bonus_proc_from_oborot'] . '% от ' . ceil($oborot).')';
+
+                                $bonus_summa = ceil($oborot / 100 * $salary['bonus_proc_from_oborot']);
+                            }
+
+                            // обычный бонус по оценке в смене
+                            if (!empty($salary['premiya-3']) || !empty($salary['premiya-5'])) {
+
+                                $ocenka_now = $check['ocenka'] ?? $check['ocenka_auto'] ?? null;
+
+                                if ($ocenka_now !== null) {
+
+                                    $bonus_put = true;
+
+                                    $bonus_summa = $salary['premiya-' . $ocenka_now] ?? null;
+                                }
+                            }
+
+                            if (!empty($bonus_summa)) {
+
+                                \f\pa($bonus_summa, '', '', '$bonus_summa');
+
+                                $bonus_adds[] = [
+                                    'auto_bonus_zp' => 'da',
+                                    'date_now' => $date_now,
+                                    'summa' => $bonus_summa,
+                                    'jobman' => $user_id,
+                                    'sale_point' => $_sp,
+                                    'text' => 'бонус к зп ' . ( $dop_text ?? '')
+                                ];
+                            }
+
+
+
+                            $jobs_date_list[$date_now]['checks'][] = $check;
+
+
+
+
+
+                            // \f\pa( $check,2,'','$check' );
+                            // self::calcBonusOneDay( $check )
+//                        
+//                            $dolgn_now = $jobs_date_list[$date_now]['job']['dolgnost'] ?? '';
+//                            $sp_now = $jobs_date_list[$date_now]['job']['sp_id'] ?? '';
+//                            
+//                            echo '<Br/>'.$check['id'].' d:'.$dolgn_now.' s:'.$sp_now;
+//                            
+//                            echo '<br/>check sp '. ( $check['sale_point'] ?? '-' );
+//                        
+                        }
+
+
+
+
+
+                        //$jobs_date_list[$date_now]['checks'] = self::$ar_jm_date_checks[$user_id][$date_now];
+//                        if( !empty($jobs_date_list[$date_now]['checks']) ){
+//                        foreach( $jobs_date_list[$date_now]['checks'] as $check ){
+//                        
+//                            if( !empty($check['dolgnost']) )
+//                            getSalarisNow($db, int $sp, int $dolgn, string $date )
+//                        }
+//                        if (!empty($jobs_date_list[$date_now]['spec'])) {
+//                            foreach ($jobs_date_list[$date_now]['spec'] as $k => $v) {
+//                                $now_spec_job = $v;
+//                                break;
+//                            }
+//                        }
+                        // $jobs_date_list[$date_now]['now']['dolgn'] = $now_dolgn = $now_spec_job['dolgnost'] ?? $jobs_date_list[$date_now]['job']['dolgn'] ?? '';
+                    }
+                }
+
+                \f\pa($jobs_date_list, 2, '', '$jobs_date_list');
+
+
+
+
+
+
+
+
+                if (1 == 2) {
+
+                    echo '<ul>';
+
+                    $now_job = [];
+
+                    for ($n = 0; $n <= 32; $n++) {
+
+                        $now_spec = [];
+
+                        $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+                        echo '<li>';
+                        echo $date_now . '<br/>';
+
+                        foreach ($v as $v2) {
+                            // если дата сходится
+                            if ($v2['date'] == $date_now) {
+
+                                if (!empty($v2['type']) && $v2['type'] == 'spec') {
+                                    $now_spec[$v2['id']] = $v2;
+                                } else {
+                                    $now_job = $v2;
+                                }
+
+                                // \f\pa($v2);
+                            }
+                        }
+
+                        if (!empty($now_job)) {
+                            \f\pa($now_job, '', '', 'текущая работа');
+                        }
+
+                        if (!empty($now_spec)) {
+                            \f\pa($now_spec, '', '', 'спец назначение');
+                        }
+
+                        echo '</li>';
+                    }
+
+
+                    echo '</ul>';
+                }
+
+                echo '</li>';
+            }
+
+            echo '</ul>';
+
+            \f\pa($bonus_adds, 2, '', '$bonus_adds пишем бонусы');
+            \Nyos\mod\items::addNewSimples($db, self::$mod_bonus, $bonus_adds);
+
+
+            echo '</li>';
+
+            echo '</ul>';
+
+            die('</body></html>');
+        }
+
+        return \f\end3('no calc mont', false, [
+            '$spec' => $spec ?? [],
+            '$spec_kolvo' => $spec_kolvo,
+            '$ar__jm_date_spec' => $ar__jm_date_spec,
+            '$checks0_kolvo' => $checks0_kolvo,
+            '$checks0' => $checks0 ?? [],
+            '$ar_jm_date_checks' => $ar_jm_date_checks,
+            'WhereJobMans' => self::$WhereJobMans,
+            '$salaris' => $salaris ?? [],
+            '$salaris0_kolvo' => $salaris0_kolvo,
+            '$ar_sp_dolgn_salaris' => $ar_sp_dolgn_salaris,
+            '$metki_sp_jm_date_type' => $metki_sp_jm_date_type
+        ]);
+
+
+
+
+
 
         /**
          * месячный оборот точки
@@ -4891,6 +5402,8 @@ class JobDesc {
      */
     public static function deleteAutoBonusMonth($db, $sp, $date0) {
 
+        // \f\pa( [ $sp, $date0 ] );
+        
 //        $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date0 );        
 //\f\pa($jobs_all['data']['plusa']);
 //        foreach( $jobs_all['data']['plusa'] as $k => $v ){
@@ -4921,7 +5434,7 @@ class JobDesc {
 // возвращаем только результаты первого запроса
         \Nyos\mod\items::$return_items_header = true;
         $bonuses = \Nyos\mod\items::get($db, self::$mod_bonus);
-// \f\pa($bonuses, '', '', 'bonuses');
+        //\f\pa($bonuses, '', '', 'bonuses');
 
         $dop = [
 // ':d' => date('Y-m-d', strtotime($date0)),
@@ -4954,8 +5467,7 @@ class JobDesc {
 // return $e;
 // \Nyos\mod\items::$show_sql = true;
 // \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
-
-        return;
+        // return;
 // return $return;
     }
 
@@ -5453,6 +5965,16 @@ class JobDesc {
 //        );
 
         return \f\end3('ок', true, ['check_string' => ( $check_string ?? 'x')]);
+    }
+
+    /**
+     * 
+     * @return считаем платим бонус или нет
+     */
+    public static function calcBonusOneDay() {
+
+
+        return \f\end3('не', false, []);
     }
 
     /**

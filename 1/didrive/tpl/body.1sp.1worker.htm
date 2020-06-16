@@ -101,7 +101,7 @@
 
 
 
-
+{% set no_job = false %}
 
         {% for i in range(low=0, high=31, step=1) %}
 
@@ -119,11 +119,25 @@
 
                 <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
 
+                    {#now_dolgn.date_finish#}
+                    {#{{  pa( now_dolgn ) }}#}
+
+                    {# новое назначение #}
+                    {% if now_dolgn.date == date %}
+                    {% set no_job = false %}
+                    {% endif %}
+                    
+                    
                     {#% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %#}
-                    {% if 1 == 1 %}
+                    {% if 1 == 1 and no_job == false %}
                     {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.htm' %}
                     {% endif %}
 
+                    {# увольнение #}
+                    {% if now_dolgn.date_finish == date %}
+                    {% set no_job = true %}
+                    {% endif %}
+                    
                 </div>
 
                 {% if 1 == 2 %}

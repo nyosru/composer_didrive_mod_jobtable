@@ -47,20 +47,16 @@ if (
         //
         || $_REQUEST['action'] == 'bonus_record_month'
         //
-        || $_REQUEST['action'] == 'show_dolgn')) 
-        || 
+        || $_REQUEST['action'] == 'show_dolgn')) ||
         (
-            isset($_REQUEST['id']{0}) 
-            && isset($_REQUEST['s']{5}) 
-            && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
+        isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
         ) || (
-            isset($_REQUEST['user']{0}) && 
-            isset($_REQUEST['s']{5}) &&
-            \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['user']) === true 
+        isset($_REQUEST['user']{0}) &&
+        isset($_REQUEST['s']{5}) &&
+        \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['user']) === true
         ) || (
-            isset($_REQUEST['id2']{0}) 
-            && isset($_REQUEST['s2']{5}) &&
-            \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
+        isset($_REQUEST['id2']{0}) && isset($_REQUEST['s2']{5}) &&
+        \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
         ) || (isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{
                 5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true) || (
@@ -252,28 +248,27 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
     echo
     // '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
-
-    '<style> '
-    . ' .d345 th, '
-    . ' .d345 tbody td{ text-align: center; } '
-    . ' .d345 tbody td.r{ text-align: right; } '
-    . '</style>'
+        '<style> '
+        . ' .d345 th, '
+        . ' .d345 tbody td{ text-align: center; } '
+        . ' .d345 tbody td.r{ text-align: right; } '
+        . '</style>'
     . '<table class="table table-bordered d345" >'
     . '<thead>'
-    . '<tr>'
+        . '<tr>'
 
-    //    . '<th>статус записи</th>'
-    //    . '<th>тип</th>'
-    //    . '<th>точка продаж</th>'
-    //    . '<th>должность</th>'
-    //    . '<th>принят</th>'
-    //    . '<th>уволен</th>'
-    . '<th>старт</th>'
-    . '<th>конец</th>'
-    . '<th>длительность (авто/вручную)</th>'
-    . '<th>оценка (авто/вручную)</th>'
-    . '<th>тех. статус</th>'
-    . '</tr>'
+            //    . '<th>статус записи</th>'
+            //    . '<th>тип</th>'
+            //    . '<th>точка продаж</th>'
+            //    . '<th>должность</th>'
+            //    . '<th>принят</th>'
+            //    . '<th>уволен</th>'
+            . '<th>старт</th>'
+            . '<th>конец</th>'
+            . '<th>длительность (авто/вручную)</th>'
+            . '<th>оценка (авто/вручную)</th>'
+            . '<th>тех. статус</th>'
+        . '</tr>'
     . '</thead>'
     . '<tbody>';
 
@@ -877,16 +872,14 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'get_smens') {
         $timer = \f\timer_stop(78);
 
 //    \f\end2($timer, true, ['in' => $_REQUEST, '2' => 2]);
-        
+
         $get_smens['timer'] = $timer;
         $get_smens['in'] = $_REQUEST;
-        
+
         \f\end2($r, true, $get_smens);
-        
     } catch (Exception $ex) {
 
         \f\end2($ex->message, false);
-        
     }
 
 
@@ -1999,7 +1992,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             sp="' . $v['sale_point'] . '"
             date="' . $v['date'] . '"
 
-            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
+            clear_cash="' . date('Y-m-01', strtotime($v['date'])) . '"
 
             ';
 
@@ -2031,7 +2024,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             sp="' . $v['sale_point'] . '"
             date="' . $v['date'] . '"
 
-            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
+            clear_cash="' . date('Y-m-01', strtotime($v['date'])) . '"
 
             ';
 
@@ -2055,7 +2048,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
             sp="' . $v['sale_point'] . '"
             date="' . $v['date'] . '"
 
-            clear_cash="'.date('Y-m-01',strtotime($v['date'])).'"
+            clear_cash="' . date('Y-m-01', strtotime($v['date'])) . '"
     
             ';
 
@@ -2210,6 +2203,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
 
 // пишем бонусы по зарплате за месяц по 1 точке
+// добавляем вычисление процентов от оборота в день
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
 
     if (empty($_REQUEST['date']))
@@ -2229,7 +2223,22 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     // ставим переменную чтобы дальше не удалять по дням
     //    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
 
-    $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+    try {
+
+        $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+    } catch (Exception $ex) {
+
+        echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+        . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+        . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+        . PHP_EOL . $ex->getTraceAsString()
+        . '</pre>';
+
+        if (class_exists('\nyos\Msg'))
+            \nyos\Msg::sendTelegramm($text, null, 1);
+    }
+
+    \f\end2('end in ajax', true, $ww);
 
     $e = [
         'datas' => ($ww['data']['adds'] ?? []),
@@ -2242,6 +2251,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     \f\end2('ok', true, $e);
 }
+
 
 /**
  * старая версия
@@ -2260,9 +2270,6 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
-
-
-
 
     /**
      * удаляем все смены что были ранее
@@ -2288,7 +2295,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
         $e2 = \Nyos\mod\JobDesc::creatAutoBonus($db, $_REQUEST['sp'], $date);
 
-        // \f\pa($e2);
+//        \f\pa($e2);
+//        die();
 
         if (isset($e2['data']['adds']))
             foreach ($e2['data']['adds'] as $k => $v) {
@@ -2302,9 +2310,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e['timer'] = \f\timer::stop('str', 3);
     $e['kolvo'] = sizeof($e['datas']);
 
-    \f\pa($e, 2);
-
-    exit;
+//    \f\pa($e, 2);
+//    exit;
 
     \f\end2('ok', true, $e);
 }
@@ -3618,9 +3625,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         $d['dolgnost'] = $_REQUEST['dolgn'];
         $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
 
-        
+
         \f\Cash::deleteKeyPoFilter([date('Y-m-01', strtotime($_REQUEST['date']))]);
-        
+
         if (!empty($_REQUEST['smoke']))
             $d['smoke'] = 'da';
 
