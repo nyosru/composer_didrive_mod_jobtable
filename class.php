@@ -3786,12 +3786,16 @@ class JobDesc {
 //        }
 
         $salary = [];
+
+        if (!isset(self::$ar_salaris_sp_dolgn_date[$sp][$dolgn]))
+            return false;
+
         foreach (self::$ar_salaris_sp_dolgn_date[$sp][$dolgn] as $k => $v) {
             if ($k <= $date)
                 $salary = $v;
         }
 
-        if ( sizeof($salary) > 0 ) {
+        if (sizeof($salary) > 0) {
 
 
             // echo '<br/>#' . __LINE__;
@@ -4438,7 +4442,7 @@ class JobDesc {
 
 //        $show_html = true;
 //        $show_html = false;
-        
+
         $show_comment = true;
         $show_comment = false;
 
@@ -4565,9 +4569,14 @@ class JobDesc {
 
 
         // if (isset($_REQUEST['show']) && $_REQUEST['show'] == 'html') {
-        if ( 1 == 1 ) {
+        if (1 == 1) {
 
-            echo '<html><head><style>
+
+            $show_html_cod = true;
+            $show_html_cod = false;
+
+            if ($show_html_cod === true)
+                echo '<html><head><style>
                 
                 ul{ 
                     background: rgba(150,150,0,0.2};
@@ -4580,16 +4589,16 @@ class JobDesc {
                     }
 
                 </style></head><body>';
-
-            echo '<h2>Трали вали</h2>';
-
-            echo '<ul>';
-
-            echo '<li>перебор сотрудников';
+            if ($show_html_cod === true)
+                echo '<h2>Трали вали</h2>';
+            if ($show_html_cod === true)
+                echo '<ul>';
+            if ($show_html_cod === true)
+                echo '<li>перебор сотрудников';
 
             // \f\pa(self::$WhereJobMans,2,'','self::$WhereJobMans');
-
-            echo '<ul>';
+            if ($show_html_cod === true)
+                echo '<ul>';
 
             $bonus_adds = [];
 
@@ -4605,7 +4614,8 @@ class JobDesc {
 //                    continue;
 //                }
 
-                echo '<li>';
+                if ($show_html_cod === true)
+                    echo '<li>';
                 // \f\pa($list_jobs, 2, '', 'инфа о назначениях пользователя');
 
                 $jobs_date_list = self::whereJobJobman($db, $_sp, $user_id, $list_jobs, $date_start, $date_finish);
@@ -4629,18 +4639,18 @@ class JobDesc {
 
 //                        if( !empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]) )
 //                        \f\pa(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]);
-                        
                         // если есть метка нет автобонусу ... то пропускаем
-                        if( !empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]['no_autobonus']) )
+                        if (!empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]['no_autobonus']))
                             continue;
-                        
+
 //                        echo '<fieldset>';
 //                        \f\pa($jobs_date_list[$date_now]);
 //                        // \f\pa(self::$ar_jm_date_checks[$user_id][$date_now]);
 //                        echo '</fieldset>';
 
                         if (empty($jobs_date_list[$date_now]['job']) && empty($jobs_date_list[$date_now]['spec'])) {
-                            echo '<br/>' . __LINE__ . ' ' . $date_now . ' пропускаем чеки';
+                            if ($show_html_cod === true)
+                                echo '<br/>' . __LINE__ . ' ' . $date_now . ' пропускаем чеки';
                             continue;
                         }
 
@@ -4656,14 +4666,12 @@ class JobDesc {
 
                         foreach (self::$ar_jm_date_checks[$user_id][$date_now] as $check) {
 
-                            if( empty($now_dolgnost) )
+                            if (empty($now_dolgnost))
                                 continue;
-                            
+
                             $salary = self::getSalarisNow($db, $_sp, $now_dolgnost, $date_now);
 //                            \f\pa($salary, '', '', '$salary');
 //                            \f\pa($check, 2, '', '$check');
-
-
                             // bonus_proc_from_oborot
                             // бонус в % от дневного оборота
                             if (!empty($salary['bonus_proc_from_oborot'])) {
@@ -4672,9 +4680,8 @@ class JobDesc {
 
                                 $oborot = \Nyos\mod\IikoOborot::getDayOborot($db, $_sp, $date_now);
                                 //\f\pa($oborot, 2, '', '$oborot day');
-
                                 // $dop_text = ' ' . $salary['bonus_proc_from_oborot'] . '% от ' . $oborot;
-                                $dop_text = ' (' . $salary['bonus_proc_from_oborot'] . '% от ' . ceil($oborot).')';
+                                $dop_text = ' (' . $salary['bonus_proc_from_oborot'] . '% от ' . ceil($oborot) . ')';
 
                                 $bonus_summa = ceil($oborot / 100 * $salary['bonus_proc_from_oborot']);
                             }
@@ -4694,7 +4701,8 @@ class JobDesc {
 
                             if (!empty($bonus_summa)) {
 
-                                \f\pa($bonus_summa, '', '', '$bonus_summa');
+                                if ($show_html_cod === true)
+                                    \f\pa($bonus_summa, '', '', '$bonus_summa');
 
                                 $bonus_adds[] = [
                                     'auto_bonus_zp' => 'da',
@@ -4747,7 +4755,8 @@ class JobDesc {
                     }
                 }
 
-                \f\pa($jobs_date_list, 2, '', '$jobs_date_list');
+                if ($show_html_cod === true)
+                    \f\pa($jobs_date_list, 2, '', '$jobs_date_list');
 
 
 
@@ -4799,20 +4808,30 @@ class JobDesc {
                     echo '</ul>';
                 }
 
-                echo '</li>';
+                if ($show_html_cod === true)
+                    echo '</li>';
             }
 
-            echo '</ul>';
+            if ($show_html_cod === true)
+                echo '</ul>';
 
-            \f\pa($bonus_adds, 2, '', '$bonus_adds пишем бонусы');
+            if ($show_html_cod === true)
+                \f\pa($bonus_adds, 2, '', '$bonus_adds пишем бонусы');
             \Nyos\mod\items::addNewSimples($db, self::$mod_bonus, $bonus_adds);
 
 
-            echo '</li>';
+            if ($show_html_cod === true)
+                echo '</li>';
+            
+            if ($show_html_cod === true)
+                echo '</ul>';
+            
+            if ($show_html_cod === true)
+                die('</body></html>');
 
-            echo '</ul>';
+            return \f\end3('bonus exists', true, ['adds' => sizeof($bonus_adds)]);
 
-            die('</body></html>');
+            die();
         }
 
         return \f\end3('no calc mont', false, [
@@ -5078,8 +5097,13 @@ class JobDesc {
         if (!empty($adds)) {
 //            \f\pa($adds,'','','adds');
 //            exit;
+            
             \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $adds);
-            return \f\end3('bonus exists', true, ['adds' => $adds]);
+            return \f\end3('bonus exists', true, [
+                // 'adds' => $adds, 
+                'kolvo' => sizeof($adds) 
+                ]);
+
         } else {
 
             return \f\end3('no bonus', false);
@@ -5403,7 +5427,6 @@ class JobDesc {
     public static function deleteAutoBonusMonth($db, $sp, $date0) {
 
         // \f\pa( [ $sp, $date0 ] );
-        
 //        $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date0 );        
 //\f\pa($jobs_all['data']['plusa']);
 //        foreach( $jobs_all['data']['plusa'] as $k => $v ){

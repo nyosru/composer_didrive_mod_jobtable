@@ -3,10 +3,10 @@
 //ini_set('error_reporting', E_ALL);
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
-
-ini_set('display_errors', 'On'); // сообщения с ошибками будут показываться
-//error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
-error_reporting(-1); // E_ALL - отображаем ВСЕ ошибки
+//
+//ini_set('display_errors', 'On'); // сообщения с ошибками будут показываться
+// error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
+ error_reporting(-1); // E_ALL - отображаем ВСЕ ошибки
 
 if (
         $_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
@@ -21,6 +21,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 //\f\timer::start();
 require($_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php');
 
+
 //require_once( DR.'/vendor/didrive/base/class/Nyos.php' );
 //require_once( dirname(__FILE__).'/../class.php' );
 //if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'scan_new_datafile') {
@@ -28,14 +29,37 @@ require($_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php');
 //    //cron_scan_new_datafile();
 //}
 //\f\pa($_REQUEST);
+
+
+
+
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+//\f\pa($_REQUEST);
+//die();
+
 // проверяем секрет
 if (
-        (!empty($_REQUEST['action']) &&
-        ($_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
+// тащим список работников на точке
+        ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'getPeriodWhereJobMans' )
+        //
+        || (!empty($input['action']) && $input['action'] == 'getPeriodWhereJobMans' )
+        //
+        ||
+        (
+        !empty($_REQUEST['action']) &&
+        (
+        //
+        $_REQUEST['action'] == 'calc_full_ocenka_day' || $_REQUEST['action'] == 'autostart_ocenka_days'
+
         // тащим цифры времени ожидания для построения графика
         || $_REQUEST['action'] == 'timeo_show_vars' || $_REQUEST['action'] == 'timeo_show_vars2'
+
         // тащим цифры оценка дня
         || $_REQUEST['action'] == 'show_vars_ocenki'
+
+
         // тащим цифры oborot для построения графика
         || $_REQUEST['action'] == 'oborot_show_vars'
         // тащим смены для построения графика
@@ -47,9 +71,16 @@ if (
         //
         || $_REQUEST['action'] == 'bonus_record_month'
         //
-        || $_REQUEST['action'] == 'show_dolgn')) ||
+        || $_REQUEST['action'] == 'show_dolgn')
+        )
+        //
+        ||
         (
-        isset($_REQUEST['id']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
+        isset($_REQUEST['id']{0})
+        //
+        && isset($_REQUEST['s']{5})
+        //
+        && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) === true
         ) || (
         isset($_REQUEST['user']{0}) &&
         isset($_REQUEST['s']{5}) &&
@@ -57,8 +88,9 @@ if (
         ) || (
         isset($_REQUEST['id2']{0}) && isset($_REQUEST['s2']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['s2'], $_REQUEST['id2']) === true
-        ) || (isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{
-                5}) &&
+        ) || (
+                //
+                isset($_REQUEST['sp']{0}) && isset($_REQUEST['sp_s']{5}) &&
         \Nyos\nyos::checkSecret($_REQUEST['sp_s'], $_REQUEST['sp']) === true) || (
         // action == 'delete_ocenka'
         !empty($_REQUEST['sp']) && !empty($_REQUEST['s']) && !empty($_REQUEST['date']) &&
@@ -73,9 +105,7 @@ else {
     //    foreach ($_REQUEST as $k => $v) {
     //        $e .= '<Br/>' . $k . ' - ' . $v;
     //    }
-
     $e = \f\pa($_REQUEST, 'html2');
-
     f\end2(
             'Произошла неописуемая ситуация #' . __LINE__ . ' обратитесь к администратору'
             . '<br/>'
@@ -85,7 +115,7 @@ else {
             . '<br/>'
             . $e // . $_REQUEST['id'] . ' && ' . $_REQUEST['secret']
             ,
-            'error'
+            false, ['req' => $_REQUEST]
     );
 }
 
@@ -248,27 +278,27 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
     echo
     // '<link rel="stylesheet" href="/didrive/design/css/vendor/bootstrap.min.css" />'
-        '<style> '
-        . ' .d345 th, '
-        . ' .d345 tbody td{ text-align: center; } '
-        . ' .d345 tbody td.r{ text-align: right; } '
-        . '</style>'
+    '<style> '
+    . ' .d345 th, '
+    . ' .d345 tbody td{ text-align: center; } '
+    . ' .d345 tbody td.r{ text-align: right; } '
+    . '</style>'
     . '<table class="table table-bordered d345" >'
     . '<thead>'
-        . '<tr>'
+    . '<tr>'
 
-            //    . '<th>статус записи</th>'
-            //    . '<th>тип</th>'
-            //    . '<th>точка продаж</th>'
-            //    . '<th>должность</th>'
-            //    . '<th>принят</th>'
-            //    . '<th>уволен</th>'
-            . '<th>старт</th>'
-            . '<th>конец</th>'
-            . '<th>длительность (авто/вручную)</th>'
-            . '<th>оценка (авто/вручную)</th>'
-            . '<th>тех. статус</th>'
-        . '</tr>'
+    //    . '<th>статус записи</th>'
+    //    . '<th>тип</th>'
+    //    . '<th>точка продаж</th>'
+    //    . '<th>должность</th>'
+    //    . '<th>принят</th>'
+    //    . '<th>уволен</th>'
+    . '<th>старт</th>'
+    . '<th>конец</th>'
+    . '<th>длительность (авто/вручную)</th>'
+    . '<th>оценка (авто/вручную)</th>'
+    . '<th>тех. статус</th>'
+    . '</tr>'
     . '</thead>'
     . '<tbody>';
 
@@ -462,6 +492,29 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
     \f\end2($r, true);
 }
+
+
+// vue запрос списка сотрудников работающих на точке продаж
+elseif (
+        ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'getPeriodWhereJobMans') || ( isset($input['action']) && $input['action'] == 'getPeriodWhereJobMans' )
+) {
+
+    $in = $input ?? $_REQUEST;
+
+    if (empty($in['date']))
+        \f\end2('нет даты', false);
+
+    if (empty($in['sp']))
+        \f\end2('нет sp', false);
+
+    $date = date('y-m-01', strtotime($in['date']));
+    $date_finish = date('Y-m-d', strtotime($date . ' +1 month -1 day'));
+
+    $list = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $date, $date_finish, $in['sp']);
+
+    \f\end2( 'ок', true, ['data' => $list ] );
+}
+
 
 // показ смен одного сотрудника за месяц или весь срок
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens_jm') {
@@ -2238,12 +2291,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
             \nyos\Msg::sendTelegramm($text, null, 1);
     }
 
-    \f\end2('end in ajax', true, $ww);
+    // \f\end2('end in ajax', true, $ww);
 
     $e = [
-        'datas' => ($ww['data']['adds'] ?? []),
+        'datas' => $ww['data']['adds'] ?? [],
         'timer' => \f\timer_stop(3),
-        'kolvo' => (!empty($ww['data']['adds']) ? sizeof($ww['data']['adds']) : 0),
+        'kolvo' => $ww['data']['adds'] ?? 0,
+        'w' => $ww
     ];
 
     //\f\pa($e,2);
