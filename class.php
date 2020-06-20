@@ -4703,9 +4703,10 @@ class JobDesc {
                                 $oborot = \Nyos\mod\IikoOborot::getDayOborot($db, $_sp, $date_now);
                                 //\f\pa($oborot, 2, '', '$oborot day');
                                 // $dop_text = ' ' . $salary['bonus_proc_from_oborot'] . '% от ' . $oborot;
-                                $dop_text = ' (' . $salary['bonus_proc_from_oborot'] . '% от ' . ceil($oborot) . ')';
-
+                                
+                                $dop_text = '(' . $salary['bonus_proc_from_oborot'] . '% от ' . ceil($oborot) . ')';
                                 $bonus_summa = ceil($oborot / 100 * $salary['bonus_proc_from_oborot']);
+                                
                             }
 
                             // обычный бонус по оценке в смене
@@ -4723,6 +4724,14 @@ class JobDesc {
 
                             if (!empty($bonus_summa)) {
 
+                                $dop_text1 = '';
+                                
+                                if (!empty(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]['autobonus50pr'])){
+                                    $dop_text1 = '(половина) ';
+                                    $summa_pr = 50;
+                                    $bonus_summa = ceil($bonus_summa/100*$summa_pr);
+                                }
+                                
                                 if ($show_html_cod === true)
                                     \f\pa($bonus_summa, '', '', '$bonus_summa');
 
@@ -4732,7 +4741,7 @@ class JobDesc {
                                     'summa' => $bonus_summa,
                                     'jobman' => $user_id,
                                     'sale_point' => $_sp,
-                                    'text' => 'бонус к зп ' . ( $dop_text ?? '')
+                                    'text' => ( $dop_text1 ?? '' ).'бонус к зп ' . ( $dop_text ?? '')
                                 ];
                             }
 

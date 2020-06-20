@@ -72,14 +72,14 @@
                                     {% endif %}
                                     >
                                     {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">
-                                            <a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
+{#                                            <a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
                                                vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
                                                res_to="{{ sp_now }}_{{ i }}_res_ob2"
                                                xtarget="_blank"
                                                class="load_ajaxjson_to_id"
                                                >
-                                                А
-                                            </a>
+#}                                                А
+{#                                            </a>#}
                                         </abbr></sup>
                                 </span>
 
@@ -113,8 +113,6 @@
                                        delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
 
                                        />
-
-
 
                             {% else %}
 
