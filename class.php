@@ -2681,23 +2681,28 @@ class JobDesc {
 
             foreach ($ee as $k => $v) {
 
-                $dd = (!empty($v['value']) ? $v['value'] :
-                        (!empty($v['value_date']) ? $v['value_date'] :
-                        (!empty($v['value_datetime']) ? $v['value_datetime'] :
-                        (!empty($v['value_int']) ? $v['value_int'] :
-                        (!empty($v['value_text']) ? $v['value_text'] : null )
-                        )
-                        )
-                        )
-                        );
+//                $dd = (!empty($v['value']) ? $v['value'] :
+//                        (!empty($v['value_date']) ? $v['value_date'] :
+//                        (!empty($v['value_datetime']) ? $v['value_datetime'] :
+//                        (!empty($v['value_int']) ? $v['value_int'] :
+//                        (!empty($v['value_text']) ? $v['value_text'] : null )
+//                        )
+//                        )
+//                        )
+//                        );
+                $dd = $v['value'] ?? $v['value_date'] ?? $v['value_datetime'] ?? $v['value_int'] ?? $v['value_text'] ?? null ;
 
                 if (!empty($dd))
                     $res_items[$v['id_item']][$v['name']] = $dd;
             }
 
             usort($res_items, "\\f\\sort_ar_date_desc");
+            usort($res_items, "\\f\\sort_ar__salary_oborot_m_desc");
+            usort($res_items, "\\f\\sort_ar__salary_oborot_d_desc");
 
-// \f\pa($res_items);
+//            \f\pa($res_items,'','','$res_items');
+//             die();
+//            
             $ar_sp_dolgn_date = [];
 
             foreach ($res_items as $k => $v) {
@@ -2754,7 +2759,24 @@ class JobDesc {
                     if (!empty($v['date']) && $date >= $v['date']) {
 
 // если есть ограничения по бюджету
-                        if (!empty($v['oborot_sp_last_monht_bolee']) || !empty($v['oborot_sp_last_monht_menee'])) {
+
+                        // день
+                        if (!empty($v['pay_from_day_oborot_bolee']) ) {
+
+                            // $v['oborot_day'] =
+                            $oborot_day = \Nyos\mod\JobBuh::getOborotSpDay($db, $sp, $date);
+                            // \f\pa($oborot,'','','$oborot');
+                            // echo '<br/>#'.__LINE__.' '.__FILE__;
+
+                            if( $v['pay_from_day_oborot_bolee'] && $oborot_day >= $v['pay_from_day_oborot_bolee'] ){
+                                $v['oborot_day'] = $oborot_day;
+                                $salary = $v;
+                                break;
+                            }
+
+                        }
+                        // месяц
+                        elseif (!empty($v['oborot_sp_last_monht_bolee']) || !empty($v['oborot_sp_last_monht_menee'])) {
 
                             $oborot = \Nyos\mod\JobBuh::getOborotSpMonth($db, $sp, $date);
 // \f\pa($oborot);

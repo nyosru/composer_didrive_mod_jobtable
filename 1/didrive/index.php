@@ -1,7 +1,6 @@
 <?php
 
-if (isset($_GET['newtype']{
-                0})) {
+if (isset($_GET['newtype']{0})) {
     $_SESSION['newtype'] = $_GET['newtype'];
     \f\redirect('/', 'i.didrive.php');
 }
