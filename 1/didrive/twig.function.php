@@ -796,6 +796,12 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__getListJobsPeriodAll', function ( $db, string $date_start, string $date_finish ) {
     
+    if( !empty($_GET['sp']) ){
+        //$jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodSp($db, $_GET['sp'], $date_start, $date_finish);
+        // \f\pa($jobs_all, 2,'','jobs_all sp');
+        \Nyos\mod\JobDesc::$sp = $_GET['sp'];
+    }
+    
     $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
     //\f\pa($jobs_all, 2,'','jobs_all');
     
