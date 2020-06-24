@@ -12,7 +12,7 @@ div.ttable div.tcell{ display: table-cell; }
     top:90px;
     position: -webkit-sticky;
     position: -moz-sticky;
-    position: -ms-sticky;
+    position: -ms-sticky;р
     position: -o-sticky;
     position: sticky;
     z-index: 50;

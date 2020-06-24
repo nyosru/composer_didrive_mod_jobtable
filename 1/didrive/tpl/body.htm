@@ -228,262 +228,252 @@
 
                             {# {{ iy }}<br/> #}
 
-                            {% for i in range(low=1, high=12, step=1) if ( 
-                            ( year == 2020 and i >= 3 )
-                            or ( year > 2020 and year <= now_year ) 
-                            ) and ( 
-                            year != now_year 
-                            or 
-                                ( 
-                                year == now_year 
-                                and i <= ( now_mont + 1 ) 
-                                ) 
-                            ) %}
+                            {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 3 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
 
-                            {% if i < 10 %}
-                                {% set i2 = '0'~i %}
-                            {% else %}
-                                {% set i2 = i %}
-                            {% endif %}
-
-                            {% set gets = gets|merge({'year':year,'month':i2}) %}
-
-                            <a  
-                                href="?{{ http_build_query(gets) }}"  
-                                xhref="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year={{ year }}&month={{ i2 }}"  
-
-                                style="margin-right:5px;"
-
-                                class="btn btn-xs 
-                                {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
-                                    btn-success
-                                {% elseif get.year is not defined and get.month is not defined  and now|date('Y') == year and i2 == now|date('m') %}
-                                    btn-success
+                                {% if i < 10 %}
+                                    {% set i2 = '0'~i %}
                                 {% else %}
-                                    btn-light
+                                    {% set i2 = i %}
                                 {% endif %}
-                                " >
 
-                                {% if i2 == 01 %}
-                                    январь
-                                {% elseif i2 == 02 %}
-                                    февраль
-                                {% elseif i2 == 03 %}
-                                    март
-                                {% elseif i2 == 04 %}
-                                    апрель
-                                {% elseif i2 == 05 %}
-                                    май
-                                {% elseif i2 == 06 %}
-                                    июнь
-                                {% elseif i2 == 07 %}
-                                    июль
-                                {% elseif i2 == 08 %}
-                                    август
-                                {% elseif i2 == 09 %}
-                                    сентябрь
-                                {% elseif i2 == 10 %}
-                                    октябрь
-                                {% elseif i2 == 11 %}
-                                    ноябрь
-                                {% elseif i2 == 12 %}
-                                    декабрь
-                                {% endif %}
-                                {{ year }}</a>
+                                {% set gets = gets|merge({'year':year,'month':i2}) %}
+
+                                <a  
+                                    href="?{{ http_build_query(gets) }}"  
+                                    xhref="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year={{ year }}&month={{ i2 }}"  
+
+                                    style="margin-right:5px;"
+
+                                    class="btn btn-xs 
+                                    {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
+                                        btn-success
+                                    {% elseif get.year is not defined and get.month is not defined  and now|date('Y') == year and i2 == now|date('m') %}
+                                        btn-success
+                                    {% else %}
+                                        btn-light
+                                    {% endif %}
+                                    " >
+
+                                    {% if i2 == 01 %}
+                                        январь
+                                    {% elseif i2 == 02 %}
+                                        февраль
+                                    {% elseif i2 == 03 %}
+                                        март
+                                    {% elseif i2 == 04 %}
+                                        апрель
+                                    {% elseif i2 == 05 %}
+                                        май
+                                    {% elseif i2 == 06 %}
+                                        июнь
+                                    {% elseif i2 == 07 %}
+                                        июль
+                                    {% elseif i2 == 08 %}
+                                        август
+                                    {% elseif i2 == 09 %}
+                                        сентябрь
+                                    {% elseif i2 == 10 %}
+                                        октябрь
+                                    {% elseif i2 == 11 %}
+                                        ноябрь
+                                    {% elseif i2 == 12 %}
+                                        декабрь
+                                    {% endif %}
+                                    {{ year }}</a>
+
+                            {% endfor %}
 
                         {% endfor %}
 
-                        {% endfor %}
-
-                            {% endif %}
+                    {% endif %}
 
 
 
 
 
-                                {# заготовка модальных окошек #}
-                                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(51) }}     {% endif %}
-                                {# <div style="padding:10px; border: 1px solid gray;" > #}
-                                {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
-                                {# </div> #}
-                                {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - body.modal_wind.htm {{ didrive_f__timer_stop(51) }} {% endif %}
+                    {# заготовка модальных окошек #}
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(51) }}     {% endif %}
+                    {# <div style="padding:10px; border: 1px solid gray;" > #}
+                    {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
+                    {# </div> #}
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - body.modal_wind.htm {{ didrive_f__timer_stop(51) }} {% endif %}
 
-                                {# <br/>timer2: {{ didrive_f__timer_stop(99) }} #}              
+                    {# <br/>timer2: {{ didrive_f__timer_stop(99) }} #}              
 
-                                {#% if 1 == 2001230201 %}
-                                    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-                                    {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
-                                    {% if timer_show == 'on' %} <br/>время 6 - jobs = jobdesc__get_smena_jobs <br/>{{ didrive_f__timer_stop(5) }} {% endif %}
-                                {% endif %#}
+                    {#% if 1 == 2001230201 %}
+                        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                        {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
+                        {% if timer_show == 'on' %} <br/>время 6 - jobs = jobdesc__get_smena_jobs <br/>{{ didrive_f__timer_stop(5) }} {% endif %}
+                    {% endif %#}
 
-                                {% if 1 == 1 %}
-                                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                    {% if 1 == 1 %}
+                        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
-                                    {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
-                                    {#{ pa(spec_jobs_on_sp) }#}
+                        {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
+                        {#{ pa(spec_jobs_on_sp) }#}
 
-                                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
-                                {% endif %}
-
-
-
-                                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-
-                                {# если модератор то выводим исписок точек к оторым есть доступ #}    
-                                {% set sp_access = jobdesc__get__access_moders( db )  %}
-                                {# <br/> pa(sp_access) {{ pa(sp_access) }} #}
-
-                                {% if 1 == 2 or timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
+                        {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
+                    {% endif %}
 
 
-                                {% if 1 == 1 %}
 
-                                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
-                                    {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
-                                    {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
+                    {# если модератор то выводим исписок точек к оторым есть доступ #}    
+                    {% set sp_access = jobdesc__get__access_moders( db )  %}
+                    {# <br/> pa(sp_access) {{ pa(sp_access) }} #}
 
-                                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                                {% endif %}
 
-                                {#{ pa(getListJobsPeriodAll) }}
-                                
-                                {# текущие доступные точки #}
-                                {% if 1 == 1 %}
-                                    <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
+                    {% if 1 == 1 %}
 
-                                        <button type="button" class="btn btn-xs btn-default">Показать:</button>
+                        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
-                                        {% set gets = get %}
-                                        {#{ pa(gets) }#}
+                        {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
+                        {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
 
-                                        {% set gets = gets|merge({'sp':'all'}) %}
-                                        <a class="btn btn-xs {% if get.sp == 'all' %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >ВСЕ</a>
+                        {% if 1 == 2 or timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                                        {% set access_to_sp = jobdesc__get__admin_access_to_sp( db ) %}
+                    {% endif %}
 
-                                        {% for n, sp_now in access_to_sp.data if sp_now.head != 'default' %}
+                    {#{ pa(getListJobsPeriodAll) }}
+                    
+                    {# текущие доступные точки #}
+                    {% if 1 == 1 %}
+                        <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
 
-                                            {% set gets = gets|merge({'sp':sp_now.id}) %}
-                                            <a class="btn btn-xs  {% if get.sp == sp_now.id %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >{{ sp_now.head }}</a>
+                            <button type="button" class="btn btn-xs btn-default">Показать:</button>
 
-                                        {% endfor %}
+                            {% set gets = get %}
+                            {#{ pa(gets) }#}
 
-                                    </div>
+                            {% set gets = gets|merge({'sp':'all'}) %}
+                            <a class="btn btn-xs {% if get.sp == 'all' %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >ВСЕ</a>
 
-                                {% endif %}
+                            {% set access_to_sp = jobdesc__get__admin_access_to_sp( db ) %}
 
-                            </div>
+                            {% for n, sp_now in access_to_sp.data if sp_now.head != 'default' %}
+
+                                {% set gets = gets|merge({'sp':sp_now.id}) %}
+                                <a class="btn btn-xs  {% if get.sp == sp_now.id %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >{{ sp_now.head }}</a>
+
+                            {% endfor %}
 
                         </div>
 
+                    {% endif %}
 
-                        {#{ pa(access_to_sp) }#}
+                </div>
 
-                        {% if get.sp is not defined %}
-
-                            <div class="bg-warning" style="padding:10px;" >Выберите точку продаж</div>
+            </div>
 
 
-                            {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}
-                            {{ pa(jobmans_on_add|length) }}
-                            {{ pa(jobmans_on_add,2) }#}
+            {#{ pa(access_to_sp) }#}
 
-                            {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans1(db) %}
-                            {{ pa(jobmans_on_add|length) }#}
+            {% if get.sp is not defined %}
 
-                            {#% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
-                            {{ pa(jobmans_on_add|length) }#}
+                <div class="bg-warning" style="padding:10px;" >Выберите точку продаж</div>
 
-                            {#% set nn = 0 %}
-                            {% for k,v in jobmans_on_add %}
-                                {% if nn < 10 %}
-                                    
-                                    {{ pa(v) }}
-                                    
-                                    {% set nn = nn+1 %}
+
+                {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}
+                {{ pa(jobmans_on_add|length) }}
+                {{ pa(jobmans_on_add,2) }#}
+
+                {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans1(db) %}
+                {{ pa(jobmans_on_add|length) }#}
+
+                {#% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
+                {{ pa(jobmans_on_add|length) }#}
+
+                {#% set nn = 0 %}
+                {% for k,v in jobmans_on_add %}
+                    {% if nn < 10 %}
+                        
+                        {{ pa(v) }}
+                        
+                        {% set nn = nn+1 %}
+                    {% endif %}
+                {% endfor %#}
+
+
+            {% elseif 1 == 1 and get.sp is defined %}
+
+
+
+                <div style="display:inline-block;padding-right:100px;margin-right:100px;">
+                    <div class="ttable cell-padding5 list_otrezki2 cell-border">
+
+                        {# верхняя строка с датами#}
+                        {% include dir_mod_now_mod_ditpl~'body.up_line.htm' %}
+
+                        {% for kk, sp_now_nn in access_to_sp.data if get.sp is defined and sp_now_nn.head != 'default' and ( get.sp == 'all' or get.sp == sp_now_nn.id ) %}
+
+                            {% if 1 == 1 and getListJobsPeriodAll is not defined %}
+
+                                {% if 1 == 3 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+                                {% set getListJobsPeriodAll = jobdesc__getListJobsPeriodAll( db, date_start, date_finish ) %}
+
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll) 
+                                    {{ pa(getListJobsPeriodAll) }} 
                                 {% endif %}
-                            {% endfor %#}
 
-
-                        {% elseif 1 == 1 and get.sp is defined %}
-
-
-
-                            <div style="display:inline-block;padding-right:100px;margin-right:100px;">
-                                <div class="ttable cell-padding5 list_otrezki2 cell-border">
-
-                                    {# верхняя строка с датами#}
-                                    {% include dir_mod_now_mod_ditpl~'body.up_line.htm' %}
-
-                                    {% for kk, sp_now_nn in access_to_sp.data if get.sp is defined and sp_now_nn.head != 'default' and ( get.sp == 'all' or get.sp == sp_now_nn.id ) %}
-
-                                        {% if 1 == 1 and getListJobsPeriodAll is not defined %}
-
-                                            {% if 1 == 3 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-
-                                            {% set getListJobsPeriodAll = jobdesc__getListJobsPeriodAll( db, date_start, date_finish ) %}
-
-                                            {% if 1 == 2 %} 
-                                                <br/> pa(getListJobsPeriodAll) 
-                                                {{ pa(getListJobsPeriodAll) }} 
-                                            {% endif %}
-
-                                            {% if 1 == 2 %} 
-                                                <br/> pa(getListJobsPeriodAll) 
-                                                {% for k,x in getListJobsPeriodAll.data %}
-                                                    <br/>{{ k }}
-                                                {% endfor %}
-
-                                            {% endif %}
-
-                                            {% if 1 == 2 %} 
-                                                <br/> pa(getListJobsPeriodAll.data.plusa) 
-                                                {{ pa(getListJobsPeriodAll.data.plusa) }} 
-                                            {% endif %}
-
-                                            {% if 1 == 3 or timer_show == 'on' %}<br/>время getListJobsPeriodAll - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-                                        {% endif %}
-
-
-                                        {% set sp_now = sp_now_nn.id %}
-                                        {#{ pa(sp_now) }#}
-                                        {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll) 
+                                    {% for k,x in getListJobsPeriodAll.data %}
+                                        <br/>{{ k }}
                                     {% endfor %}
 
-                                </div>
-                            </div>
+                                {% endif %}
 
-                        {% endif %}
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll.data.plusa) 
+                                    {{ pa(getListJobsPeriodAll.data.plusa) }} 
+                                {% endif %}
 
-                        {% endif %}
+                                {% if 1 == 3 or timer_show == 'on' %}<br/>время getListJobsPeriodAll - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+                            {% endif %}
+
+
+                            {% set sp_now = sp_now_nn.id %}
+                            {#{ pa(sp_now) }#}
+                            {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            {% endif %}
+
+        {% endif %}
 
 
 
 
-                            {# общее время #}
-                            {% set t = didrive_f__timer_stop(99) %}
+        {# общее время #}
+        {% set t = didrive_f__timer_stop(99) %}
 
-                            <div style="position: fixed; bottom: 0px; right: 0px; padding: 3px 10px; z-index: 9000; background-color: rgba(255,255,120,0.5);"
-                                 onclick="$('#bottom_info').show();
+        <div style="position: fixed; bottom: 0px; right: 0px; padding: 3px 10px; z-index: 9000; background-color: rgba(255,255,120,0.5);"
+             onclick="$('#bottom_info').show();
                                          $(this).hide();
                                          return false;"
-                                 >
-                                i {{ t }}
+             >
+            i {{ t }}
 
-                            </div>
+        </div>
 
-                            <div class="alert-warning" id="bottom_info" style="display:none; position: fixed; bottom: 10px; right: 10px; padding: 3px 10px; z-index: 9000;">
-                                <a href="#" style="float:right;" onclick="$('#bottom_info').hide('slow');
+        <div class="alert-warning" id="bottom_info" style="display:none; position: fixed; bottom: 10px; right: 10px; padding: 3px 10px; z-index: 9000;">
+            <a href="#" style="float:right;" onclick="$('#bottom_info').hide('slow');
                                         return false;" >
-                                    скрыть
-                                </a>
-                                создание страницы: {{ t }}
-                            </div>
+                скрыть
+            </a>
+            создание страницы: {{ t }}
+        </div>
 
-                            {# <br/>timer1258: {{ didrive_f__timer_stop(99) }} #}
+        {# <br/>timer1258: {{ didrive_f__timer_stop(99) }} #}
 
 
-                            {% endspaceless %}
+    {% endspaceless %}

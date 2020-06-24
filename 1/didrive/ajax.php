@@ -28,7 +28,7 @@ require($_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php');
 //    scanNewData($db);
 //    //cron_scan_new_datafile();
 //}
-//\f\pa($_REQUEST);
+// \f\pa($_REQUEST);
 
 
 
@@ -2278,7 +2278,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     try {
 
+        //echo '<br/>'.__FILE__.' '.__LINE__;
+        
         $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+        // die($ww);
+        
     } catch (Exception $ex) {
 
         echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
@@ -2512,7 +2516,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'autostart_ocenka_d
     \f\Cash::setVar($temp_var, $temp_ar, 60 * 60 * 2);
 
 
-    die('the end');
+    die('the end '.__FILE__.' '.__LINE__);
 
     //foreach( )
 
