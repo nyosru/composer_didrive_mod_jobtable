@@ -33,7 +33,11 @@
 
                 <a href="#" 
                    style="float:right;"
-                   onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) { console.log('123'); $(this).trigger('click'); }); return false; " >
+                   onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) {
+                               console.log('123');
+                               $(this).trigger('click');
+                           });
+                           return false;" >
                     <span class="fa fa-refresh" title="обновить оценки за месяц" ></span>
                 </a>
                 {# <a href="#" onclick="$('.tr{{sp_now}}ras').toggle('slow'); return false;" > #}
@@ -44,6 +48,7 @@
             </nobr>
 
             {% set ocenki_day = jobdesc__get_ocenki_days( db, sp_now, date_start, date_finish ) %}
+            {#{{ pa(ocenki_day) }}#}
 
         </div>
 
@@ -105,9 +110,7 @@
                                 <span class="fa fa-refresh" ></span>
                             </a>
 
-
                             <div id="ocenka_{{ sp_now }}_{{ i }}" style="text-align:left; xmin-width: 250px;"></div>
-
 
                             {#
                             {% if oborots[now_date2]['oborot_server'] is defined %}
@@ -128,12 +131,12 @@
 
                         </div>
 
-
                         <div id="a_price_{{ sp_now }}_{{ now_date2 }}" >
 
                             <div id="ocenka_info_{{ sp_now }}_{{ i }}" style="text-align:left;">
                                 {% if ocenki_day[now_date2] is defined %}
-                                    {#{ pa(ocenki_day[sp_now][now_date2]) }#}
+                                    
+                                    {#{{ pa(ocenki_day[sp_now][now_date2]) }}#}
 
                                     {% set now_ocenka = ocenki_day[now_date2] %}
 
@@ -148,9 +151,17 @@
                                             <abbr title="Оценка по обороту" class="ocenka_show ob{{ now_ocenka['ocenka_oborot'] }}">{{ now_ocenka['ocenka_oborot'] }}</abbr>
                                             <abbr title="Оценка по времени ожидания" class="ocenka_show time{{ now_ocenka['ocenka_time'] }}">{{ now_ocenka['ocenka_time'] }}</abbr>
                                             <abbr title="На 1 руки" class="ocenka_show naruki{{ now_ocenka['ocenka_naruki'] }}">{{ now_ocenka['ocenka_naruki'] }}</abbr>
+                                            {% if now_ocenka['ocenka_naruki_ot_oborota'] is defined %}
+                                                <abbr title="Оценка по % от оборота на руки" 
+                                                      class="ocenka_show ob{{ now_ocenka['ocenka_naruki_ot_oborota'] }}">
+                                                    {{ now_ocenka['ocenka_naruki_ot_oborota'] }}
+                                                </abbr>
+                                            {% endif %}
                                         </nobr>
                                     </div>
 
+                                        {#{{  pa(now_ocenka) }}#}
+                                        
                                     {#{  pa(ocenki_day[now_date2]['txt']) }#}
 
                                 {% endif %}

@@ -1856,6 +1856,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                         $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">Оценка суммы на руки: 3</div>';
                     }
 
+                    if ($j['data']['ocenka_naruki_ot_oborota'] == 5) {
+                        $html += '<div style="background-color:rgba(0,255,0,0.2);xcolor:red;padding:5px;">% от оборота на руки: 5</div>';
+                    } else {
+                        $html += '<div style="background-color:rgba(255,255,0,0.2);xcolor:red;padding:5px;">% от оборота на руки: 3</div>';
+                    }
+
                     $(resto).html($html + '<br/><center><button class="btn btn-xs btn-info" onclick="$(\'#' + resto1 + '\').toggle(\'slow\');" >показать/скрыть расчёты</button></center><br/><div id="' + resto1 + '" style="display: none;background-color: rgba(0,0,255,0.2);padding:10px;" ><nobr><b>расчёт оценки</b>' + $j['data']['txt'] + '</nobr></div>');
                 } else {
 

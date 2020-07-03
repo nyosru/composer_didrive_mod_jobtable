@@ -1,12 +1,70 @@
 <?php
 
+/**
+ * тащим список людей кто в указанный период был на работе в этой точке
+ * new version 200624
+ */
+$function = new Twig_SimpleFunction('jobdesc__getJobsJobMans', function ( $db, string $date_start, $sp_id = null ) {
+
+    return \Nyos\mod\JobDesc::getJobsJobMans($db, $date_start, '', $sp_id);
+});
+$twig->addFunction($function);
+
+$function = new Twig_SimpleFunction('jobdesc__getJobsSmens', function ( $db, $jobMans, string $date ) {
+
+    return \Nyos\mod\JobDesc::getChecks($db, $jobMans, $date);
+});
+$twig->addFunction($function);
+
+$function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $jobMans, string $date ) {
+
+//    \f\pa($jobMans);
+//    \f\pa($date);
+    
+    
+    if (!empty($date)) {
+        $ds = date('Y-m-01', strtotime($date));
+        \Nyos\mod\items::$between_date['date_now'] = [$ds, date('Y-m-d', strtotime($ds . ' +1 month -1 day'))];
+    }
+    if (!empty($jobMans)) {
+        \Nyos\mod\items::$search['jobman'] = array_keys($jobMans);
+    }
+    $plus0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+    // \f\pa($plus0,2,'','$plus0');
+    $plus_ar_jm_date_ar = [];
+    foreach ($plus0 as $k => $v) {
+        $plus_ar_jm_date_ar[$v['jobman']][$v['date_now']][] = $v;
+    }
+    
+    if (!empty($date)) {
+        $ds = date('Y-m-01', strtotime($date));
+        \Nyos\mod\items::$between_date['date_now'] = [$ds, date('Y-m-d', strtotime($ds . ' +1 month -1 day'))];
+    }
+    if (!empty($jobMans)) {
+        \Nyos\mod\items::$search['jobman'] = array_keys($jobMans);
+    }
+    $minus0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_minus);
+    $minus_ar_jm_date_ar = [];
+    foreach ($plus0 as $k => $v) {
+        $minus_ar_jm_date_ar[$v['jobman']][$v['date_now']][] = $v;
+    }
+
+    return [
+        'plus' => $plus_ar_jm_date_ar ,
+        'minus' => $minus_ar_jm_date_ar 
+    ];
+});
+$twig->addFunction($function);
+
+
+
 
 /**
  * тащим список людей кто в указанный период был на работе в этой точке
  */
 $function = new Twig_SimpleFunction('jobdesc__getMansOnJobsPeriod', function ( $db, string $date_start, string $date_finish, $sp_id = null ) {
 
-    return \Nyos\mod\JobDesc::getPeriodWhereJobMans( $db, $date_start, $date_finish, $sp_id );
+    return \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $date_start, $date_finish, $sp_id);
 });
 $twig->addFunction($function);
 
@@ -795,16 +853,16 @@ $twig->addFunction($function);
 
 
 $function = new Twig_SimpleFunction('jobdesc__getListJobsPeriodAll', function ( $db, string $date_start, string $date_finish ) {
-    
-    if( !empty($_GET['sp']) ){
+
+    if (!empty($_GET['sp'])) {
         //$jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodSp($db, $_GET['sp'], $date_start, $date_finish);
         // \f\pa($jobs_all, 2,'','jobs_all sp');
         \Nyos\mod\JobDesc::$sp = $_GET['sp'];
     }
-    
+
     $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
     //\f\pa($jobs_all, 2,'','jobs_all');
-    
+
     return $jobs_all;
 });
 $twig->addFunction($function);
@@ -1438,39 +1496,22 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    if (1 == 2) {
-        $ocenki = \Nyos\mod\items::getItemsSimple($db, 'sp_ocenki_job_day');
-//\f\pa($ocenki);
-
-        $re = [];
-
-        foreach ($ocenki['data'] as $k => $v) {
-
-            if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
-                $re[$v['dop']['date']] = $v['dop'];
-                $re[$v['dop']['date']]['id'] = $v['id'];
-            }
-        }
-    } 
-    //
-    else {
-
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'date\' '
-                . ' AND mid.value_date >= \'' . $date_start . '\' '
-                . ' AND mid.value_date <= \'' . $date_finish . '\' '
-                . ' INNER JOIN `mitems-dops` mid2 '
-                . ' ON mid2.id_item = mi.id '
-                . ' AND mid2.name = \'sale_point\' '
-                . ' AND mid2.value = \'' . $sp . '\' '
-
+//        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+//                . ' ON mid.id_item = mi.id '
+//                . ' AND mid.name = \'date\' '
+//                . ' AND mid.value_date >= \'' . $date_start . '\' '
+//                . ' AND mid.value_date <= \'' . $date_finish . '\' '
+//                . ' INNER JOIN `mitems-dops` mid2 '
+//                . ' ON mid2.id_item = mi.id '
+//                . ' AND mid2.name = \'sale_point\' '
+//                . ' AND mid2.value = \'' . $sp . '\' '
         ;
-        
+
         // \Nyos\mod\items::$show_sql = true;
+        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+        \Nyos\mod\items::$search['sale_point'] = $sp;
         $ocenki = \Nyos\mod\items::get($db, 'sp_ocenki_job_day');
-        
-//\f\pa($ocenki);
+        // \f\pa($ocenki,'','','$ocenki');
 
         $re = [];
 
@@ -1481,7 +1522,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, 
             //$re[$v['date']]['id'] = $v['id'];
             //}
         }
-    }
+
 
     return $re;
 });

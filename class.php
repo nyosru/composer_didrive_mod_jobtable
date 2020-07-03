@@ -205,6 +205,121 @@ class JobDesc {
      */
     public static $salary_ar__sp_dolgn_date = [];
 
+    
+    
+    
+    
+    
+    
+
+    public static function calcSizePay($check = [], $salary = []) {
+
+        if (empty($check))
+            return \f\end3('нет чека', false);
+
+        if (empty($salary))
+            return \f\end3('нет размера зп', false);
+
+        if (empty($check['fin']))
+            return \f\end3('нет конца смены, ещё в работе', false);
+
+        $v['hours'] = $check['hour_on_job_hand'] ?? $check['hour_on_job'] ?? 0;
+
+        if ($v['hours'] == 0)
+            return \f\end3('нечего считать 0 часов работы', false);
+
+        $ocenka = $check['ocenka'] ?? $check['ocenka_auto'] ?? null;
+
+        if (empty($ocenka))
+            return \f\end3('оценка не выставлена', false);
+
+        if (!empty($v['hours'])) {
+
+            if (isset($salary['ocenka-hour-' . $ocenka])) {
+                $v['pay_hour'] = $salary['ocenka-hour-' . $ocenka];
+            }
+
+            $v['summa'] = $v['hours'] * $v['pay_hour'];
+
+            return \f\end3('ок', true, $v);
+        }
+
+//        \f\pa($check);
+//        \f\pa($salary);
+//        die();
+
+        return \f\end3('error no pay size', false, ['check' => $check, 'salary' => $salary]);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        /**
+     * получаем текущую должность и спец назначения если были
+     * 2006270745
+     * @param type $db
+     * @param type $user
+     * @param type $date_now
+     * @return массив [ 'norm => [] , 'spec' => [] ]
+     */
+    public static function whatJobDate($db, $user, $date_now) {
+
+        // \f\pa([$user, $date_now]);
+
+        if (empty(self::$cash['whatJobDate'][$user])) {
+
+            $date_start = date('Y-m-d', strtotime($date_now . ' -12 month'));
+            $date_finish = date('Y-m-d', strtotime($date_now . ' +47 day'));
+            \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+
+            \Nyos\mod\items::$search['jobman'] = $user;
+
+            self::$cash['whatJobDate'][$user] = \Nyos\mod\items::get2($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp);
+
+            if (sizeof(self::$cash['whatJobDate'][$user]) > 1)
+                \uasort(self::$cash['whatJobDate'][$user], '\\f\\sort_ar__start_time__desc');
+        }
+
+        $norm = [];
+        foreach (self::$cash['whatJobDate'][$user] as $k => $v) {
+            if ($v['date'] > $date_now)
+                break;
+            $norm = $v;
+        }
+
+        if (isset(self::$WhereJobMans['data']['spec'][$user][$date_now])) {
+            $spec = self::$WhereJobMans['data']['spec'][$user][$date_now];
+        }
+
+        return ['norm' => ( $norm ?? [] ), 'spec' => ( $spec ?? [] )];
+    }
+
+    
+    
+    
+    
+    
     /**
      * 
      * @param type $db
@@ -290,7 +405,7 @@ class JobDesc {
                     'spec' => $spec,
                     'ar_jm_sp' => $ar_jm_sp,
                     'ar_sp_jm' => $ar_sp_jm,
-                    'in' => [$date_start, $date_finish, $_sp]
+                    'in' => [$date_start, $date_finish, ( $sp_id ?? 0 )]
                 ]);
 
                 if (!empty($cash_var))
@@ -333,28 +448,28 @@ class JobDesc {
      * id точки если указан то показываем только выбранные
      * @return type
      */
-    public static function whatJobDate($db, $user, $date_now) {
-
-        $norm = [];
-
-        if (isset(self::$WhereJobMans['data']['checks'][$user])) {
-
-            // usort($a, "\\f\\sort_ar_date_desc");
-
-            foreach (self::$WhereJobMans['data']['checks'][$user] as $k => $v) {
-                if ($v['date'] > $date_now)
-                    break;
-                $norm = $v;
-            }
-        }
-
-        if (isset(self::$WhereJobMans['data']['spec'][$user][$date_now])) {
-            $spec = self::$WhereJobMans['data']['spec'][$user][$date_now];
-        }
-        //$job = self::whatJobDate( $user, $date_now );
-
-        return ['norm' => $norm, 'spec' => $spec];
-    }
+//    public static function whatJobDate($db, $user, $date_now) {
+//
+//        $norm = [];
+//
+//        if (isset(self::$WhereJobMans['data']['checks'][$user])) {
+//
+//            // usort($a, "\\f\\sort_ar_date_desc");
+//
+//            foreach (self::$WhereJobMans['data']['checks'][$user] as $k => $v) {
+//                if ($v['date'] > $date_now)
+//                    break;
+//                $norm = $v;
+//            }
+//        }
+//
+//        if (isset(self::$WhereJobMans['data']['spec'][$user][$date_now])) {
+//            $spec = self::$WhereJobMans['data']['spec'][$user][$date_now];
+//        }
+//        //$job = self::whatJobDate( $user, $date_now );
+//
+//        return ['norm' => ( $norm ?? [] ), 'spec' => ( $spec ?? [] )];
+//    }
 
     /**
      * получаем список всех работников что работали на точках
@@ -720,10 +835,10 @@ class JobDesc {
         try {
 
             if (empty($_REQUEST['date_start']))
-                throw new Exception('не определена дата выборки', __LINE__);
+                throw new \Exception('не определена дата выборки', __LINE__);
 
             if (empty($_REQUEST['sp']))
-                throw new Exception('не определена точка продаж', __LINE__);
+                throw new \Exception('не определена точка продаж', __LINE__);
 
             $d_start = $_REQUEST['date_start'];
             $d_finish = $_REQUEST['date_finish'] ?? date('Y-m-d', date(strtotime($_REQUEST['date_start'] . ' +1 month ')));
@@ -735,15 +850,15 @@ class JobDesc {
             $result['who_is_job'] = self::getPeriodWhereJobMans($db, $date_start, $date_finish, $sp_id);
             $result['jobmans'] = array_keys($result['who_is_job']);
 
-
             \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 05:00:00', strtotime($d_start)), date('Y-m-d 05:00:00', strtotime($d_finish . ' + 1day '))];
             \Nyos\mod\items::$search['jobman'] = $result['jobmans'];
             $result['checks'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
 
             return \f\end3($r ?? 'x', true, $result);
-        } catch (Exception $ex) {
+        
+        } catch (\Exception $ex) {
 
-            return \f\end3($ex->message, false);
+            return \f\end3('error', false, $ex);
         }
 
 
@@ -4876,6 +4991,38 @@ class JobDesc {
      * @param type $dt0
      * @return type
      */
+    public static function getChecks($db, $jobMans = [], $date = '') {
+
+            if( !empty($date) ){
+                $ds = date('Y-m-01 03:00:00', strtotime($date));
+            \Nyos\mod\items::$between_datetime['start'] = [ $ds , date('Y-m-d 03:00:00', strtotime( $ds . ' +1 month +1 day'))];
+            }
+            
+            if( !empty($jobMans) )
+            \Nyos\mod\items::$search['jobman'] = array_keys($jobMans);
+            
+            $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+            // \f\pa($checks0,2,'','$checks0');
+            \Nyos\mod\JobDesc::$ar_jm_date_checks = [];
+
+            foreach ($checks0 as $k => $v) {
+
+                if (isset($v['jobman']))
+                    $now_check_date = date('Y-m-d', strtotime($v['start'] . ' -4 hour'));
+
+                \Nyos\mod\JobDesc::$ar_jm_date_checks[$v['jobman']][$now_check_date][] = $v;
+            }
+        
+        return \Nyos\mod\JobDesc::$ar_jm_date_checks;
+    }
+
+    /**
+     * считаем автобонусы на 1 точке всем сотрудникам
+     * @param type $db
+     * @param type $_sp
+     * @param type $dt0
+     * @return type
+     */
     public static function creatAutoBonusMonth($db, $_sp, $dt0) {
 
         $show_html = true;
@@ -4896,6 +5043,7 @@ class JobDesc {
         $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
 
+        
         /**
          * удаляем все смены что были ранее
          */
@@ -4962,8 +5110,9 @@ class JobDesc {
         foreach (self::$WhereJobMans['data']['ar_jm'] as $user_id => $v) {
 
             $show_html = false;
-//            if ($user_id == 241)
-//                $show_html = true;
+            if ( isset($_REQUEST['show_user'] ) && $_REQUEST['show_user'] == $user_id)
+            //if ($user_id == 241)
+                $show_html = true;
 
             if ($show_html === true)
                 echo '<ul>';
@@ -5033,11 +5182,30 @@ class JobDesc {
 //                        elseif ( !empty($job['spec'][$_sp]['dolgnost']) ) {
 //                            $dolgnost_now = $job['spec'][$_sp]['dolgnost'];
 //                        }
-                        $dolgnost_now = $job['spec'][$_sp]['dolgnost'] ?? $job['norm']['dolgnost'] ?? null;
 
+//                        if ($user_id == 237 && $date_now == '2020-06-13') {
+//                            \f\pa($check);
+//                            \f\pa($job);
+//                        }
+
+                        // пропускаем                        
+                        // если есть спец.назначение на др точку и нет на текущую
+                        if ( !empty($job['spec']) && empty($job['spec'][$_sp]) ){
+                            
+                        }
+                        // обрабатываем
+                        else{
+
+                        $dolgnost_now = $job['spec'][$_sp]['dolgnost'] ?? $job['norm']['dolgnost'] ?? null;
+                        }
+
+//                        if ($user_id == 237 && $date_now == '2020-06-13') {
+//                            \f\pa($dolgnost_now);
+//                        }
+                        
 // если нет должности
                         if (empty($dolgnost_now)) {
-                            \f\pa(\f\end3('Внимание, нет должности у сотрудника', true, ['sp' => $_sp, 'user' => $user_id, 'date' => $date_now]));
+                            // \f\pa(\f\end3('Внимание, нет должности у сотрудника', true, ['sp' => $_sp, 'user' => $user_id, 'date' => $date_now]));
                         }
                         // если есть должность
                         else {
@@ -5841,15 +6009,16 @@ class JobDesc {
          */
         $return['smen_in_day'] = round($return['hours'] / $return['norm_kolvo_hour_in1smena'], 1);
 
+        $re['hour_day'] = $return['hours'];
         $return['txt'] .= '<br/>суммарно отработано часов:' . $return['hours'];
         $return['txt'] .= '<br/>часов в 1 смене:' . $return['norm_kolvo_hour_in1smena'];
         $return['txt'] .= '<br/>отработано смен: ' . $return['hours'] . ' / ' . $return['norm_kolvo_hour_in1smena'] . ' = ' . $return['smen_in_day'];
 
         if (!empty($return['oborot']) && !empty($return['smen_in_day'])) {
+            $re['money_norm_ot_oborota'] = 
             $return['summa_na_ruki'] = ceil($return['oborot'] / $return['smen_in_day']);
             $return['txt'] .= '<br/>на 1 руки денег: ' . $return['oborot'] . ' / ' . $return['smen_in_day'] . ' = ' . $return['summa_na_ruki'];
         }
-
 
         $text .= $return['summa_na_ruki'] . ' (сейчас) >= (норма) ' . $return['norm_vuruchka_on_1_hand'] . $text_s;
 
@@ -5868,8 +6037,41 @@ class JobDesc {
             $return['txt'] .= '<br/>сумма Р на руки меньше НОРМы (' . $return['summa_na_ruki'] . ' < ' . $return['norm_vuruchka_on_1_hand'] . ') : оценка 3';
         }
 
+        
+        
+        $money_proc = ceil($return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota']);
+        
+        $return['txt'] .= '<br/><br/><b>Проверяем % от оборота в 1 руки</b><br/>'
+                . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';;
+        
+        if ( $return['summa_na_ruki'] >= $money_proc ) {
+        // if ( $return['summa_na_ruki'] >= $return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota'] ) {
+
+            $re['ocenka_naruki_ot_oborota'] = 5;
+            $text .= 'сумма на руки больше запланированного % от оборота '
+                    . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
+            $return['txt'] .= 
+                    // 'сумма на руки больше запланированного % от оборота '
+                    // . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
+                    '<br/>сумма на руки больше или равно нормы в % от оборота ( ' . $return['summa_na_ruki'] . ' >= ' . $money_proc . ' ) : оценка 5';
+            
+        }
+// если на руки меньше нормы то оценка 3
+        else {
+
+            $re['ocenka_naruki_ot_oborota'] = 3;
+            // $re['ocenka_naruki_ot_oborota'] = 5;
+            $text .= 'сумма на руки меньше запланированного % от оборота '
+                    . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
+            $return['txt'] .= '<br/>сумма на руки меньше нормы в % от оборота ( ' . $return['summa_na_ruki'] . ' < ' . $money_proc . ' ) : оценка 3';
+            
+        }
+
         $ar = $return;
 
+//         \f\pa($return);
+//  die();      
+        
 // время ожидания
         if (1 == 1) {
 
