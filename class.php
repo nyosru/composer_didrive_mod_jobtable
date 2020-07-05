@@ -205,13 +205,6 @@ class JobDesc {
      */
     public static $salary_ar__sp_dolgn_date = [];
 
-    
-    
-    
-    
-    
-    
-
     public static function calcSizePay($check = [], $salary = []) {
 
         if (empty($check))
@@ -250,32 +243,8 @@ class JobDesc {
 
         return \f\end3('error no pay size', false, ['check' => $check, 'salary' => $salary]);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        /**
+
+    /**
      * получаем текущую должность и спец назначения если были
      * 2006270745
      * @param type $db
@@ -315,11 +284,6 @@ class JobDesc {
         return ['norm' => ( $norm ?? [] ), 'spec' => ( $spec ?? [] )];
     }
 
-    
-    
-    
-    
-    
     /**
      * 
      * @param type $db
@@ -855,7 +819,6 @@ class JobDesc {
             $result['checks'] = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
 
             return \f\end3($r ?? 'x', true, $result);
-        
         } catch (\Exception $ex) {
 
             return \f\end3('error', false, $ex);
@@ -2242,8 +2205,11 @@ class JobDesc {
 // автооценка не нужна сменам с фиксированной оплатой
 // if (empty($v['fin']) || empty($v['ocenka_auto']) || empty($v['hour_on_job']))
 
-                if (empty($v['fin']) || empty($v['hour_on_job']))
+                if (empty($v['fin']))
                     continue;
+
+                if (empty($v['hour_on_job']))
+                    $v['hour_on_job'] = 0;
 
                 $dn = date('Y-m-d', strtotime($v['start']));
 
@@ -4993,26 +4959,26 @@ class JobDesc {
      */
     public static function getChecks($db, $jobMans = [], $date = '') {
 
-            if( !empty($date) ){
-                $ds = date('Y-m-01 03:00:00', strtotime($date));
-            \Nyos\mod\items::$between_datetime['start'] = [ $ds , date('Y-m-d 03:00:00', strtotime( $ds . ' +1 month +1 day'))];
-            }
-            
-            if( !empty($jobMans) )
+        if (!empty($date)) {
+            $ds = date('Y-m-01 03:00:00', strtotime($date));
+            \Nyos\mod\items::$between_datetime['start'] = [$ds, date('Y-m-d 03:00:00', strtotime($ds . ' +1 month +1 day'))];
+        }
+
+        if (!empty($jobMans))
             \Nyos\mod\items::$search['jobman'] = array_keys($jobMans);
-            
-            $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
-            // \f\pa($checks0,2,'','$checks0');
-            \Nyos\mod\JobDesc::$ar_jm_date_checks = [];
 
-            foreach ($checks0 as $k => $v) {
+        $checks0 = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+        // \f\pa($checks0,2,'','$checks0');
+        \Nyos\mod\JobDesc::$ar_jm_date_checks = [];
 
-                if (isset($v['jobman']))
-                    $now_check_date = date('Y-m-d', strtotime($v['start'] . ' -4 hour'));
+        foreach ($checks0 as $k => $v) {
 
-                \Nyos\mod\JobDesc::$ar_jm_date_checks[$v['jobman']][$now_check_date][] = $v;
-            }
-        
+            if (isset($v['jobman']))
+                $now_check_date = date('Y-m-d', strtotime($v['start'] . ' -4 hour'));
+
+            \Nyos\mod\JobDesc::$ar_jm_date_checks[$v['jobman']][$now_check_date][] = $v;
+        }
+
         return \Nyos\mod\JobDesc::$ar_jm_date_checks;
     }
 
@@ -5043,7 +5009,7 @@ class JobDesc {
         $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
 
-        
+
         /**
          * удаляем все смены что были ранее
          */
@@ -5110,7 +5076,7 @@ class JobDesc {
         foreach (self::$WhereJobMans['data']['ar_jm'] as $user_id => $v) {
 
             $show_html = false;
-            if ( isset($_REQUEST['show_user'] ) && $_REQUEST['show_user'] == $user_id)
+            if (isset($_REQUEST['show_user']) && $_REQUEST['show_user'] == $user_id)
             //if ($user_id == 241)
                 $show_html = true;
 
@@ -5139,7 +5105,7 @@ class JobDesc {
                 if (isset(self::$ar_metki_jm_date_sp_type[$user_id][$date_now][$_sp]['no_autobonus'])) {
                     if ($show_html === true)
                         echo '<br/>не считаем бонусы, так как есть метка "без бонусов"</li>';
-                    break;
+                    continue;
                 }
 
                 if ($date_now > $date_finish) {
@@ -5182,27 +5148,24 @@ class JobDesc {
 //                        elseif ( !empty($job['spec'][$_sp]['dolgnost']) ) {
 //                            $dolgnost_now = $job['spec'][$_sp]['dolgnost'];
 //                        }
-
 //                        if ($user_id == 237 && $date_now == '2020-06-13') {
 //                            \f\pa($check);
 //                            \f\pa($job);
 //                        }
-
                         // пропускаем                        
                         // если есть спец.назначение на др точку и нет на текущую
-                        if ( !empty($job['spec']) && empty($job['spec'][$_sp]) ){
+                        if (!empty($job['spec']) && empty($job['spec'][$_sp])) {
                             
                         }
                         // обрабатываем
-                        else{
+                        else {
 
-                        $dolgnost_now = $job['spec'][$_sp]['dolgnost'] ?? $job['norm']['dolgnost'] ?? null;
+                            $dolgnost_now = $job['spec'][$_sp]['dolgnost'] ?? $job['norm']['dolgnost'] ?? null;
                         }
 
 //                        if ($user_id == 237 && $date_now == '2020-06-13') {
 //                            \f\pa($dolgnost_now);
 //                        }
-                        
 // если нет должности
                         if (empty($dolgnost_now)) {
                             // \f\pa(\f\end3('Внимание, нет должности у сотрудника', true, ['sp' => $_sp, 'user' => $user_id, 'date' => $date_now]));
@@ -6015,8 +5978,7 @@ class JobDesc {
         $return['txt'] .= '<br/>отработано смен: ' . $return['hours'] . ' / ' . $return['norm_kolvo_hour_in1smena'] . ' = ' . $return['smen_in_day'];
 
         if (!empty($return['oborot']) && !empty($return['smen_in_day'])) {
-            $re['money_norm_ot_oborota'] = 
-            $return['summa_na_ruki'] = ceil($return['oborot'] / $return['smen_in_day']);
+            $re['money_norm_ot_oborota'] = $return['summa_na_ruki'] = ceil($return['oborot'] / $return['smen_in_day']);
             $return['txt'] .= '<br/>на 1 руки денег: ' . $return['oborot'] . ' / ' . $return['smen_in_day'] . ' = ' . $return['summa_na_ruki'];
         }
 
@@ -6037,24 +5999,23 @@ class JobDesc {
             $return['txt'] .= '<br/>сумма Р на руки меньше НОРМы (' . $return['summa_na_ruki'] . ' < ' . $return['norm_vuruchka_on_1_hand'] . ') : оценка 3';
         }
 
-        
-        
-        $money_proc = ceil($return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota']);
-        
+
+
+        $money_proc = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
+
         $return['txt'] .= '<br/><br/><b>Проверяем % от оборота в 1 руки</b><br/>'
-                . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';;
-        
-        if ( $return['summa_na_ruki'] >= $money_proc ) {
-        // if ( $return['summa_na_ruki'] >= $return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota'] ) {
+                . '( ' . $return['norm_procent_oplata_truda_on_oborota'] . '% от ' . $return['oborot'] . ' = ' . $money_proc . ')';
+        ;
+
+        if ($return['summa_na_ruki'] >= $money_proc) {
+            // if ( $return['summa_na_ruki'] >= $return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota'] ) {
 
             $re['ocenka_naruki_ot_oborota'] = 5;
             $text .= 'сумма на руки больше запланированного % от оборота '
-                    . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
-            $return['txt'] .= 
-                    // 'сумма на руки больше запланированного % от оборота '
+                    . '( ' . $return['norm_procent_oplata_truda_on_oborota'] . '% от ' . $return['oborot'] . ' = ' . $money_proc . ')';
+            $return['txt'] .= // 'сумма на руки больше запланированного % от оборота '
                     // . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
                     '<br/>сумма на руки больше или равно нормы в % от оборота ( ' . $return['summa_na_ruki'] . ' >= ' . $money_proc . ' ) : оценка 5';
-            
         }
 // если на руки меньше нормы то оценка 3
         else {
@@ -6062,16 +6023,14 @@ class JobDesc {
             $re['ocenka_naruki_ot_oborota'] = 3;
             // $re['ocenka_naruki_ot_oborota'] = 5;
             $text .= 'сумма на руки меньше запланированного % от оборота '
-                    . '( '.$return['norm_procent_oplata_truda_on_oborota'].'% от '.$return['oborot'].' = '.$money_proc.')';
+                    . '( ' . $return['norm_procent_oplata_truda_on_oborota'] . '% от ' . $return['oborot'] . ' = ' . $money_proc . ')';
             $return['txt'] .= '<br/>сумма на руки меньше нормы в % от оборота ( ' . $return['summa_na_ruki'] . ' < ' . $money_proc . ' ) : оценка 3';
-            
         }
 
         $ar = $return;
 
 //         \f\pa($return);
 //  die();      
-        
 // время ожидания
         if (1 == 1) {
 

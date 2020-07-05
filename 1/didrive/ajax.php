@@ -2728,7 +2728,44 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 
     if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
 
+            if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
+                echo '<h3>удаляем все автобонусы</h3>';
+                
+                $date_start = date('Y-m-01',strtotime($_REQUEST['date']) );
+                $date_finish = date('Y-m-d',strtotime($date_start.' +1 month -1 day') );
+
+                
+                \Nyos\mod\items::$between_date['date_now'] = [$date_start,$date_finish];
+                \Nyos\mod\items::$return_items_header = true;
+//                 $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus );
+                // \f\pa($items);
+                
+            for ($n = 0; $n <= 32; $n++) {
+//                
+                $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+//
+                if ( substr($date_now,5,2) == substr($date_start,5,2) ) {
+//                // if ( $date_now <= $date_finish ) {
+//                    
+////                break;
+////                }
+//                echo '<br/>+';                    
+                 echo '<br/>'.$date_now.' '.$date_finish .' - '.substr($date_now,5,2).' '.substr($date_start,5,2);
+//                }
+//                
+//                
+                
+                \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => $date_now, 'auto_bonus_zp' => 'da' ] );
+                
+            }
+            }
+                
+                // \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => date('Y-m-d',strtotime($_REQUEST['date']) ), 'auto_bonus_zp' => 'da' ] );
+            }
+
+        
         $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
+        
         foreach ($sps as $k => $v) {
             echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
             . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=bonus_record_month&date=2020-06-01&sp=' . $v['id'] . '">' . $v['id'] . '</a>';
