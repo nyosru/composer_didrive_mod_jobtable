@@ -1,268 +1,405 @@
 {% spaceless %}
 
+
+    {%  set timer_show = 'off' %}
+    {%  if 1 == 2 %}{%  set timer_show = 'on' %}{% endif %}
+
     {# считаем общее время #}
     {{ didrive_f__timer_start(99) }}
 
-    <script src="/js/numberformat.js" ></script>
+    <span style="position: fixed; top: 30px; left: 120px; z-index: 99999;" >
+        <a href="?level={{ get.level }}&newtype=0" class="btn btn-xs {% if session.newtype is defined and session.newtype == 1 %}btn-light{% else %}btn-success{% endif %}" >норм вид</a>
+        <a href="?level={{ get.level }}&newtype=1" class="btn btn-xs {% if session.newtype is defined and session.newtype == 1 %}btn-success{% else %}btn-light{% endif %}" >новый вид</a>
+        {#{ pa(session) }#}
+    </span>
 
-    {% set sps = items__get( db, 'sale_point' )  %}
-    {#{ pa(sps) }#}
 
-    {#% set sp = items__readItems( db, 'sale_point', null, 'sort_asc' )  %#}
-    {#{ pa(sp.data) }#}
-    
-    
-    {#{ didrive_f__timer_start(991) }#}
-    {% set job_in = readItems( '050.job_in_sp', null )  %}
-    {#{ pa(job_in) }}
-    dd {{ didrive_f__timer_stop(991) }#}
-    
-    {#{ didrive_f__timer_start(991) }}
-    {% set job_in = items__get( db, '050.job_in_sp' )  %}
-    {{ pa(job_in) }}
-    dd {{ didrive_f__timer_stop(991) }#}
-    
-    {% set mans = readItems( '070.jobman', null )  %}
-    {#% set mans = items__get( db, '070.jobman', null )  %#}
-    
-    {% set dolgn = readItems( '061.dolgnost', null )  %}
+    {% if session.newtype is defined and session.newtype == 1 %}
 
-    {% if session.now_user_di.access == 'moder' %}
-        {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
-    {% else %}
-        {% set access_to_sp = false %}
-    {% endif %}
+        {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(25) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.1.htm' %}
+        {% if 2 == 1 or timer_show == 'on' %}<br/>время body.1.htm - {{ didrive_f__timer_stop(25) }} {% endif %}
 
-    
-    
-    
-    
-    
-    
-    {#    
-    <br/>timer1: {{ didrive_f__timer_stop(99) }}
-    #}
+    {% else %}    
 
-    <div class="container-fluid">
+        <script src="/js/numberformat.js" ></script>
 
-        {% if 1 == 2 %}
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set sps = items__get( db, 'sale_point' )  %}
+        {#{ pa(sps) }#}
+        {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 sale_point - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                    {# % extends "body.htm" % #}
-                    {# % block block1 %} block 11111111111111111 {% endblock % #}
+        {# использую в списке точек что можем выбрать #}
+        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set sps_sort = items__get( db, 'sale_point', 'show', 'sort_asc' )  %}
+        {#{ pa(sps_sort) }#}
+        {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 sale_point sort - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                    {# % set krohi['1']['text'] = 'Интерфейс работы Супер администратора' %}
-                    {% set krohi['1']['uri'] = get.level % #}
+        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set mans = items__get( db, '070.jobman' )  %}
+        {#{ pa(mans) }#}
+        {% if 1 == 2 or timer_show == 'on' %} <br/>время 01 070.jobman - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                    <h3>Порядок работы по шагам v0.1 <sup><a href="#" onclick="$('#list1').toggle('slow');
-                            return false;" >развернуть/свернуть</a></sup> </h3>
+        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set dolgn = jobdesc__get_dolgnosti( db, '061.dolgnost' )  %}
+        {#{ pa(dolgn,2) }#}
+        {% if 1 == 2 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                    {# { pa(list_plan)|raw } #}
-
-                    <ol style="line-height:3em;display:none;" id="list1" >
-
-                        {% for k, v in list_plan %} 
-                            <li><a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }}</li>
-                        {% endfor %}
-
-                        {#
-                        <li><a href="#" class="btn btn-xs btn-info">Точки продаж</a> - добавляем точки продаж</li>
-                        <li><a href="#" class="btn btn-xs btn-info">Должности</a> - возможные должности</li>
-                        <li><a href="#" class="btn btn-xs btn-info">Размер оплаты труда</a> - добавляем настройки размеров оплаты труда должностям работающим на точке (точка "default" содержит настройки для всех точек у которых не назначены свои цифры)</li>
-                        <li><a href="#" class="btn btn-xs btn-info">Сотрудники</a> - добавляем ФИО и назначем должность и даты старта стажировки/работы/уволнения сотрудника</li>
-                        <li><a href="#" class="btn btn-xs btn-info">Назначение работника на точку продаж</a> - определяем кто и когда работает ( работник + точка продаж + дата )</li>
-                        <li><a href="#" class="btn btn-xs btn-info">Реестр check-in check-out</a> - определяем кто и когда начал работу/закочил работу (работник + дата,время старта/финиша) </li>
-                        <li><a href="#" class="btn btn-xs btn-info">Взыскания</a> - если есть взыскания персоналу, добавляем (участнвует дальше в расчёте оплаты)</li>
-                        <li><a href="#" class="btn btn-xs btn-info">ЗП работников</a> - реестр кому сколько платим</li>
-                        #}
-
-                    </ol>
-
-                </div>
-            </div>
+        {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% if session.now_user_di.access == 'moder' %}
+            {% set access_to_sp = jobdesc__get_access_for_moder( db )  %}
+        {% else %}
+            {% set access_to_sp = false %}
         {% endif %}
+        {% if 2 == 1 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-        <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 2vh; margin-bottom: 2vh;" >
-
-                {% if get.date is defined %}
-
-                    {% set date_start = get.date|date("Y-m-d") %}
-                    {% set date_finish = date_start|date_modify("+30 day")|date("Y-m-d") %}
-
-                {% elseif get.year is defined and get.month is defined %}
-
-                    {% set date_start = (get.year~'-'~get.month~'-01')|date("Y-m-d") %}
-                    {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
-
-                {% else %}
-
-                    {% set date_start = now|date("Y-m-01") %}
-                    {#% set date_start = now|date_modify("-3 day")|date("Y-m-d") %#}
-                    {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
-
-                {% endif %}
-
-                {% if 1 == 2 %} {{ didrive_f__timer_start(5) }}     {% endif %}
-                {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
-                {% if 1 == 2 %} <br/>время 5 - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-                {# верхние кнопки даты и скрыть показать даты #}
-                {% if 1 == 1 %}
-
-                    <button onclick="$('body .job_timer').toggle('slow');" class="btn btn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> время смен</button> 
-                    {#
-                    &nbsp;
-                    <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
-                    #}
-
-                    {# 2019 #}
-                    {#% set year = 2019 %#}
-
-                    {% set now_year = "now"|date('Y')%}
-                    {#{ now_year }#}
-
-                    {% set now_mont = "now"|date('m')%}
-                    {#{ now_mont }#}
-
-                    {% set gets = get %}
-
-                    {% for year in range(low=2019, high=2030, step=1) if iy <= now_year %}
-
-                        {# {{ iy }}<br/> #}
-
-                        {% for i in range(low=1, high=12, step=1) if ( ( year == 2019 and i >= 9 ) or ( year > 2019 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
-
-                            {% if i < 10 %}
-                                {% set i2 = '0'~i %}
-                            {% else %}
-                                {% set i2 = i %}
-                            {% endif %}
-
-                            {% set gets = gets|merge({'year':year,'month':i2}) %}
-
-                            <a  
-                                href="?{{ http_build_query(gets) }}"  
-                                xhref="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year={{ year }}&month={{ i2 }}"  
-
-                                style="margin-right:5px;"
-
-                                class="btn btn-xs 
-                                {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
-                                    btn-success
-                                {% elseif get.year is not defined and get.month is not defined  and now|date('Y') == year and i2 == now|date('m') %}
-                                    btn-success
-                                {% else %}
-                                    btn-light
-                                {% endif %}
-                                " >
-
-                                {% if i2 == 01 %}
-                                    январь
-                                {% elseif i2 == 02 %}
-                                    февраль
-                                {% elseif i2 == 03 %}
-                                    март
-                                {% elseif i2 == 04 %}
-                                    апрель
-                                {% elseif i2 == 05 %}
-                                    май
-                                {% elseif i2 == 06 %}
-                                    июнь
-                                {% elseif i2 == 07 %}
-                                    июль
-                                {% elseif i2 == 08 %}
-                                    август
-                                {% elseif i2 == 09 %}
-                                    сентябрь
-                                {% elseif i2 == 10 %}
-                                    октябрь
-                                {% elseif i2 == 11 %}
-                                    ноябрь
-                                {% elseif i2 == 12 %}
-                                    декабрь
-                                {% endif %}
-                                {{ year }}</a>
-
-                        {% endfor %}
-
-                    {% endfor %}
-
-                {% endif %}
-
-
-                {# заготовка модальных окошек #}
-                {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
-
-
-                {# <br/>timer2: {{ didrive_f__timer_stop(99) }} #}              
-
-                {% if 1 == 2 %} {{ didrive_f__timer_start(6) }}     {% endif %}
-                {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
-                {% if 1 == 2 %} <br/>время 6 - {{ didrive_f__timer_stop(6) }} {% endif %}
-
-                {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
-                {#{ pa(spec_jobs_on_sp) }#}
-
-                {# если модератор то выводим исписок точек к оторым есть доступ #}    
-                {% set sp_access = jobdesc__get__access_moders( db )  %}
-                {#{ pa(sp_access) }#}
-
-                {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
-                {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
-
-                {# текущие доступные точки #}
-                {% if 1 == 1 %}
-                    <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
-
-                        {# <div class="btn-group mr-2" role="group" aria-label="First group"> #}
-                        <button type="button" class="btn btn-xs btn-default">Показать:</button>
-                        {# </div>
-                        <div class="btn-group mr-2" role="group" aria-label="First group"> #}
-                        {% set gets = get %}
-                        {#{ pa(gets) }#}
-
-                        {% set gets = gets|merge({'sp':'all'}) %}
-                        <a class="btn btn-xs {% if get.sp == 'all' %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >ВСЕ</a>
-
-                        {#{ pa(jobs_on_sp.sort) }# }
-                        sp {{ pa(sp) }}
-                        sps {{ pa(sps) }#}
-
-                        {% for kk, sp_now in jobs_on_sp.sort if jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
-
-                            {#% set gets['now_sp'] = sp_now %#}
-                            {% set gets = gets|merge({'sp':sp_now}) %}
-
-                            <a class="btn btn-xs  {% if get.sp == sp_now %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >{{ sps[sp_now]['head'] }}</a>
-
-                            {#{ pa(sp_now) }#}
-
-                        {% endfor %}
-                        {#
-                                                </div>
-                        #}
-                    </div>
-
-                {% endif %}
-
-            </div>
-        </div>
-        {#
-            <br/>timer3: {{ didrive_f__timer_stop(99) }}
+        {#    
+        <br/>timer1: {{ didrive_f__timer_stop(99) }}
         #}
 
+        <div class="container-fluid">
+
+            {% if 1 == 2 %}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+                        {# % extends "body.htm" % #}
+                        {# % block block1 %} block 11111111111111111 {% endblock % #}
+
+                        {# % set krohi['1']['text'] = 'Интерфейс работы Супер администратора' %}
+                        {% set krohi['1']['uri'] = get.level % #}
+
+                        <h3>Порядок работы по шагам v0.1 <sup><a href="#" onclick="$('#list1').toggle('slow');
+                                return false;" >развернуть/свернуть</a></sup> </h3>
+
+                        {# { pa(list_plan)|raw } #}
+
+                        <ol style="line-height:3em;display:none;" id="list1" >
+
+                            {% for k, v in list_plan %} 
+                                <li><a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }}</li>
+                                {% endfor %}
+
+                            {#
+                            <li><a href="#" class="btn btn-xs btn-info">Точки продаж</a> - добавляем точки продаж</li>
+                            <li><a href="#" class="btn btn-xs btn-info">Должности</a> - возможные должности</li>
+                            <li><a href="#" class="btn btn-xs btn-info">Размер оплаты труда</a> - добавляем настройки размеров оплаты труда должностям работающим на точке (точка "default" содержит настройки для всех точек у которых не назначены свои цифры)</li>
+                            <li><a href="#" class="btn btn-xs btn-info">Сотрудники</a> - добавляем ФИО и назначем должность и даты старта стажировки/работы/уволнения сотрудника</li>
+                            <li><a href="#" class="btn btn-xs btn-info">Назначение работника на точку продаж</a> - определяем кто и когда работает ( работник + точка продаж + дата )</li>
+                            <li><a href="#" class="btn btn-xs btn-info">Реестр check-in check-out</a> - определяем кто и когда начал работу/закочил работу (работник + дата,время старта/финиша) </li>
+                            <li><a href="#" class="btn btn-xs btn-info">Взыскания</a> - если есть взыскания персоналу, добавляем (участнвует дальше в расчёте оплаты)</li>
+                            <li><a href="#" class="btn btn-xs btn-info">ЗП работников</a> - реестр кому сколько платим</li>
+                            #}
+
+                        </ol>
+
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 2vh; margin-bottom: 2vh;" >
+
+                    {% if get.date is defined %}
+
+                        {% set date_start = get.date|date("Y-m-d") %}
+                        {% set date_finish = date_start|date_modify("+30 day")|date("Y-m-d") %}
+
+                    {% elseif get.year is defined and get.month is defined %}
+
+                        {% set date_start = (get.year~'-'~get.month~'-01')|date("Y-m-d") %}
+                        {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
+
+                    {% else %}
+
+                        {% set date_start = now|date("Y-m-01") %}
+                        {#% set date_start = now|date_modify("-3 day")|date("Y-m-d") %#}
+                        {% set date_finish = date_start|date_modify("-1 day +1 month")|date("Y-m-d") %}
+
+                    {% endif %}
+
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                    {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+                    {# верхние кнопки даты и скрыть показать даты #}
+                    {% if 1 == 1 %}
+
+                        {#{ pa(session) }#}
+
+                        {% if 1 == 2 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+
+                            <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                {# <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i> #}
+                                <button class="btn btn-xs btn-light" style="width:250px;"> <i class="fa fa-cog"></i> настройки и действия <i class="fa fa-sort-desc"></i> </button>
+                            </div>
+
+                            <div class="dropdown-menu">
+
+                                {# универсальное модальное окошко используем #}
+                                {#
+                                <a 
+                                    href="#" 
+                                    class="dropdown-item xbtn-xs btn-light base_modal_go"
+                                    data-toggle="modal" data-target="#di_modal" 
+    
+                                    modal_header='назначения сотрудника'
+                                    ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                                    ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'
+    
+                                    >
+                                    список назначений сотрудника
+                                </a>
+                                #}
+
+                                {# универсальное модальное окошко используем #}
+                                {% if 1 == 2 %}
+                                    <a 
+                                        href="#" 
+                                        class="dropdown-item xbtn-xs btn-light base_modal_go"
+                                        data-toggle="modal" data-target="#di_modal" 
+
+                                        modal_header='назначения сотрудника'
+                                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                                        {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+                                        ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+
+                                        >
+                                        смены в этом месяце
+                                    </a>
+                                {% endif %}
+
+                                {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
+                                    <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" 
+                                       class="dropdown-item xbtn xbtn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> ТП без смен</a>
+                                {% endif %}
+
+
+
+
+                                {% if 1 == 2 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
+                                    <a 
+                                        href="#" 
+                                        style="float:right;"
+
+                                        {% if get.sp is not defined %}
+                                            onclick="alert('не забудте выбрать точку продаж');
+                                                    return false;"
+                                            class="dropdown-item xbtn xbtn-xs btn-light" 
+                                        {% else %}
+                                            class="dropdown-item base_modal_go xbtn xbtn-xs btn-light" 
+                                            data-toggle="modal" data-target="#di_modal" 
+
+                                            modal_header='возможные должности и ставки'
+                                            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                                            {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+                                            ajax_vars='{{  { 'action':'show_dolgn', 'date_start': date_start , 'view' : 'html', 'sp': get.sp }|url_encode }}'
+                                        {% endif %}
+
+                                        >
+                                        ставки и размер зарплат
+                                    </a>
+                                {% endif %}
+
+                                <button onclick="$('body .job_timer').toggle('slow');" class="dropdown-item xbtn xbtn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> время смен</button> 
+
+                            </div>
+                        {% endif %}
+
+
+
+                        {#
+                        &nbsp;
+                        <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
+                        #}
+
+                        {# 2019 #}
+                        {#% set year = 2019 %#}
+
+                        {% set now_year = "now"|date('Y')%}
+                        {#{ now_year }#}
+
+                        {% set now_mont = "now"|date('m')%}
+                        {#{ now_mont }#}
+
+                        {% set gets = get %}
+
+                        {% for year in range(low=2019, high=2030, step=1) if iy <= now_year %}
+
+                            {# {{ iy }}<br/> #}
+
+                            {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 3 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
+
+                                {% if i < 10 %}
+                                    {% set i2 = '0'~i %}
+                                {% else %}
+                                    {% set i2 = i %}
+                                {% endif %}
+
+                                {% set gets = gets|merge({'year':year,'month':i2}) %}
+
+                                <a  
+                                    href="?{{ http_build_query(gets) }}"  
+                                    xhref="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year={{ year }}&month={{ i2 }}"  
+
+                                    style="margin-right:5px;"
+
+                                    class="btn btn-xs 
+                                    {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
+                                        btn-success
+                                    {% elseif get.year is not defined and get.month is not defined  and now|date('Y') == year and i2 == now|date('m') %}
+                                        btn-success
+                                    {% else %}
+                                        btn-light
+                                    {% endif %}
+                                    " >
+
+                                    {% if i2 == 01 %}
+                                        январь
+                                    {% elseif i2 == 02 %}
+                                        февраль
+                                    {% elseif i2 == 03 %}
+                                        март
+                                    {% elseif i2 == 04 %}
+                                        апрель
+                                    {% elseif i2 == 05 %}
+                                        май
+                                    {% elseif i2 == 06 %}
+                                        июнь
+                                    {% elseif i2 == 07 %}
+                                        июль
+                                    {% elseif i2 == 08 %}
+                                        август
+                                    {% elseif i2 == 09 %}
+                                        сентябрь
+                                    {% elseif i2 == 10 %}
+                                        октябрь
+                                    {% elseif i2 == 11 %}
+                                        ноябрь
+                                    {% elseif i2 == 12 %}
+                                        декабрь
+                                    {% endif %}
+                                    {{ year }}</a>
+
+                            {% endfor %}
+
+                        {% endfor %}
+
+                    {% endif %}
 
 
 
 
 
+                    {# заготовка модальных окошек #}
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(51) }}     {% endif %}
+                    {# <div style="padding:10px; border: 1px solid gray;" > #}
+                    {% include dir_mod_now_mod_ditpl~'body.modal_wind.htm' %}
+                    {# </div> #}
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - body.modal_wind.htm {{ didrive_f__timer_stop(51) }} {% endif %}
+
+                    {# <br/>timer2: {{ didrive_f__timer_stop(99) }} #}              
+
+                    {#% if 1 == 2001230201 %}
+                        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+                        {% set jobs = jobdesc__get_smena_jobs( date_start, date_finish ) %}
+                        {% if timer_show == 'on' %} <br/>время 6 - jobs = jobdesc__get_smena_jobs <br/>{{ didrive_f__timer_stop(5) }} {% endif %}
+                    {% endif %#}
+
+                    {% if 1 == 1 %}
+                        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+                        {% set spec_jobs_on_sp = jobdesc__get_spec_job_on_sp( db, date_start, date_finish ) %}
+                        {#{ pa(spec_jobs_on_sp) }#}
+
+                        {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 - jobdesc__get_spec_job_on_sp<br/>{{ didrive_f__timer_stop(5) }} {% endif %}
+                    {% endif %}
 
 
-        {% if 1 == 1 %}
 
-            {% if get.sp is defined %}
+                    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+                    {# если модератор то выводим исписок точек к оторым есть доступ #}    
+                    {% set sp_access = jobdesc__get__access_moders( db )  %}
+                    {# <br/> pa(sp_access) {{ pa(sp_access) }} #}
+
+                    {% if 1 == 2 or timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+
+                    {% if 1 == 1 %}
+
+                        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+                        {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
+                        {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
+
+                        {% if 1 == 2 or timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+                    {% endif %}
+
+                    {#{ pa(getListJobsPeriodAll) }}
+                    
+                    {# текущие доступные точки #}
+                    {% if 1 == 1 %}
+                        <div class="btn-group" role="group" aria-label="Basic example" style="margin-top: 0.5em;">
+
+                            <button type="button" class="btn btn-xs btn-default">Показать:</button>
+
+                            {% set gets = get %}
+                            {#{ pa(gets) }#}
+
+                            {% set gets = gets|merge({'sp':'all'}) %}
+                            <a class="btn btn-xs {% if get.sp == 'all' %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >ВСЕ</a>
+
+                            {% set access_to_sp = jobdesc__get__admin_access_to_sp( db ) %}
+
+                            {% for n, sp_now in access_to_sp.data if sp_now.head != 'default' %}
+
+                                {% set gets = gets|merge({'sp':sp_now.id}) %}
+                                <a class="btn btn-xs  {% if get.sp == sp_now.id %}btn-info{% else %}btn-light{% endif %} " href="?{{ http_build_query(gets) }}" >{{ sp_now.head }}</a>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            {#{ pa(access_to_sp) }#}
+
+            {% if get.sp is not defined %}
+
+                <div class="bg-warning" style="padding:10px;" >Выберите точку продаж</div>
+
+
+                {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}
+                {{ pa(jobmans_on_add|length) }}
+                {{ pa(jobmans_on_add,2) }#}
+
+                {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans1(db) %}
+                {{ pa(jobmans_on_add|length) }#}
+
+                {#% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
+                {{ pa(jobmans_on_add|length) }#}
+
+                {#% set nn = 0 %}
+                {% for k,v in jobmans_on_add %}
+                    {% if nn < 10 %}
+                        
+                        {{ pa(v) }}
+                        
+                        {% set nn = nn+1 %}
+                    {% endif %}
+                {% endfor %#}
+
+
+            {% elseif 1 == 1 and get.sp is defined %}
+
+
 
                 <div style="display:inline-block;padding-right:100px;margin-right:100px;">
                     <div class="ttable cell-padding5 list_otrezki2 cell-border">
@@ -270,49 +407,50 @@
                         {# верхняя строка с датами#}
                         {% include dir_mod_now_mod_ditpl~'body.up_line.htm' %}
 
-                        {# <br/>timer31: {{ didrive_f__timer_stop(99) }} #}
-                        {% if 1 == 1 %}
-                            {% set checki = jobdesc__get_checki( date_start, date_finish ) %}
-                            {#{ pa(checki) }#}
-                        {% endif %}
-                        {# <br/>timer32: {{ didrive_f__timer_stop(99) }} #}
+                        {% for kk, sp_now_nn in access_to_sp.data if get.sp is defined and sp_now_nn.head != 'default' and ( get.sp == 'all' or get.sp == sp_now_nn.id ) %}
 
-                        {% if 1 == 3 %}
+                            {% if 1 == 1 and getListJobsPeriodAll is not defined %}
 
-                            {# get minusa plusa - off #}
-                            {% if 1 == 1 %}
-                                {% set minusa = get_minusa( db, date_start, date_finish ) %}
-                                {# { pa(minusa) } #}
+                                {% if 1 == 3 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
-                                {#{ date_start }} + {{ date_finish }#}
+                                {% set getListJobsPeriodAll = jobdesc__getListJobsPeriodAll( db, date_start, date_finish ) %}
 
-                                {#% set plusa = get_plusa( db, date_start, date_finish ) %}
-                                {{ pa(plusa,2) }#}
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll) 
+                                    {{ pa(getListJobsPeriodAll) }} 
+                                {% endif %}
 
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll) 
+                                    {% for k,x in getListJobsPeriodAll.data %}
+                                        <br/>{{ k }}
+                                    {% endfor %}
+
+                                {% endif %}
+
+                                {% if 1 == 2 %} 
+                                    <br/> pa(getListJobsPeriodAll.data.plusa) 
+                                    {{ pa(getListJobsPeriodAll.data.plusa) }} 
+                                {% endif %}
+
+                                {% if 1 == 3 or timer_show == 'on' %}<br/>время getListJobsPeriodAll - {{ didrive_f__timer_stop(5) }} {% endif %}
 
                             {% endif %}
 
-                        {% endif %}
 
-
-
-
-
-                        {# проходим по списку точки продаж - сотрудники #}                
-                        {#{ pa(jobs_on_sp.jobs_on_sp) }#}
-
-                        {% for kk, sp_now in jobs_on_sp.sort if get.sp is defined and ( get.sp == 'all' or get.sp == sp_now ) and jobs_on_sp.jobs_on_sp[sp_now] is defined and ( sp_access == false or sp_access[sp_now] is defined ) %}
-
-                            {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}                            
-
+                            {% set sp_now = sp_now_nn.id %}
+                            {#{ pa(sp_now) }#}
+                            {% include dir_mod_now_mod_ditpl~'body.1sp.htm' %}
                         {% endfor %}
 
                     </div>
                 </div>
 
             {% endif %}
+
         {% endif %}
-        {# <br/>timer10: {{ didrive_f__timer_stop(99) }} #}          
+
+
 
 
         {# общее время #}
@@ -320,23 +458,19 @@
 
         <div style="position: fixed; bottom: 0px; right: 0px; padding: 3px 10px; z-index: 9000; background-color: rgba(255,255,120,0.5);"
              onclick="$('#bottom_info').show();
-                     $(this).hide();
-                     return false;"
+                                         $(this).hide();
+                                         return false;"
              >
-            i
-            {{ t }} сек
+            i {{ t }}
+
         </div>
 
         <div class="alert-warning" id="bottom_info" style="display:none; position: fixed; bottom: 10px; right: 10px; padding: 3px 10px; z-index: 9000;">
-
-            <A href="#" style="float:right;" onclick="$('#bottom_info').hide('slow');
-                    return false;" >
+            <a href="#" style="float:right;" onclick="$('#bottom_info').hide('slow');
+                                        return false;" >
                 скрыть
             </a>
-            Идёт разработка,<br/>
-            пожалуйста пишите свои пожелания <br/>и обозначайте с какими ошибками столкнулись, пишите в Битрикс24<br/>
-            Ваши сообщения помогут сделать работу удобнее<br/>
-            создание страницы: {{ t }} сек
+            создание страницы: {{ t }}
         </div>
 
         {# <br/>timer1258: {{ didrive_f__timer_stop(99) }} #}

@@ -19,30 +19,29 @@
                         <a href="#" 
                            class="dropdown-item btn-light"
                            data-toggle="modal" data-target="#addPesonalOnSp" onclick="
-                                       $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                       $('#add_person__sp').val('{{ sp_now }}');
-                                       $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
-                                       return false;
+                                   $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                   $('#add_person__sp').val('{{ sp_now }}');
+                                   $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                                   return false;
                            " >назначить сотрудника на точку продаж
                             <br/><small>первое назначение</small></a>
 
                         <a href="#" 
                            class="dropdown-item btn-light"
                            data-toggle="modal" data-target="#movePesonalOnSp" onclick="
-                                       $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                       $('#move_person__sp').val('{{ sp_now }}');
-                                       $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                                   $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                   $('#move_person__sp').val('{{ sp_now }}');
+                                   $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
                            " >назначить сотрудника на данную точку</a>
                     {% endif %}
 
                     <a href="#" 
                        class="dropdown-item btn-light"
                        data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
-                                   $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
-                                   $('#add_person__sp').val('{{ sp_now }}');
-                                   $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                               $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                               $('#add_person__sp').val('{{ sp_now }}');
+                               $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
                        " >назначить сотрудника</a>
-
 
                     <a href="#" 
                        class="dropdown-item btn-light jobdesc__record__auto_bonus_zp__m"
@@ -51,7 +50,7 @@
                        date="{{ date_start }}"
 
                        res_to_id="res_new_autoocenka_{{ sp_now }}"
-                       answer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
+                       xanswer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
 
                        {#
                         xdata-toggle="modal" 
@@ -95,6 +94,7 @@
             <b class='hide_in_sup hover_show_sup'>
                 {{ sps[sp_now]['head'] }}
                 <sup>#{{ sp_now }}</sup>
+                <span class="order_to_calc_hours" id="order_to_calc_hours_{{ sp_now }}" ></span>
             </b>
 
         </div>
@@ -108,31 +108,34 @@
 
                     <div class="option_img" >
                         <i onclick='$(".sp_day_{{nd}}_{{ sp_now }}_{{ date }}").toggle("slow");
-                                    return false;' class="fa fa-cog"></i>
+                                return false;' class="fa fa-cog"></i>
                     </div>
 
                     <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
 
                         <a href="#" 
-                           xtype="button" xclass="btn btn-info btn-xs" 
+                           xtype="button" class="btn btn-light xbtn-xs" 
                            data-toggle="modal" data-target="#setSpecNaznach" 
 
                            onclick="
-                                       $('#add_person1day__sp_name').html('{{ sps[sp_now]['head'] }}');
-                                       $('#add_spec__sp').val('{{ sp_now }}');
-                                       $('#add_spec__sp_s').val('{{ creatSecret(sp_now) }}');
+                                   $('#add_person1day__sp_name').html('{{ sps[sp_now]['head'] }}');
+                                   $('#add_spec__sp').val('{{ sp_now }}');
+                                   $('#add_spec__sp_s').val('{{ creatSecret(sp_now) }}');
 
-                                       $('#add_spec_person__id').val('{{ sp_now }}');
-                                       $('#add_spec_person__s').val('{{ creatSecret(sp_now) }}');
+                                   $('#add_spec_person__id').val('{{ sp_now }}');
+                                   $('#add_spec_person__s').val('{{ creatSecret(sp_now) }}');
 
-                                       $('#addspec_person1__date').val('{{ nd|date("Y-m-d") }}');
+                                   $('#addspec_person1__date').val('{{ nd|date("Y-m-d") }}');
 
-                                       $('#add_person1day__sp_s').val('spec_naznach');
+                                   $('#add_person1day__sp_s').val('spec_naznach');
 
-                                       $('#add_person1day__user option').show();
-                                       $('#add_person1day__user option[sp={{ sp_now }}]').hide();
+                                   $('#add_person1day__user option').show();
+                                   $('#add_person1day__user option[sp={{ sp_now }}]').hide();
                            "
-                           >назначить сотрудника (1 день) с&nbsp;другой точки продаж</a>
+                           ><span class="fa fa-plus" ></span>&nbsp;<b>спец.назначение</b><br/>
+                            назначить сотрудника (1&nbsp;день)<br/>
+                            с&nbsp;другой точки продаж
+                           </a>
                     </div>
 
                 </div>

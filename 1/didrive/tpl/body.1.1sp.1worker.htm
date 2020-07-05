@@ -1,0 +1,113 @@
+{% spaceless %}
+
+  {% set man = mans[user_id] %}
+
+  <div class="trow load_job_man_1sp_smens" id="user_tr_{{ sp_now }}_{{ user_id }}"
+
+       sp="{{ sp_now }}"
+       jobman="{{ user_id }}"
+       date_start="{{ date_start }}"
+       date_stop="{{ date_finish }}"
+
+  >
+
+    <div class="tcell stick-left bg-white">
+
+      {#{ pa(constant('\\Nyos\\Nyos::$menu')) }#}
+      {#{ pa(menu_all) }#}
+      {#{ pa(level_all) }}
+      {{ pa(now_level) }#}
+      {#{ pa(site__get_metki()) }#}
+
+      {# шестерёнка у сотрудника #}
+
+      {% if 1 == 1 %}
+
+        <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true"
+             aria-expanded="false">
+          <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+        </div>
+
+        <div class="dropdown-menu">
+
+          {# универсальное модальное окошко используем #}
+          <a
+            href="#"
+            class="dropdown-item btn-light base_modal_go"
+            data-toggle="modal" data-target="#di_modal"
+
+            modal_header='назначения сотрудника'
+            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+            ajax_vars='action=show_naznach&view=html&user={{ user_id }}&s={{ creatSecret( user_id ) }}'
+
+          >
+            список назначений сотрудника
+          </a>
+
+          {# универсальное модальное окошко используем #}
+          <a
+            href="#"
+            class="dropdown-item btn-light base_modal_go"
+            data-toggle="modal" data-target="#di_modal"
+
+            modal_header='назначения сотрудника'
+            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+            {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+            ajax_vars='{{ {
+              'action':'show_smens',
+              'date_start': date_start ,
+              'view' : 'html' ,
+              'user' : user_v['jobman'] ,
+              's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+
+          >
+            смены в этом месяце
+          </a>
+
+        </div>
+      {% endif %}
+
+      {# <div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div> #}
+      {# <div style="color:gray;">{{ user_v['dolgnost_name'] }}</div> #}
+      <div style="color:gray;">{{ sort1['head'] }}</div>
+
+      <nobr title="#{{ user_id }}">
+        {{ man['firstName'] }} {{ man['lastName'] }}
+      </nobr>
+
+      {#% if user_v['type_job'] is defined and user_v['type_job'] == 'spec' %#}
+      {% if user_v[0]['type'] is defined and user_v[0]['type'] == 'spec' %}
+        <abbr class="alert-danger" style="padding:1px 5px;" title="был СПЕЦ назначен с другой точки">S</abbr>
+      {% endif %}
+
+      {% if 1 == 2 %}
+        {{ pa(man) }}
+        {{ pa(user_v[0]) }}
+      {% endif %}
+
+    </div>
+
+    {#
+      pa(now_dolgn) }}
+    {{  pa(now_dolgn) }}
+      #}
+
+
+    {% for i in range(low=0, high=31, step=1) %}
+
+      {#% set now_spec_nazn_nn = 0 %}
+      {% set nd = date_start|date_modify("+"~i~" day")|date("U") %#}
+
+      {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+      {% if date <= date_finish %}
+
+        {% include dir_mod_now_mod_ditpl~'body.1.1sp.1worker.1day.htm' %}
+
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+{% endspaceless %}

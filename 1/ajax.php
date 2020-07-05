@@ -4,10 +4,7 @@ ini_set('display_errors', 'On'); // сообщения с ошибками бу�
 error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 
 
-if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' 
-        || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
+if ($_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
 ) {
     date_default_timezone_set("Asia/Omsk");
 } else {
@@ -20,7 +17,146 @@ require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/all/ajax.start.php';
 
 //
-if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto') {
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_hand_checks') {
+
+    \Nyos\mod\items::$nocash = true;
+    // \Nyos\mod\items::$need_polya_vars = ' /* */ ';
+
+    $e = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+    // \f\pa($e);
+
+    $aa = [];
+
+    echo sizeof($e);
+
+    $w = 0;
+    $w1 = 0;
+
+    foreach ($e as $k => $v) {
+        if (!empty($v['start']) && !empty($v['fin']) && !isset($v['hour_on_job'])) {
+
+            $hour = \Nyos\mod\IikoChecks::calculateHoursInRange($v['fin'], $v['start']);
+
+            if ($hour == 0)
+                continue;
+
+            if ($hour > 0) {
+                $aa[$v['id']]['hour_on_job'] = $hour;
+            }
+        }
+    }
+
+    // \f\pa($aa);
+    echo sizeof($aa);
+
+    \Nyos\mod\items::saveNewDop($db, $aa);
+
+    die(__FILE__);
+}
+
+//
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_mont_sp') {
+
+    $date_start = date('Y-m-01', (!empty($_REQUEST['date']) ? strtotime($_REQUEST['date']) : $_SERVER['REQUEST_TIME']));
+    $date_fin = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+    // echo $date_start . ' ' . $date_fin;
+//    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+//                . ' ON mid.id_item = mi.id '
+//                . ' AND mid.name = \'start\' '
+//                . ' AND mid.value_datetime >= \'' . $date_start . ' 08:00:00\' '
+//                . ' AND mid.value_datetime <= \'' . $date_fin.' 03:00:00\' ';
+//    $checks = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks );
+//    \f\pa($checks);
+
+    \Nyos\mod\items::$where2 = ' AND `head` != \'default\' ';
+    $norms = \Nyos\mod\items::get($db, 'sale_point');
+    // \f\pa($norms);
+
+    $now_date = date('Y-m-d', $_SERVER['REQUEST_TIME']);
+
+    $return = [];
+
+    for ($i = 0; $i <= 32; $i++) {
+
+        $i_date = date('Y-m-d', strtotime($date_start . ' +' . $i . ' day'));
+
+        if ($i_date >= $now_date || $i_date > $date_fin)
+            break;
+
+        // echo '<br/>' . $i_date;
+
+        $sp = $_REQUEST['sp'] ?? 2153;
+
+        $g = [
+            't' => 1,
+            'action' => 'calc_full_ocenka_day',
+            'id' => $sp . '_1',
+            'id2' => $sp,
+            's' => md5($sp . '_1'),
+            's2' => md5($sp),
+            'show_timer' => 'da',
+            'sp' => $sp,
+            'date' => $i_date,
+        ];
+
+        $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?' . http_build_query($g));
+        $return[$i_date] = ( (substr($ee, 0, 1) == '{') ? json_decode($ee, true) : ['status' => 'error', 'html' => $ee] );
+        // \f\pa($ee);
+    }
+
+    if (!empty($_REQUEST['goto'])) {
+        \f\redirect('https://' . $_SERVER['HTTP_HOST'], $_REQUEST['goto']);
+    } elseif (!empty($_REQUEST['return']) && $_REQUEST['return'] == 'html') {
+        \f\pa($return);
+    } elseif (isset($_REQUEST['return']) && $_REQUEST['return'] == 'html-small') {
+        die('автооценка обработали даты ' . $date_start . ' - ' . $date_fin);
+    } else {
+        \f\end2('автооценка обработали даты ' . $date_start . ' - ' . $date_fin, true, $return);
+    }
+
+    die();
+}
+
+// стираем оценку дня
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ocenka_clear') {
+
+    if (empty($_REQUEST['sp']) || empty($_REQUEST['date']))
+        \f\end2('не хватает данных', false);
+
+    // $date = ;
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+            . ' ON mid.id_item = mi.id '
+            . ' AND mid.name = \'date\' '
+            . ' AND mid.value_date ' . (!empty($_REQUEST['clear_to_now']) ? ' >= ' : ' = ' ) . ' :d '
+            . ' INNER JOIN `mitems-dops` mid2 '
+            . ' ON mid2.id_item = mi.id '
+            . ' AND mid2.name = \'sale_point\' '
+            . ' AND mid2.value = :sp '
+    ;
+    \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $_REQUEST['sp'];
+    \Nyos\mod\items::$var_ar_for_1sql[':d'] = date('Y-m-d', strtotime($_REQUEST['date']));
+
+    \Nyos\mod\items::$return_items_header = true;
+    $ocenka = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_ocenki_days);
+
+    // \f\pa($ocenka);
+    if (!empty($ocenka))
+        foreach ($ocenka as $k => $v) {
+
+            if (!empty($v['id'])) {
+                $res = \Nyos\mod\items::deleteId($db, $v['id']);
+                // \f\pa($res);
+            }
+        }
+
+    \f\end2('автооценку удалили', true, $ocenka);
+
+    die();
+}
+
+//
+elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calculate_ocenka_auto') {
 
     $sec_on_job_ajax = 15;
 
@@ -354,7 +490,6 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
 
     if (isset($_REQUEST['date']) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'clear_copy_checks_today') {
 
-
         \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
                 . ' `md`.`id_item` = mi.id '
                 . 'AND `md`.`name` = \'start\' '
@@ -364,7 +499,6 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
 
         // \f\pa($checks);
 
-        
         $sql2 = '';
         $noscan = [];
         $kolvo = 0;
@@ -414,12 +548,96 @@ if (isset($_REQUEST['date']{0}) && isset($_REQUEST['s']{5}) && \Nyos\nyos::check
             //$ff->execute(array(':id' => (int) $_POST['id2']));
         }
 
-        die('Найдено и удалено копий: '.$kolvo);
+        die('Найдено и удалено копий: ' . $kolvo);
 
         die($sql2);
 
         die('<br/>' . __FILE__ . ' #' . __LINE__);
+    }
 
+    if (isset($_REQUEST['date']) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_checks_today') {
+
+        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` md ON '
+                . ' `md`.`id_item` = mi.id '
+                . 'AND `md`.`name` = \'start\' '
+                . 'AND `md`.`value_datetime` >= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'])) . '\'  '
+                . 'AND `md`.`value_datetime` <= \'' . date('Y-m-d 05:00:00', strtotime($_REQUEST['date'] . ' +1day')) . '\'  ';
+        // $checks = \Nyos\mod\items::getItemsSimple3($db, '050.chekin_checkout');
+        $checks = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_checks);
+        // \f\pa($checks);
+
+        $sl = '';
+        $sl2 = [];
+        $n = 1;
+
+        foreach ($checks as $k => $v) {
+            $sl .= (!empty($sl) ? ' OR ' : '' ) . ' `id_item` = :item' . $n . ' ';
+            $sl2[':item' . $n] = $v['id'];
+            $n++;
+        }
+
+        $sql = ' DELETE FROM `mitems-dops` WHERE name = \'fin\' AND ( ' . $sl . ' ); ';
+        \f\pa($sql);
+        $ff = $db->prepare($sql);
+        $ff->execute($sl2);
+
+
+        die();
+
+        $sql2 = '';
+        $noscan = [];
+        $kolvo = 0;
+
+        foreach ($checks as $k => $v) {
+
+            if ($v['status'] != 'show')
+                continue;
+
+            // echo '<br/>' . $v['id'] . ' ' . $v['start'];
+
+            foreach ($checks2 as $k1 => $v1) {
+
+                if (isset($noscan[$v1['id']]))
+                    continue;
+
+                if ($v1['status'] != 'show')
+                    continue;
+
+                if ($v['id'] != $v1['id'] && $v['jobman'] == $v1['jobman'] && $v1['start'] == $v['start']) {
+
+                    if (isset($noscan[$v['id']]))
+                        continue;
+
+//                    echo '<table><tr><td>';
+//                    \f\pa($v);
+//                    echo '</td><td>';
+//                    \f\pa($v1);
+//                    echo '</td></tr></table>';
+
+                    if (!isset($v1['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v1['id'] . '\' ';
+                        $noscan[$v1['id']] = 1;
+                        $kolvo++;
+                    } elseif (!isset($v['ocenka'])) {
+                        $sql2 .= (!empty($sql2) ? ' OR ' : '' ) . ' `id` = \'' . $v['id'] . '\' ';
+                        $noscan[$v['id']] = 1;
+                        $kolvo++;
+                    }
+                }
+            }
+        }
+
+        if (!empty($sql2)) {
+            $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE ' . $sql2 . ' ;');
+            $ff->execute();
+            //$ff->execute(array(':id' => (int) $_POST['id2']));
+        }
+
+        die('Найдено и удалено копий: ' . $kolvo);
+
+        die($sql2);
+
+        die('<br/>' . __FILE__ . ' #' . __LINE__);
     }
 }
 

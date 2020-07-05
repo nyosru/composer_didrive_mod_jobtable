@@ -14,15 +14,15 @@
 
     {#{ pa(jobs[spoint.id]) }#}
 
-    {#% for type_select, job_list_mans in jobs[spoint.id] if type_select == 'def' or type_select == now_date %#} 
-    {% for type_select, job_list_mans in jobs[spoint.id] %} 
+    {#% for type_select, job_list_mans in jobs[spoint.id] if type_select == 'def' or type_select == now_date %#}
+    {% for type_select, job_list_mans in jobs[spoint.id] %}
 
         {#
         job_list_mans
         {{ pa(job_list_mans) }}
         #}
 
-        {% for user_id, v123 in job_list_mans if mans.data[user_id] is defined %} 
+        {% for user_id, v123 in job_list_mans if mans.data[user_id] is defined %}
 
             {#{ pa(user_id) }#}
             {#{ pa(mans.data[user_id]) }#}
@@ -32,7 +32,16 @@
             {% set nowjob = 0 %}
 
             {# проверяем работает в этот день или нет #}
-            {% if ( jobman['dop']['stagirovka_start']|date('U') <= now_date|date('U') or jobman['dop']['fulljob_start']|date('U') <= now_date|date('U') ) and ( jobman['dop']['job_end']|date('U') >= now_date|date('U') or jobman['dop']['job_end'] == '' ) %}
+            {% if
+              (
+              jobman['dop']['stagirovka_start']|date('U') <= now_date|date('U')
+              or jobman['dop']['fulljob_start']|date('U') <= now_date|date('U')
+              )
+              and
+              (
+              jobman['dop']['job_end']|date('U') >= now_date|date('U')
+              or jobman['dop']['job_end'] == ''
+              ) %}
 
                 {% set nowjob = 1 %}
 
@@ -52,7 +61,7 @@
                 {% if type_select == now_date %}
 
                     {% set type = 'spec' %}
-                    
+
                 {% elseif jobman['dop']['job_end'] is defined and jobman['dop']['job_end']|length > 1  and now_date|date('U') > jobman['dop']['job_end']|date('U') %}
 
                 {% elseif jobman['dop']['fulljob_start'] is defined and jobman['dop']['fulljob_start']|length > 1 and jobman['dop']['fulljob_start']|date('U') <= now_date|date('U') %}
@@ -66,13 +75,13 @@
                 {% endif %}
 
                 [{{ type }}]
-                
+
                 {% include dir_mod_now_mod_ditpl~'body.mans.item.htm' %}
 
             {% endif %}
 
-        {% endfor %} 
-    {% endfor %} 
+        {% endfor %}
+    {% endfor %}
 
     {#{ pa(checki[now_date]) }#}
 
@@ -80,8 +89,8 @@
 
     <span class="list_otrezki" >
 
-        {% for user_id, checki2 in checki[now_date] %} 
-            {% for check_id, check in checki2 if check.dop.sale_point == spoint.id and check.dop.jobman not in array_job_people %} 
+        {% for user_id, checki2 in checki[now_date] %}
+            {% for check_id, check in checki2 if check.dop.sale_point == spoint.id and check.dop.jobman not in array_job_people %}
 
                 {#
                 check
@@ -111,7 +120,7 @@
                     {# <a href="#" xclass="job_man_in_graph" onclick="$('#j{{ r2 }}_{{ man1.id }}').toggle('slow'); return false;"> #}
                     <div class="job_man_in_graph {% if msg == '' %}{{ type }}{% else %}job_other{% endif %}">
                         <nobr>
-                            {{ man1.head }} 
+                            {{ man1.head }}
                             <sup title="{{ dolgn.data[man1['dop']['dolgnost']]['head'] }}">{{ dolgn.data[man1['dop']['dolgnost']]['head'][:3] }}.</sup>
                             {% if msg != '' %}
                                 <br/>
@@ -124,10 +133,10 @@
                     {# смена #}
                     {% include dir_mod_now_mod_ditpl~'body.mans.item.smena.htm' %}
 
-                {% endif %} 
+                {% endif %}
 
-            {% endfor %} 
-        {% endfor %} 
+            {% endfor %}
+        {% endfor %}
 
     </span>
 
@@ -138,18 +147,18 @@
 
         {% if list_time1[spoint.id][nowd] is defined %}
 
-            {% for k6, v6 in list_time1[spoint.id][nowd] %} 
+            {% for k6, v6 in list_time1[spoint.id][nowd] %}
 
                 <nobr>
                     <div class="job_man_in_graph">
-                        {{ people.data[k6]['head'] }} 
+                        {{ people.data[k6]['head'] }}
                         <sup title="{{ dolgn.data[people['data'][k6]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][k6]['dop']['dolgnost']]['head'][:3] }}.</sup>
                     </div>
                 </nobr>
 
                 {# { pa(v6) } #}
 
-                {% for k7, v7 in v6 %} 
+                {% for k7, v7 in v6 %}
 
                     <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >Отработано {{ v7.hours }} ч.</abbr>
 
@@ -162,42 +171,42 @@
                                 Платим
                             </b>
 
-                            <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'show' %} btn-success {% else%} btn-light {% endif %} save_edit_item" 
+                            <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'show' %} btn-success {% else%} btn-light {% endif %} save_edit_item"
                                onclick="$('.act{{ k7 }}').removeClass('btn-success');
                                        $(this).removeClass('btn-light').addClass('btn-success');"
 
                                act="replace"
                                table="mitems-dops"
 
-                               where_1_k="id_item" 
-                               where_1_v="{{ k7 }}" 
+                               where_1_k="id_item"
+                               where_1_v="{{ k7 }}"
 
-                               where_2_k="name" 
-                               where_2_v="item1" 
+                               where_2_k="name"
+                               where_2_v="item1"
 
                                set_1_k="value"
                                set_1_v="item1"
 
-                               s='{{ creatSecret( k7 ) }}' 
+                               s='{{ creatSecret( k7 ) }}'
 
-                               for_res2="show2s{{ k7 }}" 
-                               for_res2_text="ok" 
+                               for_res2="show2s{{ k7 }}"
+                               for_res2_text="ok"
 
                                >
                                 рано
                             </a>
 
-                            <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'hide' %} btn-success {% else%} btn-light {% endif %} edit_item" 
+                            <a class="btn btn-xs act{{ k7 }} {% if v7.status == 'hide' %} btn-success {% else%} btn-light {% endif %} edit_item"
                                onclick="$('.act{{ k7 }}').removeClass('btn-success');
                                        $(this).removeClass('btn-light').addClass('btn-success');"
 
-                               alt="pay_check" 
-                               rev="item2" 
-                               rel="{{ k7 }}" 
-                               s='{{ creatSecret( k7 ) }}' 
+                               alt="pay_check"
+                               rev="item2"
+                               rel="{{ k7 }}"
+                               s='{{ creatSecret( k7 ) }}'
 
-                               for_res2="show2s{{ k7 }}" 
-                               for_res2_text="ok" 
+                               for_res2="show2s{{ k7 }}"
+                               for_res2_text="ok"
 
                                >
                                 ок
@@ -205,7 +214,7 @@
                             <b id="show2s{{ k7 }}" class="btn btn-xs btn-light" style="font-weight: bold;"></b>
 
                         </div>
-                    </div>      
+                    </div>
 
                 {% endfor %}
 
@@ -220,13 +229,13 @@
 
         {# добавляем тех кого не было, чтобы добавим им смены, переводы, взыскания #}
 
-        {% for pk, pv in people.data if pv.dop.sale_point == spoint.id %} 
+        {% for pk, pv in people.data if pv.dop.sale_point == spoint.id %}
 
             {# { pa(pv) } #}
             <nobr>
                 <a href="#" class="job_man_in_graph def" onclick="$('#jobman{{ pk }}_{{ r2 }}').toggle('slow');
                         return false;">
-                    {{ people.data[pk]['head'] }} 
+                    {{ people.data[pk]['head'] }}
                     <sup title="{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'] }}">{{ dolgn.data[people['data'][pk]['dop']['dolgnost']]['head'][:3] }}.</sup>
                 </a>
             </nobr>
@@ -234,10 +243,10 @@
             <div id="res{{ spoint.id }}{{ pv.id }}{{ nowd }}" ></div>
 
             <div class="act_personal_def" id="jobman{{ pk }}_{{ r2 }}">
-                <a href="" class="put_var_in_modal" 
+                <a href="" class="put_var_in_modal"
 
-                   data-toggle2="modal" 
-                   data-target2="#add_jobday_for_jobman" 
+                   data-toggle2="modal"
+                   data-target2="#add_jobday_for_jobman"
 
                    jobman="{{ pv.id }}"
                    salepoint="{{ spoint.id }}"
@@ -263,7 +272,7 @@
 
         {% endfor %}
 
-        {# % for k1, v1 in job_in.data if v1.dop.sale_point == spoint_id % #} 
+        {# % for k1, v1 in job_in.data if v1.dop.sale_point == spoint_id % #}
 
         {# { people.data[v1.jobman]['head'] }}
         {{ pa(v1.dop)|raw }}
@@ -317,7 +326,7 @@
             console.log($uri_query);
             //$(this).html("тут список");
             var $th = $(this);
-            
+
             //return false;
         }
 

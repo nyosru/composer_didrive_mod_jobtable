@@ -1,0 +1,78 @@
+{% spaceless %}
+
+    {% if now_dolgn.sale_point is defined and now_dolgn.sale_point == sp_now  %}
+
+        {# если было увольнение в этот день #}
+        {% if now_dolgn.date_finish is defined and now_dolgn.date_finish == date %}
+
+            <small class="alert-warning" style="display:block; padding: 5px 10px;" >
+
+                <a href="#" 
+
+                   class="cancel_end_now_jobs"
+
+                   need_answer="Отменить конец рабочего промежутка (увольнение) у работника"
+
+                   work_id="{{ now_dolgn.id }}"
+                   wm_s="{{ creatSecret( now_dolgn.id ) }}"
+                   date="{{ date }}"
+
+                   res_to="res{{ spoint.id }}{{ user_v['jobman'] }}{{ date }}remove_job"
+
+                   >
+                    <span class="fa fa-times" style="float:right;"></span>
+                </a>
+
+                конец назначения
+
+            </small>
+
+        {% endif %}
+
+        {# если было новое назначение #}
+        {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
+
+            <div class="alert-info info_new_dolgn" id="block_new_dolgn{{ now_dolgn.id }}">
+
+                <a class="send_ajax"
+                   href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+                   action="cancel_smena"
+                   {# param #}
+                   ajax_id="{{ now_dolgn.id }}"
+                   ajax_s="{{ creatSecret(now_dolgn.id) }}" 
+
+                   {# raw param #}
+                   answer="Хотите отменить это назначение ?"
+                   res_to="delete_naznach_res{{ now_dolgn.id }}"
+                   result_ok_show_to ="delete_naznach_ok_res{{ now_dolgn.id }}"
+                   xresult_ok_to ="delete_naznach_ok_res{{ now_dolgn.id }}"
+                   result_error_show_to ="delete_naznach_error_res{{ now_dolgn.id }}"
+                   xresult_error_to ="delete_naznach_error_res{{ now_dolgn.id }}"
+
+                   hide_block_id_when_ok = "block_new_dolgn{{ now_dolgn.id }}"
+                   xhide_block_class_when_ok = ""
+
+                   ><span class="fa fa-times" ></span></a>
+                <abbr title="сотруднику назначена новая должность" >{{ dolgn.data[now_dolgn.dolgnost]['head'] }}</abbr>
+
+                {#{ pa(now_dolgn.d) }#}
+                <small>
+                    {% if now_dolgn['smoke'] is defined %}
+                        курит
+                    {% else %}
+                        не&nbsp;курит
+                    {% endif %}
+                </small>
+
+            </div>
+
+            <div class="alert-success" style="padding:5px;display:none;" 
+                 id="delete_naznach_ok_res{{ now_dolgn.id }}" ></div>
+            <div class="alert-warning" style="padding:5px;display:none;"
+                 id="delete_naznach_error_res{{ now_dolgn.id }}" ></div>
+
+        {% endif %}
+
+    {% endif %}
+
+{% endspaceless %}
