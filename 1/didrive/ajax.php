@@ -17,7 +17,7 @@ if (
 }
 
 
-
+header("Access-Control-Allow-Origin: *");
 
 define('IN_NYOS_PROJECT', true);
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
@@ -2744,6 +2744,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
 //                
                 $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
 //
+                
                 if ( substr($date_now,5,2) == substr($date_start,5,2) ) {
 //                // if ( $date_now <= $date_finish ) {
 //                    

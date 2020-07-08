@@ -3536,7 +3536,7 @@ class JobDesc {
             
         } else {
 
-            $sp_default = self::getDefaultSpId($db);
+            // $sp_default = self::getDefaultSpId($db);
 
             $ww = self::getAllSalary($db);
 // \f\pa($ww, 2);
@@ -3587,7 +3587,8 @@ class JobDesc {
                 }
             }
 
-            if (empty($salary) && isset($ww[$sp_default][$dolgn])) {
+            
+            if ( 1 == 2 ?? !empty($sp_default) && empty($salary) && isset($ww[$sp_default][$dolgn])) {
                 foreach ($ww[$sp_default][$dolgn] as $k => $v) {
                     if (!empty($v['date']) && $date >= $v['date']) {
 // если есть ограничения по бюджету
