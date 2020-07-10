@@ -1,12 +1,14 @@
 <?php
 
-//ini_set('error_reporting', E_ALL);
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
+if (strpos($_SERVER['HTTP_HOST'], 'dev.') !== false) {
+    ini_set('error_reporting', E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
 //
-//ini_set('display_errors', 'On'); // сообщения с ошибками будут показываться
-error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
+    ini_set('display_errors', 'On'); // сообщения с ошибками будут показываться
+    error_reporting(E_ALL); // E_ALL - отображаем ВСЕ ошибки
 // error_reporting(-1); // E_ALL - отображаем ВСЕ ошибки
+}
 
 if (
         $_SERVER['HTTP_HOST'] == 'photo.uralweb.info' || $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' || $_SERVER['HTTP_HOST'] == 'a2.uralweb.info' || $_SERVER['HTTP_HOST'] == 'adomik.uralweb.info'
@@ -179,15 +181,6 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'startFunctionClass') {
         'in' => ( $_REQUEST ?? [] )
     ]);
 }
-
-
-
-
-
-
-
-
-
 
 // показ смен одного сотрудника за месяц или весь срок
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
@@ -2483,10 +2476,9 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
 
         echo '<tr>'
         . '<td>'
-        . '<span id="shows' . $v['id'] . '" >';
+        . '<span title="#' . $v['id'] . '" id="shows' . $v['id'] . '" >';
 
         if (!empty($v['status'])) {
-
             if ($v['status'] == 'show') {
                 echo 'вкл';
             } elseif ($v['status'] == 'hide') {
@@ -2593,8 +2585,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'show_naznach') {
         echo '<td>' . ((isset($v['type']) && $v['type'] == 'spec') ? 'спец. назначение' : 'приём') . '</td>'
         . '<td>' . ($sps[$v['sale_point']]['head'] ?? 'не определена') . '</td>'
         . '<td>' . ($d[$v['dolgnost']]['head'] ?? '- - -') . '</td>'
-        . '<td class = "r" >' . $v['date'] . '</td>'
-        . '<td class = "r" >' . ($v['date_finish'] ?? '-') . '</td>'
+        . '<td class = "r" >' . $v['date'] . '</td>';
+
+        echo '<td class = "r" >';
+        if (!empty($v['date_finish'])) {
+            echo $v['date_finish'];
+        }
+        echo '</td>'
         . '</tr>';
     }
 
@@ -2725,48 +2722,71 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 // добавляем вычисление процентов от оборота в день
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
 
-
     if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
 
-            if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
-                echo '<h3>удаляем все автобонусы</h3>';
-                
-                $date_start = date('Y-m-01',strtotime($_REQUEST['date']) );
-                $date_finish = date('Y-m-d',strtotime($date_start.' +1 month -1 day') );
+        if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
 
-                
-                \Nyos\mod\items::$between_date['date_now'] = [$date_start,$date_finish];
-                \Nyos\mod\items::$return_items_header = true;
-//                 $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus );
-                // \f\pa($items);
-                
+            echo '<h3>удаляем все автобонусы</h3>';
+
+            $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
+            $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+            \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
+
+            \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
+            \Nyos\mod\items::$between_date['date_now'] = [$date_start, $date_finish];
+            // \Nyos\mod\items::$return_items_header = true;
+            $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+            \f\pa($items, 2);
+            $ids = implode(', ', array_keys($items));
+            \f\pa($ids);
+
+            $sql = 'UPDATE `mitems` mi '
+                    . ' SET `mi`.`status` = \'delete\' '
+                    . ' WHERE mi.`module` = :module AND mi.`id` IN (' . $ids . ') '
+                    . ' ;';
+            // \f\pa($sql);
+            $ff = $db->prepare($sql);
+            // \f\pa($var_in_sql);
+            $ff->execute([':module' => \Nyos\mod\JobDesc::$mod_bonus]);
+
+            echo '<br/>' . __FILE__ . ' #' . __LINE__;
+
+            die('удалено ' . sizeof($items));
+
+
+//                    \Nyos\mod\items::$between_date['date_now'] = 'da';
+//                    \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
+//                    \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+
+
             for ($n = 0; $n <= 32; $n++) {
-//                
+
                 $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
-//
-                
-                if ( substr($date_now,5,2) == substr($date_start,5,2) ) {
+
+                if (substr($date_now, 5, 2) == substr($date_start, 5, 2)) {
 //                // if ( $date_now <= $date_finish ) {
 //                    
 ////                break;
 ////                }
 //                echo '<br/>+';                    
-                 echo '<br/>'.$date_now.' '.$date_finish .' - '.substr($date_now,5,2).' '.substr($date_start,5,2);
+                    echo '<br/>' . $date_now . ' ' . $date_finish . ' - ' . substr($date_now, 5, 2) . ' ' . substr($date_start, 5, 2);
 //                }
 //                
 //                
-                
-                \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => $date_now, 'auto_bonus_zp' => 'da' ] );
-                
-            }
-            }
-                
-                // \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => date('Y-m-d',strtotime($_REQUEST['date']) ), 'auto_bonus_zp' => 'da' ] );
+                    // UPDATE `mitems` SET `status` = 'delete' WHERE `mitems`.`id` = 9;
+                    \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, ['date_now' => $date_now, 'auto_bonus_zp' => 'da']);
+                }
             }
 
-        
+            // \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => date('Y-m-d',strtotime($_REQUEST['date']) ), 'auto_bonus_zp' => 'da' ] );
+        }
+
         $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
-        
+
+        echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
+        . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=234">refresh</a>';
+
         foreach ($sps as $k => $v) {
             echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
             . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=bonus_record_month&date=2020-06-01&sp=' . $v['id'] . '">' . $v['id'] . '</a>';
@@ -2795,9 +2815,75 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     try {
 
 //echo '<br/>'.__FILE__.' '.__LINE__;
-
-        $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+//        $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
 // die($ww);
+
+        $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, 'all', $date_start);
+        // \f\pa($smens7, 2, '', '$smens7');
+
+        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+        $metki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_metki);
+
+//            $ff = $db->prepare($sql);
+//            $vars = [];
+//            $vars[':user'] = $user;
+//            $vars[':date_start'] = $date_start;
+//            $vars[':date_finish'] = $date_finish;
+//            $ff->execute($vars);
+//            $res = $ff->fetchAll();
+
+        $add_bonuses = [];
+
+        foreach ($smens7['data'] as $k => $v) {
+
+            if (!empty($v['spec1_sp'])) {
+                $now_sp = $v['spec1_sp'];
+            } elseif (!empty($v['job_sp'])) {
+                $now_sp = $v['job_sp'];
+            } else {
+                continue;
+            }
+
+            if( !empty($_REQUEST['sp']) && $_REQUEST['sp'] != $now_sp )
+                continue;
+            
+            echo '. '; flush();
+            
+            $e = \Nyos\mod\JobDesc::setupAutoBonus($db, $now_sp, $v['jobman'], $v['date'], $v['money'], $v);
+            //\f\pa($e);
+
+            if ($e['status'] == 'ok')
+                $add_bonuses[] = $e['data'];
+
+//            $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
+//
+//            if (!empty($v['money']['premiya-' . $ocenka])) {
+//                $add_bonuses[] = [
+//                    'auto_bonus_zp' => 'da',
+//                    'jobman' => $v['jobman'],
+//                    'sale_point' => $now_sp,
+//                    'date_now' => $v['date'],
+//                    'summa' => $v['money']['premiya-' . $ocenka],
+//                    'text' => 'бонус к зп'
+//                ];
+//            } elseif (!empty($v['money']['bonus_proc_from_oborot'])) {
+//
+//                $add_bonuses[] = [
+//                    'auto_bonus_zp' => 'da',
+//                    'jobman' => $v['jobman'],
+//                    'sale_point' => $now_sp,
+//                    'date_now' => $v['date'],
+//                    'summa' => $v['money']['premiya-' . $ocenka],
+//                    'text' => 'бонус к зп'
+//                ];
+//            }
+        }
+
+        // \f\pa($add_bonuses);
+        \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
+        
+        // \f\pa(sizeof($add_bonuses));
+        
     } catch (Exception $ex) {
 
         echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
@@ -2815,8 +2901,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
     $e = [
         'datas' => $ww['data']['adds'] ?? [],
         'timer' => \f\timer_stop(3),
-        'kolvo' => $ww['data']['adds'] ?? 0,
-        'w' => $ww
+        'kolvo' => sizeof($add_bonuses) ?? 0,
+        // 'w' => $ww
     ];
 
 //\f\pa($e,2);
@@ -3269,7 +3355,6 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             // сумма денег на руки от количества смен и процента на ФОТ
             'summa_na_ruki' => 0,
             // рекомендуемая оценка управляющего
-            
             // если 0 то нет оценки
             'ocenka' => 0,
             'ocenka_naruki' => 0,
@@ -3408,25 +3493,23 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
                 $return['timeo_' . $k] = $v;
 // $return['timeo_'.$k] = $v;
             }
-            
         }
 
 // \f\pa($return);
 
         $ocenka = \Nyos\mod\JobDesc::calcOcenkaDay($db, $return);
-        
+
         // \f\pa($ocenka);
         // \Nyos\mod\JobDesc::recordNewAutoOcenkiDay($db, $return['checks_for_new_ocenka'], $ocenka['data']['ocenka']);
-
         // \Nyos\mod\items::deleteItems($db, $for_msg, $uri, $data_dops);
-        
+
         \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
             'sale_point' => $ocenka['data']['sp'],
             'date' => $ocenka['data']['date'],
         ]);
 
         // \f\pa($ocenka);
-        
+
         \Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, [
             'sale_point' => $ocenka['data']['sp'],
             'date' => $ocenka['data']['date'],
@@ -3437,13 +3520,13 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'calc_full_ocenka_d
             'money_naruki_ot_oborota' => $ocenka['data']['ocenka_naruki_ot_oborota'],
             'money_norm_ot_oborota' => $ocenka['data']['money_norm_ot_oborota'],
             'ocenka' => $ocenka['data']['ocenka'],
-            // 'txt' => ( $return['txt'] ?? '' ) . '<hr>' . ( $return['time']  ?? ''  ),
+                // 'txt' => ( $return['txt'] ?? '' ) . '<hr>' . ( $return['time']  ?? ''  ),
         ]);
 
-    //\Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, $ocenka['data'] );
-    //    \Nyos\mod\items::add($db, \Nyos\mod\jobdesc::$mod_ocenki_days, $ocenka['data'] );
+        //\Nyos\mod\items::addNewSimple($db, \Nyos\mod\jobdesc::$mod_ocenki_days, $ocenka['data'] );
+        //    \Nyos\mod\items::add($db, \Nyos\mod\jobdesc::$mod_ocenki_days, $ocenka['data'] );
 
-        
+
         \f\end2('ok ' . ($ocenka['html'] ?? '--'), true, $ocenka);
     }
 //
