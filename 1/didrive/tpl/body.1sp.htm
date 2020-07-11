@@ -30,11 +30,16 @@
                 {% set man = mans['data'][user5] %}
                 {#{ pa(man) }#}
 
+                {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
                 {% set now_job = jobdesc__where_now_dolgn( jobs_on_sp, sp_now, user_v.jobman, date_start ) %}
+                {% if 2 == 1 or timer_show == 'on' %} <br/>время jobdesc__where_now_dolgn - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+                {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
                 {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.htm' %}
-                {% if 1 == 2 or timer_show == 'on' %} <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} {% endif %}
+                {% if 2 == 1 or timer_show == 'on' %} 
+                    <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} 
+                    <hr>
+                {% endif %}
 
             {% endfor %}
 

@@ -9,14 +9,15 @@
 // });
 // $twig->addFunction($function);
 
+
+
 $function = new Twig_SimpleFunction('jobdesc__get_dolgnosti', function ( $db, $mod = '061.dolgnost' ) {
 
     // \f\Cash::deleteKeyPoFilter( ['dolgnosti'] );
     $dolgn = \f\Cash::getVar('dolgnosti');
-
+    
     // если не пусто то вернули из мемкеша
     if (!empty($dolgn)) {
-        // \f\pa($dolgn,2,'','$e');
         $dolgn['cash'] = 'da';
     }
     // если пусто то достаём по новой и записываем в мемкеш
@@ -31,6 +32,7 @@ $function = new Twig_SimpleFunction('jobdesc__get_dolgnosti', function ( $db, $m
     return $dolgn;
 });
 $twig->addFunction($function);
+
 
 
 /**

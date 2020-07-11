@@ -7,6 +7,12 @@
 $function = new Twig_SimpleFunction('jobdesc__getJobsJobMans', function ( $db, string $date_start, $sp_id = null ) {
 
     return \Nyos\mod\JobDesc::getJobsJobMans($db, $date_start, '', $sp_id);
+
+//    \f\pa('\Nyos\mod\JobDesc::getJobsJobMans');   
+//    \f\timer_start(11);
+//    $e = \Nyos\mod\JobDesc::getJobsJobMans($db, $date_start, '', $sp_id);
+//    echo \f\timer_stop(11);
+//    return $e;
 });
 $twig->addFunction($function);
 
@@ -20,8 +26,8 @@ $function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $job
 
 //    \f\pa($jobMans);
 //    \f\pa($date);
-    
-    
+
+
     if (!empty($date)) {
         $ds = date('Y-m-01', strtotime($date));
         \Nyos\mod\items::$between_date['date_now'] = [$ds, date('Y-m-d', strtotime($ds . ' +1 month -1 day'))];
@@ -35,7 +41,7 @@ $function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $job
     foreach ($plus0 as $k => $v) {
         $plus_ar_jm_date_ar[$v['jobman']][$v['date_now']][] = $v;
     }
-    
+
     if (!empty($date)) {
         $ds = date('Y-m-01', strtotime($date));
         \Nyos\mod\items::$between_date['date_now'] = [$ds, date('Y-m-d', strtotime($ds . ' +1 month -1 day'))];
@@ -50,8 +56,8 @@ $function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $job
     }
 
     return [
-        'plus' => $plus_ar_jm_date_ar ,
-        'minus' => $minus_ar_jm_date_ar 
+        'plus' => $plus_ar_jm_date_ar,
+        'minus' => $minus_ar_jm_date_ar
     ];
 });
 $twig->addFunction($function);
@@ -642,8 +648,24 @@ $twig->addFunction($function);
 /**
  * список сотрудников для добавления в точки продаж (показываем тех у кого нет назначения на другие точки)
  */
-$function = new Twig_SimpleFunction('jobdesc__get_addlist_jobmans', function ( $db ) {
+$function = new Twig_SimpleFunction('jobdesc__getJobmans', function ( $db ) {
 
+    try {
+    $sql = 'SELECT id, head, birthday , iiko_name FROM mod_070_jobman ORDER BY head ASC;';
+    $ff = $db->prepare($sql);
+    $ff->execute();
+    $ss = $ff->fetchAll();
+    
+    } catch (\PDOException $exc) {
+        // echo $exc->getTraceAsString();
+        \f\pa($exc);
+    }
+    
+    return $ss;
+});
+$twig->addFunction($function);
+
+$function = new Twig_SimpleFunction('jobdesc__get_addlist_jobmans', function ( $db ) {
 
     $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
 // \f\pa($jobmans, 2);
@@ -860,10 +882,12 @@ $function = new Twig_SimpleFunction('jobdesc__getListJobsPeriodAll', function ( 
         \Nyos\mod\JobDesc::$sp = $_GET['sp'];
     }
 
-    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
-    //\f\pa($jobs_all, 2,'','jobs_all');
+    return \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
 
-    return $jobs_all;
+//    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
+//    //\f\pa($jobs_all, 2,'','jobs_all');
+//
+//    return $jobs_all;
 });
 $twig->addFunction($function);
 
@@ -1505,23 +1529,23 @@ $function = new Twig_SimpleFunction('jobdesc__get_ocenki_days', function ( $db, 
 //                . ' ON mid2.id_item = mi.id '
 //                . ' AND mid2.name = \'sale_point\' '
 //                . ' AND mid2.value = \'' . $sp . '\' '
-        ;
+    ;
 
-        // \Nyos\mod\items::$show_sql = true;
-        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
-        \Nyos\mod\items::$search['sale_point'] = $sp;
-        $ocenki = \Nyos\mod\items::get($db, 'sp_ocenki_job_day');
-        // \f\pa($ocenki,'','','$ocenki');
+    // \Nyos\mod\items::$show_sql = true;
+    \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+    \Nyos\mod\items::$search['sale_point'] = $sp;
+    $ocenki = \Nyos\mod\items::get($db, 'sp_ocenki_job_day');
+    // \f\pa($ocenki,'','','$ocenki');
 
-        $re = [];
+    $re = [];
 
-        foreach ($ocenki as $k => $v) {
+    foreach ($ocenki as $k => $v) {
 
-            //if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
-            $re[$v['date']] = $v;
-            //$re[$v['date']]['id'] = $v['id'];
-            //}
-        }
+        //if (!empty($v['dop']['sale_point']) && $v['dop']['sale_point'] == $sp && !empty($v['dop']['date']) && $v['dop']['date'] >= $date_start && $v['dop']['date'] <= $date_finish) {
+        $re[$v['date']] = $v;
+        //$re[$v['date']]['id'] = $v['id'];
+        //}
+    }
 
 
     return $re;
