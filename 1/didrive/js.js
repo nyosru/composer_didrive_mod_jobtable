@@ -1779,28 +1779,38 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var resto = 0;
         var resto1 = 0;
         var showid = 0;
+
+        var microservice = 0;
+
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                if (this.name.indexOf("forajax_") != -1) {
-                    $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
-                    // console.log(this.name, this.value);
-                }
+                if (this.name == 'forajax_microservice') {
+                    
+                    microservice = '/vendor/didrive_mod/jobdesc/1/didrive/micro-service/'+this.value+'.php';
+                    
+                } else {
 
-                if (this.name == 'hidethis') {
-                    hidethis = 1;
-                }
+                    if (this.name.indexOf("forajax_") != -1) {
+                        $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
+                        // console.log(this.name, this.value);
+                    }
 
-                if (this.name == 'show_id') {
-                    showid = '#' + this.value;
-                } else if (this.name == 'res_to_id') {
-                    resto = '#' + this.value;
-                    resto1 = this.value + '111';
-                } else if (this.name == 'answer') {
-                    answer = this.value;
-                }
+                    if (this.name == 'hidethis') {
+                        hidethis = 1;
+                    }
 
+                    if (this.name == 'show_id') {
+                        showid = '#' + this.value;
+                    } else if (this.name == 'res_to_id') {
+                        resto = '#' + this.value;
+                        resto1 = this.value + '111';
+                    } else if (this.name == 'answer') {
+                        answer = this.value;
+                    }
+                    
+                }
             }
 
         });
@@ -1815,7 +1825,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var $th = $(this);
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: ( microservice != 0 ? microservice : '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php' ) ,
+            
             data: "t=1" + $uri_query,
             cache: false,
             dataType: "json",
