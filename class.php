@@ -2391,8 +2391,8 @@ class JobDesc {
             $ff = $db->prepare($sql);
 
             $vars = [];
-            if( $user != 'all' )
-            $vars[':user'] = $user;
+            if ($user != 'all')
+                $vars[':user'] = $user;
             $vars[':dt_start'] = $dt_start;
             $vars[':dt_finish'] = $dt_finish;
             $ff->execute($vars);
@@ -5415,7 +5415,7 @@ class JobDesc {
 
 
             $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, $user_id, $date_start);
-             // \f\pa($smens7, 2, '', '$smens7');
+            // \f\pa($smens7, 2, '', '$smens7');
             // die();
 
             if ($show_html === true)
@@ -5514,7 +5514,7 @@ class JobDesc {
                             foreach ($smens7['data'] as $k => $v) {
                                 if ($v['date'] == $date_now) {
                                     $salarys = $v['money'];
-                                    $money_sp = !empty($v['spec1_sp']) ? $v['spec1_sp'] : !empty( $v['job_sp'] ) ? $v['job_sp'] : '' ;
+                                    $money_sp = !empty($v['spec1_sp']) ? $v['spec1_sp'] : !empty($v['job_sp']) ? $v['job_sp'] : '';
                                     break;
                                 }
                             }
@@ -5522,14 +5522,14 @@ class JobDesc {
 
                             if ($show_html === true)
                                 \f\pa($salarys, 2, '', 'salarys');
-                            
+
 
                             // $new_bonus = 
                             // \f\pa( [ $_sp, $user_id, $date_now, $salarys, $check , '$money_sp' => $money_sp ] );
 
-                            if( $money_sp != $_sp )
+                            if ($money_sp != $_sp)
                                 continue;
-                            
+
                             $add = self::setupAutoBonus($db, $_sp, $user_id, $date_now, $salarys, $check);
 
                             if ($show_html === true)
@@ -5600,72 +5600,26 @@ class JobDesc {
      */
     public static function deleteAutoBonusMonth($db, $sp, $date0) {
 
-        // \f\pa( [ $sp, $date0 ] );
-//        $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date0 );        
-//\f\pa($jobs_all['data']['plusa']);
-//        foreach( $jobs_all['data']['plusa'] as $k => $v ){
-//            if( $v['date_now'] == '2020-01-05' ){
-//                \f\pa($v);
-//            }
-//        }
+        $date_start = date('Y-m-01', strtotime($date0));
+        $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
-        \Nyos\mod\items::$var_ar_for_1sql[':d1'] = date('Y-m-01', strtotime($date0));
-        \Nyos\mod\items::$var_ar_for_1sql[':d2'] = date('Y-m-d', strtotime(\Nyos\mod\items::$var_ar_for_1sql[':d1'] . ' +1 month -1 day'));
-        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+        $who = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date_start, $_REQUEST['sp']);
+        // \f\pa($who, 2, '', 'who on job today');
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'date_now\' '
-                . ' AND mid.value_date >= :d1 '
-                . ' AND mid.value_date <= :d2 '
-                . ' INNER JOIN `mitems-dops` mid2 '
-                . ' ON mid2.id_item = mi.id '
-                . ' AND mid2.name = \'sale_point\' '
-                . ' AND mid2.value = :sp '
-                . ' INNER JOIN `mitems-dops` mid3 '
-                . ' ON mid3.id_item = mi.id '
-                . ' AND mid3.name = \'auto_bonus_zp\' '
-                . ' AND mid3.value = \'da\' '
+        \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
+        \Nyos\mod\items::$search['jobman'] = array_keys($who);
+        \Nyos\mod\items::$between_date['date_now'] = [$date_start, $date_finish];
+        // \Nyos\mod\items::$return_items_header = true;
+        $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+        // \f\pa( sizeof($items) );
+        // \f\pa($items,2,'','items');
 
-        ;
-// возвращаем только результаты первого запроса
-        \Nyos\mod\items::$return_items_header = true;
-        $bonuses = \Nyos\mod\items::get($db, self::$mod_bonus);
-        //\f\pa($bonuses, '', '', 'bonuses');
+        $list = array_keys($items);
+        \Nyos\mod\items::deleteIds($db, $list );
+        
+        // \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
 
-        $dop = [
-// ':d' => date('Y-m-d', strtotime($date0)),
-// ':sp' => $sp
-        ];
-
-        $sql_up = '';
-        $n = 1;
-
-        foreach ($bonuses as $k => $v) {
-
-            $sql_up .= (!empty($sql_up) ? ' OR ' : '' ) . '`id` = :i' . $n;
-            $dop[':i' . $n] = $v['id'];
-            $n++;
-        }
-
-// \f\pa($sql_up);
-// echo '<br/>' . __FUNCTION__ . ' + ' . $sp . ' + ' . $date0;
-
-        if (!empty($sql_up)) {
-            $ff = $db->prepare('UPDATE 
-                `mitems`
-            SET
-                `status` = \'delete\'
-            WHERE 
-                ' . $sql_up . '
-                ;');
-            $e = $ff->execute($dop);
-        }
-// return $e;
-// \Nyos\mod\items::$show_sql = true;
-// \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date_start;
-        // return;
-// return $return;
+        return \f\end3( 'что то удалили', true, [ 'ids' => $list ] );
     }
 
     /**
@@ -6294,7 +6248,7 @@ class JobDesc {
                     }
 //
                     elseif (!empty($vv) && $vv == 'hours') {
-                        throw new \Exception('нет количества часов работы за день для расчёта (' . $vv_text . ')', 203);
+                        // throw new \Exception('нет количества часов работы за день для расчёта (' . $vv_text . ')', 203);
                     }
 //
                     else {
@@ -6334,10 +6288,10 @@ class JobDesc {
         $text .= $return['summa_na_ruki'] . ' (сейчас) >= (норма) ' . $return['norm_vuruchka_on_1_hand'] . $text_s;
 
 // если на руки больше нормы то оценка 5
-        if ($return['summa_na_ruki'] >= $return['norm_vuruchka_on_1_hand']) {
+        if ($return['summa_na_ruki'] == 0 || $return['summa_na_ruki'] >= $return['norm_vuruchka_on_1_hand']) {
 
             $re['ocenka_naruki'] = 5;
-            $text .= 'сумма на руки больше плана/нормыы ' . $text_s;
+            $text .= 'сумма на руки больше плана/норыы ' . $text_s;
             $return['txt'] .= '<br/>сумма на руки больше или равно норм ( ' . $return['summa_na_ruki'] . ' >= ' . $return['norm_vuruchka_on_1_hand'] . ' ) : оценка 5';
         }
 // если на руки меньше нормы то оценка 3
@@ -6348,15 +6302,13 @@ class JobDesc {
             $return['txt'] .= '<br/>сумма Р на руки меньше НОРМы (' . $return['summa_na_ruki'] . ' < ' . $return['norm_vuruchka_on_1_hand'] . ') : оценка 3';
         }
 
-
-
         $money_proc = ceil($return['oborot'] / 100 * $return['norm_procent_oplata_truda_on_oborota']);
 
         $return['txt'] .= '<br/><br/><b>Проверяем % от оборота в 1 руки</b><br/>'
                 . '( ' . $return['norm_procent_oplata_truda_on_oborota'] . '% от ' . $return['oborot'] . ' = ' . $money_proc . ')';
         ;
 
-        if ($return['summa_na_ruki'] >= $money_proc) {
+        if ($return['summa_na_ruki'] == 0 || $return['summa_na_ruki'] >= $money_proc) {
             // if ( $return['summa_na_ruki'] >= $return['oborot']/100*$return['norm_procent_oplata_truda_on_oborota'] ) {
 
             $re['ocenka_naruki_ot_oborota'] = 5;
@@ -6450,7 +6402,8 @@ class JobDesc {
             $re['ocenka'] = 3;
         }
 
-        $return['txt'] .= '<br/>итоговая общая оценка: ' . $re['ocenka'];
+        $return['txt'] .= '<h4>итоговая общая оценка: ' . $re['ocenka'] . '</h4>';
+
         $re['txt'] = $return['txt'] . '<hr><b>время обработки</b>' . $return['time'];
 
         return \f\end3($text, true, $re);
