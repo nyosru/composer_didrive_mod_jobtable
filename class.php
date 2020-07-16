@@ -2339,11 +2339,11 @@ class JobDesc {
             $sql = 'SELECT '
                     . ' c.* , '
                     // ' DISTINCT c.id i2 , '.
-                    . ' SUBSTRING( c.`start` , 1 , 10 ) as `date` '
+                    // . ' SUBSTRING( c.`start` , 1 , 10 ) as `date` '
 
 //                    . ', ' 
 //                    .' MAX(job_in.date) job_date2 '
-                    . ',  '
+                    // . ',  '
                     . ' job_in.date job_date '
                     . ' ,'
                     . ' job_in.sale_point job_sp '
@@ -2405,7 +2405,9 @@ class JobDesc {
                 if (isset($skip[$res['id']]))
                     continue;
 
-                // \f\pa($res);
+                $res['date'] = date('Y-m-d',strtotime($res['start'].' -3 hour'));
+                
+                //\f\pa($res);
 
                 if (!empty($res['spec1_sp']) && !empty($res['spec1_dolgn'])) {
                     $res['money'] = self::getSalarisNow($db, $res['spec1_sp'], $res['spec1_dolgn'], $res['date']);
@@ -5614,6 +5616,9 @@ class JobDesc {
         // \f\pa( sizeof($items) );
         // \f\pa($items,2,'','items');
 
+        if( empty($items) )
+        return \f\end3( 'норм, нечего удалять', true );
+        
         $list = array_keys($items);
         \Nyos\mod\items::deleteIds($db, $list );
         

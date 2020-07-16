@@ -63,44 +63,6 @@
 
         <div class="container-fluid">
 
-            {% if 1 == 2 %}
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-
-                        {# % extends "body.htm" % #}
-                        {# % block block1 %} block 11111111111111111 {% endblock % #}
-
-                        {# % set krohi['1']['text'] = 'Интерфейс работы Супер администратора' %}
-                        {% set krohi['1']['uri'] = get.level % #}
-
-                        <h3>Порядок работы по шагам v0.1 <sup><a href="#" onclick="$('#list1').toggle('slow');
-                                return false;" >развернуть/свернуть</a></sup> </h3>
-
-                        {# { pa(list_plan)|raw } #}
-
-                        <ol style="line-height:3em;display:none;" id="list1" >
-
-                            {% for k, v in list_plan %} 
-                                <li><a href="{{ v.link }}" class="btn btn-xs btn-info">{{ v.head}}</a> - {{ v.opis }}</li>
-                                {% endfor %}
-
-                            {#
-                            <li><a href="#" class="btn btn-xs btn-info">Точки продаж</a> - добавляем точки продаж</li>
-                            <li><a href="#" class="btn btn-xs btn-info">Должности</a> - возможные должности</li>
-                            <li><a href="#" class="btn btn-xs btn-info">Размер оплаты труда</a> - добавляем настройки размеров оплаты труда должностям работающим на точке (точка "default" содержит настройки для всех точек у которых не назначены свои цифры)</li>
-                            <li><a href="#" class="btn btn-xs btn-info">Сотрудники</a> - добавляем ФИО и назначем должность и даты старта стажировки/работы/уволнения сотрудника</li>
-                            <li><a href="#" class="btn btn-xs btn-info">Назначение работника на точку продаж</a> - определяем кто и когда работает ( работник + точка продаж + дата )</li>
-                            <li><a href="#" class="btn btn-xs btn-info">Реестр check-in check-out</a> - определяем кто и когда начал работу/закочил работу (работник + дата,время старта/финиша) </li>
-                            <li><a href="#" class="btn btn-xs btn-info">Взыскания</a> - если есть взыскания персоналу, добавляем (участнвует дальше в расчёте оплаты)</li>
-                            <li><a href="#" class="btn btn-xs btn-info">ЗП работников</a> - реестр кому сколько платим</li>
-                            #}
-
-                        </ol>
-
-                    </div>
-                </div>
-            {% endif %}
-
             {% if 1 == 1 %}
                 <div class="row" style="xbackground-color:rgba(0,0,0,0.05);padding: 15px 0; ">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" style="margin-top: 2vh; margin-bottom: 2vh;" >
@@ -127,7 +89,6 @@
                         {% set ocenki_day = jobdesc__get_ocenka_day( db, date_start , date_finish ) %}
                         {% if 1 == 2 or timer_show == 'on' %} <br/>время 7 ocenki_day - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-                        
                         {# верхние кнопки даты и скрыть показать даты #}
                         {% if 1 == 1 %}
 
@@ -142,46 +103,10 @@
 
                                 <div class="dropdown-menu">
 
-                                    {# универсальное модальное окошко используем #}
-                                    {#
-                                    <a 
-                                        href="#" 
-                                        class="dropdown-item xbtn-xs btn-light base_modal_go"
-                                        data-toggle="modal" data-target="#di_modal" 
-        
-                                        modal_header='назначения сотрудника'
-                                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
-                                        ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'
-        
-                                        >
-                                        список назначений сотрудника
-                                    </a>
-                                    #}
-
-                                    {# универсальное модальное окошко используем #}
-                                    {% if 1 == 2 %}
-                                        <a 
-                                            href="#" 
-                                            class="dropdown-item xbtn-xs btn-light base_modal_go"
-                                            data-toggle="modal" data-target="#di_modal" 
-
-                                            modal_header='назначения сотрудника'
-                                            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
-                                            {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
-                                            ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
-
-                                            >
-                                            смены в этом месяце
-                                        </a>
-                                    {% endif %}
-
                                     {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
                                         <a href="/i.didrive.php?level=000.job&sp=all&hide_body=12" 
                                            class="dropdown-item xbtn xbtn-xs btn-light" style="float:right;" ><span class="fa fa-eye"></span> ТП без смен</a>
                                     {% endif %}
-
-
-
 
                                     {% if 1 == 2 or ( session.now_user_di.access is defined and session.now_user_di.access == 'admin' ) %}
                                         <a 
@@ -212,16 +137,6 @@
                                 </div>
                             {% endif %}
 
-
-
-                            {#
-                            &nbsp;
-                            <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
-                            #}
-
-                            {# 2019 #}
-                            {#% set year = 2019 %#}
-
                             {% set now_year = "now"|date('Y')%}
                             {#{ now_year }#}
 
@@ -231,8 +146,6 @@
                             {% set gets = get %}
 
                             {% for year in range(low=2019, high=2030, step=1) if iy <= now_year %}
-
-                                {# {{ iy }}<br/> #}
 
                                 {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 3 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
 
@@ -320,16 +233,6 @@
                         {% set sp_access = jobdesc__get__access_moders( db )  %}
                         {# <br/> pa(sp_access) {{ pa(sp_access) }} #}
                         {% if 1 == 2 or timer_show == 'on' %} <br/>время 8 - {{ didrive_f__timer_stop(5) }} {% endif %}
-
-                        {# 200708 off #}
-                        {% if 1 == 2 %}
-                            {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-                            {% set jobs_on_sp = jobdesc__jobmans_job_on_sp( db, null, date_start, date_finish ) %}
-                            {% if 1 == 2 %} <br/> pa(jobs_on_sp) {{ pa(jobs_on_sp,2) }} {% endif %}
-                            {% if 1 == 2 or timer_show == 'on' %} <br/>время 9 - {{ didrive_f__timer_stop(5) }} {% endif %}
-                        {% endif %}
-
-                        {#{ pa(getListJobsPeriodAll) }}
                         
                         {# текущие доступные точки #}
                         {% if 1 == 1 %}
@@ -381,23 +284,6 @@
                                 {% if 1 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
 
                                 {% set getListJobsPeriodAll = jobdesc__getListJobsPeriodAll( db, date_start, date_finish ) %}
-
-                                {% if 1 == 2 %} 
-                                    <br/> pa(getListJobsPeriodAll) 
-                                    {{ pa(getListJobsPeriodAll) }} 
-                                {% endif %}
-
-                                {% if 1 == 2 %} 
-                                    <br/> pa(getListJobsPeriodAll) 
-                                    {% for k,x in getListJobsPeriodAll.data %}
-                                        <br/>{{ k }}
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% if 1 == 2 %} 
-                                    <br/> pa(getListJobsPeriodAll.data.plusa) 
-                                    {{ pa(getListJobsPeriodAll.data.plusa) }} 
-                                {% endif %}
 
                                 {% if 1 == 2 or timer_show == 'on' %}<br/>время getListJobsPeriodAll - {{ didrive_f__timer_stop(5) }} {% endif %}
 

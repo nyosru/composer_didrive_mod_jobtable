@@ -1938,8 +1938,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            data: "action=bonus_record_month&date=" + date + "&sp=" + sp,
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/bonus_record_month.php",
+            xdata: "action=bonus_record_month&date=" + date + "&sp=" + sp,
+            data: "date=" + date + "&sp=" + sp,
             cache: false,
             dataType: "json",
             type: "post",
