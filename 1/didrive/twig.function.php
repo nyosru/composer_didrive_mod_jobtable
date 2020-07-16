@@ -883,6 +883,9 @@ $function = new Twig_SimpleFunction('jobdesc__getListJobsPeriodAll', function ( 
     }
 
     return \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
+//    $return = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
+//    \f\pa($return);
+//    return $return;
 
 //    $jobs_all = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $date_start, $date_finish);
 //    //\f\pa($jobs_all, 2,'','jobs_all');

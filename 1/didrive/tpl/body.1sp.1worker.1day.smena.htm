@@ -54,16 +54,15 @@
     {%  set rand_d = random() %}
     {# rand {{ rand_d }} #}
 
-
-
-
-
+{#{{ pa(check) }}#}
 
     {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
     {% if check.who_add_item is defined and check.who_add_item == 'iiko' and now_spec_nazn == true %}
 
     {% elseif check.sale_point is not defined or check.sale_point == sp_now %}
 
+        {#{{ pa(check) }}#}
+        
         <div class="text-center show_down_hiden smena1
 
              {% set user_smena_status = '' %}
@@ -143,7 +142,7 @@
                         <abbr class="job_hour" >
                             <nobr>
 
-                                {% if check.hour_on_job_hand is defined and check.hour_on_job_hand > 0 %}
+                                {% if check.hour_on_job_hand is defined  %}
                                     {% set hours_on_job = check.hour_on_job_hand %}
                                 {% elseif check.hour_on_job is defined and check.hour_on_job > 0 %}
                                     {% set hours_on_job = check.hour_on_job %}
@@ -256,23 +255,6 @@
                                 {% set summa_day = hours_on_job * price_hour %}
 
                             {% else %}
-
-
-                                {#
-                                <div class="text-left" >
-                                    {{ pa(now_job) }}
-                                    {{ pa(salar) }}
-                                </div>
-                                #}
-
-                                {#% if date == '2020-03-01' %}
-                                    <div style="text-align:left;" >
-                                        check
-                                        {{  pa(check) }}
-                                        now_dolgn
-                                        {{  pa(now_dolgn) }}
-                                    </div>
-                                {% endif %#}
 
                                 <select name="ocenka" 
                                         class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
@@ -390,18 +372,10 @@
                         {% endif %}
                     </div>
 
-                    {#<div class="smena_summa smena_summa_{{ check.id }}" title="сумма за смену">{{ price_hour * price_hour_now }}</div>#}
-                    {# для динамичного показа суммы за смену 1911 - #}
-
-                    {#
-                    <a href=""><span class="ocenka_text">Оценка:</span> <span class="ocenka_num" >...</span></a><br/>
-                    #}
-
                 </div>
 
 
                 {% if user_smena_status == 'add' %}
-                    {#% if user_smena_status == '' or user_smena_status == 'add_error' or user_smena_status == 'add' %#}
                 {% else %}
 
                     {% if check.status == 'hide' %}

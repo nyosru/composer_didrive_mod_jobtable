@@ -1807,8 +1807,6 @@ class JobDesc {
         if (empty($date_finish))
             $date_finish = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date_start)) . ' +1 month -1 day'));
 
-
-
         $return = [
 //            'money' => [],
             'where_job__workman_date' => [],
@@ -2224,25 +2222,40 @@ class JobDesc {
 
             if (1 == 1) {
 // \f\timer_start(771);
+//                \Nyos\mod\items::$cash_var_name = 'checks_' . self::$mod_checks . '_d' . date('Y-m-d', strtotime($date_start)) . '_d' . date('Y-m-d', strtotime($date_finish));
+                // \f\pa(\Nyos\mod\items::$cash_var_name);
+                // \f\timer_start(221);
+//                \Nyos\mod\items::$show_sql = true;
+//
+//                \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` midop01 ON '
+//                        . ' midop01.id_item = mi.id '
+//                        . ' AND midop01.name = :name71 '
+//                        . ' AND midop01.value_datetime >= :ds '
+//                        . ' AND midop01.value_datetime <= :df '
+//                ;
+//
+//                \Nyos\mod\items::$sql_vars[':name71'] = 'start';
+//                \Nyos\mod\items::$sql_vars[':ds'] = date('Y-m-d 08:00:00', strtotime($date_start));
+//                \Nyos\mod\items::$sql_vars[':df'] = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
+//// \Nyos\mod\items::$cancel_cash = true;
+//
+//                $return['checks'] = \Nyos\mod\items::get2($db, self::$mod_checks);
 
-                \Nyos\mod\items::$cash_var_name = 'checks_' . self::$mod_checks . '_d' . date('Y-m-d', strtotime($date_start)) . '_d' . date('Y-m-d', strtotime($date_finish));
-// \f\pa(\Nyos\mod\items::$cash_var_name);
 
-                \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` midop01 ON '
-                        . ' midop01.id_item = mi.id '
-                        . ' AND midop01.name = :name71 '
-                        . ' AND midop01.value_datetime >= :ds '
-                        . ' AND midop01.value_datetime <= :df '
-                ;
+                if (!empty($return['job_on_sp'][$_REQUEST['sp']])) {
+                    // \Nyos\mod\items::$search['sale_point'] = array_keys($return['where_job__workman_date']);
+                    \Nyos\mod\items::$search['jobman'] = array_keys($return['job_on_sp'][$_REQUEST['sp']]);
+                }
+                
+                \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 08:00:00', strtotime($date_start)), date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'))];
+                $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
 
-                \Nyos\mod\items::$sql_vars[':name71'] = 'start';
-                \Nyos\mod\items::$sql_vars[':ds'] = date('Y-m-d 08:00:00', strtotime($date_start));
-                \Nyos\mod\items::$sql_vars[':df'] = date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'));
-// \Nyos\mod\items::$cancel_cash = true;
-
-                $return['checks'] = \Nyos\mod\items::get2($db, self::$mod_checks);
-// \f\pa($return['checks'], 2, '', 'get checks');
-// echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(771);
+                // echo '<br/>' . sizeof($return['checks']);
+                // \f\pa($return['checks'], 2, '', 'get checks');
+                
+                // echo '<br/>'.\f\timer_stop(221);
+                // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(771);
+                
             }
 
 // получение чеков за месяц
@@ -2340,7 +2353,6 @@ class JobDesc {
                     . ' c.* , '
                     // ' DISTINCT c.id i2 , '.
                     // . ' SUBSTRING( c.`start` , 1 , 10 ) as `date` '
-
 //                    . ', ' 
 //                    .' MAX(job_in.date) job_date2 '
                     // . ',  '
@@ -2405,8 +2417,8 @@ class JobDesc {
                 if (isset($skip[$res['id']]))
                     continue;
 
-                $res['date'] = date('Y-m-d',strtotime($res['start'].' -3 hour'));
-                
+                $res['date'] = date('Y-m-d', strtotime($res['start'] . ' -3 hour'));
+
                 //\f\pa($res);
 
                 if (!empty($res['spec1_sp']) && !empty($res['spec1_dolgn'])) {
@@ -5616,15 +5628,15 @@ class JobDesc {
         // \f\pa( sizeof($items) );
         // \f\pa($items,2,'','items');
 
-        if( empty($items) )
-        return \f\end3( 'норм, нечего удалять', true );
-        
+        if (empty($items))
+            return \f\end3('норм, нечего удалять', true);
+
         $list = array_keys($items);
-        \Nyos\mod\items::deleteIds($db, $list );
-        
+        \Nyos\mod\items::deleteIds($db, $list);
+
         // \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
 
-        return \f\end3( 'что то удалили', true, [ 'ids' => $list ] );
+        return \f\end3('что то удалили', true, ['ids' => $list]);
     }
 
     /**

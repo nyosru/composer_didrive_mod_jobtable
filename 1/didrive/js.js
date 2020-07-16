@@ -769,7 +769,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $('span#' + $textblock_id).text($new_val);
         $.ajax({
 
-            url: "/vendor/didrive_mod/items/1/ajax.php",
+            xurl: "/vendor/didrive_mod/items/1/ajax.php",
+            url: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
             data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
             cache: false,
             dataType: "json",
