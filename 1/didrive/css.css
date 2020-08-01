@@ -1,3 +1,8 @@
+@import "css.2007.css";
+
+.show_to_admin{ display: none; }
+.show_to_admin.show{ display: inline; }
+
 div.ttable{ display: table; 
         width: 100%; }
 div.ttable div.trow{ display: table-row; }
@@ -12,7 +17,19 @@ div.ttable div.tcell{ display: table-cell; }
     top:90px;
     position: -webkit-sticky;
     position: -moz-sticky;
-    position: -ms-sticky;р
+    position: -ms-sticky;
+    position: -o-sticky;
+    position: sticky;
+    z-index: 50;
+}
+
+.stick-top-jobman{
+    xposition: static; 
+    xposition: sticky; 
+    top:160px;
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -ms-sticky;
     position: -o-sticky;
     position: sticky;
     z-index: 50;

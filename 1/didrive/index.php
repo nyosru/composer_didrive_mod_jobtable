@@ -5,13 +5,108 @@ if (isset($_GET['newtype']{0})) {
     \f\redirect('/', 'i.didrive.php');
 }
 
+// \f\pa($_SESSION);
 
+if ( 1 == 2 && isset($_SESSION['newtype']) && $_SESSION['newtype'] == 2007 ) {
+// if (isset($_SESSION['newtype']) && ( $_SESSION['newtype'] == 1 || $_SESSION['newtype'] == 2007 ) ) {
+    
+$vv['in_body_end'][] = '<div style="background-color: rgba(255,255,255,0.5); position: fixed; bottom: 100px; right: 50px; width: 350px;" >vue</div>';
+$vv['in_body_end'][] = '<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>';
+$vv['in_body_end'][] = 
+    '<script>
+        
+    import ShowBonus from \'/vendor/didrive_mod/jobdesc/1/didrive/vue/src/show-bonus\';
+
+    var app = new Vue({ 
+        el: \'#body2\'
+
+	components: {
+            ShowBonus,
+        }
+
+    });
+    </script>';
+    
+    
+}elseif (isset($_SESSION['newtype']) && ( $_SESSION['newtype'] == 1 ) ) {
+
+    if (empty($vv['dihead']))
+        $vv['dihead'] = '';
+
+    echo '<div style="background-color: rgba(255,255,255,0.5); position: fixed; bottom: 100px; right: 50px; width: 350px;" >';
+
+    $dirs_for_scan = [
+        __DIR__ . DS . 'dist' . DS . 'assets' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/css/',
+        __DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/js/',
+        __DIR__ . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/css/',
+        __DIR__ . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/js/',
+        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/css/',
+        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/js/',
+    ];
+
+    foreach ($dirs_for_scan as $d => $dir_local) {
+
+        echo '<br/>#'.__LINE__.' '.__DIR__;
+        echo $d;
+        
+        if (is_dir($d)) {
+
+            $list_f = scandir($d);
+            foreach ($list_f as $v) {
+
+                if (!isset($v{5}))
+                    continue;
+
+                echo '<br/>#' . __LINE__ . ' ++1++ ' . $v;
+
+                if (strpos($v, '.css') !== false && strpos($v, 'app.') !== false) {
+                    echo '<br/>#' . __LINE__ . ' ' . $v;
+                    $vv['dihead'] .= '<link href="' . $dir_local . $v . '" rel="stylesheet">';
+                }
+
+                if (strpos($v, '.js') !== false && ( strpos($v, 'app.') !== false || strpos($v, 'chunk') !== false )) {
+                    echo '<br/>#' . __LINE__ . ' ' . $v;
+                    $vv['in_body_end'][] = '<script type="text/javascript" defer="defer" src="' . $dir_local . $v . '"></script>';
+                }
+            }
+        }
+    }
+
+    echo '</div>';
+}
+
+
+
+
+
+
+
+if( 1 == 2 ){
 //\f\pa($_POST);
-//echo '<br/>';
-//echo '<br/>';
-//echo '<br/>';
-//echo '<br/>';
-//echo '<br/>';
+echo '<br/>';
+echo '<br/>';
+echo '<br/>';
+echo '<br/>';
+echo '<br/>';
+echo '<div style="padding: 0px 150px ;" >';
+////
+////$e = \Nyos\mod\JobBuh::calcDayBudget($db, 1, '2020-07-02');
+////
+//
+//$ee = \Nyos\mod\JobDesc::getListJobsPeriodAll($db, $_REQUEST['date'] ?? date('Y-m-d'));
+//\f\pa($ee['data'],2);
+////\f\pa(array_keys($ee['data']['where_job__workman_date']));
+//\f\pa(array_keys($ee['data']['job_on_sp'][$_REQUEST['sp']]));
+//// \f\pa(array_keys($ee['data']['where_job__workman_date']));
+//
+
+//$e = \Nyos\mod\JobDesc::calcDayBudget($db, $_REQUEST['sp'], ( $_REQUEST['date'] ?? date('Y-m-d') ) , [] );
+//$e = \Nyos\mod\JobDesc::whoWhereCoocking($db, $_REQUEST['sp'], ( $_REQUEST['date'] ?? date('Y-m-d') ) );
+//\f\pa($e);
+
+echo '</div>';
+}
+
 //\f\pa($_SESSION);
 // \f\Cash::allClear();
 // $vv['tpl_body'] = '';
@@ -72,60 +167,3 @@ $vv['in_body_end'][] = '<script defer="defer" src="' . DS . 'vendor' . DS . 'did
 
 // if (!empty($_REQUEST['sp'])) {
 // if (1 == 1) {
-if (isset($_SESSION['newtype']) && $_SESSION['newtype'] == 1) {
-
-    if (empty($vv['dihead']))
-        $vv['dihead'] = '';
-
-    echo '<div style="position: fixed; bottom: 100px; right: 50px; width: 350px;" >';
-
-    $dirs_for_scan = [
-        __DIR__ . DS . 'dist' . DS . 'assets' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/css/',
-        __DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/js/',
-        __DIR__ . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/css/',
-        __DIR__ . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/dist/js/',
-        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'css' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/css/',
-        __DIR__ . DS . 'vue' . DS . 'dist' . DS . 'js' . DS => '/vendor/didrive_mod/jobdesc/1/didrive/vue/dist/js/',
-    ];
-
-    foreach ($dirs_for_scan as $d => $dir_local) {
-
-// echo '<br/>#'.__LINE__.' '.__DIR__;
-        if (is_dir($d)) {
-
-            $list_f = scandir($d);
-            foreach ($list_f as $v) {
-
-                if (!isset($v{5}))
-                    continue;
-
-                // echo '<br/>#' . __LINE__ . ' ++1++ ' . $v;
-
-                if (strpos($v, '.css') !== false && strpos($v, 'app.') !== false) {
-                    echo '<br/>#' . __LINE__ . ' ' . $v;
-                    $vv['dihead'] .= '<link href="' . $dir_local . $v . '" rel="stylesheet">';
-                }
-
-                if (strpos($v, '.js') !== false && ( strpos($v, 'app.') !== false || strpos($v, 'chunk') !== false )) {
-                    echo '<br/>#' . __LINE__ . ' ' . $v;
-                    $vv['in_body_end'][] = '<script type="text/javascript" defer="defer" src="' . $dir_local . $v . '"></script>';
-                }
-            }
-        }
-    }
-//// $vv['dihead'] .= '<link href="/assets/css/app.640f582b232504c57832.css" rel="stylesheet">';
-//
-//    if (is_dir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS)) {
-//        $list_f = scandir(__DIR__ . DS . 'dist' . DS . 'assets' . DS . 'js' . DS);
-//        foreach ($list_f as $v) {
-//            if (strpos($v, '.js') !== false && (strpos($v, 'app.') !== false || strpos($v, 'vendors.') !== false)) {
-//                // echo '<br/>#' . __LINE__ . ' ' . $v;
-//                $vv['in_body_end'][] = '<script type="text/javascript" defer="defer" src="/vendor/didrive_mod/jobdesc/1/didrive/dist/assets/js/' . $v . '"></script>';
-//            }
-//        }
-//    }
-// $vv['in_body_end'][] = '<script type="text/javascript" src="/assets/js/vendors.f2e79c865ce2172cb7cb.js"></script>';
-// $vv['in_body_end'][] = '<script type="text/javascript" src="/assets/js/app.caac25aa43296c4b8c6d.js"></script>';
-
-    echo '</div>';
-}

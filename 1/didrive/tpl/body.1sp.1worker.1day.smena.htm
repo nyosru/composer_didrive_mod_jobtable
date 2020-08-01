@@ -1,5 +1,7 @@
 {% spaceless %}
 
+    {#{{ pa(check) }}#}
+    
     {# получаем данные на входе #}
     {% if 1 == 1 %}
 
@@ -61,7 +63,6 @@
 
     {% elseif check.sale_point is not defined or check.sale_point == sp_now %}
 
-        {#{{ pa(check) }}#}
         
         <div class="text-center show_down_hiden smena1
 
@@ -275,11 +276,12 @@
                                         >
                                     <option price="0" value="">Оценка</option>
 
-                                    {#{ pa(salar) }#}
+                                    salar
+                                    {{ pa(salar) }}
 
                                     {%  set price_hour1_now = '' %}
 
-                                    {% for i in range(low=5, high=2, step=-1) %}    {#{ i }#}
+                                    {% for i in range(low=5, high=3, step=-2) %}    {#{ i }#}
 
                                         {% set price_hour = 0 %}
 

@@ -1,0 +1,67 @@
+{% spaceless %}
+
+    {{ pa(new_d) }}
+
+{#    {% if i.sale_point != '' and i.sale_point != sp_now %}#}
+
+
+                <a class="send_ajax"
+                   href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+                   action="cancel_smena"
+                   {# param #}
+                   ajax_id="{{ new_d.id }}"
+                   ajax_s="{{ creatSecret(new_d.id) }}" 
+
+                   {# raw param #}
+                   answer="Хотите отменить это назначение ?"
+                   
+                   res_to="delete_naznach_res{{ new_d.id }}"
+                   result_ok_show_to ="delete_naznach_ok_res{{ new_d.id }}"
+                   xresult_ok_to ="delete_naznach_ok_res{{ new_d.id }}"
+                   result_error_show_to ="delete_naznach_error_res{{ new_d.id }}"
+                   xresult_error_to ="delete_naznach_error_res{{ new_d.id }}"
+
+                   hide_block_id_when_ok = "block_new_dolgn{{ new_d.id }}"
+                   xhide_block_class_when_ok = ""
+
+                   ><span class="fa fa-times" ></span></a>
+                   
+<span id="delete_naznach_error_res{{ new_d.id }}" ></span>
+
+        {#+++ на другой точке#}
+        <div class="text-center alert alert-success position" >
+                <a class="send_ajax icon_remove"
+                   
+                   href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+                   action="cancel_smena"
+                   {# param #}
+                   ajax_id="{{ new_d.id }}"
+                   ajax_s="{{ creatSecret(new_d.id) }}" 
+
+                   {# raw param #}
+                   answer="Хотите отменить это назначение ?"
+                   
+                   res_to="block_new_dolgn{{ new_d.id }}"
+  
+                   xxresult_ok_show_to ="delete_naznach_ok_res{{ new_d.id }}"
+                   xxresult_error_show_to ="delete_naznach_error_res{{ new_d.id }}"
+                   
+                   xresult_ok_to ="delete_naznach_ok_res{{ new_d.id }}"
+                   xresult_error_to ="delete_naznach_error_res{{ new_d.id }}"
+
+                   xhide_block_id_when_ok = "block_new_dolgn{{ new_d.id }}"
+                   xhide_block_class_when_ok = ""
+
+                   title="Отменить назначение" ><span class="fa fa-remove" ></span></a>
+            
+            новое назначение<Br/>
+            <b>{{ sps[new_d.sale_point]['head'] }}</b>
+            {{ new_d.dolgnost_name }}
+            
+            <span id="block_new_dolgn{{ new_d.id }}" ></span>
+            
+        </div>
+
+        {#{{  pa(new_d) }}#}
+            
+{% endspaceless %}

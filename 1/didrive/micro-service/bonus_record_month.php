@@ -126,89 +126,152 @@ try {
 
     \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
 
-    $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, 'all', $date_start);
+
+
+
+
+
+//    echo '<br/>1111111111111';
+//    $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, 'all', $date_start);
+//    if ( 1 == 1 || isset($_REQUEST['show_html']))
+//        \f\pa($smens7, 2, '', '$smens7 ' . sizeof($smens7));
+//    echo '<br/>1111111111111';
+
+
+    $list_jobman = \Nyos\mod\jobdesc::whoWhereCoocking($db, $_REQUEST['sp'], $date_start);
+    // list id jobman on job this month
+    //\f\pa($list_jobman,2);
+    // \f\pa($list_jobman['html'],2);
+    // \f\pa($list_jobman['data'],2);
+    // \f\pa( array_keys($list_jobman['data']['sp_jm'][$_REQUEST['sp']]),2);
+    //\f\pa( $list_jobman['data']['sp_jm'][$_REQUEST['sp']],2);
+    // $list_jobman['data']
+    $ee1 = \Nyos\mod\jobdesc::calcDayBudget($db, $_REQUEST['sp'], $date_start, array_keys($list_jobman['data']['sp_jm'][$_REQUEST['sp']]));
+
     if (isset($_REQUEST['show_html']))
-        \f\pa($smens7, 2, '', '$smens7 ' . sizeof($smens7));
+        \f\pa($ee1, 2);
 
-    \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
-    $metki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_metki);
+    $e = [
+        'data' => $ee1,
+        // 'datas' => $ww['data']['adds'] ?? [],
+        // 'timer' => \f\timer_stop(3),
+        'kolvo' => $ee1['data']['kolvo'],
+        // 'w' => $ww
+    ];
 
-    if (isset($_REQUEST['show_html']))
-        \f\pa($metki, 2, '', 'metki');
 
-    \Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type = [];
-    foreach ($metki as $k => $v) {
-        \Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type[$v['jobman']][$v['date']][$v['sale_point']][$v['type']] = 1;
-    }
+    \f\end2('ok', true, $e);
 
-    if (isset($_REQUEST['show_html']))
-        \f\pa(\Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type, 2, '', '::$ar_metki_jm_date_sp_type');
+    exit;
 
-//            $ff = $db->prepare($sql);
-//            $vars = [];
-//            $vars[':user'] = $user;
-//            $vars[':date_start'] = $date_start;
-//            $vars[':date_finish'] = $date_finish;
-//            $ff->execute($vars);
-//            $res = $ff->fetchAll();
+    // metki
 
-    $add_bonuses = [];
+    if (1 == 1) {
 
-    foreach ($smens7['data'] as $k => $v) {
-
+        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+        $metki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_metki);
         if (isset($_REQUEST['show_html']))
-            \f\pa($v, 2, '', '1 smena $v');
+            \f\pa($metki, 2, '', 'metki');
 
-        if (!empty($v['spec1_sp'])) {
-            $now_sp = $v['spec1_sp'];
-        } elseif (!empty($v['job_sp'])) {
-            $now_sp = $v['job_sp'];
-        } else {
-            continue;
+        \Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type = [];
+        foreach ($metki as $k => $v) {
+            \Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type[$v['jobman']][$v['date']][$v['sale_point']][$v['type']] = 1;
         }
 
-        if (!empty($_REQUEST['sp']) && $_REQUEST['sp'] != $now_sp)
-            continue;
-
-        // echo '. '; flush();
-
-
-
-        $e = \Nyos\mod\JobDesc::setupAutoBonus($db, $now_sp, $v['jobman'], $v['date'], $v['money'], $v);
-        //\f\pa($e);
-
-        if ($e['status'] == 'ok')
-            $add_bonuses[] = $e['data'];
-
-//            $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
-//
-//            if (!empty($v['money']['premiya-' . $ocenka])) {
-//                $add_bonuses[] = [
-//                    'auto_bonus_zp' => 'da',
-//                    'jobman' => $v['jobman'],
-//                    'sale_point' => $now_sp,
-//                    'date_now' => $v['date'],
-//                    'summa' => $v['money']['premiya-' . $ocenka],
-//                    'text' => 'бонус к зп'
-//                ];
-//            } elseif (!empty($v['money']['bonus_proc_from_oborot'])) {
-//
-//                $add_bonuses[] = [
-//                    'auto_bonus_zp' => 'da',
-//                    'jobman' => $v['jobman'],
-//                    'sale_point' => $now_sp,
-//                    'date_now' => $v['date'],
-//                    'summa' => $v['money']['premiya-' . $ocenka],
-//                    'text' => 'бонус к зп'
-//                ];
-//            }
+        if (isset($_REQUEST['show_html']))
+            \f\pa(\Nyos\mod\JobDesc::$ar_metki_jm_date_sp_type, 2, '', '::$ar_metki_jm_date_sp_type');
     }
 
-    // \f\pa($add_bonuses,2,'','$add_bonuses');
-    \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
 
-    // \f\pa(sizeof($add_bonuses));
-} catch (Exception $ex) {
+//    
+//    
+//    
+//    
+//    
+//    
+//    
+//    
+//    
+////            $ff = $db->prepare($sql);
+////            $vars = [];
+////            $vars[':user'] = $user;
+////            $vars[':date_start'] = $date_start;
+////            $vars[':date_finish'] = $date_finish;
+////            $ff->execute($vars);
+////            $res = $ff->fetchAll();
+//
+//    $add_bonuses = [];
+//
+//    foreach ($smens7['data'] as $k => $v) {
+//
+//        if ($v['status'] != 'show')
+//            continue;
+//
+//        if ( 1 == 1 || isset($_REQUEST['show_html']))
+//            \f\pa($v, 2, '', '1 smena $v');
+//
+//        if (!empty($v['spec1_sp'])) {
+//            $now_sp = $v['spec1_sp'];
+//        } elseif (!empty($v['job_sp'])) {
+//            $now_sp = $v['job_sp'];
+//        } else {
+//            continue;
+//        }
+//
+//        if (!empty($_REQUEST['sp']) && $_REQUEST['sp'] != $now_sp)
+//            continue;
+//
+//        // echo '. '; flush();
+//
+//        $e = \Nyos\mod\JobDesc::setupAutoBonus($db, $now_sp, $v['jobman'], $v['date'], $v['money'], $v);
+//        \f\pa($e,2,'','JobDesc::setupAutoBonus');
+//
+//        if ($e['status'] == 'ok')
+//            $add_bonuses[] = $e['data'];
+//
+////            $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
+////
+////            if (!empty($v['money']['premiya-' . $ocenka])) {
+////                $add_bonuses[] = [
+////                    'auto_bonus_zp' => 'da',
+////                    'jobman' => $v['jobman'],
+////                    'sale_point' => $now_sp,
+////                    'date_now' => $v['date'],
+////                    'summa' => $v['money']['premiya-' . $ocenka],
+////                    'text' => 'бонус к зп'
+////                ];
+////            } elseif (!empty($v['money']['bonus_proc_from_oborot'])) {
+////
+////                $add_bonuses[] = [
+////                    'auto_bonus_zp' => 'da',
+////                    'jobman' => $v['jobman'],
+////                    'sale_point' => $now_sp,
+////                    'date_now' => $v['date'],
+////                    'summa' => $v['money']['premiya-' . $ocenka],
+////                    'text' => 'бонус к зп'
+////                ];
+////            }
+//    }
+//
+//    // \f\pa($add_bonuses,2,'','$add_bonuses');
+//    \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
+//
+//    // \f\pa(sizeof($add_bonuses));
+//
+//// \f\end2('end in ajax', true, $ww);
+//
+//$e = [
+//    'datas' => $ww['data']['adds'] ?? [],
+//    'timer' => \f\timer_stop(3),
+//    'kolvo' => !empty($add_bonuses) ? sizeof($add_bonuses) : '00',
+//        // 'w' => $ww
+//];
+//
+////\f\pa($e,2);
+////    exit;
+
+    \f\end2('ok', true, $e);
+} catch (\Exception $ex) {
 
     echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
     . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
@@ -216,20 +279,16 @@ try {
     . PHP_EOL . $ex->getTraceAsString()
     . '</pre>';
 
+
+    if (strpos($ex->getMessage(), 'temp_oborot') !== false && strpos($ex->getMessage(), 'doesn\'t exist') !== false) {
+
+        $skip_start = true;
+        require_once './creat-db-summ-table.php';
+    }
+
+
+
+
     if (class_exists('\nyos\Msg'))
         \nyos\Msg::sendTelegramm($text, null, 1);
 }
-
-// \f\end2('end in ajax', true, $ww);
-
-$e = [
-    'datas' => $ww['data']['adds'] ?? [],
-    'timer' => \f\timer_stop(3),
-    'kolvo' => sizeof($add_bonuses) ?? 0,
-        // 'w' => $ww
-];
-
-//\f\pa($e,2);
-//    exit;
-
-\f\end2('ok', true, $e);

@@ -1,0 +1,17 @@
+{% spaceless %}
+
+    {#{ pa(item) }#}
+    <div class="show_1comment" >
+        <a href="#" class="act act_smena btn3" 
+           style="float:right;"
+           go_answer="удалить комментарий ?"
+           action="delete_comment" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" 
+           resto="ares{{ i.id }}" show_id="ares{{ i.id }}" 
+           delete_cash_start_date="{{ date }}"
+           hidethis="da" ><i class="fa fa-times"></i></a>
+            {{ i.text }}
+    </div>
+
+    <div id="ares{{ i.id }}" style="display:none;"></div>
+
+{% endspaceless %}

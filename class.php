@@ -11,6 +11,8 @@ if (!defined('IN_NYOS_PROJECT'))
 
 class JobDesc {
 
+    public static $ar_autobonus_jm_sp_date = [];
+
     /**
      * выбранная ТП для выбора всех точек работ и всякое такое
      * @var type 
@@ -247,6 +249,231 @@ class JobDesc {
 //        die();
 
         return \f\end3('error no pay size', false, ['check' => $check, 'salary' => $salary]);
+    }
+
+    /**
+     * считаем есть нет бонус за эту смену у сотрудника
+     * 2007
+     * @param type $db
+     * @param type $data
+     * @return type
+     */
+    public static function getItogiDayOnMonth($db, $sp, $date) {
+
+        if (empty($date))
+            return \f\end3('пустые данные', false);
+
+
+        $sql_vars = [
+            ':sp' => $sp
+            , ':date_start' => date('Y-m-01', strtotime($date))
+        ];
+
+        $sql_vars[':date_finish'] = date('Y-m-d', strtotime($sql_vars[':date_start'] . ' +1 month -1 day'));
+
+        $sql = 'SELECT '
+                // . ' od.* '
+                . ' od.id item_id '
+                . ' , od.date '
+                . ' , od.sale_point '
+                . ' , \'ocenka\' `item_type` '
+                . ' , od.ocenka_time '
+                . ' , od.ocenka_oborot '
+                . ' , od.ocenka_naruki '
+                . ' , od.ocenka '
+                . ' , od.hour_day '
+                . ' , od.ocenka_naruki_ot_oborota '
+                . ' , od.money_naruki_ot_oborota '
+                . ' , \'\' vuruchka '
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' hot '
+                . ' , \'\' delivery '
+                . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server '
+                . ' FROM `mod_sp_ocenki_job_day` od '
+                . ' WHERE '
+                . ' od.status = \'show\' '
+                . ' AND od.sale_point = :sp '
+                . ' AND od.date BETWEEN :date_start AND :date_finish '
+                . ' UNION ALL '
+                . ' SELECT '
+                // . ' od.* '
+                . ' p.id item_id '
+                . ' , p.date '
+                . ' , p.sale_point '
+                . ' , \'param\' `item_type` '
+                . ' , \'\' ocenka_time '
+                . ' , \'\' ocenka_oborot '
+                . ' , \'\' ocenka_naruki '
+                . ' , \'\' ocenka '
+                . ' , \'\' hour_day '
+                . ' , \'\' ocenka_naruki_ot_oborota '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , p.vuruchka '
+                . ' , p.time_wait_norm_cold '
+                . ' , p.time_wait_norm_hot '
+                . ' , p.time_wait_norm_delivery '
+                . ' , p.procent_oplata_truda_on_oborota '
+                . ' , p.kolvo_hour_in1smena '
+                . ' , p.vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' hot '
+                . ' , \'\' delivery '
+                . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server '
+                . ' FROM `mod_sale_point_parametr` p '
+                . ' WHERE '
+                . ' p.status = \'show\' '
+                . ' AND p.sale_point = :sp '
+                . ' AND p.date BETWEEN :date_start AND :date_finish '
+                . ' UNION ALL '
+                . ' SELECT '
+                . ' t.id item_id '
+                . ' , t.date '
+                . ' , t.sale_point '
+                . ' , \'timeo\' `item_type` '
+                . ' , \'\' ocenka_time '
+                . ' , \'\' ocenka_oborot '
+                . ' , \'\' ocenka_naruki '
+                . ' , \'\' ocenka '
+                . ' , \'\' hour_day '
+                . ' , \'\' ocenka_naruki_ot_oborota '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , \'\' vuruchka '
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , t.cold '
+                . ' , t.hot '
+                . ' , t.delivery '
+                . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server '
+                . 'FROM mod_074_time_expectations_list t '
+                . ' WHERE '
+                . ' t.status = \'show\' '
+                . ' AND t.sale_point = :sp '
+                . ' AND t.date BETWEEN :date_start AND :date_finish '
+                . ' UNION ALL '
+                . ' SELECT '
+                . ' oo.id item_id '
+                . ' , oo.date '
+                . ' , oo.sale_point '
+                . ' , \'oborot\' `item_type` '
+                . ' , \'\' ocenka_time '
+                . ' , \'\' ocenka_oborot '
+                . ' , \'\' ocenka_naruki '
+                . ' , \'\' ocenka '
+                . ' , \'\' hour_day '
+                . ' , \'\' ocenka_naruki_ot_oborota '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , \'\' vuruchka '
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' hot '
+                . ' , \'\' delivery '
+                . ' , oo.oborot_hand '
+                . ' , oo.oborot_server '
+                . ' FROM mod_sale_point_oborot oo '
+                . ' WHERE '
+                . ' oo.status = \'show\' '
+                . ' AND oo.sale_point = :sp '
+                . ' AND oo.date BETWEEN :date_start AND :date_finish '
+
+        ;
+
+        $ff = $db->prepare($sql);
+        $ff->execute($sql_vars);
+
+        //return $ff->fetchAll();
+
+        $return__date_type_n_ar = [];
+
+        while ($r = $ff->fetch()) {
+            $return__date_type_n_ar[$r['date']][$r['item_type']][] = $r;
+        }
+        return $return__date_type_n_ar;
+    }
+
+    /**
+     * считаем есть нет бонус за эту смену у сотрудника
+     * @param type $db
+     * @param type $data
+     * @return type
+     */
+    public static function calcAutoBonus($db, $sp, $data = []) {
+
+        if (empty($data))
+            return \f\end3('пустые данные', false);
+
+        // $e = [$data['date'], $data['jobman']];
+
+
+        if (isset(self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']]))
+            return \f\end3('повтор', false, ['text' => 'отмена так как уже выдали бонус сегодня на ТП']);
+
+        if (empty(self::$ar_metki_jm_date_sp_type))
+            self::$ar_metki_jm_date_sp_type = self::getMetki($db, $sp, date('Y-m-01', strtotime($data['date'])));
+
+        if (isset(self::$ar_metki_jm_date_sp_type[$data['jobman']][$data['date']][$sp]['no_autobonus']))
+            return \f\end3('отменён', false, ['text' => 'отмена бонуса меткой no_autobonus']);
+
+        $ocenka = $data['ocenka'] ?? $data['ocenka_auto'] ?? '';
+
+        // % от оборота дня
+        if (!empty($data['pay_bonus_proc_from_oborot'])) {
+            if (!empty($data['oborot_day'])) {
+
+                self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']] = 1;
+
+                $bonus = ceil($data['oborot_day'] / 100 * $data['pay_bonus_proc_from_oborot']);
+                $bonus_text = $data['pay_bonus_proc_from_oborot'] . '% от ' . number_format($data['oborot_day'], 0, '', '`');
+            } else {
+                $bonus_text = '#' . __LINE__;
+            }
+        }
+        // фиксированная оценка дня
+        elseif (!empty($ocenka)) {
+            if (!empty($data['pay_premiya-' . $ocenka])) {
+
+
+                self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']] = 1;
+
+                $bonus = $data['pay_premiya-' . $ocenka];
+                $bonus_text = 'оценка ' . $ocenka;
+            } else {
+                $bonus_text = '#' . __LINE__;
+            }
+        } else {
+            $bonus_text = '#' . __LINE__;
+        }
+
+        // \f\pa( [ ( $ocenka ?? 'x' ), ( $bonus ?? 'x' ), ( $bonus_text ?? 'x' ), $data ] , 2);
+
+        if (!empty($bonus)) {
+
+            if (isset(self::$ar_metki_jm_date_sp_type[$data['jobman']][$data['date']][$sp]['autobonus50pr'])) {
+                $bonus = ceil($bonus / 2);
+                $bonus_text .= ' / 50% бонуса ';
+            }
+
+            return \f\end3('окей', true, ['bonus' => $bonus, 'text' => ($bonus_text ?? '' )]);
+        } else {
+            return \f\end3('нет бонуса', false, ['text' => ($bonus_text ?? '' )]);
+        }
     }
 
     /**
@@ -792,6 +1019,473 @@ class JobDesc {
         self::$return_dop_info = false;
     }
 
+    public static function getJobmansJobingToSpMonth($db, int $sp_id, string $date) {
+
+        // echo '<br/>sp:' . $sp_id . ' date:' . $date;
+
+        try {
+
+//            $in_sql = [
+//                // ':sp' => $sp_id,
+//                ':date_start' => date('Y-m-01', strtotime($date))
+//            ];
+//            $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
+
+            $in_sql = [':date_start' => date('Y-m-01', strtotime($date))];
+            $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+            $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
+
+            // $sql = 'SELECT * FROM `mod_jobman_send_on_sp` WHERE date <= DATE( :date_start ) AND sale_point = :sp ORDER BY date DESC';
+            // $sql = 'SELECT * FROM `mod_jobman_send_on_sp` on_sp WHERE DATE( on_sp.date ) <= DATE( :date_start ) AND on_sp.sale_point = :sp ORDER BY on_sp.date DESC';
+            // $sql = 'SELECT * FROM `mod_jobman_send_on_sp` on_sp WHERE on_sp.date <= :date_start AND on_sp.sale_point = :sp ORDER BY on_sp.date DESC';
+
+            $sql = ' SELECT 
+                spec.`id` ,
+                spec.`date` , 
+                \'\' as date_finish ,
+                spec.`jobman` ,
+                spec.`sale_point` ,
+                spec.`dolgnost` ,
+                `d`.`head` dolgnost_name,
+                \'spec\' as `type` '
+                    . ' , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                    // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
+//                .' , pay.id pay_id
+//                , pay.date pay_date
+//                , pay.`ocenka-hour-base`
+//                , pay.`ocenka-hour-5`
+//                , pay.`ocenka-hour-3` 	
+//                , pay.`premiya-5`
+//                , pay.`premiya-3`
+//                , pay.`bonus_proc_from_oborot`
+//                , pay.`if_kurit` 	
+//                , pay.`oborot_sp_last_monht_bolee`
+//                , pay.`pay_from_day_oborot_bolee` '
+                    . ' FROM 
+                `mod_050_job_in_sp` `spec` '
+                    . ' LEFT JOIN mod_070_jobman jm ON jm.id = `spec`.`jobman` '
+                    . ' LEFT JOIN mod_061_dolgnost d ON d.id = `spec`.`dolgnost` '
+                    // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `spec`.`dolgnost` AND p.date <= spec.date ORDER BY date DESC LIMIT 1 ) '
+                    . ' WHERE '
+                    . ' spec.date >= :date_start '
+                    . ' AND '
+                    . ' spec.date <= :date_finish '
+                    . '  UNION  '
+                    . ' SELECT 
+                `on`.`id` ,
+                `on`.`date` , 
+                `on`.`date_finish` , 
+                `on`.`jobman` ,
+                `on`.`sale_point` ,
+                `on`.`dolgnost` ,
+                `d`.`head` dolgnost_name,
+                \'norm\' as `type`
+                , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                    // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
+//                .' ', pay.id pay_id
+//                , pay.date pay_date
+//                , pay.`ocenka-hour-base`
+//                , pay.`ocenka-hour-5`
+//                , pay.`ocenka-hour-3` 	
+//                , pay.`premiya-5`
+//                , pay.`premiya-3`
+//                , pay.`bonus_proc_from_oborot`
+//                , pay.`if_kurit` 	
+//                , pay.`oborot_sp_last_monht_bolee`
+//                , pay.`pay_from_day_oborot_bolee` '
+                    . ' FROM
+                `mod_jobman_send_on_sp` as `on` '
+                    . ' LEFT JOIN mod_070_jobman jm ON jm.id = `on`.`jobman` '
+                    . ' LEFT JOIN mod_061_dolgnost d ON d.id = `on`.`dolgnost` '
+                    // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `on`.`dolgnost` AND p.date <= on.date ORDER BY date DESC LIMIT 1 ) '
+                    . ' WHERE '
+                    . ' `on`.`date` >= :date_start0 '
+                    . ' AND '
+                    . ' `on`.`date` <= :date_finish '
+            ;
+            // \f\pa($sql);
+
+            \f\timer_start(111);
+
+            $ff = $db->prepare($sql);
+            $ff->execute($in_sql);
+            $return2 = $ff->fetchAll();
+
+            // \f\pa(\f\timer_stop(111));
+
+            usort($return2, "\\f\\sort_ar_date");
+            // \f\pa($return2);
+
+            $return_jm_fio = [];
+            $return_jm_sp = [];
+            $return_sp_jm_onjob = [];
+            $return_spec_sp_jm_onjob = [];
+
+            foreach ($return2 as $k => $v) {
+
+                $return_jm_sp[$v['jobman']][$v['sale_point']] = 1;
+                $return_sp_jm[$v['sale_point']][$v['jobman']] = ( $v['fio'] ?? '' );
+                //$return_jm_fio[$v['jobman']] = $v['fio'];
+
+                if ($v['type'] == 'norm') {
+
+                    if (!empty($v['date_finish']) && $v['date_finish'] < $in_sql[':date_start'])
+                        continue;
+
+                    if ($v['date'] <= $in_sql[':date_start']) {
+
+                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
+                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                    } else {
+
+                        if (!isset($return_sp_jm_onjob[$v['sale_point']][$v['jobman']]))
+                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
+
+                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                    }
+                } elseif ($v['type'] == 'spec') {
+
+                    $return_spec_sp_jm_onjob[$v['sale_point']][$v['jobman']][$v['date']][] = $v;
+                }
+            }
+
+            // \f\pa(\f\timer_stop(111));
+//            \f\pa($return_sp_jm, 2, '', '$return_sp_jm');
+//            \f\pa($return_jm_sp, 2, '', '$return_jm_sp');
+//            \f\pa($return_sp_jm_onjob, 2, '', '$return_sp_jm_onjob');
+
+            $return = [
+                'jobmans' => ( $return_sp_jm[$sp_id] ?? [] ),
+                'send_on_job' => ( $return_sp_jm_onjob[$sp_id] ?? [] ),
+                'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
+                'job_jm_on_sp' => []
+            ];
+
+            foreach ($return['jobmans'] as $jm => $fio) {
+                $return['job_jm_on_sp'][$jm] = $return_jm_sp[$jm];
+            }
+
+            if (isset($_REQUEST['show_info'])) {
+                foreach ($return as $k => $v) {
+                    \f\pa($v, 2, '', $k);
+                }
+            }
+
+            return \f\end3('ok ' . \f\timer_stop(111), true, $return);
+        } catch (\PDOException $exc) {
+
+            \f\pa($exc);
+        }
+
+        die();
+    }
+
+    public static function getActionsJobmansOnMonth($db, array $jobmans, string $date) {
+
+        \f\timer_start(111);
+
+        $return = [
+            'jobmans' => $jobmans,
+        ];
+
+        $jms = ' ( jobman = \'' . implode('\' OR jobman = \'', $jobmans) . '\' ) ';
+        $jms_c = ' ( c.jobman = \'' . implode('\' OR c.jobman = \'', $jobmans) . '\' ) ';
+
+        $in_sql = [
+            // ':jobmans' => '\''.implode( '\', \'', $jobmans ).'\'' ,
+            ':date_start' => date('Y-m-01', strtotime($date))
+            , ':datet_start' => date('Y-m-01 05:00:00', strtotime($date))
+        ];
+        // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+        $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
+        $in_sql[':datet_finish'] = date('Y-m-d 05:00:00', strtotime($in_sql[':date_start'] . ' +1 month'));
+        $return['sql_in'] = $in_sql;
+
+        $sql = PHP_EOL
+                . 'SELECT 
+                    `mm`.`id`,
+                    `mm`.`status`,
+                    `mm`.`jobman`,
+                    `mm`.`sale_point`,
+                    `mm`.`date`,
+                    \'\' `summa`, '
+                . ' `mm`.`type2` `var`, '
+                . ' `mm`.`head` `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'metki\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , \'\' oborot_day_id '
+                . ' , \'\' oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' FROM 
+                    `mod_072_metki` `mm` '
+                . ' WHERE '
+                . $jms
+                . ' AND `mm`.`date` BETWEEN :date_start AND :date_finish '
+                . PHP_EOL . ' UNION ALL '
+                . PHP_EOL
+                . 'SELECT 
+                    c.`id` ,
+                    c.`status` ,
+                    c.`jobman`
+                    , c.`sale_point` '
+                . ' , DATE( ( c.start - INTERVAL 300 MINUTE  ) ) `date` '
+                . ' , '
+                . ' \'\' `summa`, '
+                . ' \'\' `var`, '
+                . ' \'\' `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'check\' as `type` '
+                . ' , c.start '
+                . ' , c.fin '
+                . ' , c.who_add_item '
+                . ' , c.ocenka_auto '
+                . ' , c.ocenka '
+                . ' , c.hour_on_job '
+                . ' , c.hour_on_job_hand '
+                . ' , on_sp.id position_id '
+                . ' , on_sp.date position_date '
+                . ' , on_sp.date_finish position_date_finish '
+                . ' , on_sp.dolgnost position_d '
+                . ' , on_sp.sale_point position_sp '
+                . ' , dol.calc_auto position_calc_auto '
+                . ' , pay.id pay_id '
+                . ' , pay.date pay_date '
+                . ' , pay.`ocenka-hour-5` pay5 '
+                . ' , pay.`ocenka-hour-3` pay3 '
+                . ' , pay.`if_kurit` pay_if_kurit '
+                . ' , pay.`ocenka-hour-base` pay_base '
+                . ' , pay.`premiya-5` `pay_premiya-5` '
+                . ' , pay.`premiya-3` `pay_premiya-3` '
+                . ' , pay.`oborot_sp_last_monht_bolee` pay_oborot_sp_last_monht_bolee '
+                . ' , pay.`bonus_proc_from_oborot` pay_bonus_proc_from_oborot '
+                . ' , pay.`pay_from_day_oborot_bolee` pay_pay_from_day_oborot_bolee '
+
+                // .' , \'\' oborot_day '
+                . ' , oborot_d.id oborot_day_id '
+                . ' , oborot_d.date oborot_day_date '
+                . ' , oborot_d.oborot_hand oborot_day_hand '
+                . ' , oborot_d.oborot_server oborot_day_server '
+                . ' , ( CASE 
+                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
+                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
+                    ELSE NULL END ) as oborot_day '
+//                    . ' , '
+                . ' FROM `mod_050_chekin_checkout` `c` '
+                . ' LEFT JOIN mod_jobman_send_on_sp on_sp ON on_sp.id = ( SELECT id FROM mod_jobman_send_on_sp WHERE '
+                . ' jobman = c.jobman '
+                // . ' AND sale_point = c.sale_point '
+                . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                . ' ORDER BY date DESC '
+                . ' LIMIT 1 ) '
+                . ' LEFT JOIN mod_sale_point_oborot oborot_d ON oborot_d.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) AND oborot_d.sale_point = on_sp.sale_point AND oborot_d.status = \'show\' '
+                . ' LEFT JOIN mod_061_dolgnost dol ON dol.id = on_sp.dolgnost '
+                . ' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
+                // .' jobman = c.jobman '
+                . ' dolgnost = on_sp.dolgnost '
+                . ' AND sale_point = on_sp.sale_point '
+                . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                . ' AND status = \'show\' '
+
+//                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
+//                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
+                . ' AND ( '
+                . ' ( oborot_d.oborot_hand > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_hand ) ) '
+                . ' OR ( oborot_d.oborot_hand IS NULL AND oborot_d.oborot_server > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_server ) ) '
+                . ' OR pay_from_day_oborot_bolee IS NULL '
+                . ' ) '
+                . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
+                . ' LIMIT 1 ) '
+                . ' WHERE '
+                . $jms_c
+                . ' AND c.`start` BETWEEN :datet_start AND :datet_finish '
+
+                //.' GROUP BY c.id '
+                . PHP_EOL . ' UNION ALL '
+                . PHP_EOL
+                . ' SELECT 
+                    `mi`.`id`,
+                    `mi`.`status`,
+                    `mi`.`jobman`,
+                    `mi`.`sale_point`,
+                    `mi`.`date_now` `date`,
+                    `mi`.`summa`,
+                    \'\' `var`,
+                    `mi`.`text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'minus\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , \'\' oborot_day_id '
+                . ' , \'\' oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' FROM 
+
+                    `mod_072_vzuscaniya` `mi`
+                WHERE '
+                . $jms
+                . ' AND '
+                . ' `mi`.`date_now` BETWEEN :date_start AND :date_finish '
+                . PHP_EOL . ' UNION '
+                . ' SELECT 
+                    `m`.`id`,
+                    `m`.`status`,
+                    `m`.`jobman`,
+                    `m`.`sale_point`,
+                    `m`.`date_now` `date`,
+                    `m`.`summa`,
+                    \'\' `var`,
+                    `m`.`text`,
+                    `m`.`auto_bonus_zp`,
+                    \'plus\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , \'\' oborot_day_id '
+                . ' , \'\' oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' FROM `mod_072_plus` `m`
+                WHERE '
+                . $jms
+                . ' AND '
+                . ' `m`.`date_now` BETWEEN :date_start AND :date_finish '
+                . PHP_EOL . ' UNION ALL '
+//
+////
+                . PHP_EOL . 'SELECT 
+                    `id`,
+                    `status`,
+                    `jobman`,
+                    `sale_point`,
+                    `date_to` `date`,
+                    \'\' `summa`,
+                    \'\' `var`,
+                    `comment` `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'comment\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , \'\' oborot_day_id '
+                . ' , \'\' oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' FROM `mod_073_comments` '
+                . ' WHERE '
+                . $jms
+                . ' AND '
+                . ' `date_to` BETWEEN :date_start AND :date_finish '
+
+        ;
+        // \f\pa($sql);
+        $ff = $db->prepare($sql);
+        $ff->execute($in_sql);
+        $return['actions'] = $ff->fetchAll();
+
+        if (isset($_REQUEST['show_info'])) {
+            foreach ($return as $k => $v) {
+                \f\pa($v, 2, '', 'return data[' . $k . ']');
+            }
+            \f\pa(\f\timer_stop(111));
+        }
+
+        return \f\end3('ok ' . \f\timer_stop(111), true, $return);
+    }
+
     /**
      * получаем смены, назначения и зарплаты сотрудников на точке
      * @param type $db
@@ -1240,6 +1934,690 @@ class JobDesc {
             $ar[] = 'sp' . $sp_id;
 
         \f\Cash::deleteKeyPoFilter($ar);
+    }
+
+    /**
+     * кто где готовит
+     * @param type $db
+     * @param type $sp
+     * @param type $date
+     * @param type $list_jobman
+     * @return boolean
+     */
+    public static function whoWhereCoocking($db, $sp, $date) {
+
+        // \f\pa(__FUNCTION__);
+        \f\timer_start(57);
+
+        if (empty($date))
+            $date = date('Y-m-d');
+
+        $sql_in = [
+            ':date_start' => date('Y-m-01', strtotime($date)),
+            ':date_finish' => date('Y-m-d', strtotime($date . ' +1 month -1 day')),
+//            ':dt_start' => date('Y-m-01 08:00:00', strtotime($date) ),
+//            ':dt_finish' => date('Y-m-d 03:00:00', strtotime($date . ' +1 month')),
+            ':sp' => $sp
+        ];
+
+        $sql = 'SELECT '
+                . ' jm.id jobman '
+//                . ' , '
+//                . ' send.* '
+                . ' , '
+                . ' send.id send_id '
+                . ' , '
+                . ' send.sale_point send_sp '
+                . ' , '
+                . ' send.dolgnost send_d '
+                . ' , '
+                . ' send.date send_date '
+                . ' , '
+                . ' send.date_finish send_date_finish '
+                . ' , '
+                . ' send.smoke send_smoke '
+                . ' , '
+                . ' spec.id spec_id '
+//                . ' , '
+//                . ' spec.head spec_head '
+//                . ' , '
+//                . ' spec.sort spec_id '
+//                . ' , '
+//                . ' spec.status spec_id '
+//                . ' , '
+//                . ' spec.jobman spec_id '
+                . ' , '
+                . ' spec.sale_point spec_sp '
+                . ' , '
+                . ' spec.date spec_date '
+                . ' , '
+                . ' spec.dolgnost spec_d '
+                . ' , '
+                . ' spec.sale_point_from spec_from_sp '
+                . ' , '
+                . ' spec.dolgnost_from spec_from_d '
+                . ' , '
+                . ' spec.smoke spec_smoke '
+                . ' FROM `mod_070_jobman` `jm` '
+                //
+                . ' LEFT JOIN `mod_050_job_in_sp` spec '
+                . ' ON '
+                . ' `spec`.`jobman` = `jm`.`id` '
+                // . ' AND `spec`.`sale_point` = :sp '
+                . ' AND `spec`.`status` = \'show\' '
+                . ' AND `spec`.`date` BETWEEN :date_start AND :date_finish '
+                //
+                . ' LEFT JOIN `mod_jobman_send_on_sp` send '
+                . ' ON '
+                . ' `send`.`jobman` = `jm`.`id` '
+                . ' AND `send`.`sale_point` = :sp '
+                . ' AND `send`.`status` = \'show\' '
+                . ' AND `send`.`date` <= :date_finish '
+                . ' AND ( 
+                        send.date_finish >= :date_start  
+                        OR send.date_finish IS NULL 
+                        ) '
+                . ' WHERE '
+                . ' jm.status = \'show\' '
+        // . ' GROUP BY jm.id '
+        ;
+
+        $ff = $db->prepare($sql);
+        $ff->execute($sql_in);
+
+        $res = [];
+        while ($v = $ff->fetch()) {
+
+            if (empty($v['jobman']))
+                continue;
+
+            // if (!empty($v['spec_on']) || !empty($v['send_on'])) {
+            // \f\pa($v);
+            if (isset($v['spec_id'])) {
+                $res['sp_jm'][( $v['send_sp'] ?? $v['spec_sp'] )][$v['jobman']]['spec'][] = $v['spec_id'];
+                $res['jm_sp'][$v['jobman']][( $v['send_sp'] ?? $v['spec_sp'] )]['spec'][] = $v['spec_id'];
+            }
+            if (isset($v['send_id'])) {
+                $res['sp_jm'][( $v['send_sp'] ?? $v['spec_sp'] )][$v['jobman']]['send'][] = $v['send_id'];
+                $res['jm_sp'][$v['jobman']][( $v['send_sp'] ?? $v['spec_sp'] )]['send'][] = $v['send_id'];
+            }
+            // }
+
+            $res['send'][$v['send_id']] = $v;
+            $res['spec'][$v['spec_id']] = $v;
+        }
+
+        return \f\end3('достали ' . sizeof($res) . ' / ' . \f\timer_stop(57), true, $res);
+    }
+
+    /**
+     * получаем сумму оборота за месяц по точке продаж
+     * @param type $db
+     * @param type $sp
+     * @param type $str_date
+     * @param type $module_sp
+     * @param type $module_oborot
+     * @return type
+     */
+    public static function calcDayBudget($db, $sp, $date, $list_jobman) {
+
+        try {
+
+//            \f\pa(__FUNCTION__);
+//            \f\pa($list_jobman, 2);
+
+            \f\timer_start(57);
+
+            $sql_in = [
+                ':date_start' => date('Y-m-01 08:00:00', strtotime($date)),
+                ':date_finish' => date('Y-m-d 03:00:00', strtotime($date . ' +1 month')),
+                ':sp' => $sp
+            ];
+
+            // $now_year = 2020;
+            $now_year = date('Y', strtotime($date));
+            // $now_month = '07';
+            $now_month = date('m', strtotime($date));
+
+            $sql = 'SELECT '
+
+                    // . ' * '
+                    // . ' , '
+                    . ' DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) date '
+                    . ' , '
+                    . ' check.jobman '
+                    //. ' , '
+                    //. ' spec.date spec_date '
+                    . ' , spec.sale_point spec_sp '
+                    . ' , spec.dolgnost spec_d '
+                    //. ' , '
+                    //. ' send.date send_d_start '
+                    . ' , send.sale_point send_sp '
+                    . ' , send.jobman send_jm '
+                    . ' , send.dolgnost send_d '
+                    . ' , send.date send_date '
+                    // . ' , send.* '
+                    . ' , '
+                    . ' ( 
+                    CASE 
+                    WHEN check.hour_on_job_hand IS NOT NULL THEN check.hour_on_job_hand
+                    WHEN check.hour_on_job IS NOT NULL THEN check.hour_on_job
+                    ELSE NULL 
+                    END ) as check_hour_on_job '
+                    . ' , '
+                    . ' ( 
+                    CASE 
+                    WHEN check.ocenka IS NOT NULL THEN check.ocenka
+                    WHEN check.ocenka_auto IS NOT NULL THEN check.ocenka_auto
+                    ELSE NULL 
+                    END ) as check_ocenka '
+
+
+
+// сумма за день             
+// amount_day
+                    . ( 1 == 1 ? ' , ( CASE '
+
+// оценка рук 5
+// часы рук
+                    . ' WHEN 
+                        check.ocenka IS NOT NULL AND check.ocenka = 5 
+                        AND salary.`ocenka-hour-5` IS NOT NULL
+                        AND check.hour_on_job_hand IS NOT NULL
+                        THEN check.hour_on_job_hand*salary.`ocenka-hour-5` '
+// оценка рук 5
+// часы авто
+                    . ' WHEN 
+                        check.ocenka IS NOT NULL AND check.ocenka = 5 
+                        AND salary.`ocenka-hour-5` IS NOT NULL
+                        AND check.hour_on_job IS NOT NULL
+                        THEN check.hour_on_job*salary.`ocenka-hour-5` '
+
+// оценка авто 5
+// часы рук
+                    . ' WHEN 
+                        check.ocenka_auto IS NOT NULL AND check.ocenka_auto = 5 
+                        AND salary.`ocenka-hour-5` IS NOT NULL
+                        AND check.hour_on_job_hand IS NOT NULL
+                        THEN check.hour_on_job_hand*salary.`ocenka-hour-5` '
+// оценка auto 5
+// часы авто
+                    . ' WHEN 
+                        check.ocenka_auto IS NOT NULL AND check.ocenka_auto = 5 
+                        AND salary.`ocenka-hour-5` IS NOT NULL
+                        AND check.hour_on_job IS NOT NULL
+                        THEN check.hour_on_job*salary.`ocenka-hour-5` '
+
+
+// оценка рук 3
+// часы рук
+                    . ' WHEN 
+                        check.ocenka IS NOT NULL AND check.ocenka = 3 
+                        AND salary.`ocenka-hour-3` IS NOT NULL
+                        AND check.hour_on_job_hand IS NOT NULL
+                        THEN check.hour_on_job_hand*salary.`ocenka-hour-3` '
+// оценка рук 3
+// часы авто
+                    . ' WHEN 
+                        check.ocenka IS NOT NULL AND check.ocenka = 3 
+                        AND salary.`ocenka-hour-3` IS NOT NULL
+                        AND check.hour_on_job IS NOT NULL
+                        THEN check.hour_on_job*salary.`ocenka-hour-3` '
+
+// оценка авто 3
+// часы рук
+                    . ' WHEN 
+                        check.ocenka_auto IS NOT NULL AND check.ocenka_auto = 3 
+                        AND salary.`ocenka-hour-3` IS NOT NULL
+                        AND check.hour_on_job_hand IS NOT NULL
+                        THEN check.hour_on_job_hand*salary.`ocenka-hour-3` '
+// оценка auto 3
+// часы авто
+                    . ' WHEN 
+                        check.ocenka_auto IS NOT NULL AND check.ocenka_auto = 3 
+                        AND salary.`ocenka-hour-3` IS NOT NULL
+                        AND check.hour_on_job IS NOT NULL
+                        THEN check.hour_on_job*salary.`ocenka-hour-3` '
+
+// оплата фикс час 
+// часы рук
+                    . ' WHEN 
+                        salary.`ocenka-hour-base` IS NOT NULL
+                        AND check.hour_on_job_hand IS NOT NULL
+                        THEN check.hour_on_job_hand*salary.`ocenka-hour-base` '
+// оплата фикс час 
+// часы авто
+                    . ' WHEN 
+                        salary.`ocenka-hour-base` IS NOT NULL
+                        AND check.hour_on_job IS NOT NULL
+                        THEN check.hour_on_job*salary.`ocenka-hour-base` '
+                    . '
+                    ELSE NULL 
+                    END ) as amount_day ' : '' )
+
+//.'                
+//                    WHEN check.hour_on_job_hand IS NOT NULL THEN check.hour_on_job_hand
+//                    WHEN check.hour_on_job IS NOT NULL THEN check.hour_on_job
+// '               
+                    . ' , `check`.start '
+                    . ' , `check`.fin '
+                    // . ' , `check`.* '
+                    // 
+// сумма за смену
+//                . ' , '
+//                . ' ( 
+//                    CASE '
+//                . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 5 AND check.hour_on_job_hand IS NOT NULL THEN salary.`ocenka-hour-5`*check.hour_on_job_hand '
+//                . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 3 AND check.hour_on_job_hand IS NOT NULL THEN salary.`ocenka-hour-3`*check.hour_on_job_hand '
+//                . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 5 AND check.hour_on_job_hand IS NOT NULL THEN salary.`ocenka-hour-5`*check.hour_on_job_hand '
+//                . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 3 AND check.hour_on_job_hand IS NOT NULL THEN salary.`ocenka-hour-3`*check.hour_on_job_hand '
+//                . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 5 AND check.hour_on_job IS NOT NULL THEN salary.`ocenka-hour-5`*check.hour_on_job '
+//                . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 3 AND check.hour_on_job IS NOT NULL THEN salary.`ocenka-hour-3`*check.hour_on_job '
+//                . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 5 AND check.hour_on_job IS NOT NULL THEN salary.`ocenka-hour-5`*check.hour_on_job '
+//                . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 3 and check.hour_on_job IS NOT NULL THEN salary.`ocenka-hour-3`*check.hour_on_job '
+//                . ' ELSE NULL 
+//                    END ) as check_amount '
+// дневной оборот
+                    . ' , ( CASE '
+                    . ' WHEN oborot.oborot_hand IS NOT NULL THEN oborot.oborot_hand '
+                    . ' WHEN oborot.oborot_server IS NOT NULL THEN oborot.oborot_server '
+                    . ' ELSE NULL 
+                    END ) as oborot_day '
+
+// сумма бонуса
+                    . ' , ( CASE '
+
+// % от оборота
+                    . ' WHEN 
+                        oborot.oborot_hand IS NOT NULL 
+                        AND salary.bonus_proc_from_oborot IS NOT NULL 
+                        THEN CEILING( oborot.oborot_hand / 100 * salary.bonus_proc_from_oborot ) '
+                    . ' WHEN 
+                        oborot.oborot_server IS NOT NULL 
+                        AND salary.bonus_proc_from_oborot IS NOT NULL 
+                        THEN CEILING( oborot.oborot_server / 100 * salary.bonus_proc_from_oborot ) '
+
+
+//                // фикс от оценки
+                    . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 3 AND salary.`premiya-3` IS NOT NULL THEN salary.`premiya-3` '
+                    . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 3 AND salary.`premiya-3` IS NOT NULL THEN salary.`premiya-3` '
+                    . ' WHEN check.ocenka IS NOT NULL and check.ocenka = 5 AND salary.`premiya-5` IS NOT NULL THEN salary.`premiya-5` '
+                    . ' WHEN check.ocenka_auto IS NOT NULL and check.ocenka_auto = 5 AND salary.`premiya-5` IS NOT NULL THEN salary.`premiya-5` '
+//
+                    . ' ELSE \'00\'
+                    END ) as bonus_amount '
+
+// оборот месячный
+                    . ' , '
+                    . ' ( 
+                    CASE '
+                    . ' WHEN oborot_m_spec.oborot IS NOT NULL THEN oborot_m_spec.oborot '
+                    . ' WHEN oborot_m.oborot IS NOT NULL THEN oborot_m.oborot '
+                    . ' ELSE \'error\'
+                    END ) as oborot_month '
+                    . ' , oborot_m.oborot ob_m '
+                    . ' , oborot_m_spec.oborot ob_m_spec '
+
+
+// должность и зп
+//                . ' , salary.date salary_date '
+//                . ' , salary.dolgnost salary_d '
+//                . ' , salary.sale_point salary_sp '
+//                . ' , salary.`ocenka-hour-5` '
+//                . ' , salary.`ocenka-hour-3` '
+//                // . ' , salary.`ocenka-hour-4` '
+//                // . ' , salary.`ocenka-hour-2` '
+//                . ' , salary.if_kurit '
+//                . ' , salary.`ocenka-hour-base` '
+//                . ' , salary.`premiya-5` '
+//                . ' , salary.`premiya-3` '
+//                . ' , salary.oborot_sp_last_monht_bolee '
+////                 . ' , salary.oborot_sp_last_monht_menee '
+//                . ' , salary.bonus_proc_from_oborot '
+//                . ' , salary.pay_from_day_oborot_bolee '
+////                 . ' , salary.`premiya-4` '
+////                 . ' , salary.`premiya-2` '
+                    // . ' , salary.id sal_id '
+                    . ' , salary.`ocenka-hour-base`	 '
+                    . ' , salary.`ocenka-hour-5` '
+                    . ' , salary.`ocenka-hour-3` '
+                    . ' , salary.`premiya-5` '
+                    . ' , salary.`premiya-3` '
+                    . ' , salary.`bonus_proc_from_oborot` '
+                    . ' , salary.oborot_sp_last_monht_bolee	 '
+                    . ' , salary.pay_from_day_oborot_bolee	 '
+                    . ' , salary.dolgnost sal_d '
+                    . ' , salary.sale_point sal_sp '
+
+//                . ' , '
+//                . ' salary.* '
+                    . ' FROM `mod_050_chekin_checkout` `check` '
+
+
+
+                    // спец назначения
+                    . ' LEFT JOIN `mod_050_job_in_sp` spec '
+                    . ' ON '
+                    . ' spec.jobman = check.jobman '
+                    // . ' AND spec.sale_point = check.sale_point '
+                    . ' AND spec.status = \'show\' '
+                    . ' AND spec.date = DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) '
+
+
+                    // норм назначения
+                    . ' LEFT JOIN `mod_jobman_send_on_sp` send '
+                    . ' ON '
+                    . ' spec.sale_point IS NULL '
+                    . ' AND send.status = \'show\' '
+                    . ' AND send.jobman = check.jobman '
+                    . ' AND send.sale_point = :sp '
+                    . ' AND send.date = ( 
+                            SELECT onsp.date 
+                            FROM mod_jobman_send_on_sp onsp
+                            WHERE onsp.status = \'show\' '
+                    // .' AND sale_point = :sp  '
+                    . ' AND onsp.jobman = check.jobman 
+                                AND onsp.date <= DATE( DATE_ADD( check.start , INTERVAL -5 HOUR ) ) 
+                            ORDER BY onsp.date DESC LIMIT 1 
+                        ) '
+
+
+
+// тащим оборот для норм назначения или спец назначения
+                    . ' LEFT JOIN `mod_sale_point_oborot` oborot '
+                    . ' ON '
+                    . ' oborot.date = DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) '
+                    . ' AND oborot.status = \'show\' '
+                    . ' AND ( '
+                    . ' ( '
+                    . ' spec.sale_point IS NOT NULL AND oborot.sale_point = spec.sale_point '
+                    . ' ) OR ( '
+                    . ' send.sale_point IS NOT NULL AND oborot.sale_point = send.sale_point '
+                    . ' ) '
+                    . ' ) '
+
+                    // тащим оборот для норм назначения или спец назначения
+                    . ' LEFT JOIN `temp_oborot` oborot_m '
+                    . ' ON '
+                    . ' send.sale_point IS NOT NULL '
+                    . ' AND '
+                    . ' oborot_m.sale_point = send.sale_point '
+                    . ' AND '
+                    . ' oborot_m.date_y = YEAR( DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) ) '
+                    . ' AND '
+                    . ' oborot_m.date_m = MONTH( DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) ) '
+
+                    // тащим оборот для норм назначения или спец назначения
+                    . ' LEFT JOIN `temp_oborot` oborot_m_spec '
+                    . ' ON '
+                    . ' spec.sale_point IS NOT NULL '
+                    . ' AND '
+                    . ' oborot_m_spec.sale_point = spec.sale_point '
+                    . ' AND '
+                    . ' oborot_m_spec.date_y = YEAR( DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) ) '
+                    . ' AND '
+                    . ' oborot_m_spec.date_m = MONTH( DATE( DATE_ADD( check.start , INTERVAL -5 HOUR) ) ) '
+
+                    // тащим оборот для норм назначения или спец назначения
+                    // попытка собрать сумму оборота (неудачная)
+//                . ' LEFT JOIN `mod_sale_point_oborot` oborot_m '
+//                . ' ON '
+//                . ' oborot_m.date LIKE \''.$now_year.'-'.$now_month.'-%\' '
+//                . ' AND oborot_m.status = \'show\' '
+//                . ' AND ( '
+//                    . ' ( '
+//                    . ' spec.sale_point IS NOT NULL AND oborot_m.sale_point = spec.sale_point '
+//                    . ' ) OR ( '
+//                    . ' send.sale_point IS NOT NULL AND oborot_m.sale_point = send.sale_point '
+//                    . ' ) '
+//                . ' ) '
+                    // размер зарплаты
+                    . ' LEFT JOIN `mod_071_set_oplata` salary '
+                    . ' ON '
+                    . ' salary.status = \'show\' '
+                    . ' AND ( '
+                    . ' ( '
+                    . ' spec.sale_point IS NOT NULL '
+                    . ' AND salary.sale_point = spec.sale_point '
+                    . ' AND salary.dolgnost = spec.dolgnost '
+                    . ' AND salary.date = ( '
+                    . ' SELECT date FROM mod_071_set_oplata '
+                    . ' WHERE status = \'show\' '
+                    . ' AND sale_point = spec.sale_point '
+                    . ' AND dolgnost = spec.dolgnost '
+                    . ' AND date <= DATE( DATE_ADD( check.start , INTERVAL -5 HOUR ) ) '
+                    . ' ORDER BY date DESC LIMIT 1 '
+                    . ' ) '
+                    . ' AND '
+                    . ' ( '
+                    . ' salary.oborot_sp_last_monht_bolee IS NULL '
+                    . ' OR ( '
+                    . ' oborot_m_spec.oborot IS NOT NULL '
+                    . ' AND salary.oborot_sp_last_monht_bolee < oborot_m_spec.oborot '
+                    . ' ) '
+                    . ' ) '
+                    . ' ) OR ( '
+                    . ' send.sale_point IS NOT NULL '
+                    . ' AND salary.sale_point = send.sale_point '
+                    . ' AND salary.dolgnost = send.dolgnost '
+                    . ' AND salary.date = ( SELECT date FROM mod_071_set_oplata '
+                    . ' WHERE status = \'show\' '
+                    . ' AND sale_point = send.sale_point '
+                    . ' AND dolgnost = send.dolgnost '
+                    . ' AND date <= DATE( DATE_ADD( check.start , INTERVAL -5 HOUR ) ) '
+                    . ' ORDER BY date DESC LIMIT 1 '
+                    . ' ) '
+                    . ' AND ( '
+                    . ' salary.oborot_sp_last_monht_bolee IS NULL '
+                    . ' OR ( '
+                    . ' oborot_m.oborot IS NOT NULL '
+                    . ' AND salary.oborot_sp_last_monht_bolee < oborot_m.oborot '
+                    . ' ) '
+                    . ' ) '
+                    . ' ) '
+                    . ' ) '
+                    . ' WHERE '
+
+                    // . ' check.jobman = \'33211\' AND '
+                    // . ' check.jobman = 101362  '
+                    // . ' check.jobman = 241  '
+                    // . ' check.jobman IN ( 241,33216 )  '
+                    . (!empty($list_jobman) ? ' check.jobman IN ( ' . implode(',', $list_jobman) . ' ) AND ' : '' )
+                    . ' check.start BETWEEN :date_start AND :date_finish '
+//                . ' AND '
+//                . ' salary.date = MAX(salary.date) '
+                    . ' GROUP BY check.id '
+                    . ' ORDER BY check.start ASC '
+            ;
+
+// $sql_in = [];
+//        $ff2 = $db->prepare('FLUSH(;)');
+//        $ff2->execute();
+            $ff = $db->prepare($sql);
+            $ff->execute($sql_in);
+            //$ff->execute();
+//        $res = $ff->fetchAll();
+//        \f\pa($res);
+
+
+
+
+
+
+
+            \Nyos\mod\items::$between_date['date'] = [
+                date('Y-m-01', strtotime($date)),
+                date('Y-m-d', strtotime($date . ' +1 month -1 day'))
+            ];
+            $metki0 = \Nyos\mod\items::get($db, '072.metki');
+            // \f\pa($metki0);
+            $metki = [];
+            foreach ($metki0 as $k => $v) {
+                $metki[$v['jobman']][$v['sale_point']][$v['date']][( $v['type2'] ?? $v['type'] ?? '-' )] = 1;
+            }
+            // \f\pa($metki, 2, '', 'metki');
+
+
+
+            $add_bonuses = [];
+            $one_bonus__jobman_sp_date = [];
+
+            if (isset($_REQUEST['show_html']))
+                echo '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">'
+                . '<table class="table table-bordered table-stripped" >';
+            $ii = 0;
+            while ($r = $ff->fetch()) {
+
+                if (isset($_REQUEST['show_html']))
+                    if ($ii == 0) {
+                        echo '<thead style="background-color: rgba(155,255,255,0.9); position: sticky; top: 20px; " ><tr>';
+                        foreach ($r as $k => $v) {
+                            echo '<td style="" >' . $k . '</td>';
+                        }
+                        echo '</tr></thead><tbody>';
+                        $ii++;
+                    }
+
+
+//                if( $r['jobman'] != 33211 )
+//                    continue;
+                // \f\pa($r,2);
+                // echo '<br/>'.$r['id'].' start '.$r['start'].' date '.$r['date_smena'].' '.$r['norm_date_start'].' spec sp '.( $r['spec_sp'] ?? '-' );
+
+                if (isset($_REQUEST['show_html'])) {
+                    echo '<tr>';
+                    foreach ($r as $k => $v) {
+                        echo '<td>' . $v . '</td>';
+                    }
+                    echo '</tr>';
+                }
+
+                if ($r['bonus_amount'] == '00')
+                    continue;
+
+                $sp = (!empty($r['spec_sp']) ? $r['spec_sp'] : (!empty($r['send_sp']) ? $r['send_sp'] : false ) );
+
+                if ($sp === false)
+                    continue;
+
+                if (isset($_REQUEST['show_html']))
+                    echo '<tr><td colspan="5">' . $sp . ' /  ' . $r['jobman'] . ' / ' . $r['date'];
+
+                if (isset($one_bonus__jobman_sp_date[$r['jobman']][$sp][$r['date']])) {
+                    if (isset($_REQUEST['show_html']))
+                        echo 'пропускаем автобонус так как один уже добавили</td></tr>';
+                    continue;
+                }
+                $one_bonus__jobman_sp_date[$r['jobman']][$sp][$r['date']] = 1;
+
+
+                if (isset($metki[$r['jobman']][$sp][$r['date']]['no_autobonus'])) {
+                    if (isset($_REQUEST['show_html']))
+                        echo 'пропускаем автобонус так как метка отмены</td></tr>';
+                    continue;
+                }
+
+
+
+                $bonus_money = $r['bonus_amount'];
+
+                $text = '';
+
+                if (isset($r['bonus_proc_from_oborot']{1}) && !empty($r['oborot_day'])) {
+                    $text = '(' . $r['bonus_proc_from_oborot'] . '% от ' . $r['oborot_day'] . ')';
+                    $bonus_money = ceil($r['oborot_day'] / 100 * $r['bonus_proc_from_oborot']);
+                }
+
+                if (isset($metki[$r['jobman']][$sp][$r['date']]['autobonus50pr'])) {
+                    $text .= ' половина';
+                    $bonus_money = ceil($bonus_money / 2);
+                }
+
+                $we = [
+                    'auto_bonus_zp' => 'da',
+                    'jobman' => $r['jobman'],
+                    'sale_point' => $sp,
+                    'date_now' => $r['date'],
+                    'summa' => $bonus_money,
+                    'text' => 'бонус к зп ' . $text
+                ];
+                //\f\pa($we);
+
+                if (isset($_REQUEST['show_html']))
+                    echo '</td></tr>';
+
+                $add_bonuses[] = $we;
+            }
+
+            if (isset($_REQUEST['show_html']))
+                echo '</tbody></table>';
+
+            if (isset($_REQUEST['show_html']))
+                \f\pa(\f\timer_stop(57));
+
+
+            // \f\pa($add_bonuses,2,'','$add_bonuses');
+            \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
+        } catch (\PDOException $exc) {
+            // echo $exc->getTraceAsString();
+            if (strpos($exc->getMessage(), 'temp_oborot') !== false && strpos($exc->getMessage(), 'doesn\'t exist') !== false) {
+                $skip_start = true;
+                require_once './1/didrive/micro-service/creat-db-summ-table.php';
+
+                \f\end3('создали таблицу с сумарными данными по оборотам за месяц', false);
+            }
+        }
+
+        return \f\end3('ок', true, ['kolvo' => sizeof($add_bonuses)]);
+//die();
+        return true;
+
+//        DATE()
+//
+//        
+//            $f = 'SELECT * FROM `mitems` mi WHERE '
+//                    . ' mi.`status` != \'delete2\' '
+//                    // . ' AND mi.folder = :folder '
+//                    . (isset($module{
+//                            1}) ? ' AND mi.`module` = \'' . addslashes($module) . '\' ' : '')
+//                    . (isset($stat{
+//                            1}) ? ' AND mi.`status` = \'' . addslashes($stat) . '\' ' : '')
+//                    . 'ORDER BY '
+//                    . (self::$sort_head == 'desc' ? ' mi.head DESC, ' : '')
+//                    . (self::$sort_head == 'asc' ? ' mi.head ASC, ' : '')
+//                    . ' mi.`sort` DESC, mi.`add_d` DESC, mi.`add_t` DESC '
+//                    . (isset($limit{
+//                            1}) && is_numeric($limit) ? 'LIMIT ' . $limit . ' ' : '')
+//                    . ';';
+//
+//            //            if( $_SERVER['HTTP_HOST'] == 'yapdomik.uralweb.info' )
+//            //                echo '<br/>'.'<br/>'.$f;
+//
+//            $ff = $db->prepare($f);
+//            $ff->execute(
+//                    array(
+//                    // ':folder' => $folder
+//                    )
+//            );
+//
+//            //$re1 = $ff->fetchAll();
+//            $re = [];
+//
+//            while ($v = $ff->fetch()) {
+//                // foreach ($re1 as $k => $v) {
+//                $re[$v['id']] = $v;        
+//            }
+
+        \f\pa(\f\timer_stop(57));
+
+        return false;
+
+        return \f\end3('ок', true, [
+            're' => ( $return ?? [] ),
+            'fio' => $fio,
+            'fio_names' => $names,
+            'user' => \Nyos\mod\JobDesc::$WhereJobMans['data']['ar_jm']]
+        );
     }
 
     /**
@@ -2246,16 +3624,14 @@ class JobDesc {
                     // \Nyos\mod\items::$search['sale_point'] = array_keys($return['where_job__workman_date']);
                     \Nyos\mod\items::$search['jobman'] = array_keys($return['job_on_sp'][$_REQUEST['sp']]);
                 }
-                
+
                 \Nyos\mod\items::$between_datetime['start'] = [date('Y-m-d 08:00:00', strtotime($date_start)), date('Y-m-d 03:00:00', strtotime($date_finish . ' +1 day'))];
                 $return['checks'] = \Nyos\mod\items::get($db, self::$mod_checks);
 
                 // echo '<br/>' . sizeof($return['checks']);
                 // \f\pa($return['checks'], 2, '', 'get checks');
-                
                 // echo '<br/>'.\f\timer_stop(221);
                 // echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(771);
-                
             }
 
 // получение чеков за месяц
@@ -2827,11 +4203,6 @@ class JobDesc {
                     }
 // если не было спец назначения в этот день
                     else {
-
-
-
-
-
 
 
 // ищем последнюю дату до даты старта периода
@@ -5587,7 +6958,10 @@ class JobDesc {
      * @param type $date_finish
      * @return int
      */
-    public static function getMetki($db, $sp, $date_start, $date_finish) {
+    public static function getMetki($db, $sp, $date_start, $date_finish = null) {
+
+        if (empty($date_finish))
+            $date_finish = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date_start)) . ' +1month -1 day'));
 
         \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
         \Nyos\mod\items::$search['sale_point'] = $sp;
@@ -5598,7 +6972,7 @@ class JobDesc {
 
         foreach ($metki0 as $k => $v) {
             // self::$ar_metki_jm_date_sp_type[$v['jobman']][$v['date']][$v['sale_point']][$v['type']] = 1;
-            $r[$v['jobman']][$v['date']][$v['sale_point']][$v['type']] = 1;
+            $r[$v['jobman']][$v['date']][$v['sale_point']][( $v['type'] ?? $v['type2'] ?? 'x' )] = 1;
         }
 
         unset($metki0);

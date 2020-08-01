@@ -2719,17 +2719,92 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
 //********** перенесле в микросервисы **********//
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
+    
+    if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
+
+        if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
+
+            echo '<h3>удаляем все автобонусы</h3>';
+
+            $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
+            $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+            \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
+
+            \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
+            \Nyos\mod\items::$between_date['date_now'] = [$date_start, $date_finish];
+            // \Nyos\mod\items::$return_items_header = true;
+            $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+            \f\pa($items, 2);
+            $ids = implode(', ', array_keys($items));
+            \f\pa($ids);
+
+            $sql = 'UPDATE `mitems` mi '
+                    . ' SET `mi`.`status` = \'delete\' '
+                    . ' WHERE mi.`module` = :module AND mi.`id` IN (' . $ids . ') '
+                    . ' ;';
+            // \f\pa($sql);
+            $ff = $db->prepare($sql);
+            // \f\pa($var_in_sql);
+            $ff->execute([':module' => \Nyos\mod\JobDesc::$mod_bonus]);
+
+            echo '<br/>' . __FILE__ . ' #' . __LINE__;
+
+            die('удалено ' . sizeof($items));
+
+
+//                    \Nyos\mod\items::$between_date['date_now'] = 'da';
+//                    \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
+//                    \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
+
+
+            for ($n = 0; $n <= 32; $n++) {
+
+                $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
+
+                if (substr($date_now, 5, 2) == substr($date_start, 5, 2)) {
+//                // if ( $date_now <= $date_finish ) {
+//                    
+////                break;
+////                }
+//                echo '<br/>+';                    
+                    echo '<br/>' . $date_now . ' ' . $date_finish . ' - ' . substr($date_now, 5, 2) . ' ' . substr($date_start, 5, 2);
+//                }
+//                
+//                
+                    // UPDATE `mitems` SET `status` = 'delete' WHERE `mitems`.`id` = 9;
+                    \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, ['date_now' => $date_now, 'auto_bonus_zp' => 'da']);
+                }
+            }
+
+            // \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => date('Y-m-d',strtotime($_REQUEST['date']) ), 'auto_bonus_zp' => 'da' ] );
+        }
+
+        $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
+
+        echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
+        . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=234">refresh</a>';
+
+        foreach ($sps as $k => $v) {
+            echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
+            . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=bonus_record_month&date=2020-06-01&sp=' . $v['id'] . '">' . $v['id'] . '</a>';
+        }
+        echo '<br clear="all" /><iframe src="demo_iframe.htm" name="iframe_a"></iframe>';
+        die();
+    }    
+    
     $skip_start = true;
     require_once './micro-service/bonus_record_month.php';
+    
+    \f\end2('ok');
 }
+
 // пишем бонусы по зарплате за месяц по 1 точке
 // добавляем вычисление процентов от оборота в день
 //elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
-//
+
 //    if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
-//
 //        if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
-//
 //            echo '<h3>удаляем все автобонусы</h3>';
 //
 //            $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
@@ -4055,10 +4130,20 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_smena') {
 
 // \f\pa($_REQUEST);
 
+        $txt2 = '';
+        
+        try {
+        $ff = $db->prepare('UPDATE `mod_jobman_send_on_sp` SET `status` = \'delete\' WHERE `id` = :id ');
+        $ff->execute(array(':id' => $_REQUEST['id']));
+        } catch (\PDOException $exc) {
+            $txt2 = $exc->getMessage();
+            // $exc->getTraceAsString();
+        }
+        
         $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE `id` = :id ');
         $ff->execute(array(':id' => $_REQUEST['id']));
 
-        \f\end2('назначение отменено', true);
+        \f\end2('назначение отменено (sql2 error '.$txt2 .')', true);
     }
 //
     catch (\Exception $ex) {
@@ -4300,7 +4385,6 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         $d['dolgnost'] = $_REQUEST['dolgn'];
         $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
 
-
         \f\Cash::deleteKeyPoFilter([date('Y-m-01', strtotime($_REQUEST['date']))]);
 
         if (!empty($_REQUEST['smoke']))
@@ -4315,8 +4399,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
                 $d['dolgnost_from'] = $_REQUEST['dolgnost_from'];
 
             \Nyos\mod\items::addNewSimple($db, '050.job_in_sp', $d);
+            
         } else {
+            
             \Nyos\mod\items::addNewSimple($db, 'jobman_send_on_sp', $d);
+            
         }
 
         \f\Cash::deleteKeyPoFilter(['getListJobsPeriod']);

@@ -5,66 +5,66 @@
 
     {% set day_start = date|date("Y-m-d 08:00:00") %}
     {% set day_end = date|date_modify("+1 day")|date("Y-m-d 03:00:00") %}
-    
-{#    m {{ man }}
-    <br/>
-    u5 {{ user5 }}
-    <br/>
-    uj {{ user_v['jobman'] }}
-    <br/>
-#}
+
+    {#    m {{ man }}
+        <br/>
+        u5 {{ user5 }}
+        <br/>
+        uj {{ user_v['jobman'] }}
+        <br/>
+    #}
 
     {# если было новое назначение #}
     {% if getListJobsPeriodAll.data.norm.data[man][date] is defined %}
         {% set now_dolgn = getListJobsPeriodAll.data.norm.data[man][date] %}
     {% endif %}
-    
-        {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.dolgnost.htm' %}
-            
-        {# всякие глобальные штуки - спец назначение#}    
-        {% if 1 == 1 %}
 
-            {#% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.spec.htm' %#}
+    {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.dolgnost.htm' %}
 
-            {% set spec_out = null %}
-            {% set spec_in = null %}
+    {# всякие глобальные штуки - спец назначение#}    
+    {% if 1 == 1 %}
 
-            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point == sp_now and spec0.date == date %}
+        {#% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.spec.htm' %#}
 
-                {% set spec_in = spec0 %}
+        {% set spec_out = null %}
+        {% set spec_in = null %}
 
-                {#
-                спец
-                {{ pa(spec) }}
-                #}
+        {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point == sp_now and spec0.date == date %}
 
-                <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                    основная работа: {{ sps[now_dolgn.sale_point]['head'] }} {{ dolgn.data[now_dolgn.dolgnost]['head'] }}
-                    <br/>
-                    спец. назначение в {{ sps[spec_in.sale_point]['head'] }} {{ dolgn.data[spec_in.dolgnost]['head'] }}
-                </div>
+            {% set spec_in = spec0 %}
 
-                {#{ pa(spec) }#}
+            {#
+            спец
+            {{ pa(spec) }}
+            #}
 
-            {% endfor %}
+            <div class="alert-warning text-center" style="padding: 5px 2px;" >
+                основная работа: {{ sps[now_dolgn.sale_point]['head'] }} {{ dolgn.data[now_dolgn.dolgnost]['head'] }}
+                <br/>
+                спец. назначение в {{ sps[spec_in.sale_point]['head'] }} {{ dolgn.data[spec_in.dolgnost]['head'] }}
+            </div>
 
-            {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point != sp_now and spec0.date == date %}
+            {#{ pa(spec) }#}
 
-                {% set spec_out = spec0 %}
+        {% endfor %}
 
-                <div class="alert-warning text-center" style="padding: 5px 2px;" >
-                    спец. назначение сегодня <u>работает на {{ sps[spec_out.sale_point]['head'] }}</u>
-                </div>
+        {% for k, spec0 in getListJobsPeriodAll.data.spec.data if spec0.jobman == man and spec0.sale_point != sp_now and spec0.date == date %}
 
-            {% endfor %}
+            {% set spec_out = spec0 %}
 
-            {% if spec != 0 %}
-                ++++ спец ++++
-                {{ pa(spec) }}
-            {% endif %}
+            <div class="alert-warning text-center" style="padding: 5px 2px;" >
+                спец. назначение сегодня <u>работает на {{ sps[spec_out.sale_point]['head'] }}</u>
+            </div>
 
+        {% endfor %}
+
+        {% if spec != 0 %}
+            ++++ спец ++++
+            {{ pa(spec) }}
         {% endif %}
-    
+
+    {% endif %}
+
     {# включить выключить показ шестерёнки дня #}
 
     {% if now_dolgn.sale_point == get.sp %}{# работает сегодня на этой точке #}
@@ -100,6 +100,8 @@
                     {% set metkis = site__get_metki() %}
                 {% endif %}
 
+                {#{{ pa(metkis) }}#}
+
                 {% for k,v in metkis %}
 
                     <a href="" 
@@ -126,13 +128,13 @@
                        {% set ss = sp_now ~ man %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
-#}
+                        #}
 
                        data-toggle="modal" data-target="#di_modal" 
 
                        modal_header='Добавляем метку'
-                       ajax_link='/vendor/didrive_mod/items/1/ajax.php'
-                       ajax_vars='action=add_new&id={{ user_v['jobman']~k~date }}&s={{ creatSecret(user_v['jobman']~k~date) }}&add_module=072.metki&add[type]={{ k }}&add[head]={{ v }}&add[jobman]={{ user_v['jobman'] }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                       ajax_link='/vendor/didrive_mod/items/2/ajax.php'
+                       ajax_vars='action=add_new&id={{ user_v['jobman']~k~date }}&s={{ creatSecret(user_v['jobman']~k~date) }}&add_module=072.metki&add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{ user_v['jobman'] }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
 
                        reload_page_after_ok="da"
 
@@ -330,7 +332,7 @@
     {% else %}    {#% if show_option_day == true %#}
 
 
-            
+
 
         {# 
         <Br/>
@@ -406,7 +408,7 @@
                 <br/> pa(now_job_cfg) }}
                 {{ pa(now_job_cfg) }}
             #}
-            
+
             {# всякие глобальные штуки - назначение, конец работы, спец назначение#}    
 
 
@@ -473,12 +475,10 @@
 
 
                     {# минусы #}
-                    {% for k, item in getListJobsPeriodAll.data.money_minus if item.jobman == man and item.date_now == date %}
+                    {% for k, item in getListJobsPeriodAll.data.money_minus if item.jobman == man and item.date_now == date and item.sale_point == sp_now %}
                         {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.minus.htm' %}
                     {% endfor %}
                     <div id="sp{{ sp_now }}_jm{{ man }}_minus{{ date }}" ></div>
-
-
 
                     {# комментарии #}
                     {#{ pa( getListJobsPeriodAll.data.comments ) }#}

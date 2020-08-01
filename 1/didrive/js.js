@@ -330,6 +330,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
         sp_from = $('#add_person1day__user option:selected').attr('sp');
+
         $.ajax({
 
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -643,12 +644,20 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
+//    setTimeout(function () {
+//        alert(123);
+//        calculateSummAllGraph();
+//    }, 3000);
+
     /* затираем данные в строчках с результатом работы */
     function clearTdSummAllGraph() {
         $('body .show_summ_hour_day').each(function (i, elem) {
             $(elem).html('...');
         });
     }
+
+
+
 
 // calculateSummAllGraph();
 
@@ -712,10 +721,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-// считаем сумму каждой смены
-//    setTimeout(function () {
-//        calcSummMoneySmena();
-//    }, 2000);
 
 
 // кликаем по кнопам плюс минус час
@@ -770,7 +775,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.ajax({
 
             xurl: "/vendor/didrive_mod/items/1/ajax.php",
-            url: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
+            xurl: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
+            url: "/vendor/didrive_mod/items/2/micro-service/edit-dop-pole.php",
             data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
             cache: false,
             dataType: "json",
@@ -832,6 +838,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
+
+
     $('body').on('change', '.select_edit_item_dop2', function () {
 
         // console.log(2);
@@ -840,6 +848,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }, 100);
         // console.log(3);
     });
+
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
@@ -1788,9 +1797,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             if (this.specified) {
 
                 if (this.name == 'forajax_microservice') {
-                    
-                    microservice = '/vendor/didrive_mod/jobdesc/1/didrive/micro-service/'+this.value+'.php';
-                    
+
+                    microservice = '/vendor/didrive_mod/jobdesc/1/didrive/micro-service/' + this.value + '.php';
+
                 } else {
 
                     if (this.name.indexOf("forajax_") != -1) {
@@ -1810,7 +1819,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     } else if (this.name == 'answer') {
                         answer = this.value;
                     }
-                    
+
                 }
             }
 
@@ -1826,8 +1835,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var $th = $(this);
         $.ajax({
 
-            url: ( microservice != 0 ? microservice : '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php' ) ,
-            
+            url: (microservice != 0 ? microservice : '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'),
+
             data: "t=1" + $uri_query,
             cache: false,
             dataType: "json",
@@ -3387,8 +3396,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         return false;
     });
 
-});
-
 
 // $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 //    nd = didrive__get_cash();
@@ -3397,3 +3404,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //    nd = didrive__get_cash();
 //    console.log('9999999999', nd );
 // });
+
+
+
+
+
+
+
+
+
+});

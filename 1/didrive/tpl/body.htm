@@ -1,6 +1,5 @@
 {% spaceless %}
 
-
     {%  set timer_show = 'off' %}
     {%  if 1 == 2 %}{%  set timer_show = 'on' %}{% endif %}
 
@@ -8,8 +7,9 @@
     {{ didrive_f__timer_start(99) }}
 
     <span style="position: fixed; top: 30px; left: 120px; z-index: 99999;" >
-        <a href="?level={{ get.level }}&newtype=0" class="btn btn-xs {% if session.newtype is defined and session.newtype == 1 %}btn-light{% else %}btn-success{% endif %}" >норм вид</a>
+        <a href="?level={{ get.level }}&newtype=0" class="btn btn-xs {% if session.newtype is defined and ( session.newtype == 1 or session.newtype ==  2007 ) %}btn-light{% else %}btn-success{% endif %}" >норм вид</a>
         <a href="?level={{ get.level }}&newtype=1" class="btn btn-xs {% if session.newtype is defined and session.newtype == 1 %}btn-success{% else %}btn-light{% endif %}" >новый вид</a>
+        <a href="?level={{ get.level }}&newtype=2007" class="btn btn-xs {% if session.newtype is defined and session.newtype == 2007 %}btn-success{% else %}btn-light{% endif %}" >новый вид 20.07</a>
         {#{ pa(session) }#}
     </span>
 
@@ -18,6 +18,12 @@
 
         {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(25) }}     {% endif %}
         {% include dir_mod_now_mod_ditpl~'body.1.htm' %}
+        {% if 2 == 1 or timer_show == 'on' %}<br/>время body.1.htm - {{ didrive_f__timer_stop(25) }} {% endif %}
+
+    {% elseif session.newtype is defined and session.newtype == 2007 %}
+
+        {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(25) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.2007.htm' %}
         {% if 2 == 1 or timer_show == 'on' %}<br/>время body.1.htm - {{ didrive_f__timer_stop(25) }} {% endif %}
 
     {% else %}    

@@ -1,0 +1,5 @@
+.position .icon_remove span{ position: absolute; float:right; top: 2px; right: 2px; }
+
+.position .icon_remove span{ color: rgba(255,0,0,0.1); }
+.position:HOVER .icon_remove span{ color: rgba(255,0,0,0.3); }
+.position .icon_remove span:HOVER{ color: rgba(255,0,0,0.7); }

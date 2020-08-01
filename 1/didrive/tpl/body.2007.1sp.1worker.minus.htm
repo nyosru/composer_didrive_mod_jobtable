@@ -1,19 +1,18 @@
 {% spaceless %}
-    
-    {#{{ pa(item) }}#}
-    
-    <div class="xtext-center show_down_hiden plus {{ item.status }}" >
-        <b>+{{ item.summa|number_format(0, '.', '`') }}</b> &nbsp;
-        <small>{{ item.text }}</small>
 
-        {% if item.status == 'hide' %}
+    <div class="xtext-center show_down_hiden minus {{ i.status }}" >
+
+        <b>{{ i.summa }}</b> &nbsp;
+        <small>{{ i.text }}</small>
+
+        {% if i.status == 'hide' %}
             <br/>отменено<br/>
         {% endif %}
 
         <span class="hide_down" >
-            {#{ pa(plus) }#}
+            {#{ pa(minus) }#}
 
-            {% if item.status == 'hide' %}
+            {% if i.status == 'hide' %}
 
                 {#
                 <a href="#" class="act act_smena btn3" action="recover_smena" 
@@ -21,91 +20,97 @@
                    id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
                 #}
 
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
+                <a 
+                    
+                    href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
                    xstyle='display:none;'
+                   
                    {# действие после вопроса #}
-                   comit_answer="Отменить премию ?"
+                   comit_answer="Отменить взыскание ?"
 
                    {# замена доп параметра #}
                    action="edit_dop_item"
 
                    {# модуль итемов #}
-                   itemsmod="072.plus"
+                   itemsmod="072.vzuscaniya"
+                   
                    {# id итема #}
-                   item_id="{{ item.id }}"
+                   item_id="{{ i.id }}"
 
                    {# новое значение статуса записи #}
                    new_status="show"
                    {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~item.id~'-show' ) }}" 
+                   s3="{{ creatSecret( '072.vzuscaniya-'~i.id~'-show' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ item.id }}" 
+                   show_id="ares{{ i.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ item.id }}" 
+                   res_to_id="ares{{ i.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Восстановлено"
 
                    >восстановить</a>
 
-            {% elseif item.status == 'show' %}
+            {% elseif i.status == 'show' %}
 
                 {#
                 <a href="#" class="act act_smena btn3" 
                    go_answer="Хотите удалить минус ?"
-                   action="delete_plus" id2="{{ mk }}" s2="{{ creatSecret( mk ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" 
+                   action="delete_minus" id2="{{ mk }}" s2="{{ creatSecret( mk ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" 
                    
                    >отменить взыскание</a>
                 #}
 
+
                 <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
+                   
                    xstyle='display:none;'
+                   
                    {# действие после вопроса #}
-                   comit_answer="Отменить премию ?"
+                   comit_answer="Отменить взыскание ?"
 
                    {# замена доп параметра #}
                    action="edit_dop_item"
 
                    {# модуль итемов #}
-                   itemsmod="072.plus"
+                   itemsmod="072.vzuscaniya"
                    {# id итема #}
-                   item_id="{{ item.id }}"
+                   item_id="{{ i.id }}"
 
                    {# название доп параметра #}
                    {# dop_name="pay_check" #}
                    {# новое значение параметра #}
                    {# dop_new_value="no" #}
                    {# секрет #}
-                   {# s3="{{ creatSecret( '050.chekin_checkout-'~item.id~'-pay_check-no' ) }}"  #}
+                   {# s3="{{ creatSecret( '050.chekin_checkout-'~i.id~'-pay_check-no' ) }}"  #}
 
                    {# новое значение статуса записи #}
                    new_status="hide"
-                   
                    {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~item.id~'-hide' ) }}" 
+                   s3="{{ creatSecret( '072.vzuscaniya-'~i.id~'-hide' ) }}" 
 
                    {# скрыть ссылку после клика #}
                    hidethis="da" 
-                   
                    {# сделать видимым блок по id #}
-                   show_id="ares{{ item.id }}" 
-                   
+                   show_id="ares{{ i.id }}" 
                    {# id куда печатаем результат #}
-                   res_to_id="ares{{ item.id }}" 
-                   
+                   res_to_id="ares{{ i.id }}" 
                    {# сообщение печатаем если всё ок #}
                    msg_to_success="Отменено"
 
                    {# print_res_to_id="ares{{ k1 }}" #}
 
-                   >Отменить премию</a>
+                   >Отменить взыскание</a>
+
 
             {% endif %}
 
         </span>
-        <div id="ares{{ item.id }}" style="display:none;"></div>
+
+        <div id="ares{{ i.id }}" style="display:none;"></div>
+
     </div>
 
 {% endspaceless %}
