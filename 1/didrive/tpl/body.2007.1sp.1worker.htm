@@ -62,7 +62,8 @@
                             {% endif %}
                 #}
 
-                <abbr title="#{{ user5 }}">{{ user_v[0]['fio'] }}</abbr>
+                {% set jobman = user_v[0]['jobman'] %}
+                <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
                 <div style="color:gray;">{{ user_v[0]['dolgnost_name'] }}</div>
 
             </div>
@@ -176,41 +177,15 @@
                 {% endif %}
 
                 <div class="tcell c{{ user_id }}_{{sp_now}}_{{ date }}">
+
                     {#{{ date }} / {{ date_finish }}#}
-
                     {#{{ pa(user_v,2) }}#}
-                    {#{% if 1 == 2 %}#}
-                    {% for k3,new_d in user_v %}
-                        {#{{ pa(k3) }}#}
-                        {#{{ pa(v3) }}#}
-                        {% if new_d['date'] == date %}
-
-                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}                            
-
-                            {#
-                            {% if new_dolgn.sale_point != get.sp %}
-                                <div class="bg-info" >
-                            {% endif %}
-                            Новое назначение:<Br/>
-
-                            {% if new_dolgn.sale_point != get.sp %}
-                               654654 {{ sps[new_dolgn.sale_point]['head'] }}
-                            {% endif %}
-
-                            {{ new_dolgn.dolgnost_name }}
-                            <br/>
-                            <br/>
-                            {{ pa(new_dolgn) }}
-                            
-                            {% if new_dolgn.sale_point != get.sp %}
-                                </div>
-                            {% endif %}
-                            #}
-
-                        {% endif %}
-
+                    
+                    {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.day_option.htm' %}
+                    
+                    {% for k3,new_d in user_v if new_d['date'] == date %}
+                        {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
                     {% endfor %}
-                    {#{% endif %}#}
 
                     {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'metki' %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}

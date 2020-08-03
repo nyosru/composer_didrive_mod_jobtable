@@ -7,8 +7,10 @@
                    data-toggle="modal" data-target="#di_modal"
 
                    modal_header='Удалить метку'
-                   ajax_link='/vendor/didrive_mod/items/1/ajax.php'
-                   ajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                   xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                   ajax_link='/vendor/didrive_mod/items/2/ajax.php'
+                   xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                   ajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki&remove[type2]={{ i.var }}&remove[date]={{ date }}&remove[jobman]={{ jobman }}&remove_cash[]=metki&remove_cash[]={{ date }}'
 
                    reload_page_after_ok="da"
                    get_answer='Удаляем метку ?'
@@ -16,6 +18,7 @@
                    ><span class="fa fa-remove on_hover_opacity05green" style="float:right;" ></span></a>
                 <span class="fa fa-eercast" ></span> 
                 {{ i.text }}
+                {#{{ pa(i) }}#}
             </div>
 
 {#    {% if 1 == 2 %}
