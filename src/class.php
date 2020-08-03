@@ -2,7 +2,7 @@
 
 /**
   класс модуля
- * */
+ */
 
 namespace Nyos\mod;
 
@@ -1248,7 +1248,9 @@ class JobDesc {
                 . $jms
                 . ' AND `mm`.`date` BETWEEN :date_start AND :date_finish '
                 . ' AND `mm`.`status` = \'show\' '
+                
                 . PHP_EOL . ' UNION ALL '
+                
                 . PHP_EOL
                 . 'SELECT 
                     c.`id` ,
@@ -1480,7 +1482,7 @@ class JobDesc {
                 . ' `status` = \'show\' '
 
         ;
-        // \f\pa($sql);
+        \f\pa($sql);
         $ff = $db->prepare($sql);
         $ff->execute($in_sql);
         $return['actions'] = $ff->fetchAll();
