@@ -124,10 +124,7 @@
 
                                 {% endif %}
 
-                                <a href="#"  class="but_show_option" 
-                                   onclick="$('#drop2_{{ rand_d }},.drop2_{{ rand_d }}').toggle('slow');
-                                           return false;" 
-                                   >
+                                <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow'); return false;" >
                                     <span class="fa fa-caret-down" ></span>
                                 </a>
 
@@ -263,126 +260,30 @@
 
                 </div>
 
+                <span class="xhide_down" style="display:none;" id="drop2_{{ i.id }}">
 
-                {% if user_smena_status == 'add' %}
-                {% else %}
-
-                    {% if i.status == 'hide' %}
-                        <span class="hide_down" >
-                            удалённая смена
-                        </span>
-
-                    {% elseif i.status == 'show' %}
-
-                        {% if i.pay_check == 'yes' %}
-
-                            <span class="hide_down" >
-                                отправлено в бух. ожидает оплаты
-                            </span>
-
-                            <a href="#" class="btn3 edit_items_dop_values drop2_{{ rand_d }}" 
-                               style='display:none;'
-                               {# действие после вопроса #}
-                               comit_answer="Отменить разрешение на оплату смены ?"
-
-                               {# замена доп параметра #}
-                               action="edit_dop_item"
-
-                               {# модуль итемов #}
-                               itemsmod="050.chekin_checkout"
-                               {# id итема #}
-                               item_id="{{ rand_d }}"
-                               {# название доп параметра #}
-                               dop_name="pay_check"
-                               {# новое значение параметра #}
-                               dop_new_value="no"
-
-                               {# секрет #}
-                               s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-no' ) }}" 
-
-                               {# скрыть ссылку после клика #}
-                               hidethis="da" 
-                               {# сделать видимым блок по id #}
-                               show_id="ares{{ rand_d }}" 
-                               {# id куда печатаем результат #}
-                               res_to_id="ares{{ rand_d }}" 
-                               {# сообщение печатаем если всё ок #}
-                               msg_to_success="Отменено"
-
-                               {# print_res_to_id="ares{{ rand_d }}" #}
-
-                               >Отозвать разрешение на оплату</a>
-
-
-                        {% else %}
-
-                            {% if 1 == 2 %}
-                                <a href="#" class="btn3 edit_items_dop_values" 
-
-                                   {# действие после вопроса #}
-                                   comit_answer="Отправляем на оплату ?"
-
-                                   {# замена доп параметра #}
-                                   action="edit_dop_item"
-
-                                   {# модуль итемов #}
-                                   itemsmod="050.chekin_checkout"
-                                   {# id итема #}
-                                   item_id="{{ rand_d }}"
-                                   {# название доп параметра #}
-                                   dop_name="pay_check"
-                                   {# новое значение параметра #}
-                                   dop_new_value="yes"
-
-                                   {# секрет #}
-                                   s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-yes' ) }}" 
-
-                                   {# скрыть ссылку после клика #}
-                                   hidethis="da" 
-                                   {# сделать видимым блок по id #}
-                                   show_id="ares{{ rand_d }}" 
-                                   {# id куда печатаем результат #}
-                                   res_to_id="ares{{ rand_d }}" 
-                                   {# сообщение печатаем если всё ок #}
-                                   msg_to_success="Отправили на оплату, спасибо"
-
-                                   {# print_res_to_id="ares{{ rand_d }}" #}
-
-                                   >Отправить на оплату 2</a>
-                            {% endif %}
-                        {% endif %}
-
-                        {# { pa(check) } #}
-
-                    {% endif %}
-                {% endif %}
-
-                <span class="xhide_down" style="display:none;" id="drop2_{{ rand_d }}">
-
-                    {% if i.status == 'hide' %}
-
-                        {#
-                        <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
-    
-                           action="recover_smena" 
-                           go_answer="Хотите восстановить смену ?"
-                           id2="{{ rand_d }}" 
-                           s2="{{ creatSecret( rand_d ) }}" 
-                           resto="ares{{ rand_d }}" 
-                           show_id="ares{{ rand_d }}" 
-                           hidethis="da" 
-    
-                           >восстановить</a>
-                        #}
-
-                    {% elseif i.status == 'show' %}
-
-
+                    {% if i.status == 'show' %}
 
                         <a href="#" class="act act_smena btn3" 
                            go_answer="Хотите удалить смену ?"
                            action="delete_smena" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" resto="ares{{ i.id }}" show_id="ares{{ i.id }}" hidethis="da" >удалить смену</a>
+                           
+                <a href="#"
 
+                   class='base_modal_go'
+                   data-toggle="modal" data-target="#di_modal"
+
+                   modal_header='Удалить смену'
+                   xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                   ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/smena-remove.php'
+                   xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                   ajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+
+                   reload_page_after_ok="da"
+                   get_answer='Удаляем смену ?'
+
+                   >удалить смену</a>                   
+                           
                         {% if 1 == 2 %}
                             <a href="#" class="act act_smena btn3" 
 

@@ -63,6 +63,7 @@
                 #}
 
                 {% set jobman = user_v[0]['jobman'] %}
+                {% set jobman_fio = user_v[0]['fio'] %}
                 <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
                 <div style="color:gray;">{{ user_v[0]['dolgnost_name'] }}</div>
 
@@ -100,81 +101,6 @@
 
             {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
             {% if date <= date_finish %}
-
-                {% if 1 == 2 %}
-
-                    {# если было новое назначение #}
-                    {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
-                        {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
-                    {% endif %}
-
-                    <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
-
-                        {#now_dolgn.date_finish#}
-                        {#{{  pa( now_dolgn ) }}#}
-
-                        {# новое назначение #}
-                        {% if now_dolgn.date == date %}
-                            {% set no_job = false %}
-                        {% endif %}
-
-
-                        {#% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %#}
-                        {% if 1 == 1 and no_job == false %}
-                            {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.htm' %}
-                        {% endif %}
-
-                        {# увольнение #}
-                        {% if now_dolgn.date_finish == date %}
-                            {% set no_job = true %}
-                        {% endif %}
-
-                    </div>
-
-                    {% if 1 == 2 %}
-
-                        {% set now_spec_nazn_nn = 0 %}
-                        {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
-
-                        {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-
-                            {# текущая дата #}
-                            {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-                            {# текущий чел #}
-                            {#{ man }#}
-
-                            {% set now_job_cfg = jobdesc__getDayNaznachJobman( db, user5, date ) %}
-                            {#{ pa(now_job_cfg,2) }#}
-
-                            <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
-
-                                {% if now_job_cfg.data.sale_point is defined and now_job_cfg.data.sale_point != sp_now %}
-
-                                    {#{ pa(now_job_cfg) }#}
-                                    {#{ pa(dolgn) }#}
-
-                                    <div style="background-color: rgba(0,255,0,0.1); padding: 5px;" >
-                                        работает в {{ sps[now_job_cfg.data.sale_point]["head"] }} {{ dolgn['data'][now_job_cfg.data.dolgnost]['head'] }}
-                                    </div>
-
-                                {% else %}
-
-                                    {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
-                                    {% if date|date("U") < "now"|date("U") %}
-
-                                        {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
-
-                                    {% endif %}
-
-                                {% endif %}
-
-                            </div>
-
-                        {% endif %}
-
-                    {% endif %}
-
-                {% endif %}
 
                 <div class="tcell c{{ user_id }}_{{sp_now}}_{{ date }}">
 

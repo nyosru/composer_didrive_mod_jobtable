@@ -1480,13 +1480,13 @@ class JobDesc {
                 . ' `date_to` BETWEEN :date_start AND :date_finish '
                 . ' AND '
                 . ' `status` = \'show\' '
-
         ;
-        \f\pa($sql);
+        //\f\pa($sql);
         $ff = $db->prepare($sql);
         $ff->execute($in_sql);
         $return['actions'] = $ff->fetchAll();
 
+        
         if (isset($_REQUEST['show_info'])) {
             foreach ($return as $k => $v) {
                 \f\pa($v, 2, '', 'return data[' . $k . ']');

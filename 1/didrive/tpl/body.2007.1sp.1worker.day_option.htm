@@ -1,9 +1,9 @@
 {% spaceless %}
 
-    {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
-        {#<small xclass="show_to_admin" >чек #{{ i.id }}</small>#}
-        <small xclass="show_to_admin" >дата {{ date }}</small>
-    {% endif %}
+    {#{% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}#}
+    {#<small xclass="show_to_admin" >чек #{{ i.id }}</small>#}
+    {#<small xclass="show_to_admin" >дата {{ date }}</small>#}
+    {#{% endif %}#}
 
     {#{{ sp_now }}#}
     {#<br/> jobman {{ jobman }}#}
@@ -48,20 +48,73 @@
 
             <div class="dropdown-menu">
 
-                {% if metkis is not defined %}
-                    {% set metkis = site__get_metki() %}
+
+
+
+
+
+
+
+
+
+
+                {# metki #}
+                {% if 1 == 1 %}
+                    {% if metkis is not defined %}
+                        {% set metkis = site__get_metki() %}
+                    {% endif %}
+
+                    {#{{ pa(metkis) }}#}
+
+                    {% for k,v in metkis %}
+
+                        <a href="" 
+
+                           xclass="put_var_in_modal btn btn-xs btn-light" 
+                           class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
+
+                           {#
+                           data-toggle2="modal" 
+                           data-target2="#add_jobday_for_jobman" 
+    
+                           jobman="{{ jobman }}"
+                           salepoint="{{ sp_now }}"
+    
+                           toform_sp="{{ sp_now }}"
+                           toform_sp_name="{{ sps[sp_now]['head'] }}"
+    
+                           toform_jobman="{{ jobman }}"
+                           toform_jobman_name="{{ mans[man]['head'] }}"
+    
+                           date="{{ date }}"
+                           print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}"
+    
+                           {% set ss = sp_now ~ man %}
+                           id2="{{ ss }}"
+                           s2="{{ creatSecret( ss ) }}"
+                            #}
+
+                           data-toggle="modal" data-target="#di_modal" 
+
+                           modal_header='Добавляем метку'
+                           ajax_link='/vendor/didrive_mod/items/2/ajax.php'
+                           ajax_vars='action=add_new&id={{ jobman~k~date }}&s={{ creatSecret( jobman~k~date) }}&add_module=072.metki&add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{  jobman }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
+
+                           reload_page_after_ok="da"
+
+                           ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
+
+                    {% endfor %}
                 {% endif %}
 
-                {#{{ pa(metkis) }}#}
 
-                {% for k,v in metkis %}
-
+                {# добавить смену#}
+                {% if 1 == 1 %}
                     <a href="" 
 
                        xclass="put_var_in_modal btn btn-xs btn-light" 
-                       class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
+                       class="put_var_in_modal2 dropdown-item btn-light"
 
-                       {#
                        data-toggle2="modal" 
                        data-target2="#add_jobday_for_jobman" 
 
@@ -72,7 +125,8 @@
                        toform_sp_name="{{ sps[sp_now]['head'] }}"
 
                        toform_jobman="{{ jobman }}"
-                       toform_jobman_name="{{ mans[man]['head'] }}"
+                       {#toform_jobman_name="{{ mans[man]['head'] }}"#}
+                       toform_jobman_name="{{ jobman_fio }}"
 
                        date="{{ date }}"
                        print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}"
@@ -80,134 +134,109 @@
                        {% set ss = sp_now ~ man %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
-                        #}
 
-                       data-toggle="modal" data-target="#di_modal" 
-
-                       modal_header='Добавляем метку'
-                       ajax_link='/vendor/didrive_mod/items/2/ajax.php'
-                       ajax_vars='action=add_new&id={{ jobman~k~date }}&s={{ creatSecret( jobman~k~date) }}&add_module=072.metki&add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{  jobman }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
-
-                       reload_page_after_ok="da"
-
-                       ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
-
-                {% endfor %}
-
-                <a href="" 
-
-                   xclass="put_var_in_modal btn btn-xs btn-light" 
-                   class="put_var_in_modal2 dropdown-item btn-light"
-
-                   data-toggle2="modal" 
-                   data-target2="#add_jobday_for_jobman" 
-
-                   jobman="{{ jobman }}"
-                   salepoint="{{ sp_now }}"
-
-                   toform_sp="{{ sp_now }}"
-                   toform_sp_name="{{ sps[sp_now]['head'] }}"
-
-                   toform_jobman="{{ jobman }}"
-                   {#toform_jobman_name="{{ mans[man]['head'] }}"#}
-                   toform_jobman_name="{{ user_v['fio'] }}"
-
-                   date="{{ date }}"
-                   print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}"
-
-                   {% set ss = sp_now ~ man %}
-                   id2="{{ ss }}"
-                   s2="{{ creatSecret( ss ) }}"
-
-                   ><nobr><span class="fa fa-plus" ></span> смену</nobr></a>
-
-                <a href="" 
-
-                   xclass="put_var_in_modal btn btn-xs btn-light"
-                   class="put_var_in_modal2 dropdown-item btn-light"
-
-                   data-toggle2="modal" 
-                   data-target2="#add_comment" 
-
-                   jobman="{{ jobman }}"
-                   sale_point="{{ sp_now }}"
-
-                   date_to="{{ date }}"
-                   print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}comment"
-
-                   creator="{{ session.now_user_di.id }}"
-
-                   toform_sp="{{ sp_now }}"
-                   toform_sp_name="{{ sps[sp_now]['head'] }}"
-
-                   toform_jobman="{{ jobman }}"
-                   {#toform_jobman_name="{{ mans[man]['head'] }}"#}
-                   toform_jobman_name="{{ user_v['fio'] }}"
+                       ><nobr>
+                            <span class="fa fa-plus" ></span> смену
+                        </nobr>
+                    </a>
+                {% endif %}
 
 
-                   {% set ss = sp_now ~ man %}
-                   id2="{{ ss }}"
-                   s2="{{ creatSecret( ss ) }}"
+                {# добавить коментарий взыскание бонус #}
+                {% if 1 == 1 %}
+                    <a href="" 
 
-                   delete_cash_start_date="{{ date_start }}"
+                       xclass="put_var_in_modal btn btn-xs btn-light"
+                       class="put_var_in_modal2 dropdown-item btn-light"
 
-                   ><nobr><span class="fa fa-plus" ></span> комментарий</nobr></a>
+                       data-toggle2="modal" 
+                       data-target2="#add_comment" 
 
-                <a href=""
+                       jobman="{{ jobman }}"
+                       sale_point="{{ sp_now }}"
 
-                   xclass="put_var_in_modal btn btn-xs btn-light" 
-                   class="put_var_in_modal2 dropdown-item btn-light"
+                       date_to="{{ date }}"
+                       print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}comment"
 
-                   jobman="{{ jobman }}"
-                   {# salepoint="{{ sp_oint.id }}" #}
-                   salepoint="{{ sp_now }}"
+                       creator="{{ session.now_user_di.id }}"
 
-                   {# toform_sp="{{ sp_now }}" #}
-                   toform_sp="{{ sp_now }}"
-                   toform_sp_name="{{ sps[sp_now]['head'] }}"
+                       toform_sp="{{ sp_now }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                   toform_jobman="{{ jobman }}"
-                   {#toform_jobman_name="{{ mans[man]['head'] }}"#}
-                   toform_jobman_name="{{ user_v['fio'] }}"
+                       toform_jobman="{{ jobman }}"
+                       {#toform_jobman_name="{{ mans[man]['head'] }}"#}
+                       toform_jobman_name="{{ jobman_fio }}"
 
-                   date="{{ date }}"
-                   {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}" #}
-                   print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_minus{{ date }}"
 
-                   {% set ss = sp_now ~ pv.id %}
-                   id2="{{ ss }}"
-                   s2="{{ creatSecret( ss ) }}"
+                       {% set ss = sp_now ~ man %}
+                       id2="{{ ss }}"
+                       s2="{{ creatSecret( ss ) }}"
 
-                   data-target2="#add_minus_for_jobman"
+                       delete_cash_start_date="{{ date_start }}"
 
-                   ><span class="fa fa-minus" ></span> взыскание</a>
+                       ><nobr>
+                            <span class="fa fa-plus" ></span> комментарий
+                        </nobr></a>
 
-                <a href=""
+                    <a href=""
 
-                   xclass="put_var_in_modal btn btn-xs btn-light" 
-                   class="put_var_in_modal2 dropdown-item btn-light"
+                       xclass="put_var_in_modal btn btn-xs btn-light" 
+                       class="put_var_in_modal2 dropdown-item btn-light"
 
-                   jobman="{{ jobman }}"
-                   salepoint="{{ sp_now }}"
+                       jobman="{{ jobman }}"
+                       {# salepoint="{{ sp_oint.id }}" #}
+                       salepoint="{{ sp_now }}"
 
-                   toform_sp="{{ sp_now }}"
-                   toform_sp_name="{{ sps[sp_now]['head'] }}"
+                       {# toform_sp="{{ sp_now }}" #}
+                       toform_sp="{{ sp_now }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
 
-                   toform_jobman="{{ jobman }}"
-                   {#toform_jobman_name="{{ mans[man]['head'] }}"#}
-                   toform_jobman_name="{{ user_v['fio'] }}"
+                       toform_jobman="{{ jobman }}"
+                       {#toform_jobman_name="{{ mans[man]['head'] }}"#}
+                       toform_jobman_name="{{ jobman_fio }}"
 
-                   date="{{ date }}"
-                   {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus" #}
-                   print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_plus{{ date }}"
+                       date="{{ date }}"
+                       {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}" #}
+                       print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_minus{{ date }}"
 
-                   {% set ss = sp_now ~ pv.id %}
-                   id2="{{ ss }}"
-                   s2="{{ creatSecret( ss ) }}"
+                       {% set ss = sp_now ~ pv.id %}
+                       id2="{{ ss }}"
+                       s2="{{ creatSecret( ss ) }}"
 
-                   data-target2="#add_plus_for_jobman"
+                       data-target2="#add_minus_for_jobman"
 
-                   ><span class="fa fa-plus" ></span> премия</a>        
+                       ><span class="fa fa-minus" ></span> взыскание</a>
+
+                    <a href=""
+
+                       xclass="put_var_in_modal btn btn-xs btn-light" 
+                       class="put_var_in_modal2 dropdown-item btn-light"
+
+                       jobman="{{ jobman }}"
+                       salepoint="{{ sp_now }}"
+
+                       toform_sp="{{ sp_now }}"
+                       toform_sp_name="{{ sps[sp_now]['head'] }}"
+
+                       toform_jobman="{{ jobman }}"
+                       {#toform_jobman_name="{{ mans[man]['head'] }}"#}
+                       toform_jobman_name="{{ jobman_fio }}"
+
+                       date="{{ date }}"
+                       {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus" #}
+                       print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_plus{{ date }}"
+
+                       {% set ss = sp_now ~ pv.id %}
+                       id2="{{ ss }}"
+                       s2="{{ creatSecret( ss ) }}"
+
+                       data-target2="#add_plus_for_jobman"
+
+                       >
+                        <span class="fa fa-plus" ></span> премия
+                    </a>        
+                {% endif %}
+
 
                 <a href="#"
 
