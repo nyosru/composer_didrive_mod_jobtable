@@ -1,6 +1,13 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
 
+
+
+
+
+
+
+
     function run_load__aj_get_minus_plus_coment() {
 
         var ert = [];
@@ -333,8 +340,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            data: "action=put_workman_on_sp&" + data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/add-new-smena.php",
+            xdata: "action=put_workman_on_sp&" + data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
+            data: data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
             cache: false,
             dataType: "json",
             type: "post",
@@ -726,118 +735,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // кликаем по кнопам плюс минус час
 
 // $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
-
-    $('body').on('click', '.ajax_hour_action', function () {
-
-        var in_date = '';
-        var in_sp = '';
-//        clearTdSummAllGraph();
-        var uri_query = '';
-        $.each(this.attributes, function () {
-            if (this.specified) {
-                //console.log(1, this.name, this.value);
-                uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
-                if (this.name == 'date') {
-                    in_date = this.value;
-                } else if (this.name == 'sp') {
-                    in_sp = this.value;
-                }
-
-            }
-        });
-        $th = $(this);
-        $znak = $th.attr('type_action'); // - || +
-        // console.log($znak); // - || +
-
-        $hour_id = $th.attr('hour_id'); // - || +
-        // console.log($hour_id); // - || +
-
-        $textblock_id = $th.attr('block');
-        // console.log($textblock_id);
-
-        $s = $th.attr('s');
-        // console.log($textblock_id);
-
-        $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
-        if ($cifra > 20)
-            $cifra = 20;
-        // console.log($('span#' + $textblock_id).text());
-        // console.log($cifra);
-        if ($znak == '-') {
-            var $new_val = +$cifra - +0.5;
-        }
-//
-        else if ($znak == '+') {
-            var $new_val = +$cifra + +0.5;
-        }
-
-        $('span#' + $textblock_id).text($new_val);
-        $.ajax({
-
-            xurl: "/vendor/didrive_mod/items/1/ajax.php",
-            xurl: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
-            url: "/vendor/didrive_mod/items/2/micro-service/edit-dop-pole.php",
-            data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
-            cache: false,
-            dataType: "json",
-            type: "post",
-            async: false,
-            beforeSend: function () {
-
-                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
-                $('span#' + $textblock_id).css('font-weight', 'bold');
-                //if (typeof $div_hide !== 'undefined') {
-                //$('#' + $div_hide).hide();
-                //}
-
-                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
-                //                $("#ok_but_stat").show('slow');
-                //                $("#ok_but").hide();
-
-
-            }
-            ,
-            success: function ($j) {
-
-                // alert($j.status);
-
-                if ($j.status == 'error') {
-
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
-                    // $('span#' + $textblock_id).css('color', 'darkred');
-
-                } else {
-
-                    ocenka_clear(in_sp, in_date);
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
-                    // $('span#' + $textblock_id).css('color', 'darkgreen');
-
-                    // console.log($new_val);
-                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
-                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-
-                    // $.debounce( 1000, calcSummMoneySmena2 );
-                    calcSummMoneySmena2($textblock_id);
-//                    setTimeout( function () {
-//                        //calculateSummAllGraph();
-//
-//                        console.log('$textblock_id', $textblock_id);
-//                        // alert($textblock_id);
-//
-//                        calcSummMoneySmena($textblock_id);
-//
-//                    }, 100);
-//                    //$(document).one( calculateSummAllGraph );
-
-                }
-
-
-            }
-
-        });
-        return false;
-    });
 
 
     $('body').on('change', '.select_edit_item_dop2', function () {
@@ -1355,84 +1252,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     // alert(i + ': ' + $(elem).text());
     // }
 
-    $('body').on('submit', '#add_new_smena', function (event) {
-
-        event.preventDefault();
-        // создание массива объектов из данных формы
-        var data1 = $(this).serializeArray();
-        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        // console.log('Входящие данные');
-        $.each(data1, function () {
-
-            // console.log(this.name + '=' + this.value);
-            if (this.name == 'print_res_to_id') {
-                $print_res_to = $('#' + this.value);
-            }
-
-            if (this.name == 'data-target2') {
-                $modal_id = this.value;
-            }
-
-        });
-        // alert('123');
-        // return false;
-
-        $.ajax({
-
-            type: 'POST',
-            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            dataType: 'json',
-            data: data1,
-            // сoбытиe дo oтпрaвки
-            beforeSend: function ($data) {
-                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
-                // $this.css({"border": "2px solid orange"});
-            },
-            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
-            success: function ($data) {
-
-                //alert('123');
-
-                // eсли oбрaбoтчик вeрнул oшибку
-                if ($data['status'] == 'error')
-                {
-                    // alert($data['error']); // пoкaжeм eё тeкст
-                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid red"});
-
-                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
-                }
-                // eсли всe прoшлo oк
-                else
-                {
-                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid green"});
-
-                    $($print_res_to).append($data['html']);
-                }
-
-                //$($modal_id).modal('hide');
-                $('.modal').modal('hide');
-            }
-            ,
-            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
-            error: function (xhr, ajaxOptions, thrownError) {
-                // пoкaжeм oтвeт сeрвeрa
-                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
-            }
-
-            // сoбытиe пoслe любoгo исхoдa
-            // ,complete: function ($data) {
-            // в любoм случae включим кнoпку oбрaтнo
-            // $form.find('input[type="submit"]').prop('disabled', false);
-            // }
-
-        }); // ajax-
-
-
-        return false;
-    });
+    
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1561,55 +1381,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-    $('body').on('click', '.delete_smena', function (event) {
-
-        $.each(this.attributes, function () {
-
-            if (this.specified) {
-
-                // console.log(this.name, this.value);
-                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-
-                if (this.name == 'data-target2') {
-                    var $id_modal = this.value;
-                    // console.log(this.value);
-                    $(this.value).modal('toggle');
-                    // $id_modal.modal('toggle');
-                } else {
-                    // console.log(2, this.value);
-                    if ($("input").is("#" + this.name)) {
-                        $("input#" + this.name).val(this.value);
-                    }
-                }
-            }
-        });
-        return false;
-        if ($(this).prop('data-target2').length()) {
-            // console.log($(this).prop('data-target2'));
-        }
-
-        $.each(this.attributes, function () {
-
-            if (this.specified) {
-
-                // console.log(this.name, this.value);
-//                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-//
-//                if (this.name == 'res_to') {
-//                    $vars['resto'] = '#' + this.value + ' tbody';
-//                    console.log($vars['resto']);
-//                    // alert($res_to);
-//                }
-//
-//                if (this.name == 'show_on_click') {
-//                    $('#' + this.value).show('slow');
-//                }
-
-            }
-
-        });
-        return false;
-    });
+    
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
 // alert('2323');
@@ -3307,8 +3079,25 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //        run_load__aj_get_minus_plus_coment();
     }
 
+
+
+// $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
+//    nd = didrive__get_cash();
+//    console.log('9999999999', nd );
+//    
+//    nd = didrive__get_cash();
+//    console.log('9999999999', nd );
+// });
+
+
+
+
+
+
+
     /**
      * добавляем взыскание
+     * 2007 версия
      */
 
     $('body').on('submit', '#add_minus', function (event) {
@@ -3326,6 +3115,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.each(data1, function () {
 
             // console.log(this.name + '=' + this.value);
+
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -3397,19 +3187,260 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     });
 
 
-// $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
-//    nd = didrive__get_cash();
-//    console.log('9999999999', nd );
-//    
-//    nd = didrive__get_cash();
-//    console.log('9999999999', nd );
-// });
+// новая версия 2007
+    $('body').on('click', '.ajax_hour_action', function () {
+
+        var in_date = '';
+        var in_sp = '';
+//        clearTdSummAllGraph();
+        var uri_query = '';
+        $.each(this.attributes, function () {
+            if (this.specified) {
+                //console.log(1, this.name, this.value);
+                uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
+                if (this.name == 'date') {
+                    in_date = this.value;
+                } else if (this.name == 'sp') {
+                    in_sp = this.value;
+                }
+
+            }
+        });
+        $th = $(this);
+        $znak = $th.attr('type_action'); // - || +
+        // console.log($znak); // - || +
+
+        $hour_id = $th.attr('hour_id'); // - || +
+        // console.log($hour_id); // - || +
+
+        $textblock_id = $th.attr('block');
+        // console.log($textblock_id);
+
+        $s = $th.attr('s');
+        // console.log($textblock_id);
+
+        $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
+        if ($cifra > 20)
+            $cifra = 20;
+        // console.log($('span#' + $textblock_id).text());
+        // console.log($cifra);
+        if ($znak == '-') {
+            var $new_val = +$cifra - +0.5;
+        }
+//
+        else if ($znak == '+') {
+            var $new_val = +$cifra + +0.5;
+        }
+
+        $('span#' + $textblock_id).text($new_val);
+        $.ajax({
+
+            xurl: "/vendor/didrive_mod/items/1/ajax.php",
+            xurl: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
+            url: "/vendor/didrive_mod/items/2/micro-service/edit-dop-pole.php",
+            data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            async: false,
+            beforeSend: function () {
+
+                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
+                $('span#' + $textblock_id).css('font-weight', 'bold');
+                //if (typeof $div_hide !== 'undefined') {
+                //$('#' + $div_hide).hide();
+                //}
+
+                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
+                //                $("#ok_but_stat").show('slow');
+                //                $("#ok_but").hide();
 
 
+            }
+            ,
+            success: function ($j) {
+
+                // alert($j.status);
+
+                if ($j.status == 'error') {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
+                    // $('span#' + $textblock_id).css('color', 'darkred');
+
+                } else {
+
+                    ocenka_clear(in_sp, in_date);
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
+                    // $('span#' + $textblock_id).css('color', 'darkgreen');
+
+                    // console.log($new_val);
+                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
+                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+
+                    // $.debounce( 1000, calcSummMoneySmena2 );
+//                    setTimeout( function () {
+//                        //calculateSummAllGraph();
+//
+//                        console.log('$textblock_id', $textblock_id);
+//                        // alert($textblock_id);
+//
+//                        calcSummMoneySmena($textblock_id);
+//
+//                    }, 100);
+//                    //$(document).one( calculateSummAllGraph );
+
+                }
 
 
+            }
+
+        });
+        
+        setTimeout( function () {
+            calcSummMoneySmena2($textblock_id);
+            }, 100);
+
+        return false;
+    });
+
+//        setTimeout( function () {
+//            calcSummMoneySmena2();
+//            }, 100);
 
 
+// новая версия 2007
+    $('body').on('submit', '#add_new_smena', function (event) {
+
+        event.preventDefault();
+        // создание массива объектов из данных формы
+        var data1 = $(this).serializeArray();
+        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
+        // console.log('Входящие данные');
+        $.each(data1, function () {
+
+            // console.log(this.name + '=' + this.value);
+            if (this.name == 'print_res_to_id') {
+                $print_res_to = $('#' + this.value);
+            }
+
+            if (this.name == 'data-target2') {
+                $modal_id = this.value;
+            }
+
+        });
+        // alert('123');
+        // return false;
+
+        $.ajax({
+
+            type: 'POST',
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/add-new-smena.php",
+            dataType: 'json',
+            data: data1,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($data['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    $($print_res_to).append($data['html']);
+                }
+
+                //$($modal_id).modal('hide');
+                $('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+
+
+        return false;
+    });
+    
+//
+//    // новая версия 2007
+//    $('body').on('click', '.delete_smena', function (event) {
+//
+//        $.each(this.attributes, function () {
+//
+//            if (this.specified) {
+//
+//                // console.log(this.name, this.value);
+//                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+//
+//                if (this.name == 'data-target2') {
+//                    var $id_modal = this.value;
+//                    // console.log(this.value);
+//                    $(this.value).modal('toggle');
+//                    // $id_modal.modal('toggle');
+//                } else {
+//                    // console.log(2, this.value);
+//                    if ($("input").is("#" + this.name)) {
+//                        $("input#" + this.name).val(this.value);
+//                    }
+//                }
+//            }
+//        });
+//        return false;
+//        if ($(this).prop('data-target2').length()) {
+//            // console.log($(this).prop('data-target2'));
+//        }
+//
+//        $.each(this.attributes, function () {
+//
+//            if (this.specified) {
+//
+//                // console.log(this.name, this.value);
+////                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+////
+////                if (this.name == 'res_to') {
+////                    $vars['resto'] = '#' + this.value + ' tbody';
+////                    console.log($vars['resto']);
+////                    // alert($res_to);
+////                }
+////
+////                if (this.name == 'show_on_click') {
+////                    $('#' + this.value).show('slow');
+////                }
+//
+//            }
+//
+//        });
+//        return false;
+//    });
 
 
 

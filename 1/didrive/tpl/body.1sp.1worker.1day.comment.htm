@@ -4,10 +4,15 @@
     <div class="show_1comment" >
         <a href="#" class="act act_smena btn3" 
            style="float:right;"
-           go_answer="удалить комментарий ?"
+           go_answer="удалить все комментарии дня у пользователя ?"
            action="delete_comment" id2="{{ item.id }}" s2="{{ creatSecret( item.id ) }}" 
            resto="ares{{ item.id }}" show_id="ares{{ item.id }}" 
            delete_cash_start_date="{{ date }}"
+           
+           remove_module="073.comments"
+           remove[jobman]="{{ user5 }}"
+           remove[date_to]="{{ date }}"
+           
            hidethis="da" ><i class="fa fa-times"></i></a>
             {{ item.comment }}
     </div>

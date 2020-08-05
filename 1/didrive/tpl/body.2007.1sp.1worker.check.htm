@@ -1,11 +1,10 @@
 {% spaceless %}
 
-    
+
     {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
         <small class="show_to_admin" >чек #{{ i.id }}</small>
     {% endif %}
 
-    
     {#{{ pa(session) }}#}    
     {#{{ pa(i) }}#}
 
@@ -15,14 +14,11 @@
         <div class="text-center show_down_hiden smena1 smena_ok" >
             рабочая смена на {{ sps[i.sale_point]['head'] }}
 
-            
-            
         </div>
 
     {% else %}
 
         <div class="text-center show_down_hiden smena1 smena_ok" >
-
 
             {% if i.who_add_item is defined and i.who_add_item == 'iiko' %}
 
@@ -59,7 +55,6 @@
 
                         <abbr class="job_hour" >
                             <nobr>
-
 
                                 {% set hours_on_job = i.hour_on_job_hand ?? i.hour_on_job ?? 0 %}
 
@@ -100,13 +95,12 @@
 
 
                                     <i class="fa fa-plus ajax_hour_action" 
-                                       
+
                                        module="050.chekin_checkout"
                                        hour_id="{{ i.id }}" 
                                        block="hour_{{ i.id }}" 
                                        s="{{ creatSecret('hour_'~i.id) }}" 
 
-                                       
                                        type_action="+" 
 
                                        cash_delete1_1="hoursonjob"
@@ -124,7 +118,8 @@
 
                                 {% endif %}
 
-                                <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow'); return false;" >
+                                <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
+                                        return false;" >
                                     <span class="fa fa-caret-down" ></span>
                                 </a>
 
@@ -148,7 +143,19 @@
                             <center>
 
 
-                                {% if i.pay_base > 0 %} {# если фикс за час #}
+                                {% if i.s_pay_base > 0 %} {# если фикс за час #}
+
+                                    <input 
+                                        type="hidden" 
+                                        class="price_hour_{{ date }}_{{ sp_now }}" 
+                                        value="{{ i.s_pay_base }}" 
+                                        >
+
+                                    {{ i.s_pay_base }}р/ч
+
+                                    {% set summa_day = hours_on_job * i.s_pay_base %}
+
+                                {% elseif i.pay_base > 0 %} {# если фикс за час #}
 
                                     <input 
                                         type="hidden" 
@@ -162,7 +169,8 @@
 
 
                                 {% else %} {# если не фикс за час #}
-
+                                    
+                                    
                                     <select name="ocenka" 
                                             class="select_price_hour_now select_edit_item_dop02 price_hour_{{ date }}_{{ sp_now }}_select
 
@@ -188,12 +196,14 @@
                                         {%  set price_hour1_now = '' %}
                                         {% set now_ocenka = i.ocenka ?? i.ocenka_auto ?? 0 %}
 
-                                        
+
                                         {#{% for i in range(low=5, high=3, step=-2) %}    { #{ i }# }#}
                                         {% for ii in [5,3] %}    {#{ i }#}
                                             {% set price_hour = 0 %}
 
-                                            {% if i['pay'~ii] > 0 %}> 
+                                            {% if i['spec_sp'] > 0 and i['spec_sp'] == get.sp and i['s_pay'~ii] > 0 %}> 
+                                                {% set price_hour = i['s_pay'~ii] %}
+                                            {% elseif i['pay'~ii] > 0 %}> 
                                                 {% set price_hour = i['pay'~ii] %}
                                             {% endif %}
 
@@ -236,10 +246,10 @@
 
                                     </select>
 
-                                    {% if price_hour1_now != '' %}
-                                        {% set summa_day = hours_on_job * price_hour1_now %}
-                                    {% endif %}
-
+                                    {#                                    {% if price_hour1_now != '' %}
+                                                                            {% set summa_day = hours_on_job * price_hour1_now %}
+                                                                        {% endif %}
+                                    #}
                                 {% endif %}
 
 
@@ -247,10 +257,57 @@
 
                         {% endif %}
 
+                        {% set now_hours = 0 %}
+                        {% if i.hour_on_job_hand > 0 %}
+                            {% set now_hours = i.hour_on_job_hand %}
+                        {% elseif i.hour_on_job > 0 %}
+                            {% set now_hours = i.hour_on_job %}
+                        {% endif %}
+
+                        {% set now_hour_price = 0 %}
+
+{# если спец назначение #}
+                        {% if i.spec_id > 0 %}
+
+                            {% if i.s_pay_base > 0 %}
+                                {% set now_hour_price = i.s_pay_base %}
+                            {% elseif i.ocenka == 5 and i.s_pay5 > 0 %}
+                                {% set now_hour_price = i.s_pay5 %}
+                            {% elseif i.ocenka == 3 and i.s_pay3 > 0 %}
+                                {% set now_hour_price = i.s_pay3 %}
+                            {% elseif i.ocenka_auto == 5 and i.s_pay5 > 0 %}
+                                {% set now_hour_price = i.s_pay5 %}
+                            {% elseif i.ocenka_auto == 3 and i.s_pay3 > 0 %}
+                                {% set now_hour_price = i.s_pay3 %}
+                            {% endif %}
+
+{# если НЕ спец назначение #}
+                        {% else %}
+                            
+                            {% if i.pay_base > 0 %}
+                                {% set now_hour_price = i.pay_base %}
+                            {% elseif i.ocenka == 5 and i.pay5 > 0 %}
+                                {% set now_hour_price = i.pay5 %}
+                            {% elseif i.ocenka == 3 and i.pay3 > 0 %}
+                                {% set now_hour_price = i.pay3 %}
+                            {% elseif i.ocenka_auto == 5 and i.pay5 > 0 %}
+                                {% set now_hour_price = i.pay5 %}
+                            {% elseif i.ocenka_auto == 3 and i.pay3 > 0 %}
+                                {% set now_hour_price = i.pay3 %}
+                            {% endif %}
+                            
+                        {% endif %}
+
+                        
+                        
+                        {% if now_hour_price > 0 and now_hours > 0 %}
+                            {% set summa_day =  ( now_hour_price * now_hours )|round(0, 'ceil') %}
+                        {% else %}
+                            {% set summa_day = 0 %}
+                        {% endif %}
 
                         {# для динамичного показа суммы за смену 1911 + #}
                         <div class="smena_summa smena_summa_{{ i.id }}" title="сумма за смену">
-
                             {% if summa_day is defined and summa_day != 0 %}
                                 {{ summa_day }}
                             {% else %}
@@ -264,26 +321,30 @@
 
                     {% if i.status == 'show' %}
 
-                        <a href="#" class="act act_smena btn3" 
-                           go_answer="Хотите удалить смену ?"
-                           action="delete_smena" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" resto="ares{{ i.id }}" show_id="ares{{ i.id }}" hidethis="da" >удалить смену</a>
-                           
-                <a href="#"
+                        {% if 1 == 2 %}
+                            <a href="#" class="act act_smena btn3" 
+                               go_answer="Хотите удалить смену ?"
+                               action="delete_smena" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" resto="ares{{ i.id }}" show_id="ares{{ i.id }}" hidethis="da" >удалить смену</a>
+                        {% endif %}
 
-                   class='base_modal_go'
-                   data-toggle="modal" data-target="#di_modal"
+                        <a href="#"
 
-                   modal_header='Удалить смену'
-                   xajax_link='/vendor/didrive_mod/items/1/ajax.php'
-                   ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/smena-remove.php'
-                   xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
-                   ajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                           class='base_modal_go'
+                           data-toggle="modal" data-target="#di_modal"
 
-                   reload_page_after_ok="da"
-                   get_answer='Удаляем смену ?'
+                           modal_header='Удалить смену'
+                           xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                           xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                           xxajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
 
-                   >удалить смену</a>                   
-                           
+                           ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                           ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
+
+                           reload_page_after_ok="da"
+                           get_answer='Удаляем смену ?'
+
+                           >удалить смену</a>                   
+
                         {% if 1 == 2 %}
                             <a href="#" class="act act_smena btn3" 
 
@@ -363,8 +424,8 @@
 
     {% endif %}
 
-    {# <br/>#{{ i.id }} #}
+    {#<br/>{{ pa(i,2) }} #}
     {#{% if i.id == 128475 %} {{ pa(user_v,2) }} {{  pa(i,2) }} {% endif %}#}
-    {% if i.id == 132232 %} {{ pa(user_v,2) }} {{  pa(i,2) }} {% endif %}
+    {#{% if i.id == 132232 %} {{ pa(user_v,2) }} {{  pa(i,2) }} {% endif %}#}
 
 {% endspaceless %}

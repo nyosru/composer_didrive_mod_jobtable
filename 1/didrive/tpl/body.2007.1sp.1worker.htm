@@ -53,13 +53,13 @@
 
 
                 {#            
-                            <div style="color:gray;">{{ user_v['dolgnost_name'] }}</div>
-                            <nobr title="#{{ user_v['jobman'] }}">
-                                {{ user_v['fio'] }}
-                            </nobr>
-                            {% if user_v['type_job'] is defined and user_v['type_job'] == 'spec' %}
-                                <abbr class="alert-danger" style="padding:1px 5px;" title="был СПЕЦ назначен с другой точки">S</abbr>
-                            {% endif %}
+                <div style="color:gray;">{{ user_v['dolgnost_name'] }}</div>
+                <nobr title="#{{ user_v['jobman'] }}">
+                    {{ user_v['fio'] }}
+                </nobr>
+                {% if user_v['type_job'] is defined and user_v['type_job'] == 'spec' %}
+                    <abbr class="alert-danger" style="padding:1px 5px;" title="был СПЕЦ назначен с другой точки">S</abbr>
+                {% endif %}
                 #}
 
                 {% set jobman = user_v[0]['jobman'] %}
@@ -93,7 +93,7 @@
         #}
 
 
-
+        {#{{  pa(user_v) }}#}
 
         {% set no_job = false %}
 
@@ -106,12 +106,20 @@
 
                     {#{{ date }} / {{ date_finish }}#}
                     {#{{ pa(user_v,2) }}#}
-                    
+
                     {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.day_option.htm' %}
-                    
-                    {% for k3,new_d in user_v if new_d['date'] == date %}
+
+                    {% for k3,i in user_v if i['date'] == date %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+                        {#{{ pa(i) }}#}
                     {% endfor %}
+
+                    {% if jobmans.data.spec[jobman_id][date] is defined %}
+                        {% for k3,i in jobmans.data.spec[jobman_id][date] %}
+                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
+                            {#{{ pa(i) }}#}
+                        {% endfor %}
+                    {% endif %}
 
                     {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'metki' %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
@@ -123,7 +131,7 @@
                     {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'check' %}
 
                         {% if i.sale_point == '' or i.sale_point == get.sp %}
-                        {% set i2 = i %}
+                            {% set i2 = i %}
                         {% endif %}
 
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
@@ -140,7 +148,15 @@
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.plus.auto.htm' %}
                         {% set auto_bonus = [] %}
                     {% endif %}
-                    
+
+
+                    {#{% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'minus' %}#}
+                    {#                    {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'minus' %}
+                                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
+                                                minus
+                                                { #{{  pa(i) }}# }
+                                        {% endfor %}
+                    #}
                     {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and ( i.type == 'minus' or i.type == 'plus' or i.type == 'comment' ) %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
                     {% endfor %}

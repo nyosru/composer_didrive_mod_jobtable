@@ -74,7 +74,9 @@ $function = new Twig_SimpleFunction('jobdesc_ms__get_list_jobmans_job_on_sp_mont
 
     if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
     \f\timer_start(78);
+    
     $r = \Nyos\mod\JobDesc::getJobmansJobingToSpMonth($db, $sp, $date);
+    
     if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
     \f\pa('jobdesc_ms__get_list_jobmans_job_on_sp_month ' . \f\timer_stop(78) );
 

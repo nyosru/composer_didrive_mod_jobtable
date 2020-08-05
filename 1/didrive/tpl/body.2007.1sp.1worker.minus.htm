@@ -9,105 +9,26 @@
             <br/>отменено<br/>
         {% endif %}
 
-        <span class="hide_down" >
-            {#{ pa(minus) }#}
+        <div class="hide_down" >
+            {#{{ pa(i) }}#}
 
-            {% if i.status == 'hide' %}
+            <a href="#"
+               class='base_modal_go'
 
-                {#
-                <a href="#" class="act act_smena btn3" action="recover_smena" 
-                   go_answer="Хотите восстановить смену ?"
-                   id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
-                #}
+               data-toggle="modal" data-target="#di_modal"
+               modal_header='Отменить взыскание ?'
 
-                <a 
-                    
-                    href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
-                   xstyle='display:none;'
-                   
-                   {# действие после вопроса #}
-                   comit_answer="Отменить взыскание ?"
+               ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
 
-                   {# замена доп параметра #}
-                   action="edit_dop_item"
+               ajax_vars='id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.vzuscaniya&remove[summa]={{ i.summa }}&remove[date_now]={{ date }}&remove[jobman]={{ jobman }}'
 
-                   {# модуль итемов #}
-                   itemsmod="072.vzuscaniya"
-                   
-                   {# id итема #}
-                   item_id="{{ i.id }}"
+               reload_page_after_ok="da"
+               get_answer='Отменить взыскание ?'
 
-                   {# новое значение статуса записи #}
-                   new_status="show"
-                   {# секрет #}
-                   s3="{{ creatSecret( '072.vzuscaniya-'~i.id~'-show' ) }}" 
+               ><span class="fa fa-remove on_hover_opacity05green" style="xfloat:right;" ></span> отменить</a>
+               <br clear="all" />
 
-                   {# скрыть ссылку после клика #}
-                   hidethis="da" 
-                   {# сделать видимым блок по id #}
-                   show_id="ares{{ i.id }}" 
-                   {# id куда печатаем результат #}
-                   res_to_id="ares{{ i.id }}" 
-                   {# сообщение печатаем если всё ок #}
-                   msg_to_success="Восстановлено"
-
-                   >восстановить</a>
-
-            {% elseif i.status == 'show' %}
-
-                {#
-                <a href="#" class="act act_smena btn3" 
-                   go_answer="Хотите удалить минус ?"
-                   action="delete_minus" id2="{{ mk }}" s2="{{ creatSecret( mk ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" 
-                   
-                   >отменить взыскание</a>
-                #}
-
-
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
-                   
-                   xstyle='display:none;'
-                   
-                   {# действие после вопроса #}
-                   comit_answer="Отменить взыскание ?"
-
-                   {# замена доп параметра #}
-                   action="edit_dop_item"
-
-                   {# модуль итемов #}
-                   itemsmod="072.vzuscaniya"
-                   {# id итема #}
-                   item_id="{{ i.id }}"
-
-                   {# название доп параметра #}
-                   {# dop_name="pay_check" #}
-                   {# новое значение параметра #}
-                   {# dop_new_value="no" #}
-                   {# секрет #}
-                   {# s3="{{ creatSecret( '050.chekin_checkout-'~i.id~'-pay_check-no' ) }}"  #}
-
-                   {# новое значение статуса записи #}
-                   new_status="hide"
-                   {# секрет #}
-                   s3="{{ creatSecret( '072.vzuscaniya-'~i.id~'-hide' ) }}" 
-
-                   {# скрыть ссылку после клика #}
-                   hidethis="da" 
-                   {# сделать видимым блок по id #}
-                   show_id="ares{{ i.id }}" 
-                   {# id куда печатаем результат #}
-                   res_to_id="ares{{ i.id }}" 
-                   {# сообщение печатаем если всё ок #}
-                   msg_to_success="Отменено"
-
-                   {# print_res_to_id="ares{{ k1 }}" #}
-
-                   >Отменить взыскание</a>
-
-
-            {% endif %}
-
-        </span>
+        </div>
 
         <div id="ares{{ i.id }}" style="display:none;"></div>
 

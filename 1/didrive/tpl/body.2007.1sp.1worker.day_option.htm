@@ -198,6 +198,7 @@
                        date="{{ date }}"
                        {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}" #}
                        print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_minus{{ date }}"
+                       xxprint_res_to_class="sp{{ sp_now }}_jm{{ jobman }}_minus{{ date }}"
 
                        {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
@@ -234,10 +235,11 @@
 
                        >
                         <span class="fa fa-plus" ></span> премия
-                    </a>        
+                    </a>
                 {% endif %}
 
-
+                
+                
                 <a href="#"
 
                    class="set_end_now_jobs dropdown-item btn-light"
@@ -294,7 +296,7 @@
 
 
 
-
+    <div id='sp{{ sp_now }}_jm{{ jobman }}_minus{{ date }}' ></div>
 
 
 

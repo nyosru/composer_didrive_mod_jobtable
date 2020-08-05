@@ -2,15 +2,17 @@
 
 try {
 
-    $date = $in['date'] ?? $_REQUEST['date'] ?? null;
-
-    if (empty($date))
-        throw new \Exception('нет даты');
+//    $date = $in['date'] ?? $_REQUEST['date'] ?? null;
+//
+//    if (empty($date))
+//        throw new \Exception('нет даты');
 
     require_once '0start.php';
 
     \f\pa($_REQUEST);
 
+    die();
+    
     echo '<h3>удаляем все автобонусы</h3>';
 
     $date_start = date('Y-m-01', strtotime($_REQUEST['date']));

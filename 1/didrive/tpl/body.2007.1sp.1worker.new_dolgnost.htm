@@ -2,66 +2,99 @@
 
     {#{{ pa(new_d) }}#}
 
-{#    {% if i.sale_point != '' and i.sale_point != sp_now %}#}
+    {#    {% if i.sale_point != '' and i.sale_point != sp_now %}#}
 
+{% if 1 == 2 %}
+    <a 
+        {% if 1 == 2 %}
+            class="send_ajax"
+            href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+            action="cancel_smena"
+            {# param #}
+            ajax_id="{{ i.id }}"
+            ajax_s="{{ creatSecret(i.id) }}" 
 
-                <a class="send_ajax"
-                   href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
-                   action="cancel_smena"
-                   {# param #}
-                   ajax_id="{{ new_d.id }}"
-                   ajax_s="{{ creatSecret(new_d.id) }}" 
+            {# raw param #}
+            answer="Хотите отменить это назначение ?"
 
-                   {# raw param #}
-                   answer="Хотите отменить это назначение ?"
-                   
-                   res_to="delete_naznach_res{{ new_d.id }}"
-                   result_ok_show_to ="delete_naznach_ok_res{{ new_d.id }}"
-                   xresult_ok_to ="delete_naznach_ok_res{{ new_d.id }}"
-                   result_error_show_to ="delete_naznach_error_res{{ new_d.id }}"
-                   xresult_error_to ="delete_naznach_error_res{{ new_d.id }}"
+            res_to="delete_naznach_res{{ i.id }}"
+            result_ok_show_to ="delete_naznach_ok_res{{ i.id }}"
+            xresult_ok_to ="delete_naznach_ok_res{{ i.id }}"
+            result_error_show_to ="delete_naznach_error_res{{ i.id }}"
+            xresult_error_to ="delete_naznach_error_res{{ i.id }}"
 
-                   hide_block_id_when_ok = "block_new_dolgn{{ new_d.id }}"
-                   xhide_block_class_when_ok = ""
+            hide_block_id_when_ok = "block_new_dolgn{{ i.id }}"
+            xhide_block_class_when_ok = ""
+        {% endif %}
 
-                   ><span class="fa fa-times" ></span></a>
-                   
-<span id="delete_naznach_error_res{{ new_d.id }}" ></span>
+        class='base_modal_go'
+        data-toggle="modal" data-target="#di_modal"
 
-        {#+++ на другой точке#}
-        <div class="text-center alert alert-success position" >
-                <a class="send_ajax icon_remove"
-                   
-                   href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
-                   action="cancel_smena"
-                   {# param #}
-                   ajax_id="{{ new_d.id }}"
-                   ajax_s="{{ creatSecret(new_d.id) }}" 
+        modal_header='Отменить назначение ?'
+        xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+        xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+        xxajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
 
-                   {# raw param #}
-                   answer="Хотите отменить это назначение ?"
-                   
-                   res_to="block_new_dolgn{{ new_d.id }}"
-  
-                   xxresult_ok_show_to ="delete_naznach_ok_res{{ new_d.id }}"
-                   xxresult_error_show_to ="delete_naznach_error_res{{ new_d.id }}"
-                   
-                   xresult_ok_to ="delete_naznach_ok_res{{ new_d.id }}"
-                   xresult_error_to ="delete_naznach_error_res{{ new_d.id }}"
+        ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+        ajax_vars='r_module=jobman_send_on_sp&remove[jobman]={{ i.jobman }}&remove[date]={{ i.start }}'
 
-                   xhide_block_id_when_ok = "block_new_dolgn{{ new_d.id }}"
-                   xhide_block_class_when_ok = ""
+        reload_page_after_ok="da"
+        get_answer='Отменить назначение ?'
 
-                   title="Отменить назначение" ><span class="fa fa-remove" ></span></a>
-            
-            новое назначение<Br/>
-            <b>{{ sps[new_d.sale_point]['head'] }}</b>
-            {{ new_d.dolgnost_name }}
-            
-            <span id="block_new_dolgn{{ new_d.id }}" ></span>
-            
-        </div>
+        ><span class="fa fa-times" ></span></a>
+{% endif %}
+    <span id="delete_naznach_error_res{{ i.id }}" ></span>
 
-        {#{{  pa(new_d) }}#}
-            
+    {#+++ на другой точке#}
+    <div class="text-center alert alert-success position" >
+        <a 
+            {% if 1 == 2 %}
+            class="send_ajax icon_remove"
+
+           href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+           action="cancel_smena"
+           {# param #}
+           ajax_id="{{ i.id }}"
+           ajax_s="{{ creatSecret(i.id) }}" 
+
+           {# raw param #}
+           answer="Хотите отменить это назначение ?"
+
+           res_to="block_new_dolgn{{ i.id }}"
+
+           xxresult_ok_show_to ="delete_naznach_ok_res{{ i.id }}"
+           xxresult_error_show_to ="delete_naznach_error_res{{ i.id }}"
+
+           xresult_ok_to ="delete_naznach_ok_res{{ i.id }}"
+           xresult_error_to ="delete_naznach_error_res{{ i.id }}"
+
+           xhide_block_id_when_ok = "block_new_dolgn{{ i.id }}"
+           xhide_block_class_when_ok = ""
+
+           title="Отменить назначение" 
+           {% endif %}
+
+        class='base_modal_go icon_remove'
+        data-toggle="modal" data-target="#di_modal"
+
+        modal_header='Отменить назначение ?'
+
+        ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+        ajax_vars='r_module=jobman_send_on_sp&remove[dolgnost]={{ i.dolgnost }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'
+
+        reload_page_after_ok="da"
+        get_answer='Отменить назначение #{{ i.id }}?'
+               
+           ><span class="fa fa-remove" ></span></a>
+
+        новое назначение<Br/>
+        <b>{{ sps[i.sale_point]['head'] }}</b>
+        {{ i.dolgnost_name }}
+
+        <span id="block_new_dolgn{{ i.id }}" ></span>
+
+    </div>
+
+    {#{{  pa(i) }}#}
+
 {% endspaceless %}

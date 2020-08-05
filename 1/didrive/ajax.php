@@ -163,6 +163,9 @@ else {
 
 
 
+$ajax2 = true;
+require_once './ajax.2007.php';
+$ajax2 = false;
 
 // vue тащим разные функции
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'startFunctionClass') {
@@ -4488,22 +4491,22 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_ocenka') {
     \f\end2('удалено', true);
 }
 
+// перенёс в 2007
+//elseif (isset($_POST['action']) && ($_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 //
-elseif (isset($_POST['action']) && ($_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
-
-// удаляем запись кеша главного массива данных
-    if (!empty($_REQUEST['delete_cash_start_date'])) {
-        $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . date('Y-m-01', strtotime($_REQUEST['delete_cash_start_date']))]);
-// \f\pa($e);
-    }
-
-// require_once DR . '/all/ajax.start.php';
-
-    $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
-    $ff->execute(array(':id' => (int) $_POST['id2']));
-
-    \f\end2('удалено');
-}
+//// удаляем запись кеша главного массива данных
+//    if (!empty($_REQUEST['delete_cash_start_date'])) {
+//        $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . date('Y-m-01', strtotime($_REQUEST['delete_cash_start_date']))]);
+//// \f\pa($e);
+//    }
+//
+//// require_once DR . '/all/ajax.start.php';
+//
+//    $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
+//    $ff->execute(array(':id' => (int) $_POST['id2']));
+//
+//    \f\end2('удалено');
+//}
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
 
@@ -4572,6 +4575,7 @@ elseif (
                     . '</div>', true);
         }
 // добавление смены руками
+        // перенёс в микросервисы
         elseif ($_POST['action'] == 'add_new_smena') {
 
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -4611,32 +4615,35 @@ elseif (
             \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], $indb);
 
             \f\end2('<div>'
-                    . '<nobr><b class="warn" >смена добавлена</b>'
-                    . '<br/>'
-                    . date('d.m.y H:i', $start_time)
-                    . ' - ' . date('d.m.y H:i', $fin_time)
-                    . '<br/>'
-                    . $indb['hour_on_job']
-                    . '</nobr>'
-                    . '</div>', true);
+                . '<nobr><b class="warn" >смена добавлена</b>'
+                . '<br/>'
+                . date('d.m.y H:i', $start_time)
+                . ' - ' . date('d.m.y H:i', $fin_time)
+                . '<br/>'
+                . $indb['hour_on_job']
+                . '</nobr>'
+                . '</div>', true);
         }
 
-// добавляем комментарий к дню работника
-        elseif ($_POST['action'] == 'add_comment') {
-
-// удаляем запись кеша главного массива данных
-            if (!empty($_REQUEST['delete_cash_start_date']))
-                $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
-// \f\pa($e);
-
-            $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
-
-            \f\end2('<div class="warn" style="padding:5px;" >'
-                    . '<div style="padding:5px; margin-bottom: 5px; background-color: rgba(0,0,0,0.1);" >добавили комментарий</div>'
-//. '<br/>'
-                    . $_REQUEST['comment']
-                    . '</div>', true);
-        }
+        // перенес в 2007
+//// добавляем комментарий к дню работника
+//        elseif ($_POST['action'] == 'add_comment') {
+//
+//// удаляем запись кеша главного массива данных
+//            if (!empty($_REQUEST['delete_cash_start_date']))
+//                $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
+//// \f\pa($e);
+//
+//            // $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
+//            \Nyos\mod\items::$type_module = 2;
+//            $e = \Nyos\mod\items::add($db, '073.comments', $_REQUEST);
+//
+//            \f\end2('<div class="warn" style="padding:5px;" >'
+//                    . '<div style="padding:5px; margin-bottom: 5px; background-color: rgba(0,0,0,0.1);" >добавили комментарий</div>'
+////. '<br/>'
+//                    . $_REQUEST['comment']
+//                    . '</div>', true);
+//        }
 //
         elseif ($_POST['action'] == 'confirm_smena') {
 
@@ -4696,146 +4703,6 @@ elseif (
     }
 }
 
-//
-elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
-// action=add_new_smena
-
-    try {
-
-//        require_once DR . '/all/ajax.start.php';
-//
-//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-//
-//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-
-        \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.vzuscaniya'], array(
-// 'head' => rand(100, 100000),
-            'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
-            'jobman' => $_REQUEST['jobman'],
-            'sale_point' => $_REQUEST['salepoint'],
-            'summa' => $_REQUEST['summa'],
-            'text' => $_REQUEST['text']
-        ));
-
-
-//        if (date('Y-m-d', $start_time) == date('Y-m-d', $fin_time)) {
-//            $dd = true;
-//        } else {
-//            $dd = false;
-//        }
-//        $r = ob_get_contents();
-//        ob_end_clean();
-
-
-        \f\end2('<div>'
-                . '<nobr><b class="warn" >взыскание добавлено</b>'
-                . '<br/>'
-                . $_REQUEST['summa']
-                . '<br/>'
-                . '<small>' . $_REQUEST['text'] . '</small>'
-//                . (
-//                $dd === true ?
-//                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
-//                )
-// .'окей '.$b
-//                . '</br>'
-//                . $b
-//                . '</br>'
-//                . $r
-                . '</nobr>'
-                . '</div>', true);
-    } catch (\Exception $ex) {
-
-        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-                . PHP_EOL . $ex->getTraceAsString()
-                . '</pre>';
-
-        \f\end2($e, true);
-    } catch (\PDOException $ex) {
-
-        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-                . PHP_EOL . $ex->getTraceAsString()
-                . '</pre>';
-
-        \f\end2($e, true);
-    }
-}
-//
-elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
-// action=add_new_smena
-
-    try {
-
-//require_once DR . '/all/ajax.start.php';
-//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
-//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-//
-//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
-//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
-
-        \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.plus'], array(
-// 'head' => rand(100, 100000),
-            'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
-            'jobman' => $_REQUEST['jobman'],
-            'sale_point' => $_REQUEST['salepoint'],
-            'summa' => $_REQUEST['summa'],
-            'text' => $_REQUEST['text']
-        ));
-
-
-//        if (date('Y-m-d', $start_time) == date('Y-m-d', $fin_time)) {
-//            $dd = true;
-//        } else {
-//            $dd = false;
-//        }
-//        $r = ob_get_contents();
-//        ob_end_clean();
-
-
-        \f\end2('<div>'
-                . '<nobr><b class="warn" >премия добавлена'
-                . '<br/>'
-                . $_REQUEST['summa']
-                . '<br/>'
-                . '<small>' . $_REQUEST['text'] . '</small>'
-                . '</b>'
-//                . (
-//                $dd === true ?
-//                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
-//                )
-// .'окей '.$b
-//                . '</br>'
-//                . $b
-//                . '</br>'
-//                . $r
-                . '</nobr>'
-                . '</div>', true);
-    } catch (\Exception $ex) {
-
-        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-                . PHP_EOL . $ex->getTraceAsString()
-                . '</pre>';
-
-        \f\end2($e, true);
-    } catch (\PDOException $ex) {
-
-        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-                . PHP_EOL . $ex->getTraceAsString()
-                . '</pre>';
-
-        \f\end2($e, true);
-    }
-}
 ///
 elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
 

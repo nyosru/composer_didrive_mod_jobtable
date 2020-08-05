@@ -433,6 +433,18 @@ class JobDesc {
 
         $ocenka = $data['ocenka'] ?? $data['ocenka_auto'] ?? '';
 
+        // \f\pa($data);
+
+        if (!empty($data['spec_id']) && !empty($data['spec_sp']) && $data['spec_sp'] == $_GET['sp'] ){
+
+            // $data['pay_bonus_proc_from_oborot'] = $data['s_pay_bonus_proc_from_oborot']
+            $kk = ['s_pay5','s_pay3','s_pay_if_kurit','s_pay_base','s_pay_premiya-5','s_pay_premiya-3','s_pay_oborot_sp_last_monht_bolee','s_pay_bonus_proc_from_oborot','s_pay_pay_from_day_oborot_bolee'];
+            foreach( $kk as $v ){
+                $data[substr($v,2,100)] = $data[$v];
+            }
+                    
+        }
+        
         // % от оборота дня
         if (!empty($data['pay_bonus_proc_from_oborot'])) {
             if (!empty($data['oborot_day'])) {
@@ -448,7 +460,6 @@ class JobDesc {
         // фиксированная оценка дня
         elseif (!empty($ocenka)) {
             if (!empty($data['pay_premiya-' . $ocenka])) {
-
 
                 self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']] = 1;
 
@@ -1063,14 +1074,20 @@ class JobDesc {
 //                , pay.`pay_from_day_oborot_bolee` '
                     . ' FROM 
                 `mod_050_job_in_sp` `spec` '
+                    
                     . ' LEFT JOIN mod_070_jobman jm ON jm.id = `spec`.`jobman` '
                     . ' LEFT JOIN mod_061_dolgnost d ON d.id = `spec`.`dolgnost` '
                     // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `spec`.`dolgnost` AND p.date <= spec.date ORDER BY date DESC LIMIT 1 ) '
                     . ' WHERE '
-                    . ' spec.date >= :date_start '
+                    . ' spec.date BETWEEN :date_start AND :date_finish '
+//                    . ' spec.date >= :date_start '
+//                    . ' AND '
+//                    . ' spec.date <= :date_finish '
                     . ' AND '
-                    . ' spec.date <= :date_finish '
+                    . ' spec.status = \'show\' '
+                    
                     . '  UNION  '
+                    
                     . ' SELECT 
                 `on`.`id` ,
                 `on`.`date` , 
@@ -1102,6 +1119,8 @@ class JobDesc {
                     . ' `on`.`date` >= :date_start0 '
                     . ' AND '
                     . ' `on`.`date` <= :date_finish '
+                    . ' AND '
+                    . ' `on`.status = \'show\' '
             ;
             // \f\pa($sql);
 
@@ -1242,6 +1261,25 @@ class JobDesc {
                 . ' , \'\' oborot_day_hand '
                 . ' , \'\' oborot_day_server '
                 . ' , \'\' oborot_day '
+                
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                
                 . ' FROM 
                     `mod_072_metki` `mm` '
                 . ' WHERE '
@@ -1277,6 +1315,7 @@ class JobDesc {
                 . ' , on_sp.dolgnost position_d '
                 . ' , on_sp.sale_point position_sp '
                 . ' , dol.calc_auto position_calc_auto '
+
                 . ' , pay.id pay_id '
                 . ' , pay.date pay_date '
                 . ' , pay.`ocenka-hour-5` pay5 '
@@ -1299,17 +1338,42 @@ class JobDesc {
                     WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                     ELSE NULL END ) as oborot_day '
 //                    . ' , '
+                
+                . ' , s.id spec_id '
+                . ' , s.date spec_date '
+                . ' , s.dolgnost spec_d '
+                . ' , s.sale_point spec_sp '
+                
+                . ' , s_pay.id s_pay_id '
+                . ' , s_pay.dolgnost s_pay_d '
+                . ' , s_pay.date s_pay_date '
+                . ' , s_pay.`ocenka-hour-5` s_pay5 '
+                . ' , s_pay.`ocenka-hour-3` s_pay3 '
+                . ' , s_pay.`if_kurit` s_pay_if_kurit '
+                . ' , s_pay.`ocenka-hour-base` s_pay_base '
+                . ' , s_pay.`premiya-5` `s_pay_premiya-5` '
+                . ' , s_pay.`premiya-3` `s_pay_premiya-3` '
+                . ' , s_pay.`oborot_sp_last_monht_bolee` s_pay_oborot_sp_last_monht_bolee '
+                . ' , s_pay.`bonus_proc_from_oborot` s_pay_bonus_proc_from_oborot '
+                . ' , s_pay.`pay_from_day_oborot_bolee` s_pay_pay_from_day_oborot_bolee '
+
+
                 . ' FROM `mod_050_chekin_checkout` `c` '
+
+                
+
                 
                 . ' LEFT JOIN mod_jobman_send_on_sp on_sp ON on_sp.id = ( SELECT id FROM mod_jobman_send_on_sp WHERE '
-                . ' jobman = c.jobman '
-                // . ' AND sale_point = c.sale_point '
-                . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
-                . ' ORDER BY date DESC '
-                . ' LIMIT 1 ) '
-                
+                    . ' jobman = c.jobman '
+                    // . ' AND sale_point = c.sale_point '
+                    . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                    . ' ORDER BY date DESC '
+                    . ' LIMIT 1 ) '
+
+
                 . ' LEFT JOIN mod_sale_point_oborot oborot_d ON oborot_d.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) AND oborot_d.sale_point = on_sp.sale_point AND oborot_d.status = \'show\' '
                 . ' LEFT JOIN mod_061_dolgnost dol ON dol.id = on_sp.dolgnost '
+                
                 . ' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
                 // .' jobman = c.jobman '
                 . ' dolgnost = on_sp.dolgnost '
@@ -1326,9 +1390,48 @@ class JobDesc {
                 . ' ) '
                 . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
                 . ' LIMIT 1 ) '
+
+
+
+
+
+
+
+
+
+
+
+                . ' LEFT JOIN mod_050_job_in_sp s ON 
+                        s.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) )
+                        AND s.jobman = c.jobman
+                        AND s.status = \'show\'
+                        '
+
+                . ' LEFT JOIN mod_071_set_oplata s_pay ON s_pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
+                // .' jobman = c.jobman '
+                . ' dolgnost = s.dolgnost '
+                . ' AND sale_point = on_sp.sale_point '
+                . ' AND date <= s.date '
+                . ' AND status = \'show\' '
+
+//                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
+//                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
+                . ' AND ( '
+                . ' ( oborot_d.oborot_hand > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_hand ) ) '
+                . ' OR ( oborot_d.oborot_hand IS NULL AND oborot_d.oborot_server > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_server ) ) '
+                . ' OR pay_from_day_oborot_bolee IS NULL '
+                . ' ) '
+                . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
+                . ' LIMIT 1 ) '
+                
+
+
+                
                 . ' WHERE '
                 . $jms_c
                 . ' AND c.`start` BETWEEN :datet_start AND :datet_finish '
+                . ' AND '
+                . ' c.`status` = \'show\' '
 
                 //.' GROUP BY c.id '
                 . PHP_EOL . ' UNION ALL '
@@ -1373,6 +1476,25 @@ class JobDesc {
                 . ' , \'\' oborot_day_hand '
                 . ' , \'\' oborot_day_server '
                 . ' , \'\' oborot_day '
+                
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                
                 . ' FROM 
 
                     `mod_072_vzuscaniya` `mi`
@@ -1423,6 +1545,25 @@ class JobDesc {
                 . ' , \'\' oborot_day_hand '
                 . ' , \'\' oborot_day_server '
                 . ' , \'\' oborot_day '
+                
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                
                 . ' FROM `mod_072_plus` `m`
                 WHERE '
                 . $jms
@@ -1473,6 +1614,25 @@ class JobDesc {
                 . ' , \'\' oborot_day_hand '
                 . ' , \'\' oborot_day_server '
                 . ' , \'\' oborot_day '
+                
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                
                 . ' FROM `mod_073_comments` '
                 . ' WHERE '
                 . $jms
@@ -3550,11 +3710,11 @@ class JobDesc {
 // $now_smena['salary'] = [];
 
                         $now_smena['salary'] = self::getSalaryJobman($db,
-                                        $now_smena['sale_point'],
+                                        ( $now_smena['sale_point'] ?? null ),
                                         $now_smena['dolgnost'],
                                         $now_date);
 
-                        if (!empty($var_cash_salary))
+                        if ( !empty($var_cash_salary) )
                             \f\Cash::setVar($var_cash_salary, $now_smena);
                     }
 
@@ -5188,7 +5348,10 @@ class JobDesc {
      * @param type $module_salary
      * @return type
      */
-    public static function getSalaryJobman($db, int $sp, int $dolgn, string $date) {
+    public static function getSalaryJobman($db, $sp, $dolgn, $date) {
+    
+        if( empty($sp) || empty($dolgn) || empty($date) )
+            return false;
 
         $cash_var = \Nyos\mod\JobDesc::$mod_salary . '_sp' . $sp . '_dolgn' . $dolgn . '_date' . $date;
 // $cash_time = 60 * 60 * 20;
