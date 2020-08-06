@@ -3,6 +3,7 @@
 
     <script src="/js/numberformat.js" ></script>
 
+    {#{{ didrive_f__timer_start(57) }}#}
 
     {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set sps = items__get( db, 'sale_point' )  %}
@@ -40,6 +41,9 @@
     {% endif %}
     {% if 2 == 1 or timer_show == 'on' %} <br/>время jobdesc__get_dolgnosti - {{ didrive_f__timer_stop(5) }} {% endif %}
 
+    {#2277 -    {{ didrive_f__timer_stop(57) }}#}
+    
+    
     <div class="container-fluid" id="body2" >
 
         {% if 1 == 1 %}
@@ -259,6 +263,9 @@
         {% elseif 1 == 1 and get.sp is defined %}
 
 
+                    {% if metkis is not defined %}
+                        {% set metkis = site__get_metki() %}
+                    {% endif %}
 
 
 
@@ -284,10 +291,15 @@
 
                         {#{{ jobdesc__calcDayBudget( db, get.sp, date_start, getListJobsPeriodAll.data.where_job__workman_date|keys ) }}#}
 
+    {#{{ didrive_f__timer_start(78) }}#}
+                        
                         {% set sp_now = sp_now_nn.id %}
                         {#{ pa(sp_now) }#}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.htm' %}
 
+    {#{{ didrive_f__timer_stop(78) }}#}
+                        
+                        
                     {% endfor %}
                 </div>
             </div>

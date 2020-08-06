@@ -32,3 +32,22 @@ $input = json_decode(file_get_contents('php://input'), true);
 if (!empty($input) && empty($_REQUEST))
     $_REQUEST = $input;
 
+// \f\pa($_SERVER);
+// if( $_REQUEST )
+
+if(strpos( $_SERVER['REQUEST_URI'], '0start.php' ) !== false ){
+
+    $scan = scandir( __DIR__ );
+    // \f\pa($scan);
+
+    echo '<table style="width:100%;"><tr><td>';
+
+    foreach( $scan as $k => $v ){
+        if( !isset($v{5}))
+        continue;
+        echo '<br/><nobr><a href="'.$v.'" target="res1" >'.$v.'</a></nobr>';
+    }
+
+    echo '</td><td><iframe name="res1" style="height:600px;width:100%;border: 1px solid blue;" ></iframe></td></tr></table>';
+
+}

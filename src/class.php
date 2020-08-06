@@ -1139,6 +1139,7 @@ class JobDesc {
             $return_jm_sp = [];
             $return_sp_jm_onjob = [];
             $return_spec_sp_jm_onjob = [];
+            $return_spec__jm_onjob = [];
 
             foreach ($return2 as $k => $v) {
 
@@ -1155,6 +1156,7 @@ class JobDesc {
 
                         $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
                         $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                        
                     } else {
 
                         if (!isset($return_sp_jm_onjob[$v['sale_point']][$v['jobman']]))
@@ -1164,7 +1166,11 @@ class JobDesc {
                     }
                 } elseif ($v['type'] == 'spec') {
 
-                    $return_spec_sp_jm_onjob[$v['sale_point']][$v['jobman']][$v['date']][] = $v;
+                    // $return_spec_sp_jm_onjob[$v['sale_point']][$v['jobman']][$v['date']][] = $v;
+                    $return_spec__jm_onjob[$v['jobman']][] = $v;
+                    
+                    $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                    
                 }
             }
 
@@ -1176,7 +1182,8 @@ class JobDesc {
             $return = [
                 'jobmans' => ( $return_sp_jm[$sp_id] ?? [] ),
                 'send_on_job' => ( $return_sp_jm_onjob[$sp_id] ?? [] ),
-                'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
+                // 'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
+                'spec' => ( $return_spec__jm_onjob ?? [] ),
                 'job_jm_on_sp' => []
             ];
 

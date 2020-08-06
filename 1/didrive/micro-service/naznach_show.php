@@ -71,7 +71,7 @@ try {
             . '<br/>с ' . date('d.m.y H:i', $start_time)
             . '<br/>до ' . date('d.m.y H:i', $fin_time)
             . '<br/>часов на работе ' . $indb['hour_on_job']
-            // . '<hr>' . $ee . '<hr>'
+            . '<hr>' . $ee . '<hr>'
             . '</nobr>'
             . '</div>', true);
 } catch (Exception $exc) {

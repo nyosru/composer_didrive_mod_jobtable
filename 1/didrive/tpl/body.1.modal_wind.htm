@@ -127,7 +127,7 @@
                         {#
                         <button type="button" class="btn btn-xs btn-light" data-dismiss="modal">Close</button>
                         #}
-                        <button type="submit" name="add_profi" value="yes" onclick="return confirm('Назначаем сотрудника ?');" class="btn btn-success">Назначить</button>
+                        <button type="submit" name="add_profi" value="yes" onclick="return confirm('Назначаем сотрудника ?'); $(this).hide();" class="btn btn-success">Назначить</button>
                     </div>
 
                 </form>
