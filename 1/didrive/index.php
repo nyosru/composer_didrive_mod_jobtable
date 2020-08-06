@@ -5,6 +5,8 @@ if (isset($_GET['newtype']{0})) {
     \f\redirect('/', 'i.didrive.php');
 }
 
+$vv['in_body_end'][] = '<link rel="stylesheet" href="/vendor/didrive_mod/jobdesc/1/didrive/css.2007.css">';
+
 // \f\pa($_SESSION);
 
 if ( 1 == 2 && isset($_SESSION['newtype']) && $_SESSION['newtype'] == 2007 ) {

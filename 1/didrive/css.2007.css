@@ -3,3 +3,8 @@
 .position .icon_remove span{ color: rgba(255,0,0,0.1); }
 .position:HOVER .icon_remove span{ color: rgba(255,0,0,0.3); }
 .position .icon_remove span:HOVER{ color: rgba(255,0,0,0.7); }
+
+
+.icon_removed_item{ float:right; padding:2px; cursor: pointer; }
+.icon_removed_item span{ color: rgba(0,0,0,0.3); }
+.icon_removed_item:HOVER span{ color: rgba(255,0,0,0.7); }

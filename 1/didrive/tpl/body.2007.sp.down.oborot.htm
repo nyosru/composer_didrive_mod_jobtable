@@ -28,8 +28,7 @@
                     {% if itogi_day[now_date]['oborot'][1] %}
                         <small>есть 2-е значение, обратитесь в поддержку #{{ itogi_day[now_date]['oborot'][1]['item_id'] }}</small>
                     {% endif %}
-                    
-                    
+
                     <div class="tcell td_inf_{{sp_now}}obr" >
                         <div class='text-center'>
                             {#{ pa(oborots[now_date2]) }#}
@@ -40,29 +39,6 @@
                                     {{ v.oborot_server|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
                                 </span>
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
-
-                                <input type="number" max="1000000" min="0" 
-
-                                       placeholder="уточнить"
-                                       title="укажите точную сумму оборота"
-
-                                       value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
-
-                                       style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
-                                       class="form-control didrive__edit_items_dop_pole"
-
-                                       edit_item_id="{{ oborots[now_date2]['id'] }}"
-                                       edit_dop_name="oborot_hand"
-                                       edit_s="{{ creatSecret( v.item_id~"oborot_hand") }}"
-
-                                       pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
-                                       text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
-
-                                       delete_ocenka_sp="{{ sp_now }}"
-                                       delete_ocenka_date="{{ now_date2 }}"
-                                       delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
-
-                                       />
 
                             {% else %}
 
@@ -76,7 +52,43 @@
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
                             {% endif %}
+                                
+                            <input type="number" max="1000000" min="0" 
 
+                                placeholder="уточнить"
+                                title="укажите точную сумму оборота"
+
+                                value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
+
+                                style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
+                                class="form-control didrive__edit_items_dop_pole"
+                                
+                                module="sale_point_oborot"
+
+                                pole_edit_name="oborot_hand"
+                                
+                                edit1="sale_point"
+                                edit1val="{{ sp_now }}"
+                                edit2="date"
+                                edit2val="{{ now_date }}"
+                                
+                                edit_s="{{ creatSecret( "oborot_hand"~sp_now~now_date) }}"
+                                
+
+                                
+                                
+                                
+                                edit_item_id="{{ oborots[now_date2]['id'] }}"
+                                edit_dop_name="oborot_hand"
+
+                                pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
+                                text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
+
+                                delete_ocenka_sp="{{ sp_now }}"
+                                delete_ocenka_date="{{ now_date2 }}"
+                                delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                />
                         </div>
                     </div>                    
 

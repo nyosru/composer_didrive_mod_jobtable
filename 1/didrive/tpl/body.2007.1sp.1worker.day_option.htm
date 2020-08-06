@@ -67,7 +67,7 @@
 
                         <a href="" 
 
-                           xclass="put_var_in_modal btn btn-xs btn-light" 
+                           xclass="put_var_in_modal btn btn-sm btn-light" 
                            class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
 
                            {#
@@ -99,6 +99,8 @@
 
                            reload_page_after_ok="da"
 
+                           style="padding:5px;"
+                           
                            ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
 
                     {% endfor %}
@@ -131,7 +133,9 @@
                        {% set ss = sp_now ~ man %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
+style="padding:5px;"
 
+onclick="$('.but_submit_add_form').show();"
                        ><nobr>
                             <span class="fa fa-plus" ></span> смену
                         </nobr>
@@ -170,7 +174,7 @@
                        s2="{{ creatSecret( ss ) }}"
 
                        delete_cash_start_date="{{ date_start }}"
-
+style="padding:5px;"
                        ><nobr>
                             <span class="fa fa-plus" ></span> комментарий
                         </nobr></a>
@@ -202,7 +206,7 @@
                        s2="{{ creatSecret( ss ) }}"
 
                        data-target2="#add_minus_for_jobman"
-
+style="padding:5px;"
                        ><span class="fa fa-minus" ></span> взыскание</a>
 
                     <a href=""
@@ -229,7 +233,7 @@
                        s2="{{ creatSecret( ss ) }}"
 
                        data-target2="#add_plus_for_jobman"
-
+style="padding:5px;"
                        >
                         <span class="fa fa-plus" ></span> премия
                     </a>
@@ -273,7 +277,7 @@
     
                     data-target2="#add_plus_for_jobman"
                     #}
-
+style="padding:5px;"
                    ><span class="fa fa-window-close" ></span> уволен c завтрашнего дня<br/>
                     <small>сегодня последний день в этой должности</small></a>
 

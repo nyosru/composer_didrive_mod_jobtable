@@ -18,7 +18,38 @@
 
     {% else %}
 
-        <div class="text-center show_down_hiden smena1 smena_ok" >
+        <div class="text-center show_down_hiden smena1 smena_ok " >
+
+
+
+
+
+
+            <a 
+
+                class='base_modal_go icon_removed_item'
+                data-toggle="modal" 
+                data-target="#di_modal"
+                modal_header='Удалить смену'
+                ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
+                reload_page_after_ok="da"
+                get_answer='Удаляем смену ?'
+
+                ><span class="fa fa-remove" ></span></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {% if i.who_add_item is defined and i.who_add_item == 'iiko' %}
 
@@ -33,6 +64,7 @@
             {% endif %}
 
             {#{ pa(check) }#}
+
 
             <nobr>
 
@@ -113,16 +145,16 @@
                                        date="{{ date }}"
 
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
-
                                        ></i> 
 
                                 {% endif %}
 
+{% if 1 == 2 %}
                                 <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
                                         return false;" >
                                     <span class="fa fa-caret-down" ></span>
                                 </a>
-
+{% endif %}
                             </nobr>
 
                             <br/>
@@ -169,8 +201,8 @@
 
 
                                 {% else %} {# если не фикс за час #}
-                                    
-                                    
+
+
                                     <select name="ocenka" 
                                             class="select_price_hour_now select_edit_item_dop02 price_hour_{{ date }}_{{ sp_now }}_select
 
@@ -266,7 +298,7 @@
 
                         {% set now_hour_price = 0 %}
 
-{# если спец назначение #}
+                        {# если спец назначение #}
                         {% if i.spec_id > 0 %}
 
                             {% if i.s_pay_base > 0 %}
@@ -281,9 +313,9 @@
                                 {% set now_hour_price = i.s_pay3 %}
                             {% endif %}
 
-{# если НЕ спец назначение #}
+                            {# если НЕ спец назначение #}
                         {% else %}
-                            
+
                             {% if i.pay_base > 0 %}
                                 {% set now_hour_price = i.pay_base %}
                             {% elseif i.ocenka == 5 and i.pay5 > 0 %}
@@ -295,11 +327,11 @@
                             {% elseif i.ocenka_auto == 3 and i.pay3 > 0 %}
                                 {% set now_hour_price = i.pay3 %}
                             {% endif %}
-                            
+
                         {% endif %}
 
-                        
-                        
+
+
                         {% if now_hour_price > 0 and now_hours > 0 %}
                             {% set summa_day =  ( now_hour_price * now_hours )|round(0, 'ceil') %}
                         {% else %}
@@ -317,107 +349,106 @@
 
                 </div>
 
-                <span class="xhide_down" style="display:none;" id="drop2_{{ i.id }}">
+                {% if 1 == 2 %}
+                    <span class="xhide_down" style="display:none;" id="drop2_{{ i.id }}">
 
-                    {% if i.status == 'show' %}
+                        {% if i.status == 'show' %}
 
-                        {% if 1 == 2 %}
-                            <a href="#" class="act act_smena btn3" 
-                               go_answer="Хотите удалить смену ?"
-                               action="delete_smena" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" resto="ares{{ i.id }}" show_id="ares{{ i.id }}" hidethis="da" >удалить смену</a>
+                            {% if 1 == 2 %}
+                                <a href="#" class="act act_smena btn3" 
+                                   go_answer="Хотите удалить смену ?"
+                                   action="delete_smena" id2="{{ i.id }}" s2="{{ creatSecret( i.id ) }}" resto="ares{{ i.id }}" show_id="ares{{ i.id }}" hidethis="da" >удалить смену</a>
+                            {% endif %}
+
+                            <a href="#"
+
+                               class='base_modal_go'
+                               data-toggle="modal" data-target="#di_modal"
+
+                               modal_header='Удалить смену'
+                               xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                               xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                               xxajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+
+                               ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                               ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
+
+                               reload_page_after_ok="da"
+                               get_answer='Удаляем смену ?'
+
+                               >удалить смену</a>                   
+
+                            {% if 1 == 2 %}
+                                <a href="#" class="act act_smena btn3" 
+
+
+                                   {# действие после вопроса #}
+                                   comit_answer="Отправляем на оплату ?"
+
+                                   {# замена доп параметра #}
+                                   action="edit_dop_item"
+
+                                   {# модуль итемов #}
+                                   itemsmod="050.chekin_checkout"
+                                   {# id итема #}
+                                   item_id="{{ rand_d }}"
+                                   {# название доп параметра #}
+                                   dop_name="pay_check"
+                                   {# новое значение параметра #}
+                                   dop_new_value="yes"
+
+                                   {# секрет #}
+                                   s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-yes' ) }}" 
+
+                                   {# скрыть ссылку после клика #}
+                                   hidethis="da" 
+                                   {# сделать видимым блок по id #}
+                                   show_id="ares{{ rand_d }}" 
+                                   {# id куда печатаем результат #}
+                                   res_to_id="ares{{ rand_d }}" 
+                                   {# сообщение печатаем если всё ок #}
+                                   msg_to_success="Отправили на оплату, спасибо"
+
+                                   >редактировать смену</a>
+                            {% endif %}
                         {% endif %}
 
-                        <a href="#"
+                    </span>
+                    <div id="ares{{ rand_d }}" style="display:none;"></div>
+                    {% if i.payed is defined %}
 
-                           class='base_modal_go'
-                           data-toggle="modal" data-target="#di_modal"
+                        {% set pay_all = 0 %}
+                        {% set pay_string = '' %}
 
-                           modal_header='Удалить смену'
-                           xajax_link='/vendor/didrive_mod/items/1/ajax.php'
-                           xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
-                           xxajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                        {% for k2,v2 in i.payed %}
 
-                           ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
-                           ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
+                            {% set pay_all = pay_all + v2.summa %}
+                            {% set pay_string = pay_string~' / '~v2.summa %}
 
-                           reload_page_after_ok="da"
-                           get_answer='Удаляем смену ?'
+                        {% endfor %}
 
-                           >удалить смену</a>                   
+                        {% if pay_all != 0 %}
 
-                        {% if 1 == 2 %}
-                            <a href="#" class="act act_smena btn3" 
+                            <abbr class="pole_oplacheno 
 
+                                  {# для динамичного показа суммы за смену + #}
+                                  smena_oplacheno_{{ i.id }}
+                                  {# для динамичного показа суммы за смену - #}
 
-                               {# действие после вопроса #}
-                               comit_answer="Отправляем на оплату ?"
+                                  " 
 
-                               {# замена доп параметра #}
-                               action="edit_dop_item"
+                                  {# для динамичного показа суммы за смену + #}
+                                  summ="{{ pay_all }}" 
+                                  {# для динамичного показа суммы за смену - #}
 
-                               {# модуль итемов #}
-                               itemsmod="050.chekin_checkout"
-                               {# id итема #}
-                               item_id="{{ rand_d }}"
-                               {# название доп параметра #}
-                               dop_name="pay_check"
-                               {# новое значение параметра #}
-                               dop_new_value="yes"
+                                  title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all|number_format(0, '.', '`') }}&nbsp;₽</abbr>
 
-                               {# секрет #}
-                               s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-yes' ) }}" 
-
-                               {# скрыть ссылку после клика #}
-                               hidethis="da" 
-                               {# сделать видимым блок по id #}
-                               show_id="ares{{ rand_d }}" 
-                               {# id куда печатаем результат #}
-                               res_to_id="ares{{ rand_d }}" 
-                               {# сообщение печатаем если всё ок #}
-                               msg_to_success="Отправили на оплату, спасибо"
-
-                               >редактировать смену</a>
                         {% endif %}
-                    {% endif %}
-
-                </span>
-
-                <div id="ares{{ rand_d }}" style="display:none;"></div>
-
-
-                {% if i.payed is defined %}
-
-                    {% set pay_all = 0 %}
-                    {% set pay_string = '' %}
-
-                    {% for k2,v2 in i.payed %}
-
-                        {% set pay_all = pay_all + v2.summa %}
-                        {% set pay_string = pay_string~' / '~v2.summa %}
-
-                    {% endfor %}
-
-                    {% if pay_all != 0 %}
-
-                        <abbr class="pole_oplacheno 
-
-                              {# для динамичного показа суммы за смену + #}
-                              smena_oplacheno_{{ i.id }}
-                              {# для динамичного показа суммы за смену - #}
-
-                              " 
-
-                              {# для динамичного показа суммы за смену + #}
-                              summ="{{ pay_all }}" 
-                              {# для динамичного показа суммы за смену - #}
-
-                              title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all|number_format(0, '.', '`') }}&nbsp;₽</abbr>
 
                     {% endif %}
-
+                    {# { pa(check) } #}
                 {% endif %}
 
-                {# { pa(check) } #}
 
             </nobr>
         </div>

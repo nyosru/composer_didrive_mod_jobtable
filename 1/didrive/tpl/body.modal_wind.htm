@@ -108,10 +108,12 @@
                     </div>
 
                     <div class="modal-footer">
+                        
+                        
                         {#
                         <button type="button" class="btn btn-xs btn-light" data-dismiss="modal">Close</button>
                         #}
-                        <button type="submit" name="add_profi" value="yes" onclick="return confirm('Назначаем сотрудника ?');" class="btn btn-success">Назначить</button>
+                        <button type="submit" name="add_profi" value="yes" onclick="return confirm('Назначаем сотрудника ?'); " class="btn btn-success">Назначить</button>
                     </div>
 
                 </form>
@@ -194,7 +196,8 @@
                   <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
                   #}
 
-                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <button type="submit" onclick="$(this).hide();" class="but_submit_add_form btn btn-sm btn-primary">Добавить</button>
+                    
                     <input type="hidden" name="action" id="action" value="add_new_smena" >
                     <input type="hidden" name="id2" id="id2" value="" >
                     <input type="hidden" name="s2" id="s2" value="" >

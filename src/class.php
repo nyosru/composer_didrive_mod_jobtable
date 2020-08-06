@@ -1141,8 +1141,16 @@ class JobDesc {
             $return_spec_sp_jm_onjob = [];
             $return_spec__jm_onjob = [];
 
-            foreach ($return2 as $k => $v) {
+//            $skip_id = [];
+            
+            foreach ( $return2 as $k => $v) {
 
+//                if( isset($skip_id[$v['id']]) )
+//                    continue;
+//                $skip_id[$v['id']] = 1;
+
+                // echo '<Br/>'.$v['id'];
+                
                 $return_jm_sp[$v['jobman']][$v['sale_point']] = 1;
                 $return_sp_jm[$v['sale_point']][$v['jobman']] = ( $v['fio'] ?? '' );
                 //$return_jm_fio[$v['jobman']] = $v['fio'];
@@ -1164,8 +1172,11 @@ class JobDesc {
 
                         $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
                     }
+                    
                 } elseif ($v['type'] == 'spec') {
 
+                    // echo '<br/>'.$v['id'];
+                    
                     // $return_spec_sp_jm_onjob[$v['sale_point']][$v['jobman']][$v['date']][] = $v;
                     $return_spec__jm_onjob[$v['jobman']][] = $v;
                     

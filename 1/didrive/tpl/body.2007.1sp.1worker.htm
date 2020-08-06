@@ -106,7 +106,6 @@
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.day_option.htm' %}
                     {% endif %}
 
-
                     {% if now_dolgn != '' and new_dolgn != '' %}
                         {% set i = now_dolgn %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
@@ -120,35 +119,53 @@
 
                     
                     {% if now_dolgn != '' or now_spec != '' %}
-
+                        
+                        {#<Br/>122++#}
+                        
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.sale_point == get.sp and i.date == date and i.type == 'metki' %}
+                            
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
                             {#{{  pa(i) }}#}
                         {% endfor %}
 
                         {% set i2 = 0 %}
-
+                        {% set n1 = 1 %}
+                        {#{% set skip = [] %}#}
+                        
+                        {% set last_id = 0 %}
+                        
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'check' %}
+                            
+                            {% if last_id != i.id %}
 
+                            {#<br/>141++ {{ p }} / {{ last_id }} / {{ i.id }}#}
+                                
+                            {% set last_id = i.id %}
+                            
                             {% if i.sale_point == '' or i.sale_point == get.sp %}
                                 {% set i2 = i %}
                             {% endif %}
+                            
+                            {#{% set skip = skip|merge({ i['id'] }) %}#}
 
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
-                            {#{{  pa(i) }}#}
 
+                            {% endif %}
+                            
                         {% endfor %}
 
                         {% if i2 != 0 %}
 
                             {% set auto_bonus = jobdesc__calcAutoBonus( db, get.sp, i2 ) %}
                             {#{{ pa(auto_bonus) }}#}
+                            {#<br/>155++#}
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.plus.auto.htm' %}
                             {% set auto_bonus = [] %}
 
                         {% endif %}
 
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and ( i.type == 'minus' or i.type == 'plus' or i.type == 'comment' ) %}
+                            {#<br/>162++#}
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
                         {% endfor %}
 
