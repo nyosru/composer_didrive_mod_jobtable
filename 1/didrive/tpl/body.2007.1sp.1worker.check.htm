@@ -1,6 +1,5 @@
 {% spaceless %}
 
-
     {% if session.now_user_di.access is defined and session.now_user_di.access == 'admin' %}
         <small class="show_to_admin" >чек #{{ i.id }}</small>
     {% endif %}
@@ -13,17 +12,11 @@
         {#+++ на другой точке#}
         <div class="text-center show_down_hiden smena1 smena_ok" >
             рабочая смена на {{ sps[i.sale_point]['head'] }}
-
         </div>
 
     {% else %}
 
         <div class="text-center show_down_hiden smena1 smena_ok " >
-
-
-
-
-
 
             <a 
 
@@ -174,7 +167,19 @@
 
                             <center>
 
-
+                                
+                                
+                                {% set i2 = [] %}
+                                {% if i.position_d == 111186 %}
+                                    {% set i2 = jobdesc_whoisSizeNowPay( db, sp_now, i.position_d, date ) %}
+                                    {#{{ pa(i2) }}#}
+                                    {#{% set i['pay5'] = i2['ocenka-hour-5'] %}#}
+                                    {#{% set i['pay3'] = i2['[ocenka-hour-3'] %}#}
+                                    {% set i = i|merge({'pay5': i2['ocenka-hour-5'] }) %}
+                                    {% set i = i|merge({'pay3': i2['ocenka-hour-3'] }) %}
+                                {% endif %}
+                                
+                                
                                 {% if i.s_pay_base > 0 %} {# если фикс за час #}
 
                                     <input 
@@ -458,5 +463,7 @@
     {#<br/>{{ pa(i,2) }} #}
     {#{% if i.id == 128475 %} {{ pa(user_v,2) }} {{  pa(i,2) }} {% endif %}#}
     {#{% if i.id == 132232 %} {{ pa(user_v,2) }} {{  pa(i,2) }} {% endif %}#}
-
+    {#{% if i.id == 128168 %} {{ pa(i) }} {% endif %}#}
+    {#{% if i.id == 132197 %} {{ pa(i) }} {% endif %}#}
+    
 {% endspaceless %}

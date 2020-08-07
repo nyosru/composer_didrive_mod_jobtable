@@ -64,6 +64,8 @@
                     
                 {% endif %}
 
+                {#{{ pa( now_dolgn ) }}#}
+                
             </div>
         </div>
 
@@ -91,7 +93,6 @@
 
                     {% set now_spec = '' %}
 
-                    
                     {% if jobmans.data.spec[jobman_id] is defined %}
                         {% for k3,i in jobmans.data.spec[jobman_id] if i.date == date %}
                             {#{% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}#}
@@ -116,7 +117,6 @@
                         {% set i = now_spec %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
                     {% endif %}
-
                     
                     {% if now_dolgn != '' or now_spec != '' %}
                         

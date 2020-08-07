@@ -13,6 +13,17 @@
     {% set actions = jobdesc_ms__get_actions_jobmans_on_month( db, jobmans.data.send_on_job|keys , date_start ) %}
     {#{{ pa(actions,2) }}#}
     
+    
+    
+    {% set position_pay = jobdesc_get_size_pay_position_month( db, sp_now, now_dolgn['dolgnost'], date_start ) %}
+
+    position_pay
+    {{  pa(position_pay,2) }}
+    
+    
+    
+    
+    
     {% include dir_mod_now_mod_ditpl~'body.2007.1sp.up_line.htm' %}
 
     {% if get.hide_body is not defined %}        

@@ -70,6 +70,29 @@ $twig->addFunction($function);
 
 
 
+$function = new Twig_SimpleFunction('jobdesc_get_size_pay_position_month', function ( $db, $sp, $position, $date ) {
+
+    return \Nyos\mod\JobDesc::getSizePayPositionMonth( $db, (int) $sp, (int) $position, $date);
+    
+});
+$twig->addFunction($function);
+
+
+$function = new Twig_SimpleFunction('jobdesc_whoisSizeNowPay', function ( $db, $sp, $position, $date ) {
+
+    return \Nyos\mod\JobDesc::whoisSizeNowPay( $db, (int) $sp, (int) $position, $date);
+    
+});
+$twig->addFunction($function);
+
+
+
+
+
+
+
+
+
 $function = new Twig_SimpleFunction('jobdesc_ms__get_list_jobmans_job_on_sp_month', function ( $db, $sp, string $date ) {
 
     if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
