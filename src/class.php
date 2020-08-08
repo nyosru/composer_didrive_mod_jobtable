@@ -1367,11 +1367,11 @@ class JobDesc {
                     . ' LEFT JOIN mod_061_dolgnost d ON d.id = `on`.`dolgnost` '
                     // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `on`.`dolgnost` AND p.date <= on.date ORDER BY date DESC LIMIT 1 ) '
                     . ' WHERE '
-                    . ' `on`.`date` <= :date_start '
+                    // . ' `on`.`date` <= :date_start '
+                    . ' `on`.`date` = ( SELECT MAX(date) FROM mod_jobman_send_on_sp WHERE date <= :date_start AND jobman = `on`.`jobman` LIMIT 1 ) '
                     . ' AND '
                     . ' `on`.status = \'show\' '
                     . ' GROUP BY `on`.`jobman` '
-                    . ' ORDER BY `on`.`date` DESC '
                     . ' ) '
                     
             ;
