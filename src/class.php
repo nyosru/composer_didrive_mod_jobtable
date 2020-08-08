@@ -232,7 +232,7 @@ class JobDesc {
         $in_sql = [
             ':date_start' => date('Y-m-01', strtotime($date)),
             ':sp' => $sp,
-            // ':position' => $position ,
+                // ':position' => $position ,
         ];
         $in_sql[':date_finish'] = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date)) . ' +1 month -1 day'));
 
@@ -242,9 +242,9 @@ class JobDesc {
             oborot_hand,
             oborot_server,
             CASE '
-            . ' WHEN oborot_hand IS NOT NULL THEN oborot_hand '
-            . ' WHEN oborot_server IS NOT NULL THEN oborot_server '
-            . ' ELSE 0 
+                . ' WHEN oborot_hand IS NOT NULL THEN oborot_hand '
+                . ' WHEN oborot_server IS NOT NULL THEN oborot_server '
+                . ' ELSE 0 
             END as oborot 
             FROM mod_sale_point_oborot
             WHERE
@@ -255,7 +255,7 @@ class JobDesc {
             GROUP BY date
             ORDER BY date DESC
             ';
-        
+
         // \f\pa($sql);
         $ff = $db->prepare($sql);
         // \f\pa($in_sql);
@@ -292,7 +292,6 @@ class JobDesc {
             return self::$ar_oborots_sp_date[$sp][$date];
 
         return false;
-
     }
 
     /**
@@ -315,14 +314,14 @@ class JobDesc {
         ];
         $in_sql[':date_finish'] = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date)) . ' +1 month -1 day'));
 
-        $cash_var = 'ar_position_pays_'.$sp.'_'.$in_sql[':date_finish'];
+        $cash_var = 'ar_position_pays_' . $sp . '_' . $in_sql[':date_finish'];
 
-        $rr = \f\Cash::getVar( $cash_var );
-        
-            if( !empty($rr) ){
+        $rr = \f\Cash::getVar($cash_var);
+
+        if (!empty($rr)) {
             self::$ar_pays__sp_position_d = $rr;
             return \f\end3('ok cash');
-            }
+        }
 
         $sql = ' SELECT '
                 . ' p.*'
@@ -362,7 +361,7 @@ class JobDesc {
 //                            .' OR 
 //                            pay_from_day_oborot_bolee IS NULL '
 //                        .' ) '
-                 // . ' GROUP BY sale_point, dolgnost, date '
+                // . ' GROUP BY sale_point, dolgnost, date '
                 . ' ORDER BY p.date DESC, p.pay_from_day_oborot_bolee DESC '
                 . ' ; '
 
@@ -380,8 +379,8 @@ class JobDesc {
             self::$ar_pays__sp_position_d[$r['sale_point']][$r['dolgnost']][] = $r;
         }
 
-        \f\Cash::setVar( $cash_var , self::$ar_pays__sp_position_d , 60*60*6 );
-        
+        \f\Cash::setVar($cash_var, self::$ar_pays__sp_position_d, 60 * 60 * 6);
+
         return \f\end3('ok');
     }
 
@@ -412,9 +411,9 @@ class JobDesc {
                 if (!empty($v['pay_from_day_oborot_bolee'])) {
                     $oborot = self::getOborotSp($db, $sp, $date);
                     // \f\pa($oborot);
-                    if( !empty($oborot['oborot']) && $oborot['oborot'] >= $v['pay_from_day_oborot_bolee'] ){
+                    if (!empty($oborot['oborot']) && $oborot['oborot'] >= $v['pay_from_day_oborot_bolee']) {
                         return $v;
-                    }else{
+                    } else {
                         continue;
                     }
                 }
@@ -1255,8 +1254,11 @@ class JobDesc {
 //            ];
 //            $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
 
-            $in_sql = [':date_start' => date('Y-m-01', strtotime($date))];
-            $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+            $in_sql = [
+                ':date_start' => date('Y-m-01', strtotime($date))
+                ];
+            // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+            $in_sql[':date_start2'] = date('Y-m-02', strtotime($date));
             $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
 
             // $sql = 'SELECT * FROM `mod_jobman_send_on_sp` WHERE date <= DATE( :date_start ) AND sale_point = :sp ORDER BY date DESC';
@@ -1297,17 +1299,19 @@ class JobDesc {
 //                    . ' spec.date <= :date_finish '
                     . ' AND '
                     . ' spec.status = \'show\' '
-                    . '  UNION  '
+
+                    . '  UNION ALL '
+                    
                     . ' SELECT 
-                `on`.`id` ,
-                `on`.`date` , 
-                `on`.`date_finish` , 
-                `on`.`jobman` ,
-                `on`.`sale_point` ,
-                `on`.`dolgnost` ,
-                `d`.`head` dolgnost_name,
-                \'norm\' as `type`
-                , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                        `on`.`id` ,
+                        `on`.`date` , 
+                        `on`.`date_finish` , 
+                        `on`.`jobman` ,
+                        `on`.`sale_point` ,
+                        `on`.`dolgnost` ,
+                        `d`.`head` dolgnost_name,
+                        \'norm\' as `type`
+                        , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
 //                .' ', pay.id pay_id
 //                , pay.date pay_date
@@ -1326,11 +1330,50 @@ class JobDesc {
                     . ' LEFT JOIN mod_061_dolgnost d ON d.id = `on`.`dolgnost` '
                     // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `on`.`dolgnost` AND p.date <= on.date ORDER BY date DESC LIMIT 1 ) '
                     . ' WHERE '
-                    . ' `on`.`date` >= :date_start0 '
+                    . ' `on`.`date` >= :date_start2 '
                     . ' AND '
                     . ' `on`.`date` <= :date_finish '
                     . ' AND '
                     . ' `on`.status = \'show\' '
+
+                    . '  UNION ALL '
+                    
+                    . ' ( 
+                        SELECT 
+                        `on`.`id` ,
+                        `on`.`date` , 
+                        `on`.`date_finish` , 
+                        `on`.`jobman` ,
+                        `on`.`sale_point` ,
+                        `on`.`dolgnost` ,
+                        `d`.`head` dolgnost_name,
+                        \'norm\' as `type`
+                        , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                    // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
+//                .' ', pay.id pay_id
+//                , pay.date pay_date
+//                , pay.`ocenka-hour-base`
+//                , pay.`ocenka-hour-5`
+//                , pay.`ocenka-hour-3` 	
+//                , pay.`premiya-5`
+//                , pay.`premiya-3`
+//                , pay.`bonus_proc_from_oborot`
+//                , pay.`if_kurit` 	
+//                , pay.`oborot_sp_last_monht_bolee`
+//                , pay.`pay_from_day_oborot_bolee` '
+                    . ' FROM
+                `mod_jobman_send_on_sp` as `on` '
+                    . ' LEFT JOIN mod_070_jobman jm ON jm.id = `on`.`jobman` '
+                    . ' LEFT JOIN mod_061_dolgnost d ON d.id = `on`.`dolgnost` '
+                    // .' LEFT JOIN mod_071_set_oplata pay ON pay.id = ( SELECT id FROM mod_071_set_oplata p WHERE p.dolgnost = `on`.`dolgnost` AND p.date <= on.date ORDER BY date DESC LIMIT 1 ) '
+                    . ' WHERE '
+                    . ' `on`.`date` <= :date_start '
+                    . ' AND '
+                    . ' `on`.status = \'show\' '
+                    . ' GROUP BY `on`.`jobman` '
+                    . ' ORDER BY `on`.`date` DESC '
+                    . ' ) '
+                    
             ;
             // \f\pa($sql);
 
@@ -1353,6 +1396,18 @@ class JobDesc {
 
 //            $skip_id = [];
 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             foreach ($return2 as $k => $v) {
 
 //                if( isset($skip_id[$v['id']]) )
@@ -1371,8 +1426,9 @@ class JobDesc {
 
                     if ($v['date'] <= $in_sql[':date_start']) {
 
-                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
-                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
+                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
+                            
                     } else {
 
                         if (!isset($return_sp_jm_onjob[$v['sale_point']][$v['jobman']]))
