@@ -23,7 +23,7 @@
                             {#ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'#}
 
                             ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/naznach_show.php'
-                            ajax_vars='user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'
+                            ajax_vars='user={{ jobman_id }}&s={{ creatSecret( jobman_id ) }}'
 
                             >
                             список назначений сотрудника
@@ -54,18 +54,18 @@
 
                 {% if user_v[0]['type'] == 'spec' %}
                 {% else %}
-                    
+
                     {# запуск должности только если она была ранее даты старта #}
                     {% if user_v[0]['date']|date('U') <= date_start|date('U') %}
-                    {% set now_dolgn = user_v[0] %}
+                        {% set now_dolgn = user_v[0] %}
                     {% else %}
-                    {% set now_dolgn = '' %}
+                        {% set now_dolgn = '' %}
                     {% endif %}
-                    
+
                 {% endif %}
 
                 {#{{ pa( now_dolgn ) }}#}
-                
+
             </div>
         </div>
 
@@ -82,12 +82,23 @@
 
                     {% for k3,i in user_v if i['date'] == date %}
                         {% if i['type'] == 'spec' %}
+
+                            {#spec {{ pa(i) }}#}
+
                         {% else %}
+
+                            {% if 1 == 2 and now_dolgn != i %}
+                                {#{% set i = now_dolgn %}#}
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+                            {% endif %}
+
                             {#{% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}#}
                             {#{{ pa(i) }}#}
                             {% set now_dolgn = i %}
                             {% set new_dolgn = 1 %}
-                            {#{{ pa(now_dolgn) }}#}
+
+                            {#norm {{ pa(now_dolgn) }}#}
+
                         {% endif %}
                     {% endfor %}
 
@@ -109,7 +120,27 @@
 
                     {% if now_dolgn != '' and new_dolgn != '' %}
                         {% set i = now_dolgn %}
+
+
+                        {% for k3,i22 in user_v if i22['date'] == date %}
+                            {% if i['type'] == 'spec' %}
+                            {% else %}
+                                {% if i22 != i %}
+                                    {% set i23 = i %}
+                                    {% set i = i22 %}
+                                    {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+                                    {% set i = i23 %}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+
+
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+
+
+
+
                     {% endif %}
 
                     {% if now_spec != '' %}
@@ -117,42 +148,43 @@
                         {% set i = now_spec %}
                         {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
                     {% endif %}
-                    
+
                     {% if now_dolgn != '' or now_spec != '' %}
-                        
                         {#<Br/>122++#}
-                        
+
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.sale_point == get.sp and i.date == date and i.type == 'metki' %}
-                            
+
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
                             {#{{  pa(i) }}#}
+
                         {% endfor %}
 
                         {% set i2 = 0 %}
                         {% set n1 = 1 %}
                         {#{% set skip = [] %}#}
-                        
+
                         {% set last_id = 0 %}
-                        
+
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'check' %}
-                            
+
                             {% if last_id != i.id %}
 
-                            {#<br/>141++ {{ p }} / {{ last_id }} / {{ i.id }}#}
-                                
-                            {% set last_id = i.id %}
-                            
-                            {% if i.sale_point == '' or i.sale_point == get.sp %}
-                                {% set i2 = i %}
-                            {% endif %}
-                            
-                            {#{% set skip = skip|merge({ i['id'] }) %}#}
+                                {#<br/>141++ {{ p }} / {{ last_id }} / {{ i.id }}#}
 
-                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
+                                {% set last_id = i.id %}
+
+                                {% if i.sale_point == '' or i.sale_point == get.sp %}
+                                    {% set i2 = i %}
+                                {% endif %}
+
+                                {#{% set skip = skip|merge({ i['id'] }) %}#}
+
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
 
                             {% endif %}
-                            
+
                         {% endfor %}
+
 
                         {% if i2 != 0 %}
 
@@ -163,6 +195,7 @@
                             {% set auto_bonus = [] %}
 
                         {% endif %}
+
 
                         {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and ( i.type == 'minus' or i.type == 'plus' or i.type == 'comment' ) %}
                             {#<br/>162++#}

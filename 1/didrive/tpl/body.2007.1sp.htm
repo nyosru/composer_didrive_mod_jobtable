@@ -3,30 +3,55 @@
     {% set spoint = sps[sp_now] %}
     {#{ pa(spoint) }#}
 
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {{ didrive_f__timer_start(781) }}
+                {% endif %}
+
     {% set jobmans = jobdesc_ms__get_list_jobmans_job_on_sp_month( db, sp_now, date_start ) %}
+                
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                    <small><br/>jobmans {{ didrive_f__timer_stop(781) }}</small>
+                {% endif %}
     {#{{ pa(jobmans) }}#}
 {#     pa(jobmans.data.send_on_job,2) 
     {{ pa(jobmans.data.send_on_job,2) }}
      pa(jobmans.data.spec,2) 
     {{ pa(jobmans.data.spec,2) }}
 #}
+
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {{ didrive_f__timer_start(781) }}
+                {% endif %}
+
     {% set actions = jobdesc_ms__get_actions_jobmans_on_month( db, jobmans.data.send_on_job|keys , date_start ) %}
     {#{{ pa(actions,2) }}#}
     
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                <small><br/> actions {{ didrive_f__timer_stop(781) }}</small>
+                {% endif %}
     
+    
+                
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {{ didrive_f__timer_start(781) }}
+                {% endif %}
+
     
     {% set position_pay = jobdesc_get_size_pay_position_month( db, sp_now, now_dolgn['dolgnost'], date_start ) %}
 
-    position_pay
-    {{  pa(position_pay,2) }}
+    {#position_pay#}
+    {#{{  pa(position_pay,2) }}#}
     
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                <small><br/> position_pay {{ didrive_f__timer_stop(781) }}</small>
+                {% endif %}
     
     
     
     
     {% include dir_mod_now_mod_ditpl~'body.2007.1sp.up_line.htm' %}
 
-    {% if get.hide_body is not defined %}        
+    {% if get.hide_body is not defined %}
 
         {% set hour_summ = [] %}
 
@@ -38,10 +63,17 @@
                     {{  pa(jobmans.data.spec) }}
 #}                    {#{{  pa(jobmans.data.spec[jobman_id][date]) }}#}
 
+                {#{{  pa(session) }}#}
                 
-                {#{{ didrive_f__timer_start(781) }}#}
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {{ didrive_f__timer_start(781) }}
+                {% endif %}
+
                 {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.htm' %}
-                {#781 {{ didrive_f__timer_stop(781) }}#}
+                
+                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                <small>{{ didrive_f__timer_stop(781) }}</small>
+                {% endif %}
                 
             {% endfor %}
 
@@ -57,7 +89,9 @@
                     {% if 2 == 1 or timer_show == 'on' %} <br/>время jobdesc__where_now_dolgn - {{ didrive_f__timer_stop(5) }} {% endif %}
 
                     {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+                    
                     {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.htm' %}
+                    
                     {% if 2 == 1 or timer_show == 'on' %} 
                         <br/>время 32 tpl body.1sp.1worker.htm - {{ didrive_f__timer_stop(5) }} 
                         <hr>

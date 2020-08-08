@@ -560,12 +560,6 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
 
 
-
-
-
-
-
-
 // vue тащим бонусы и минусы за месяц
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'getPaysDopMonth') {
 

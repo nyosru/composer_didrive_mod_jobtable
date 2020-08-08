@@ -100,7 +100,7 @@
                            reload_page_after_ok="da"
 
                            style="padding:5px;"
-                           
+
                            ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
 
                     {% endfor %}
@@ -133,9 +133,9 @@
                        {% set ss = sp_now ~ man %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
-style="padding:5px;"
+                       style="padding:5px;"
 
-onclick="$('.but_submit_add_form').show();"
+                       onclick="$('.but_submit_add_form').show();"
                        ><nobr>
                             <span class="fa fa-plus" ></span> смену
                         </nobr>
@@ -174,7 +174,7 @@ onclick="$('.but_submit_add_form').show();"
                        s2="{{ creatSecret( ss ) }}"
 
                        delete_cash_start_date="{{ date_start }}"
-style="padding:5px;"
+                       style="padding:5px;"
                        ><nobr>
                             <span class="fa fa-plus" ></span> комментарий
                         </nobr></a>
@@ -206,7 +206,7 @@ style="padding:5px;"
                        s2="{{ creatSecret( ss ) }}"
 
                        data-target2="#add_minus_for_jobman"
-style="padding:5px;"
+                       style="padding:5px;"
                        ><span class="fa fa-minus" ></span> взыскание</a>
 
                     <a href=""
@@ -226,21 +226,22 @@ style="padding:5px;"
 
                        date="{{ date }}"
                        {# print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus" #}
-                       print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_plus{{ date }}"
+                       {#print_res_to_id="sp{{ sp_now }}_jm{{ jobman }}_plus{{ date }}"#}
+                       print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}comment"
 
                        {% set ss = sp_now ~ pv.id %}
                        id2="{{ ss }}"
                        s2="{{ creatSecret( ss ) }}"
 
                        data-target2="#add_plus_for_jobman"
-style="padding:5px;"
+                       style="padding:5px;"
                        >
                         <span class="fa fa-plus" ></span> премия
                     </a>
                 {% endif %}
 
-                
-                
+
+
                 <a href="#"
 
                    class="set_end_now_jobs dropdown-item btn-light"
@@ -277,7 +278,7 @@ style="padding:5px;"
     
                     data-target2="#add_plus_for_jobman"
                     #}
-style="padding:5px;"
+                   style="padding:5px;"
                    ><span class="fa fa-window-close" ></span> уволен c завтрашнего дня<br/>
                     <small>сегодня последний день в этой должности</small></a>
 

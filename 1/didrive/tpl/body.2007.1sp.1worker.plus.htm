@@ -1,112 +1,29 @@
 {% spaceless %}
-    
+
     {#{{ pa(i) }}#}
     {#{{ pa(auto_bonus) }}#}
-    
+
     <div class="xtext-center show_down_hiden plus {{ i.status }}" >
+
+        <a 
+
+            class='base_modal_go icon_removed_item'
+            data-toggle="modal" data-target="#di_modal"
+
+            modal_header='Отменить бонус ?'
+
+            ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+            xajax_vars='r_module=jobman_send_on_sp&remove[id]={{ i.id }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'
+            ajax_vars='r_module=072.plus&remove[id]={{ i.id }}'
+
+            reload_page_after_ok="da"
+            get_answer='Отменить бонус ?'
+
+            ><span class="fa fa-remove" ></span></a>
+
         <b>+{{ i.summa|number_format(0, '.', '`') }}</b> &nbsp;
         <small>{{ i.text }}</small>
 
-        {% if i.status == 'hide' %}
-            <br/>отменено<br/>
-        {% endif %}
-
-        <span class="hide_down" >
-            {#{ pa(plus) }#}
-
-            {% if i.status == 'hide' %}
-
-                {#
-                <a href="#" class="act act_smena btn3" action="recover_smena" 
-                   go_answer="Хотите восстановить смену ?"
-                   id2="{{ k1 }}" s2="{{ creatSecret( k1 ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" >восстановить</a>
-                #}
-
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
-                   xstyle='display:none;'
-                   {# действие после вопроса #}
-                   comit_answer="Отменить премию ?"
-
-                   {# замена доп параметра #}
-                   action="edit_dop_item"
-
-                   {# модуль итемов #}
-                   itemsmod="072.plus"
-                   {# id итема #}
-                   item_id="{{ i.id }}"
-
-                   {# новое значение статуса записи #}
-                   new_status="show"
-                   {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~i.id~'-show' ) }}" 
-
-                   {# скрыть ссылку после клика #}
-                   hidethis="da" 
-                   {# сделать видимым блок по id #}
-                   show_id="ares{{ i.id }}" 
-                   {# id куда печатаем результат #}
-                   res_to_id="ares{{ i.id }}" 
-                   {# сообщение печатаем если всё ок #}
-                   msg_to_success="Восстановлено"
-
-                   >восстановить</a>
-
-            {% elseif i.status == 'show' %}
-
-                {#
-                <a href="#" class="act act_smena btn3" 
-                   go_answer="Хотите удалить минус ?"
-                   action="delete_plus" id2="{{ mk }}" s2="{{ creatSecret( mk ) }}" resto="ares{{ k1 }}" show_id="ares{{ k1 }}" hidethis="da" 
-                   
-                   >отменить взыскание</a>
-                #}
-
-                <a href="#" class="btn3 edit_items_dop_values drop2_{{ k1 }} btn btn-xs btn-light" 
-                   xstyle='display:none;'
-                   {# действие после вопроса #}
-                   comit_answer="Отменить премию ?"
-
-                   {# замена доп параметра #}
-                   action="edit_dop_item"
-
-                   {# модуль итемов #}
-                   itemsmod="072.plus"
-                   {# id итема #}
-                   item_id="{{ i.id }}"
-
-                   {# название доп параметра #}
-                   {# dop_name="pay_check" #}
-                   {# новое значение параметра #}
-                   {# dop_new_value="no" #}
-                   {# секрет #}
-                   {# s3="{{ creatSecret( '050.chekin_checkout-'~i.id~'-pay_check-no' ) }}"  #}
-
-                   {# новое значение статуса записи #}
-                   new_status="hide"
-                   
-                   {# секрет #}
-                   s3="{{ creatSecret( '072.plus-'~i.id~'-hide' ) }}" 
-
-                   {# скрыть ссылку после клика #}
-                   hidethis="da" 
-                   
-                   {# сделать видимым блок по id #}
-                   show_id="ares{{ i.id }}" 
-                   
-                   {# id куда печатаем результат #}
-                   res_to_id="ares{{ i.id }}" 
-                   
-                   {# сообщение печатаем если всё ок #}
-                   msg_to_success="Отменено"
-
-                   {# print_res_to_id="ares{{ k1 }}" #}
-
-                   >Отменить премию</a>
-
-            {% endif %}
-
-        </span>
-        <div id="ares{{ i.id }}" style="display:none;"></div>
     </div>
 
 {% endspaceless %}

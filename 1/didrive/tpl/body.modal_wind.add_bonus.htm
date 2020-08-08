@@ -11,7 +11,7 @@
                     </button>
                 </div>
 
-                <form action="" method="post" id="add_minus">
+                <form action="" method="post" xid="add_minus" class="add_form" >
 
                     <div class="modal-body">
 
@@ -20,30 +20,30 @@
                         <div class="form-group row">
                             <label for="a1" class="col-sm-2 col-form-label">Кто</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
-                                <input type="hidden" id="toform_jobman" value="">
+                                <input type="text" readonly class="form-control-plaintext" id="toform_jobman_name" value="">
+                                <input type="hidden" name="jobman" id="toform_jobman" value="">
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
-                                <input type="hidden" id="toform_sp" value="">
+                                <input type="text" readonly class="form-control-plaintext" id="toform_sp_name" value="">
+                                <input type="hidden" name="sale_point" id="toform_sp" value="">
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <label for="staticEmail" class="col-sm-2 col-form-label">Когда</label>
                             <div class="col-sm-10">
-                                <input type="date" readonly class="form-control" name="date" id="date" value="" xstyle="width: 120px; display: inline-block;" >
+                                <input type="date" readonly class="form-control-plaintext" name="date_now" id="date" value="" xstyle="width: 120px; display: inline-block;" >
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <label for="staticEmail" class="col-sm-2 col-form-label">Сумма премии</label>
                             <div class="col-sm-10">
-                                <input type="number" max="100000" min="0" step="1" class="form-control -plaintext" name="summa" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
+                                <input type="number" max="100000" min="0" step="1" class="form-control" name="summa" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
                                 <br/>
                                 <small>например 700р</small>
                             </div>
@@ -67,7 +67,9 @@
                         <input type="hidden" name="action" id="action" value="add_new_plus" >
                         <input type="hidden" name="id2" id="id2" value="" >
                         <input type="hidden" name="s2" id="s2" value="" >
+                        
                         <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                        
                         <input type="hidden" name="data-target2" id="data-target2" value="" >
                         <input type="hidden" name="jobman" id="jobman" value="" >
                         <input type="hidden" name="salepoint" id="salepoint" value="" >

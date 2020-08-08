@@ -1,11 +1,13 @@
 <?php
 
+ob_start('ob_gzhandler');
+
 try {
 
-    $date = $in['date'] ?? $_REQUEST['date'] ?? null;
-
-    if (empty($date))
-        throw new \Exception('нет даты');
+//    $date = $in['date'] ?? $_REQUEST['date'] ?? null;
+//
+//    if (empty($date))
+//        throw new \Exception('нет даты');
 
     if (isset($skip_start) && $skip_start === true) {
         
@@ -14,70 +16,110 @@ try {
         $skip_start = false;
     }
 
-    // если нет старта и финиша значит назначение сотрудника новое
-    if (empty($_REQUEST['start_time']) && empty($_REQUEST['fin_time'])) {
 
-        if (isset($_REQUEST['type2']) && $_REQUEST['type2'] == 'spec_naznach') {
+    // \f\pa($_REQUEST);
 
-            $skip_start = true;
-            require_once './add-new-dolgn-spec.php';
-            die();
-            
-        } else {
+    $in_sql = [':jm' => $_REQUEST['user']];
 
-            $skip_start = true;
-            require_once './add-new-dolgn.php';
-            die();
+    $sql = ' SELECT 
+                o.id 
+                , o.sale_point
+                , o.dolgnost
+                , o.date
+                , o.smoke
+                , o.date_finish
+                , o.status
+                , d.head position_name
+                , \'norm\' type 
+
+            FROM mod_jobman_send_on_sp o '
+            . ' LEFT JOIN mod_061_dolgnost d ON d.id = o.dolgnost AND d.status = \'show\' '
+            . ' WHERE '
+            . ' o.jobman = :jm '
+            // . ' ORDER BY o.date DESC '
+            . ' UNION ALL '
+            . ' SELECT 
+                s.id 
+                , s.sale_point
+                , s.dolgnost
+                , s.date
+                , s.smoke
+                , \'\' date_finish
+                , s.status
+                , d.head position_name
+                , \'spec\' type 
+
+            FROM mod_050_job_in_sp s '
+            . ' LEFT JOIN mod_061_dolgnost d ON d.id = s.dolgnost AND d.status = \'show\' '
+            . ' WHERE '
+            . ' s.jobman = :jm '
+
+            // . ' ORDER BY s.date DESC '
+            . ' ; '
+    ;
+    // \f\pa($sql);
+    $ff = $db->prepare($sql);
+    // \f\pa($in_sql);
+    $ff->execute($in_sql);
+    $return = $ff->fetchAll();
+
+    usort($return, "\\f\\sort_ar_date_desc");
+
+//        return $return;
+    // $re__sp_position_date_d = [];
+//        while ($r = $ff->fetch()) {
+//            // $re__sp_position_date_d[$r['sale_point']][$r['dolgnost']][$r['date']][] = $r;
+//            self::$ar_pays__sp_position_d[$r['sale_point']][$r['dolgnost']][] = $r;
+//        }
+//
+    // \f\pa($return);
+
+
+    if (isset($_REQUEST['answer']) && $_REQUEST['answer'] == 'json') {
+
+        $r = ob_get_contents();
+        ob_end_clean();
+
+        \f\end2('ок', true, ['req' => $_REQUEST, 'data' => $return]);
+    } else {
+
+        echo '<table class="table" >
+            <thead>
+            <tr>
+            <th>Точка продаж</th>
+            <th>Должность</th>
+            <th>Назначение</th>
+            <th>Дата назначение ( и увольнения )</th>
+            <th>Статус</th>
+            </tr>
+            </thead>
+            ';
+
+        foreach ($return as $k => $v) {
+
+            echo '<tr style="'. ( $v['type'] == 'spec' ? ' background-color: rgba( 255,255,0,0.2); ' : '' ) .' " >'
+            . '<td>' . ( $v['type'] == 'norm' ? 'Прием на работу' : ( $v['type'] == 'spec' ? 'Спец. назначение' : '' ) ) . '</td>'
+            . '<td>' . $v['position_name'] . '</td>'
+            . '<td>' . $v['date'] . ( !empty( $v['date_finish'] ) ? ' ('.$v['date_finish'].')' : '' ) . '</td>'
+            . '<td>' . $v['status'] . '</td>'
+            . '</tr>';
         }
+
+        echo '</table>';
+
+        $r = ob_get_contents();
+        ob_end_clean();
+
+        \f\end2( $r , true);
     }
-
-
-
-
-
-// если старт часов меньше часов сдачи
-    if (strtotime($_REQUEST['start_time']) > strtotime($_REQUEST['fin_time'])) {
-        $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
-        $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']) + 3600 * 24;
-    }
-// если старт часов больше часов сдачи
-    else {
-        $start_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['start_time']);
-        $fin_time = strtotime($_REQUEST['date'] . ' ' . $_REQUEST['fin_time']);
-    }
-
-    $indb = array(
-        'head' => 1,
-        'jobman' => $_REQUEST['jobman'],
-        'sale_point' => $_REQUEST['salepoint'],
-        'start' => date('Y-m-d H:i', $start_time),
-        'fin' => date('Y-m-d H:i', $fin_time),
-        // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
-        'hour_on_job' => \Nyos\mod\IikoChecks::calcHoursInSmena(date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
-        // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRangeUnix($start_time, $fin_time),
-        'who_add_item' => 'admin',
-        'who_add_item_id' => $_SESSION['now_user_di']['id'] ?? '',
-        'ocenka' => $_REQUEST['ocenka']
-    );
-
-    //\f\pa($indb);
-    \Nyos\mod\items::$type_module = 2;
-    \Nyos\mod\items::add($db, '050.chekin_checkout', $indb);
-
-    $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no');
-
-    \f\end2('<div class="warn" style="padding:5px;" >'
-            . '<nobr><b>смена добавлена</b>'
-            . '<br/>с ' . date('d.m.y H:i', $start_time)
-            . '<br/>до ' . date('d.m.y H:i', $fin_time)
-            . '<br/>часов на работе ' . $indb['hour_on_job']
-            . '<hr>' . $ee . '<hr>'
-            . '</nobr>'
-            . '</div>', true);
-} catch (Exception $exc) {
+} catch (\Exception $exc) {
 
     echo '<pre>';
     print_r($exc);
     echo '</pre>';
     // echo $exc->getTraceAsString();
+    $r = ob_get_contents();
+    ob_end_clean();
+
+    \f\end2('<h3>Что-то пошло не так</h3> ' . $r, false, $_REQUEST);
 }

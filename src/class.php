@@ -315,6 +315,15 @@ class JobDesc {
         ];
         $in_sql[':date_finish'] = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date)) . ' +1 month -1 day'));
 
+        $cash_var = 'ar_position_pays_'.$sp.'_'.$in_sql[':date_finish'];
+
+        $rr = \f\Cash::getVar( $cash_var );
+        
+            if( !empty($rr) ){
+            self::$ar_pays__sp_position_d = $rr;
+            return \f\end3('ok cash');
+            }
+
         $sql = ' SELECT '
                 . ' p.*'
 //                    . ', ob.oborot_hand ob1h '
@@ -353,7 +362,7 @@ class JobDesc {
 //                            .' OR 
 //                            pay_from_day_oborot_bolee IS NULL '
 //                        .' ) '
-//                 . ' GROUP BY sale_point, dolgnost, date '
+                 // . ' GROUP BY sale_point, dolgnost, date '
                 . ' ORDER BY p.date DESC, p.pay_from_day_oborot_bolee DESC '
                 . ' ; '
 
@@ -371,6 +380,8 @@ class JobDesc {
             self::$ar_pays__sp_position_d[$r['sale_point']][$r['dolgnost']][] = $r;
         }
 
+        \f\Cash::setVar( $cash_var , self::$ar_pays__sp_position_d , 60*60*6 );
+        
         return \f\end3('ok');
     }
 

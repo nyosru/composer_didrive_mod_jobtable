@@ -1332,6 +1332,23 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         return false;
     });
 
+/* версия 2007 */
+    $('body').on('click', '.put_var_in_modal3', function (event) {
+        $.each(this.attributes, function () {
+            if (this.specified) {
+                if (this.name == 'data-target2') {
+                    var $id_modal = this.value;
+                    $(this.value).modal('toggle');
+                } else {
+                    if ($("input").is("." + this.name)) {
+                        $("input." + this.name).val(this.value);
+                    }
+                }
+            }
+        });
+    });
+    
+
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
@@ -3096,11 +3113,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
     /**
-     * добавляем взыскание
+     * добавляем взыскание / комментарий / бонус
      * 2007 версия
      */
 
-    $('body').on('submit', '#add_minus', function (event) {
+    $('body').on('submit', '.add_form', function (event) {
 
         // console.log('добавляем минус');
 

@@ -48,31 +48,6 @@
     {#+++ на другой точке#}
     <div class="text-center alert alert-success position" >
         <a 
-            {% if 1 == 2 %}
-            class="send_ajax icon_remove"
-
-           href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
-           action="cancel_smena"
-           {# param #}
-           ajax_id="{{ i.id }}"
-           ajax_s="{{ creatSecret(i.id) }}" 
-
-           {# raw param #}
-           answer="Хотите отменить это назначение ?"
-
-           res_to="block_new_dolgn{{ i.id }}"
-
-           xxresult_ok_show_to ="delete_naznach_ok_res{{ i.id }}"
-           xxresult_error_show_to ="delete_naznach_error_res{{ i.id }}"
-
-           xresult_ok_to ="delete_naznach_ok_res{{ i.id }}"
-           xresult_error_to ="delete_naznach_error_res{{ i.id }}"
-
-           xhide_block_id_when_ok = "block_new_dolgn{{ i.id }}"
-           xhide_block_class_when_ok = ""
-
-           title="Отменить назначение" 
-           {% endif %}
 
         class='base_modal_go icon_remove'
         data-toggle="modal" data-target="#di_modal"
@@ -84,7 +59,7 @@
 
         reload_page_after_ok="da"
         get_answer='Отменить назначение #{{ i.id }}?'
-               
+
            ><span class="fa fa-remove" ></span></a>
 
         новое назначение<Br/>
