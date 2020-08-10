@@ -629,6 +629,8 @@ class JobDesc {
      */
     public static function calcAutoBonus($db, $sp, $data = []) {
 
+        // \f\pa($data);
+
         if (empty($data))
             return \f\end3('пустые данные', false);
 
@@ -658,7 +660,21 @@ class JobDesc {
         }
 
         // % от оборота дня
-        if (!empty($data['pay_bonus_proc_from_oborot'])) {
+        if (
+                !isset(self::$ar_autobonus_jm_sp_date[$data['jobman']][$data['spec_sp']][$data['date']]) && !empty($data['spec_sp']) && $data['s_pay_bonus_proc_from_oborot'] > 0 && ( empty($data['sale_point']) || $data['sale_point'] == $data['spec_sp'] )
+        ) {
+            if (!empty($data['spec_bonus'])) {
+
+                self::$ar_autobonus_jm_sp_date[$data['jobman']][$data['spec_sp']][$data['date']] = 1;
+
+                $bonus = $data['spec_bonus'];
+                $bonus_text = $data['s_pay_bonus_proc_from_oborot'] . '% от ' . number_format($data['spec_oborot_day'], 0, '', '`');
+            } else {
+                $bonus_text = '#' . __LINE__;
+            }
+        }
+        // % от оборота дня
+        elseif (!empty($data['pay_bonus_proc_from_oborot'])) {
             if (!empty($data['oborot_day'])) {
 
                 self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']] = 1;
@@ -1256,7 +1272,7 @@ class JobDesc {
 
             $in_sql = [
                 ':date_start' => date('Y-m-01', strtotime($date))
-                ];
+            ];
             // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
             $in_sql[':date_start2'] = date('Y-m-02', strtotime($date));
             $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
@@ -1299,9 +1315,7 @@ class JobDesc {
 //                    . ' spec.date <= :date_finish '
                     . ' AND '
                     . ' spec.status = \'show\' '
-
                     . '  UNION ALL '
-                    
                     . ' SELECT 
                         `on`.`id` ,
                         `on`.`date` , 
@@ -1335,9 +1349,7 @@ class JobDesc {
                     . ' `on`.`date` <= :date_finish '
                     . ' AND '
                     . ' `on`.status = \'show\' '
-
                     . '  UNION ALL '
-                    
                     . ' ( 
                         SELECT 
                         `on`.`id` ,
@@ -1373,7 +1385,7 @@ class JobDesc {
                     . ' `on`.status = \'show\' '
                     . ' GROUP BY `on`.`jobman` '
                     . ' ) '
-                    
+
             ;
             // \f\pa($sql);
 
@@ -1383,10 +1395,59 @@ class JobDesc {
             $ff->execute($in_sql);
             $return2 = $ff->fetchAll();
 
+
+            // added from 200810
+            if (1 == 1) {
+
+                // return $return2;
+
+                $ar__jobs_sp_jm = [];
+
+                // search jobmans_on_sp
+                foreach ($return2 as $v) {
+                    $ar__jobs_sp_jm[$v['sale_point']][$v['jobman']] = 1;
+                }
+
+                $return = [
+                    'jobmans' => [],
+                    'send_on_job' => [],
+                    // 'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
+                    'spec' => []
+                ];
+
+                foreach ($return2 as $v) {
+                    if ($v['type'] == 'norm' && isset($ar__jobs_sp_jm[$sp_id][$v['jobman']])) {
+                        
+                        if( isset($v['date_finish']) && $v['date_finish'] < $in_sql[':date_start'] )
+                            continue;
+                        
+                        if (!isset($return['jobmans'][$v['jobman']]))
+                            $return['jobmans'][$v['jobman']] = $v['fio'];
+
+                        $return['send_on_job'][$v['jobman']][] = $v;
+                        
+                    } elseif ($v['type'] == 'spec' && isset($ar__jobs_sp_jm[$sp_id][$v['jobman']])) {
+
+                        if (!isset($return['jobmans'][$v['jobman']]))
+                            $return['jobmans'][$v['jobman']] = $v['fio'];
+
+                        $return['spec'][$v['jobman']][] = $v;
+                    }
+                }
+
+                unset($return2);
+
+                return \f\end3('ok ' . \f\timer_stop(111), true, $return);
+                // return $return;
+            }
+
+
             // \f\pa(\f\timer_stop(111));
 
             usort($return2, "\\f\\sort_ar_date");
             // \f\pa($return2);
+
+
 
             $return_jm_fio = [];
             $return_jm_sp = [];
@@ -1396,18 +1457,18 @@ class JobDesc {
 
 //            $skip_id = [];
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
+
+
+
             foreach ($return2 as $k => $v) {
 
 //                if( isset($skip_id[$v['id']]) )
@@ -1426,9 +1487,8 @@ class JobDesc {
 
                     if ($v['date'] <= $in_sql[':date_start']) {
 
-                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
-                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
-                            
+                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
+                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
                     } else {
 
                         if (!isset($return_sp_jm_onjob[$v['sale_point']][$v['jobman']]))
@@ -1556,6 +1616,8 @@ class JobDesc {
                 . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
                 . ' , \'\' s_pay_bonus_proc_from_oborot '
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
                 . ' FROM 
                     `mod_072_metki` `mm` '
                 . ' WHERE '
@@ -1627,6 +1689,25 @@ class JobDesc {
                 . ' , s_pay.`oborot_sp_last_monht_bolee` s_pay_oborot_sp_last_monht_bolee '
                 . ' , s_pay.`bonus_proc_from_oborot` s_pay_bonus_proc_from_oborot '
                 . ' , s_pay.`pay_from_day_oborot_bolee` s_pay_pay_from_day_oborot_bolee '
+                . ' , ( CASE 
+                        WHEN oborot_spec.oborot_hand > 0 THEN oborot_spec.oborot_hand
+                        WHEN oborot_spec.oborot_server > 0 THEN oborot_spec.oborot_server
+                        ELSE NULL END ) as spec_oborot_day '
+                . ' , ( CASE 
+                    
+                        WHEN 
+                                oborot_spec.oborot_hand > 0 
+                                AND s_pay.`bonus_proc_from_oborot` > 0
+                            THEN 
+                                FLOOR( oborot_spec.oborot_hand / 100 * s_pay.`bonus_proc_from_oborot` )
+                                
+                        WHEN 
+                                oborot_spec.oborot_server > 0 
+                                AND s_pay.`bonus_proc_from_oborot` > 0
+                            THEN 
+                                FLOOR( oborot_spec.oborot_server / 100 * s_pay.`bonus_proc_from_oborot` )
+
+                        ELSE NULL END ) as  spec_bonus  '
                 . ' FROM `mod_050_chekin_checkout` `c` '
                 . ' LEFT JOIN mod_jobman_send_on_sp on_sp ON on_sp.id = ( SELECT id FROM mod_jobman_send_on_sp WHERE '
                 . ' jobman = c.jobman '
@@ -1650,7 +1731,7 @@ class JobDesc {
                 //                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
                 //                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                 . ' AND ( 
-                            ( '
+                                ( '
                 . ' oborot_d.oborot_hand > 0 '
                 . ' AND '
                 . ' oborot_d.oborot_hand >= pay_from_day_oborot_bolee '
@@ -1662,7 +1743,7 @@ class JobDesc {
                 . ' pay.pay_from_day_oborot_bolee <= oborot_d.oborot_server '
                 . ' ) '
                 . ' OR 
-                            pay_from_day_oborot_bolee IS NULL '
+                                pay_from_day_oborot_bolee IS NULL '
                 . ' ) '
                 . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
                 . ' LIMIT 1 ) '
@@ -1687,6 +1768,11 @@ class JobDesc {
                 . ' ) '
                 . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
                 . ' LIMIT 1 ) '
+                . ' LEFT JOIN mod_sale_point_oborot oborot_spec ON '
+                . ' s.sale_point > 0 '
+                . ' AND oborot_spec.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                . ' AND oborot_spec.sale_point = s.sale_point '
+                . ' AND oborot_spec.status = \'show\' '
                 . ' WHERE '
                 . $jms_c
                 . ' AND c.`start` BETWEEN :datet_start AND :datet_finish '
@@ -1752,6 +1838,8 @@ class JobDesc {
                 . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
                 . ' , \'\' s_pay_bonus_proc_from_oborot '
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
                 . ' FROM 
 
                     `mod_072_vzuscaniya` `mi`
@@ -1818,6 +1906,8 @@ class JobDesc {
                 . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
                 . ' , \'\' s_pay_bonus_proc_from_oborot '
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
                 . ' FROM `mod_072_plus` `m`
                 WHERE '
                 . $jms
@@ -1884,6 +1974,8 @@ class JobDesc {
                 . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
                 . ' , \'\' s_pay_bonus_proc_from_oborot '
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
                 . ' FROM `mod_073_comments` '
                 . ' WHERE '
                 . $jms
