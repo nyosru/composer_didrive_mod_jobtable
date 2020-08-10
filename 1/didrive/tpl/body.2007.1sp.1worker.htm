@@ -68,12 +68,23 @@
                 {% endif %}
 
                 {#{{ pa( now_dolgn ) }}#}
-
+                {#{{ pa(user_v) }}#}
+                
             </div>
         </div>
 
+                
+                
+                
+                
+                
+                
         {% set no_job = false %}
 
+        
+        
+        
+        
         {% for i in range(low=0, high=31, step=1) %}
 
             {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}

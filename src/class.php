@@ -1395,6 +1395,7 @@ class JobDesc {
             $ff->execute($in_sql);
             $return2 = $ff->fetchAll();
 
+            usort($return2, "\\f\\sort_ar_date");
 
             // added from 200810
             if (1 == 1) {
@@ -1444,7 +1445,7 @@ class JobDesc {
 
             // \f\pa(\f\timer_stop(111));
 
-            usort($return2, "\\f\\sort_ar_date");
+            
             // \f\pa($return2);
 
 
