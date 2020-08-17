@@ -211,7 +211,7 @@
                             {% set n1 = 1 %}
                             {#{% set skip = [] %}#}
 
-                            {#{% set last_id = 0 %}#}
+                            {% set last_id = 0 %}
 
                             {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'check' %}
 
@@ -233,7 +233,7 @@
                                 {% else %}
 
 
-                                    {#{% if last_id != i.id %}#}
+                                    {% if last_id != i.id %}
 
                                     {#<br/>141++ {{ p }} / {{ last_id }} / {{ i.id }}#}
 
@@ -250,7 +250,7 @@
                                 {% endif %}
 
                                 {#{{ pa(i,2) }}#}
-                                {#{% endif %}#}
+                                {% endif %}
 
                             {% endfor %}
 

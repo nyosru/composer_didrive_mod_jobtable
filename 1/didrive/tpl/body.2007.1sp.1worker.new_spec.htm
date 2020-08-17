@@ -10,7 +10,8 @@
                 modal_header='Отменить назначение ?'
 
                 ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
-                ajax_vars='r_module=050.job_in_sp&remove[dolgnost]={{ i.dolgnost }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'
+                {#ajax_vars='r_module=050.job_in_sp&remove[dolgnost]={{ i.dolgnost }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'#}
+                ajax_vars='r_module=050.job_in_sp&remove[id]={{ i.id }}'
 
                 reload_page_after_ok="da"
                 get_answer='Отменить назначение ?'

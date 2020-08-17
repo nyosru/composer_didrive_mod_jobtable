@@ -61,10 +61,13 @@ try {
     );
 
     //\f\pa($indb);
-    \Nyos\mod\items::$type_module = 2;
-    \Nyos\mod\items::add($db, '050.chekin_checkout', $indb);
 
-    $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no');
+//    \Nyos\mod\items::$type_module = 2;
+//    \Nyos\mod\items::add($db, '050.chekin_checkout', $indb);
+    // $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no');
+
+    \Nyos\mod\items::$type_module = 3;
+    \Nyos\mod\items::add($db, '050.chekin_checkout', $indb);
 
     \f\end2('<div class="warn" style="padding:5px;" >'
             . '<nobr><b>смена добавлена</b>'

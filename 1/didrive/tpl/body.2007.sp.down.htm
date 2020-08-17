@@ -1,5 +1,8 @@
 {% spaceless %}
 
+    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+        {{ didrive_f__timer_start(577) }}
+    {% endif %}
 
     {% if 1 == 2 %}
         {% set timer_show = 'on' %}
@@ -13,18 +16,22 @@
     {#{{ pa(itogi_day,2) }}#}
     {% if timer_show == 'on' %} <br/>время itogi_days - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-    
     {# нормы на день #}
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {#{% set norms_day = jobdesc__get_norms( db, sp_now, date_start, date_finish ) %}#}
+
     {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.norms.htm' %}
     {% if timer_show == 'on' %} <br/>время norms - {{ didrive_f__timer_stop(5) }} {% endif %}
 
-    
     {# оборот #}
     {% if 1 == 1 %}
         {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
-        {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.oborot.htm' %}
+        
+    <div class="trow" >
+        <div class="tcell stick-left bg-white" >
+            <b>Оборот</b> в процессе подготовки до 17.08.2020
+        </div>
+    </div>
+        {# {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.oborot.htm' %} #}
         {% if timer_show == 'on' %} <br/>время oborot - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
 
@@ -35,21 +42,25 @@
         {% if timer_show == 'on' %} <br/>время timeo - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
 
-    
     {# оценка дня #}
-    {% if 1 == 2 %}
+    {% if 1 == 1 %}
         {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-        {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka.htm' %}
+    <div class="trow" >
+        <div class="tcell stick-left bg-white" >
+            <b>Автооценка</b> в процессе подготовки до 17.08.2020
+        </div>
+    </div>
+        {#{% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka.htm' %}#}
         {% if timer_show == 'on' %} <br/>время ocenka - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
 
+    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+        bottom {{ didrive_f__timer_stop(577) }}
+    {% endif %}
     
-
     {% if timer_show == 'on' %}
         {% set timer_show = 'off' %}
     {% endif %}
-
-
 
     {% if 1 == 2 %}
 
@@ -116,8 +127,6 @@
         {% if 1 == 2 or timer_show == 'on' %} <br/>время ocenka - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {% endif %}
-
-
 
     {#% set timer_show = 'on1' %#}
 

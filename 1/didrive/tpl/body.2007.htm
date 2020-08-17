@@ -7,13 +7,13 @@
 
 
     {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {% set sps = items__get( db, 'sale_point' )  %}
+    {% set sps = items3__get( db, 'sale_point' )  %}
     {#{ pa(sps) }#}
     {% if 2 == 1 or timer_show == 'on' %} <br/>время 01 sale_point - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {# использую в списке точек что можем выбрать #}
     {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-    {#{% set sps_sort = items__get( db, 'sale_point', 'show', 'sort_asc' )  %}#}
+    {#{% set sps_sort = items3__get( db, 'sale_point', 'show', 'sort_asc' )  %}#}
     {% set sps_sort = di__sort_sort(sps)  %}
     {#{{ pa(sps_sort) }}#}
     {% if 2 == 1 or timer_show == 'on' %} <br/>время 01 sale_point sort - {{ didrive_f__timer_stop(5) }} {% endif %}
@@ -21,7 +21,7 @@
 
     {% if 1 == 1 %}
         {% if 2 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
-        {#{% set mans = items__get( db, '070.jobman' )  %}#}
+        {#{% set mans = items3__get( db, '070.jobman' )  %}#}
         {% set mans = jobdesc__getJobmans( db )  %}
         {#{ pa(mans) }#}
         {% if 2 == 1 or timer_show == 'on' %} <br/>время 01 070.jobman - {{ didrive_f__timer_stop(5) }} {% endif %}

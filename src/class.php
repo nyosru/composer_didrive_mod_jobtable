@@ -1413,24 +1413,30 @@ class JobDesc {
                     'jobmans' => [],
                     'send_on_job' => [],
                     // 'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
-                    'spec' => []
+                    'spec' => [],
+                    'ar__jm_sp' => [],
                 ];
 
                 foreach ($return2 as $v) {
+
+
                     if ($v['type'] == 'norm' && isset($ar__jobs_sp_jm[$sp_id][$v['jobman']])) {
-                        
-                        if( isset($v['date_finish']) && $v['date_finish'] < $in_sql[':date_start'] )
+
+                        if (isset($v['date_finish']) && $v['date_finish'] < $in_sql[':date_start'])
                             continue;
-                        
+
                         if (!isset($return['jobmans'][$v['jobman']]))
                             $return['jobmans'][$v['jobman']] = $v['fio'];
 
                         $return['send_on_job'][$v['jobman']][] = $v;
-                        
+
+                        $return['ar__jm_sp'][$v['jobman']][$v['sale_point']] = 1;
                     } elseif ($v['type'] == 'spec' && isset($ar__jobs_sp_jm[$sp_id][$v['jobman']])) {
 
                         if (!isset($return['jobmans'][$v['jobman']]))
                             $return['jobmans'][$v['jobman']] = $v['fio'];
+
+                        $return['ar__jm_sp'][$v['jobman']][$v['sale_point']] = 1;
 
                         $return['spec'][$v['jobman']][] = $v;
                     }
@@ -1441,96 +1447,6 @@ class JobDesc {
                 return \f\end3('ok ' . \f\timer_stop(111), true, $return);
                 // return $return;
             }
-
-
-            // \f\pa(\f\timer_stop(111));
-
-            
-            // \f\pa($return2);
-
-
-
-            $return_jm_fio = [];
-            $return_jm_sp = [];
-            $return_sp_jm_onjob = [];
-            $return_spec_sp_jm_onjob = [];
-            $return_spec__jm_onjob = [];
-
-//            $skip_id = [];
-
-
-
-
-
-
-
-
-
-
-
-
-
-            foreach ($return2 as $k => $v) {
-
-//                if( isset($skip_id[$v['id']]) )
-//                    continue;
-//                $skip_id[$v['id']] = 1;
-                // echo '<Br/>'.$v['id'];
-
-                $return_jm_sp[$v['jobman']][$v['sale_point']] = 1;
-                $return_sp_jm[$v['sale_point']][$v['jobman']] = ( $v['fio'] ?? '' );
-                //$return_jm_fio[$v['jobman']] = $v['fio'];
-
-                if ($v['type'] == 'norm') {
-
-                    if (!empty($v['date_finish']) && $v['date_finish'] < $in_sql[':date_start'])
-                        continue;
-
-                    if ($v['date'] <= $in_sql[':date_start']) {
-
-                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
-                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
-                    } else {
-
-                        if (!isset($return_sp_jm_onjob[$v['sale_point']][$v['jobman']]))
-                            $return_sp_jm_onjob[$v['sale_point']][$v['jobman']] = [];
-
-                        $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
-                    }
-                } elseif ($v['type'] == 'spec') {
-
-                    // echo '<br/>'.$v['id'];
-                    // $return_spec_sp_jm_onjob[$v['sale_point']][$v['jobman']][$v['date']][] = $v;
-                    $return_spec__jm_onjob[$v['jobman']][] = $v;
-
-                    $return_sp_jm_onjob[$v['sale_point']][$v['jobman']][] = $v;
-                }
-            }
-
-            // \f\pa(\f\timer_stop(111));
-//            \f\pa($return_sp_jm, 2, '', '$return_sp_jm');
-//            \f\pa($return_jm_sp, 2, '', '$return_jm_sp');
-//            \f\pa($return_sp_jm_onjob, 2, '', '$return_sp_jm_onjob');
-
-            $return = [
-                'jobmans' => ( $return_sp_jm[$sp_id] ?? [] ),
-                'send_on_job' => ( $return_sp_jm_onjob[$sp_id] ?? [] ),
-                // 'spec' => ( $return_spec_sp_jm_onjob[$sp_id] ?? [] ),
-                'spec' => ( $return_spec__jm_onjob ?? [] ),
-                'job_jm_on_sp' => []
-            ];
-
-            foreach ($return['jobmans'] as $jm => $fio) {
-                $return['job_jm_on_sp'][$jm] = $return_jm_sp[$jm];
-            }
-
-            if (isset($_REQUEST['show_info'])) {
-                foreach ($return as $k => $v) {
-                    \f\pa($v, 2, '', $k);
-                }
-            }
-
-            return \f\end3('ok ' . \f\timer_stop(111), true, $return);
         } catch (\PDOException $exc) {
 
             \f\pa($exc);
@@ -1714,6 +1630,7 @@ class JobDesc {
                 . ' jobman = c.jobman '
                 // . ' AND sale_point = c.sale_point '
                 . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                . ' AND status = \'show\' '
                 . ' ORDER BY date DESC '
                 . ' LIMIT 1 ) '
                 . ' LEFT JOIN mod_sale_point_oborot oborot_d ON '
@@ -8799,62 +8716,84 @@ class JobDesc {
      */
     public static function whatNormToDay($db, int $sp, string $date, $date_fin = null) {
 
-// название переменной где храним кеш
-        $cash_var = 'jobdesc__whatNormToDay_sp' . $sp . '_date' . $date . '_date_fin' . $date_fin;
-// время в сек на которое храним кеш
-        $cash_time = 60;
+        $date_start = date('Y-m-01', strtotime($date));
+        $date_finish = (!empty($date_fin) ) ? date('Y-m-d', strtotime($date_finish)) : date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
-        if (!empty($cash_var)) {
-            $e = \f\Cash::getVar($cash_var);
+        \Nyos\mod\items::$type_module = 3;
+        \Nyos\mod\items::$search['sale_point'] = $sp;
+        \Nyos\mod\items::$between['date'] = [$date_start, $date_finish];
 
-            if (!empty($e))
-                return $e;
+        $res = [];
+        $res = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_norms_day);
+
+        $ar__date_d = [];
+        
+        foreach( $res as $k => $v ){
+            
+            $ar__date_d[$v['date']][] = $v;
+            
         }
+        
+        return \f\end3('ok', true, $ar__date_d );
 
-        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
-                . ' ON mid.id_item = mi.id '
-                . ' AND mid.name = \'sale_point\' '
-                . ' AND mid.value = :sp ';
-        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
-
-        if (!empty($date_fin)) {
-            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
-                    . ' ON mid2.id_item = mi.id '
-                    . ' AND mid2.name = \'date\' '
-                    . ' AND mid2.value_date >= :ds '
-                    . ' AND mid2.value_date <= :df '
-            ;
-            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
-            \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_fin;
-        } else {
-            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
-                    . ' ON mid2.id_item = mi.id '
-                    . ' AND mid2.name = \'date\' '
-                    . ' AND mid2.value_date = :ds '
-            ;
-            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
-        }
-
-// $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
-        $norms = \Nyos\mod\items::get($db, self::$mod_norms_day);
-
-        $rr = [];
-
-        foreach ($norms as $k => $v) {
-
-// если ищем одну даты то отправляем этот 1 день
-            if ($date_fin === null) {
-                return $v;
-            }
-
-// если ищем несколько дат, то собираем по датам в массив и возвращаем
-            $rr[$v['date']] = $v;
-        }
-
-        if (!empty($cash_var) && !empty($cash_time))
-            \f\Cash::setVar($cash_var, $rr, $cash_time);
-
-        return $rr;
+//        
+//        
+//// название переменной где храним кеш
+//        $cash_var = 'jobdesc__whatNormToDay_sp' . $sp . '_date' . $date . '_date_fin' . $date_fin;
+//// время в сек на которое храним кеш
+//        $cash_time = 60;
+//
+//        if (!empty($cash_var)) {
+//            $e = \f\Cash::getVar($cash_var);
+//
+//            if (!empty($e))
+//                return $e;
+//        }
+//
+//        \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid '
+//                . ' ON mid.id_item = mi.id '
+//                . ' AND mid.name = \'sale_point\' '
+//                . ' AND mid.value = :sp ';
+//        \Nyos\mod\items::$var_ar_for_1sql[':sp'] = $sp;
+//
+//        if (!empty($date_fin)) {
+//            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
+//                    . ' ON mid2.id_item = mi.id '
+//                    . ' AND mid2.name = \'date\' '
+//                    . ' AND mid2.value_date >= :ds '
+//                    . ' AND mid2.value_date <= :df '
+//            ;
+//            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
+//            \Nyos\mod\items::$var_ar_for_1sql[':df'] = $date_fin;
+//        } else {
+//            \Nyos\mod\items::$join_where .= ' INNER JOIN `mitems-dops` mid2 '
+//                    . ' ON mid2.id_item = mi.id '
+//                    . ' AND mid2.name = \'date\' '
+//                    . ' AND mid2.value_date = :ds '
+//            ;
+//            \Nyos\mod\items::$var_ar_for_1sql[':ds'] = $date;
+//        }
+//
+//// $norms = \Nyos\mod\items::get($db, 'sale_point_parametr');
+//        $norms = \Nyos\mod\items::get($db, self::$mod_norms_day);
+//
+//        $rr = [];
+//
+//        foreach ($norms as $k => $v) {
+//
+//// если ищем одну даты то отправляем этот 1 день
+//            if ($date_fin === null) {
+//                return $v;
+//            }
+//
+//// если ищем несколько дат, то собираем по датам в массив и возвращаем
+//            $rr[$v['date']] = $v;
+//        }
+//
+//        if (!empty($cash_var) && !empty($cash_time))
+//            \f\Cash::setVar($cash_var, $rr, $cash_time);
+//
+//        return $rr;
     }
 
     /**

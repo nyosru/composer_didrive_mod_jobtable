@@ -1,6 +1,6 @@
 {% spaceless %}
 
-    <style> .td_inf_{{sp_now}}obr{ display:none; } </style>
+    <style> .td_inf_{{sp_now}}obr{ xdisplay:none; } </style>
 
     <div class="trow" 
          xdata-aos="fade-up"
@@ -13,23 +13,25 @@
         </div>
 
         {% for i in range(low=0, high=35, step=1) %}  
+            
             {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            
             {% if date_finish|date('U') >= now_date|date('U') %}
-                
-                
-                
-                {#{% for v in itogi_day if v.item_type == 'oborot' and v.date == now_date %}#}
 
-                {% if itogi_day[now_date]['oborot'][0] %}
-                
-                    {% set v = itogi_day[now_date]['oborot'][0] %}
-                    {#{{ pa(v) }}#}
+                <div class="tcell td_inf_{{sp_now}}obr" >
                     
-                    {% if itogi_day[now_date]['oborot'][1] %}
-                        <small>есть 2-е значение, обратитесь в поддержку #{{ itogi_day[now_date]['oborot'][1]['item_id'] }}</small>
-                    {% endif %}
+                {{ now_date }}
 
-                    <div class="tcell td_inf_{{sp_now}}obr" >
+                    {#{% for v in itogi_day if v.item_type == 'oborot' and v.date == now_date %}#}
+                    {% if itogi_day[now_date]['oborot'][0] %}
+
+                        {% set v = itogi_day[now_date]['oborot'][0] %}
+                        {#{{ pa(v) }}#}
+
+                        {% if itogi_day[now_date]['oborot'][1] %}
+                            <small>есть 2-е значение, обратитесь в поддержку #{{ itogi_day[now_date]['oborot'][1]['item_id'] }}</small>
+                        {% endif %}
+
                         <div class='text-center'>
                             {#{ pa(oborots[now_date2]) }#}
 
@@ -52,51 +54,49 @@
                                 <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
 
                             {% endif %}
-                                
+
                             <input type="number" max="1000000" min="0" 
 
-                                placeholder="уточнить"
-                                title="укажите точную сумму оборота"
+                                   placeholder="уточнить"
+                                   title="укажите точную сумму оборота"
 
-                                value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
+                                   value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
 
-                                style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
-                                class="form-control didrive__edit_items_dop_pole"
-                                
-                                module="sale_point_oborot"
+                                   style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
+                                   class="form-control didrive__edit_items_dop_pole"
 
-                                pole_edit_name="oborot_hand"
-                                
-                                edit1="sale_point"
-                                edit1val="{{ sp_now }}"
-                                edit2="date"
-                                edit2val="{{ now_date }}"
-                                
-                                edit_s="{{ creatSecret( "oborot_hand"~sp_now~now_date) }}"
-                                
+                                   module="sale_point_oborot"
 
-                                
-                                
-                                
-                                edit_item_id="{{ oborots[now_date2]['id'] }}"
-                                edit_dop_name="oborot_hand"
+                                   pole_edit_name="oborot_hand"
 
-                                pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
-                                text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
+                                   edit1="sale_point"
+                                   edit1val="{{ sp_now }}"
+                                   edit2="date"
+                                   edit2val="{{ now_date }}"
 
-                                delete_ocenka_sp="{{ sp_now }}"
-                                delete_ocenka_date="{{ now_date2 }}"
-                                delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+                                   edit_s="{{ creatSecret( "oborot_hand"~sp_now~now_date) }}"
 
-                                />
+                                   edit_item_id="{{ oborots[now_date2]['id'] }}"
+                                   edit_dop_name="oborot_hand"
+
+                                   pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
+                                   text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
+
+                                   delete_ocenka_sp="{{ sp_now }}"
+                                   delete_ocenka_date="{{ now_date2 }}"
+                                   delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                                   />
                         </div>
-                    </div>                    
 
-                {% endif %}
+
+                    {% endif %}
+                    
+                </div>       
+                    
             {% endif %}
         {% endfor %}
 
-    </span>
-</div>
+    </div>
 
 {% endspaceless %}

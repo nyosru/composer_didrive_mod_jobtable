@@ -4,6 +4,26 @@
 $_SESSION['show_timer_47'] = false;
 
 
+/**
+ * тащим нормы дня за месяц или период
+ */
+$function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, int $sp, string $date, $date_finish = '' ) {
+
+    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
+    \f\timer_start(78);
+    
+    $r = \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date );
+    // $r = [ 12 , 12 , 12 ];
+    
+    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
+    \f\pa(' ' . \f\timer_stop(78) );
+    
+    return $r;
+    
+});
+$twig->addFunction($function);
+
+
 
 /**
  * тащим список людей кто в указанный период был на работе в этой точке
@@ -516,24 +536,6 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
 $twig->addFunction($function);
 
 
-$function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, string $sp, string $date, $date_finish = '' ) {
-
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
-    $date_start = date('Y-m-01',strtotime($date) );
-    $date_finish = date('Y-m-d',strtotime($date_start .' +1 month -1 day') );
-    // $date_start, $date_finish);
-    $r = \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date_start, $date_finish);
-
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
-    return $r;
-});
-$twig->addFunction($function);
-
-
 $function = new Twig_SimpleFunction('jobdesc__calcJobHoursDay', function ( $db, string $date, int $sp ) {
     
     if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
@@ -643,6 +645,10 @@ $function = new Twig_SimpleFunction('jobdesc__get__admin_access_to_sp', function
     if (empty($_SESSION['now_user_di']['id']) or empty($_SESSION['now_user_di']['access']))
         return \f\end3('не хватает переменных #' . __LINE__, false);
 
+    //echo '</div></div></div></div></div>';
+    \Nyos\mod\items::$type_module = 3;
+    //\Nyos\mod\items::$show_sql = true;
+    \Nyos\mod\items::$var_ar_for_1sql = [];
     $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point, 'show', 'sort_asc');
 
     // \f\pa( $_SESSION['now_user_di']['access'] );
@@ -909,10 +915,12 @@ $function = new Twig_SimpleFunction('jobdesc__getJobmans', function ( $db ) {
     \f\timer_start(78);
     
     try {
+        
         $sql = 'SELECT id, head, birthday , iiko_name FROM mod_070_jobman ORDER BY head ASC;';
         $ff = $db->prepare($sql);
         $ff->execute();
         $ss = $ff->fetchAll();
+        
     } catch (\PDOException $exc) {
         // echo $exc->getTraceAsString();
         \f\pa($exc);
