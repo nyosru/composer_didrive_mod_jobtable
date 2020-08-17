@@ -640,8 +640,10 @@ class JobDesc {
         if (isset(self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']]))
             return \f\end3('повтор', false, ['text' => 'отмена так как уже выдали бонус сегодня на ТП']);
 
-        if (empty(self::$ar_metki_jm_date_sp_type))
+        if (empty(self::$ar_metki_jm_date_sp_type)) {
+            // echo '<br/>123123';
             self::$ar_metki_jm_date_sp_type = self::getMetki($db, $sp, date('Y-m-01', strtotime($data['date'])));
+        }
 
         if (isset(self::$ar_metki_jm_date_sp_type[$data['jobman']][$data['date']][$sp]['no_autobonus']))
             return \f\end3('отменён', false, ['text' => 'отмена бонуса меткой no_autobonus']);
@@ -649,7 +651,7 @@ class JobDesc {
         $ocenka = $data['ocenka'] ?? $data['ocenka_auto'] ?? '';
 
         // \f\pa($data);
-
+        // c
         if (!empty($data['spec_id']) && !empty($data['spec_sp']) && $data['spec_sp'] == $_GET['sp']) {
 
             // $data['pay_bonus_proc_from_oborot'] = $data['s_pay_bonus_proc_from_oborot']
@@ -660,9 +662,11 @@ class JobDesc {
         }
 
         // % от оборота дня
+        // бонус при спец размещении
         if (
-                !isset(self::$ar_autobonus_jm_sp_date[$data['jobman']][$data['spec_sp']][$data['date']]) && !empty($data['spec_sp']) && $data['s_pay_bonus_proc_from_oborot'] > 0 && ( empty($data['sale_point']) || $data['sale_point'] == $data['spec_sp'] )
+                !isset(self::$ar_autobonus_jm_sp_date[$data['jobman']][$data['spec_sp']][$data['date']]) && !empty($data['spec_sp']) && $data['spec_sp'] > 0 && $data['s_pay_bonus_proc_from_oborot'] > 0 && ( empty($data['sale_point']) || $data['sale_point'] == $data['spec_sp'] )
         ) {
+
             if (!empty($data['spec_bonus'])) {
 
                 self::$ar_autobonus_jm_sp_date[$data['jobman']][$data['spec_sp']][$data['date']] = 1;
@@ -675,15 +679,18 @@ class JobDesc {
         }
         // % от оборота дня
         elseif (!empty($data['pay_bonus_proc_from_oborot'])) {
-            if (!empty($data['oborot_day'])) {
+
+            if (empty($data['oborot_day'])) {
+                $bonus_text = '#' . __LINE__ . ' оборот дня не определён ';
+            } 
+            //
+            elseif (!empty($data['oborot_day'])) {
 
                 self::$ar_autobonus_jm_sp_date[$data['jobman']][$sp][$data['date']] = 1;
 
                 $bonus = ceil($data['oborot_day'] / 100 * $data['pay_bonus_proc_from_oborot']);
                 $bonus_text = $data['pay_bonus_proc_from_oborot'] . '% от ' . number_format($data['oborot_day'], 0, '', '`');
-            } else {
-                $bonus_text = '#' . __LINE__;
-            }
+            } 
         }
         // фиксированная оценка дня
         elseif (!empty($ocenka)) {
@@ -709,9 +716,9 @@ class JobDesc {
                 $bonus_text .= ' / 50% бонуса ';
             }
 
-            return \f\end3('окей', true, ['bonus' => $bonus, 'text' => ($bonus_text ?? '' )]);
+            return \f\end3('окей', true, ['in' => [$sp, $data], 'bonus' => $bonus, 'text' => ($bonus_text ?? '' )]);
         } else {
-            return \f\end3('нет бонуса', false, ['text' => ($bonus_text ?? '' )]);
+            return \f\end3('нет бонуса', false, ['in' => [$sp, $data], 'text' => ($bonus_text ?? '' )]);
         }
     }
 
@@ -7329,12 +7336,13 @@ class JobDesc {
         if (empty($date_finish))
             $date_finish = date('Y-m-d', strtotime(date('Y-m-01', strtotime($date_start)) . ' +1month -1 day'));
 
-        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+        \Nyos\mod\items::$between['date'] = [$date_start, $date_finish];
         \Nyos\mod\items::$search['sale_point'] = $sp;
         \Nyos\mod\items::$search['status'] = 'show';
         // $metki0 = \Nyos\mod\items::get($db, self::$mod_metki);
         // \Nyos\mod\items::$show_sql = true;
-        $metki0 = \Nyos\mod\items::get2007($db, self::$mod_metki);
+        // $metki0 = \Nyos\mod\items::get2007($db, self::$mod_metki);
+        $metki0 = \Nyos\mod\items::get($db, self::$mod_metki);
 
         // self::$ar_metki_jm_date_sp_type = [];
         $r = [];
@@ -8727,14 +8735,13 @@ class JobDesc {
         $res = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_norms_day);
 
         $ar__date_d = [];
-        
-        foreach( $res as $k => $v ){
-            
+
+        foreach ($res as $k => $v) {
+
             $ar__date_d[$v['date']][] = $v;
-            
         }
-        
-        return \f\end3('ok', true, $ar__date_d );
+
+        return \f\end3('ok', true, $ar__date_d);
 
 //        
 //        

@@ -1,5 +1,7 @@
 <?php
 
+// \f\pa(\Nyos\Nyos::$menu);
+
 if (isset($_GET['newtype']{0})) {
     $_SESSION['newtype'] = $_GET['newtype'];
     \f\redirect('/', 'i.didrive.php');

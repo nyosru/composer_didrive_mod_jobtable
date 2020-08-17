@@ -41,21 +41,7 @@ $twig->addFunction($function);
  * new version 200624
  */
 $function = new Twig_SimpleFunction('jobdesc__calcAutoBonus', function ( $db, $sp, $smena_data ) {
-
-//    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-//    \f\timer_start(78);
-// return \f\pa( $sp );
     return \Nyos\mod\JobDesc::calcAutoBonus( $db, $sp, $smena_data );
-// $r = \Nyos\mod\JobDesc::calcAutoBonus( $smena_data );
-//    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-//    \f\pa('getJobsJobMans ' . \f\timer_stop(78) );
-    // return $r;
-
-//    \f\pa('\Nyos\mod\JobDesc::getJobsJobMans');   
-//    \f\timer_start(11);
-//    $e = \Nyos\mod\JobDesc::getJobsJobMans($db, $date_start, '', $sp_id);
-//    echo \f\timer_stop(11);
-//    return $e;
 });
 $twig->addFunction($function);
 

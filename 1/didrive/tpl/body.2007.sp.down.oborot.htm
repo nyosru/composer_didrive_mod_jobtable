@@ -10,90 +10,70 @@
         <div class="tcell stick-left bg-white" >
             <b>Оборот</b>
             {#<abbr title="суммарный оборот за месяц" style="color: gray; float:right;" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>#}
+            {#{{ pa(itogi_day) }}#}
         </div>
 
+        {#{{ date_start }}#}
+        
         {% for i in range(low=0, high=35, step=1) %}  
-            
+
             {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+            {#- {{ now_date }} +#}
             
-            {% if date_finish|date('U') >= now_date|date('U') %}
+            {#{% if ( "now"|date('U') + 3600*56 ) < now_date|date('U') %}#}
+            {% if "now"|date('U') > ( now_date|date('U') + 3600*36 ) %}
 
-                <div class="tcell td_inf_{{sp_now}}obr" >
+                <div class="tcell td_inf_{{sp_now}}obr text-center" >
+
+                    {#{{ now_date }}#}
                     
-                {{ now_date }}
+                    {% set v = itogi_day[now_date]['oborot'][0] %}
+                    {#{{ pa(v) }}#}
 
-                    {#{% for v in itogi_day if v.item_type == 'oborot' and v.date == now_date %}#}
-                    {% if itogi_day[now_date]['oborot'][0] %}
-
-                        {% set v = itogi_day[now_date]['oborot'][0] %}
-                        {#{{ pa(v) }}#}
-
-                        {% if itogi_day[now_date]['oborot'][1] %}
-                            <small>есть 2-е значение, обратитесь в поддержку #{{ itogi_day[now_date]['oborot'][1]['item_id'] }}</small>
+                    <abbr title="Авто значение с сервера" {% if v.oborot_hand > 0 %} style="color:gray;" {% endif %} >
+                        {% if v.oborot_server > 0 %}
+                            {{ v.oborot_server|number_format(0, '.', '`') }}
+                        {% else %}
+                            -
                         {% endif %}
-
-                        <div class='text-center'>
-                            {#{ pa(oborots[now_date2]) }#}
-
-                            {% if v.oborot_server is defined %}
-
-                                <span {% if v.oborot_hand > 0 %} style="color:gray;" {% endif %} >
-                                    {{ v.oborot_server|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                                </span>
-                                <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
-
-                            {% else %}
-
-                                <sup><a href="/vendor/didrive_mod/iiko_oborot/1/didrive/ajax.php" 
-                                        vars="date={{ now_date2 }}&hide_form=da&action=get_oborot_for_sps&get_sp_load={{ sp_now }}" 
-                                        res_to="{{ sp_now }}_{{ i }}_res_ob2"
-                                        xtarget="_blank"
-                                        class="load_ajaxjson_to_id"
-                                        >загрузить с ИИКО</a></sup>                        
-
-                                <div id="{{ sp_now }}_{{ i }}_res_ob2" ></div>
-
-                            {% endif %}
-
-                            <input type="number" max="1000000" min="0" 
-
-                                   placeholder="уточнить"
-                                   title="укажите точную сумму оборота"
-
-                                   value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
-
-                                   style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
-                                   class="form-control didrive__edit_items_dop_pole"
-
-                                   module="sale_point_oborot"
-
-                                   pole_edit_name="oborot_hand"
-
-                                   edit1="sale_point"
-                                   edit1val="{{ sp_now }}"
-                                   edit2="date"
-                                   edit2val="{{ now_date }}"
-
-                                   edit_s="{{ creatSecret( "oborot_hand"~sp_now~now_date) }}"
-
-                                   edit_item_id="{{ oborots[now_date2]['id'] }}"
-                                   edit_dop_name="oborot_hand"
-
-                                   pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
-                                   text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
-
-                                   delete_ocenka_sp="{{ sp_now }}"
-                                   delete_ocenka_date="{{ now_date2 }}"
-                                   delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
-
-                                   />
-                        </div>
-
-
-                    {% endif %}
+                    </abbr>
                     
+                    <br/>
+
+                    <input type="number" max="1000000" min="0" 
+                           placeholder="уточнить"
+                           title="укажите точную сумму оборота"
+
+                           value="{% if v.oborot_hand > 0 %}{{ v.oborot_hand }}{% endif %}" 
+
+                           style="width:120px; padding: 3px; margin: 0 auto; text-align:center;" 
+                           class="form-control didrive__edit_items_dop_pole"
+
+                           module="sale_point_oborot"
+
+                           pole_edit_name="oborot_hand"
+
+                           edit1="sale_point"
+                           edit1val="{{ sp_now }}"
+                           edit2="date"
+                           edit2val="{{ now_date }}"
+
+                           edit_s="{{ creatSecret( "oborot_hand"~sp_now~now_date) }}"
+
+                           edit_item_id="{{ oborots[now_date2]['id'] }}"
+                           edit_dop_name="oborot_hand"
+
+                           pole_price_id="a_price_{{ sp_now }}_{{ now_date2 }}"
+                           text_in_pole_price_id="<br/><center>оборот изменился, текущая автооценка удалена</center>"
+
+                           delete_ocenka_sp="{{ sp_now }}"
+                           delete_ocenka_date="{{ now_date2 }}"
+                           delete_ocenka_s="{{ creatSecret( sp_now~now_date2 ) }}"
+
+                           />
                 </div>       
-                    
+
             {% endif %}
         {% endfor %}
 
