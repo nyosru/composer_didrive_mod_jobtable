@@ -3291,12 +3291,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     ocenka_clear(in_sp, in_date);
                     $('span#' + $textblock_id).css('border-bottom', '2px solid green');
-                    // $('span#' + $textblock_id).css('color', 'darkgreen');
-
-                    // console.log($new_val);
-                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
                     $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
-                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
+                    $('.smena_summa_'+$hour_id ).html(  $( '#price_'+ $hour_id +' option:selected' ).attr('price')  *  $new_val );
 
                     // $.debounce( 1000, calcSummMoneySmena2 );
 //                    setTimeout( function () {
@@ -3317,9 +3313,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         });
         
-        setTimeout( function () {
-            calcSummMoneySmena2($textblock_id);
-            }, 100);
+//        setTimeout( function () {
+//            calcSummMoneySmena2($textblock_id);
+//            }, 100);
 
         return false;
     });

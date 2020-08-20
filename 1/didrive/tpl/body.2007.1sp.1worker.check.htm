@@ -139,7 +139,7 @@
                                        sp="{{ sp_now }}"
                                        date="{{ date }}"
 
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>'); "
                                        ></i> 
 
                                 {% endif %}
@@ -220,14 +220,25 @@
                                             {# для динамичного показа суммы за смену - #}
                                             " 
 
-                                            action="edit_dop_pole"
-                                            xfolder="{{ folder }}"
+                                            ajax_go="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/smena-ocenka-edit.php"
+                                            
+                                            {#action="edit_dop_pole"#}
+                                            {#xfolder="{{ folder }}"#}
+                                            
                                             ajax_module="050.chekin_checkout"
                                             dop_name="ocenka"
                                             item_id="{{ i.id }}"
                                             s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~i.id ) }}" 
 
                                             {#{% if i.payed is defined %} disabled="disabled" {% endif %}#}
+                                            
+                                            id="price_{{ i.id }}"
+                                            
+
+                                            {#onchange="$('.smena_summa_{{ i.id }}').html(  $( '#price_{{ i.id }} option:selected' ).attr('price')  );"#}
+                                            {#onchange="$('.smena_summa_{{ i.id }}').html(   $('#hour_{{ i.id }}').html() );"#}
+                                            onchange="$('.smena_summa_{{ i.id }}').html(  $( '#price_{{ i.id }} option:selected' ).attr('price')  *  $('#hour_{{ i.id }}').html() );"
+                                            
                                             >
                                         <option price="0" value="">Оценка</option>
 
@@ -253,7 +264,7 @@
 
                                                         {# для динамичного показа суммы за смену + #}
                                                         price="{{price_hour}}"
-
+                                                        
                                                         {# для динамичного показа суммы за смену - #}
                                                         {% if now_ocenka == ii %} selected="selected" {% endif %}
 
@@ -424,6 +435,7 @@
 
                     </span>
                     <div id="ares{{ rand_d }}" style="display:none;"></div>
+                    
                     {% if i.payed is defined %}
 
                         {% set pay_all = 0 %}
@@ -455,7 +467,9 @@
                         {% endif %}
 
                     {% endif %}
+                    
                     {# { pa(check) } #}
+                    
                 {% endif %}
 
 
