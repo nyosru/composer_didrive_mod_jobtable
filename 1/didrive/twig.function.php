@@ -9,17 +9,16 @@ $_SESSION['show_timer_47'] = false;
  */
 $function = new Twig_SimpleFunction('jobdesc__get_norms', function ( $db, int $sp, string $date, $date_finish = '' ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
-    $r = \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
+    $r = \Nyos\mod\JobDesc::whatNormToDay($db, $sp, $date);
     // $r = [ 12 , 12 , 12 ];
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $r;
-    
 });
 $twig->addFunction($function);
 
@@ -31,8 +30,7 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc_ms__get_itogi_day_on_month', function ( $db, $sp, $date ) {
 
-    return \Nyos\mod\JobDesc::getItogiDayOnMonth( $db, $sp, $date );
-    
+    return \Nyos\mod\JobDesc::getItogiDayOnMonth($db, $sp, $date);
 });
 $twig->addFunction($function);
 
@@ -41,7 +39,7 @@ $twig->addFunction($function);
  * new version 200624
  */
 $function = new Twig_SimpleFunction('jobdesc__calcAutoBonus', function ( $db, $sp, $smena_data ) {
-    return \Nyos\mod\JobDesc::calcAutoBonus( $db, $sp, $smena_data );
+    return \Nyos\mod\JobDesc::calcAutoBonus($db, $sp, $smena_data);
 });
 $twig->addFunction($function);
 
@@ -53,11 +51,11 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__getJobsJobMans', function ( $db, string $date_start, $sp_id = null ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
     $r = \Nyos\mod\JobDesc::getJobsJobMans($db, $date_start, '', $sp_id);
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa('getJobsJobMans ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa('getJobsJobMans ' . \f\timer_stop(78));
     return $r;
 
 //    \f\pa('\Nyos\mod\JobDesc::getJobsJobMans');   
@@ -78,16 +76,14 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc_get_size_pay_position_month', function ( $db, $sp, $position, $date ) {
 
-    return \Nyos\mod\JobDesc::getSizePayPositionMonth( $db, (int) $sp, (int) $position, $date);
-    
+    return \Nyos\mod\JobDesc::getSizePayPositionMonth($db, (int) $sp, (int) $position, $date);
 });
 $twig->addFunction($function);
 
 
 $function = new Twig_SimpleFunction('jobdesc_whoisSizeNowPay', function ( $db, $sp, $position, $date ) {
 
-    return \Nyos\mod\JobDesc::whoisSizeNowPay( $db, (int) $sp, (int) $position, $date);
-    
+    return \Nyos\mod\JobDesc::whoisSizeNowPay($db, (int) $sp, (int) $position, $date);
 });
 $twig->addFunction($function);
 
@@ -101,13 +97,13 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc_ms__get_list_jobmans_job_on_sp_month', function ( $db, $sp, string $date ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $r = \Nyos\mod\JobDesc::getJobmansJobingToSpMonth($db, $sp, $date);
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa('jobdesc_ms__get_list_jobmans_job_on_sp_month ' . \f\timer_stop(78) );
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa('jobdesc_ms__get_list_jobmans_job_on_sp_month ' . \f\timer_stop(78));
 
     return $r;
 });
@@ -115,11 +111,11 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc_ms__get_actions_jobmans_on_month', function ( $db, array $jobmans, string $date ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
     $r = \Nyos\mod\JobDesc::getActionsJobmansOnMonth($db, $jobmans, $date);
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
     return $r;
     // return \Nyos\mod\JobDesc::getJobmansJobingToSpMonth($db, $sp , $date );
 });
@@ -137,15 +133,15 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__calcDayBudget', function ( $db, $sp_id, string $date_start, $list_jobman ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $e = \Nyos\mod\JobDesc::calcDayBudget($db, $sp_id, $date_start, $list_jobman);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $e;
 
 //    \f\pa('\Nyos\mod\JobDesc::getJobsJobMans');   
@@ -158,25 +154,25 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__getJobsSmens', function ( $db, $jobMans, string $date ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $r = \Nyos\mod\JobDesc::getChecks($db, $jobMans, $date);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $r;
 });
 $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $jobMans, string $date ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
 //    \f\pa($jobMans);
 //    \f\pa($date);
 
@@ -208,8 +204,8 @@ $function = new Twig_SimpleFunction('jobdesc__getJobsDops', function ( $db, $job
         $minus_ar_jm_date_ar[$v['jobman']][$v['date_now']][] = $v;
     }
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
 
     return [
         'plus' => $plus_ar_jm_date_ar,
@@ -226,14 +222,14 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__getMansOnJobsPeriod', function ( $db, string $date_start, string $date_finish, $sp_id = null ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $r = \Nyos\mod\JobDesc::getPeriodWhereJobMans($db, $date_start, $date_finish, $sp_id);
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $r;
 });
 $twig->addFunction($function);
@@ -244,9 +240,9 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $db, int $jobman_id, string $date ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     // название переменной где храним кеш
     $cash_var = 'jobdesc__getDayNaznachJobman_date' . $date . '_jobman' . $jobman_id;
     // время в сек на которое храним кеш
@@ -293,9 +289,9 @@ $function = new Twig_SimpleFunction('jobdesc__getDayNaznachJobman', function ( $
     if (!empty($cash_var) && !empty($cash_time))
         \f\Cash::setVar($cash_var, $list, $cash_time);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return \f\end3('ок', true, $list);
 });
 $twig->addFunction($function);
@@ -312,16 +308,16 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__whereJobmansNowDate', function ( $db, int $sp, string $date ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
+
     $workmans = \Nyos\mod\JobDesc::whereJobmansNowDate($db, $date, $sp);
     // \f\pa($workmans,2,'','$workmans');
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return \f\end3('ок', true, $workmans);
 });
 $twig->addFunction($function);
@@ -329,11 +325,11 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $db, int $sp, string $date ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
+
 //    if ($date == '2020-01-05')
 //        \Nyos\mod\JobDesc::$return_dop_info = true;
     // echo $date.'<Br/>';
@@ -341,10 +337,10 @@ $function = new Twig_SimpleFunction('jobdesc__calculateHoursOnJob', function ( $
     $workmans = \Nyos\mod\JobDesc::calculateHoursOnJob($db, $date, $sp);
     //\f\pa($workmans,2,'','$workmans');
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
+
     return \f\end3('ок', true, $workmans['data']);
 });
 $twig->addFunction($function);
@@ -356,8 +352,8 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
 
 
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
 
 // \f\pa( \Nyos\nyos::$folder_now );
 
@@ -514,25 +510,25 @@ $function = new Twig_SimpleFunction('jobdesc__get_smena_jobs', function ( string
 // \f\pa($a_job_in, 2, null, '$a_job_in');
 // \f\pa($a_job_in);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $a_job_in;
 });
 $twig->addFunction($function);
 
 
 $function = new Twig_SimpleFunction('jobdesc__calcJobHoursDay', function ( $db, string $date, int $sp ) {
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     // $hours = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
     $r = \Nyos\mod\JobDesc::calcJobHoursDay($db, $date, $sp);
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $r;
 });
 $twig->addFunction($function);
@@ -540,9 +536,9 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $sp, string $date_start, string $date_finish ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
 // \f\pa( \Nyos\nyos::$folder_now );
 
     /**
@@ -566,9 +562,9 @@ $function = new Twig_SimpleFunction('get_timers_on_sp', function ( $db, string $
         }
     }
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $ee;
 });
 $twig->addFunction($function);
@@ -578,14 +574,14 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, string $mod_default = '074.time_expectations_default' ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $cash_var = 'twig--get_timers_on_sp_default--074.time_expectations_default';
     $e = \f\Cash::getVar($cash_var);
     //\f\pa($e);
-    if ( 1 == 2 && !empty($e)) {
+    if (1 == 2 && !empty($e)) {
 
 //                echo '<br/>201: ' . \f\timer::stop('str', 121);
 //                echo '<br/>211: ' . \f\CalcMemory::stop(121);
@@ -612,9 +608,9 @@ $function = new Twig_SimpleFunction('get_timers_on_sp_default', function ( $db, 
 
     \f\Cash::setVar($cash_var, $return);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $return;
 });
 $twig->addFunction($function);
@@ -625,9 +621,9 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__get__admin_access_to_sp', function ( $db ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     if (empty($_SESSION['now_user_di']['id']) or empty($_SESSION['now_user_di']['access']))
         return \f\end3('не хватает переменных #' . __LINE__, false);
 
@@ -671,21 +667,21 @@ $function = new Twig_SimpleFunction('jobdesc__get__admin_access_to_sp', function
             }
         }
 
-        
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-        
+
+        if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+            \f\pa(' ' . \f\timer_stop(78));
+
         return \f\end3('ок модер', true, $return);
     } else {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+        if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+            \f\pa(' ' . \f\timer_stop(78));
+
         return \f\end3('не достаточно прав доступа #' . __LINE__, false);
     }
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
 
     return \f\end3('что то пошло не так #' . __LINE__, false, $_SESSION);
 });
@@ -698,32 +694,43 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__get__access_moders', function ( $db ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     if (isset($_SESSION['now_user_di']['access']) && $_SESSION['now_user_di']['access'] == 'moder') {
 
-        $ac = \Nyos\mod\items::getItemsSimple($db, 'sale_point_access_moder');
+//        $ac = \Nyos\mod\items::getItemsSimple($db, 'sale_point_access_moder');
+//        // \f\pa($ac,2);
+//        $return = [];
+//
+//        foreach ($ac['data'] as $k => $v) {
+//            if (isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && $v['dop']['user_id'] == $_SESSION['now_user_di']['id']) {
+//                $return[$v['dop']['sale_point']] = 1;
+//            }
+//        }
+
+        // \f\pa( $_SESSION['now_user_di'] );
+        \Nyos\mod\items::$search['user_id'] = $_SESSION['now_user_di']['id'];
+        // \Nyos\mod\items::$show_sql = true;
+        $ac = \Nyos\mod\items::get($db, 'sale_point_access_moder');
+         // \f\pa($ac,2);
         $return = [];
 
-
-        foreach ($ac['data'] as $k => $v) {
-
-            if (isset($v['dop']['sale_point']) && isset($v['dop']['user_id']) && $v['dop']['user_id'] == $_SESSION['now_user_di']['id']) {
-                $return[$v['dop']['sale_point']] = 1;
+        foreach ($ac as $k => $v) {
+            if (!empty($v['sale_point']) && !empty($v['user_id'])) {
+                $return[$v['sale_point']] = 1;
             }
         }
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-        
-        
+        if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+            \f\pa(' ' . \f\timer_stop(78));
+
         return $return;
     } else {
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+
+        if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+            \f\pa(' ' . \f\timer_stop(78));
+
         return false;
     }
 });
@@ -733,9 +740,9 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $date_start, string $date_finish ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
 // \f\pa( \Nyos\nyos::$folder_now );
 
     /**
@@ -845,8 +852,8 @@ $function = new Twig_SimpleFunction('get_list_jobmans', function ( $db, string $
 // \f\pa($a_job_in, 2, null, '$a_job_in');
 // \f\pa($a_job_in);
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
 
     return $a_job_in;
 });
@@ -859,8 +866,8 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__get_list_jobmans', function ( $db ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
 
     $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
 // \f\pa($jobmans, 2);
@@ -880,9 +887,9 @@ $function = new Twig_SimpleFunction('jobdesc__get_list_jobmans', function ( $db 
     usort($jobmans['data'], "\\f\\sort_ar_head");
 
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
 // return $free_jobmans;
     return $jobmans['data'];
 });
@@ -896,24 +903,23 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__getJobmans', function ( $db ) {
 
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     try {
-        
+
         $sql = 'SELECT id, head, birthday , iiko_name FROM mod_070_jobman ORDER BY head ASC;';
         $ff = $db->prepare($sql);
         $ff->execute();
         $ss = $ff->fetchAll();
-        
     } catch (\PDOException $exc) {
         // echo $exc->getTraceAsString();
         \f\pa($exc);
     }
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
 
     return $ss;
 });
@@ -921,10 +927,10 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('jobdesc__get_addlist_jobmans', function ( $db ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
+
     $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
 // \f\pa($jobmans, 2);
 
@@ -944,10 +950,10 @@ $function = new Twig_SimpleFunction('jobdesc__get_addlist_jobmans', function ( $
     }
 
     usort($free_jobmans, "\\f\\sort_ar_head");
-    
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
+
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
     return $free_jobmans;
 });
 $twig->addFunction($function);
@@ -958,9 +964,9 @@ $twig->addFunction($function);
  */
 $function = new Twig_SimpleFunction('jobdesc__get_movelist_jobmans', function ( $db ) {
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\timer_start(78);
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\timer_start(78);
+
     $jobmans = \Nyos\mod\items::getItemsSimple($db, '070.jobman');
 // \f\pa($jobmans, 2);
 
@@ -981,10 +987,10 @@ $function = new Twig_SimpleFunction('jobdesc__get_movelist_jobmans', function ( 
 
     usort($free_jobmans, "\\f\\sort_ar_head");
 
-    if( isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true )
-    \f\pa(' ' . \f\timer_stop(78) );
-    
-    
+    if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
+        \f\pa(' ' . \f\timer_stop(78));
+
+
     return $free_jobmans;
 });
 $twig->addFunction($function);
