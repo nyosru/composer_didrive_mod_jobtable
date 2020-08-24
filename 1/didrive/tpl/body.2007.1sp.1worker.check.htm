@@ -67,7 +67,8 @@
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
                     {# если нет финиша #}
-                    {% if i.start is defined and i.fin is not defined %}
+                    {#{% if i.start is defined and i.fin is not defined %}#}
+                    {% if i.start is defined and i.fin is empty %}
 
                         {{ i.start|date("H:i") }} - ...
                         {#<br/>#}
@@ -117,7 +118,7 @@
                                           xstyle="display: inline-block; width:40px; border:1px solid green;"
 
                                           title="{{ i.start|date("d.m H:i") }} - {{ i.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ i.hour_on_job }}"
-                                          {% if i.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
+                                          {% if i.hour_on_job_hand != '' %} style="font-weight: bold;" {% endif%} 
                                           >{{ hours_on_job }}</span>
 
 
@@ -154,6 +155,8 @@
 
                             <br/>
 
+                            {#{% if i.id == 160441 %}{{ pa(i) }}{% endif %}#}
+                            
                         {% endif %}
 
 

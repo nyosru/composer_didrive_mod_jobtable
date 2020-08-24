@@ -20,9 +20,13 @@ try {
         $skip_start = false;
     }
 
+    // \f\pa($_REQUEST);
+    
     if (isset($_REQUEST['s']) && isset($_REQUEST['id']) && \Nyos\nyos::checkSecret($_REQUEST['s'], $_REQUEST['id']) !== false) {
         
     } else {
+        
+        \f\end2( 'произошла неописуемая ситуация №'.__LINE__ , false );
         
         // \f\pa($_REQUEST);
         throw new \Exception('не', __LINE__ );

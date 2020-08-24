@@ -85,7 +85,7 @@
                             {# <input type="hidden" name="action" value="edit_norms" > #}
                             <input type="hidden" name="in[sale_point]" value="{{ sp_now }}" >
                             <input type="hidden" name="date" value="{{ now_date }}" >
-                            <input type="hidden" name="id" value="{{ sp_now }}{{ now_date }}" >
+                            <input type="hidden" name="id" value="{{ sp_now ~ now_date }}" >
                             <input type="hidden" name="s" value="{{ creatSecret(sp_now~now_date) }}" >
 
                             <input class="input-norms on_change_show_block" 
