@@ -3525,7 +3525,8 @@ class JobDesc {
 //// переменная для кеша
                 \Nyos\mod\items::$cash_var_name = 'items_job_' . self::$mod_man_job_on_sp . '_do_' . \Nyos\mod\items::$sql_vars[':df'];
 //
-                $send_on_job = \Nyos\mod\items::get2($db, self::$mod_man_job_on_sp, 'show', 'date_asc');
+                //$send_on_job = \Nyos\mod\items::get2($db, self::$mod_man_job_on_sp, 'show', 'date_asc');
+                $send_on_job = \Nyos\mod\items::get($db, self::$mod_man_job_on_sp, 'show', 'date_asc');
 
 //          $send_on_job = \Nyos\mod\items::get2($db, self::$mod_man_job_on_sp);
 // \f\pa($send_on_job, 2, '', '$send_on_job');
@@ -3679,8 +3680,9 @@ class JobDesc {
             \f\timer_start(221);
 
 // переменная для кеша
-        \Nyos\mod\items::$cash_var_name = 'items_' . self::$mod_dolgn;
-        $dolgn = \Nyos\mod\items::get2($db, self::$mod_dolgn);
+//        \Nyos\mod\items::$cash_var_name = 'items_' . self::$mod_dolgn;
+//        $dolgn = \Nyos\mod\items::get2($db, self::$mod_dolgn);
+        $dolgn = \Nyos\mod\items::get($db, self::$mod_dolgn);
 
         if (isset($timer1) && $timer1 === true)
             echo '<br/>#' . __LINE__ . ' ' . \f\timer_stop(221);

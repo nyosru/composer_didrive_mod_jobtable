@@ -6,7 +6,7 @@
         require_once '0start.php';
         $skip_start = false;
     }
-    
+
 \f\timer_start(1);
 
 // если нужно не обращать внимания на кеш
@@ -17,22 +17,27 @@ if (!empty($_GET['no_load_cash']))
 
 \Nyos\api\Iiko::getConfigDbIiko();
 $new = \Nyos\api\Iiko::loadIikoPeople();
-\f\pa($new, 2, '', ' результат загрузки');
-
-
+// \f\pa($new['data'], 2, '', 'new результат загрузки '.sizeof($new['data']));
 
 $now = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_jobman);
-\f\pa($now, 2, '', ' текущие записи');
+// \f\pa($now, 2, '', 'old текущие записи '.sizeof($now) );
 
 // сравниваем старое и новое
-$diff = self::diffLoadData( $new, $now );
-\f\pa($diff, 2, '', '$res_diff');
+$diff = \Nyos\api\Iiko::diffLoadData( $new['data'], $now );
+// \f\pa($diff, 2, '', '$res_diff');
 
+$new_add = [];
+foreach( $diff['data']['new_items'] as $k => $v ){
+    $new_add[] = \Nyos\api\Iiko::convertIikoPeopleAr($v);
+}
 
+// \f\pa($new_add);
 
+if( !empty($new_add) )
+$new = \Nyos\mod\items::adds($db, \Nyos\mod\JobDesc::$mod_jobman, $new_add);
+// \f\pa($new);
 
-
-
+\f\end2( 'добавлено '.sizeof( $new['data']['kolvo'] ?? [] ) );
 
 die();
 
