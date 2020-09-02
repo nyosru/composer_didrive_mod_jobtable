@@ -1,0 +1,84 @@
+{% spaceless %}
+
+    {% if 1 == 1 %}
+        {% set timer_show = 'on' %}
+    {% endif %}
+
+    {# итого за день #}
+    {% if 1 == 2 %}
+        {% if 1 == 1 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.itogi_days.htm' %}
+        {% if 1 == 1 or timer_show == 'on' %} <br/>время itogi_days - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% else %}
+        сумма часов по дням, отменено для ускорения
+    {% endif %}
+
+    {% if 1 == 2 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set norms_day = jobdesc__get_norms( db, sp_now, date_start, date_finish ) %}
+        {% if timer_show == 'on' %} <br/>время norms_day - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+    {# нормы на день #}
+    {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% set norms_day = jobdesc__get_norms( db, sp_now, date_start, date_finish ) %}
+    {% include dir_mod_now_mod_ditpl~'body.sp.down.norms.htm' %}
+    {% if timer_show == 'on' %} <br/>время norms - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+    {#% set timer_show = 'on' %#}
+
+
+
+    {# оборот #}
+    {% if 1 == 1 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.oborot.htm' %}
+        {% if timer_show == 'on' %} <br/>время oborot - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+    {# оборот ajax #}
+    {# этот вариант не включаю так как не работает сохранение при редактировании поля в живую #}
+    {% if 1 == 2 %}
+        {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }} {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.oborot.ajax.htm' %}
+        {% if 1 == 2 or timer_show == 'on' %} <br/>время oborot.ajax - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+
+
+
+
+
+    {% if 1 == 2 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% set time_ex_default = get_timers_on_sp_default( db ) %}
+        {% if timer_show == 'on' %} <br/>время get_timers_on_sp_default - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+
+
+    {# Время ожидания #}
+    {% if 1 == 2 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.timeo.htm' %}
+        {% if timer_show == 'on' %} <br/>время timeo - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+    {% if 1 == 1 %}
+        {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+        {% include dir_mod_now_mod_ditpl~'body.sp.down.timeo.ajax.htm' %}
+        {% if timer_show == 'on' %} <br/>время timeo.ajax - {{ didrive_f__timer_stop(5) }} {% endif %}
+    {% endif %}
+
+
+
+    {# оценка дня #}
+    {% if 1 == 2 or timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+    {% include dir_mod_now_mod_ditpl~'body.sp.down.ocenka.htm' %}
+    {% if 1 == 2 or timer_show == 'on' %} <br/>время ocenka - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+
+
+    {#% set timer_show = 'on1' %#}
+
+{% endspaceless %}

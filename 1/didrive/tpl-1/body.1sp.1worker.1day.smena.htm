@@ -1,0 +1,586 @@
+{% spaceless %}
+
+    {#{{ pa(check) }}#}
+    
+    {# получаем данные на входе #}
+    {% if 1 == 1 %}
+
+        {% if 1 == 2 %}
+            pa(now_job) 
+            {{ pa(now_job) }}
+        {% endif %}
+
+        {% if 1 == 2 %}
+            pa(now_dolgn) 
+            {{ pa(now_dolgn) }}
+        {% endif %}
+
+        {% if 1 == 2 %}
+            массив данных по должности и зарплате
+            {{ pa(getListJobsPeriodAll.data.where_job__workman_date[man][date]) }}
+        {% endif %}
+
+        {% set data_on_workman_day = getListJobsPeriodAll.data.where_job__workman_date[man][date] %}
+
+        {% if 2 == 1 %}
+            #24 1sp 1work 1day smena<br/>
+            массив данных по должности и зарплате data_on_workman_day
+            {{ pa(data_on_workman_day) }}
+        {% endif %}
+
+        {# достаём размер оплаты текущей должности #}
+        {% if 1 == 2 %}
+
+            {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
+
+            {% if spec_in.dolgnost is defined %}
+                {% set salar = jobdesc__getSalaryJobman( db, sp_now, spec_in.dolgnost, date ) %}
+            {% else %}
+                {% set salar = jobdesc__getSalaryJobman( db, sp_now, now_job.dolgnost, date ) %}
+            {% endif %}
+
+            {% if 1 == 2 %}
+                salar
+                {{ pa(salar,2) }}
+            {% endif %}
+
+            {% if timer_show == 'on' %} <br/>время jobdesc__getSalaryJobman 57 - {{ didrive_f__timer_stop(5) }} {% endif %}
+
+        {% endif %}
+
+        {% set salar = data_on_workman_day['salary'] %}
+
+    {% endif %}
+
+
+    {%  set rand_d = random() %}
+    {# rand {{ rand_d }} #}
+
+{#{{ pa(check) }}#}
+
+    {# если назначение с ИИКО но есть спец назначение на другую точку, то пропускаем #}
+    {% if check.who_add_item is defined and check.who_add_item == 'iiko' and now_spec_nazn == true %}
+
+    {% elseif check.sale_point is not defined or check.sale_point == sp_now %}
+
+        
+        <div class="text-center show_down_hiden smena1
+
+             {% set user_smena_status = '' %}
+
+             {% if check.status == 'hide' %}
+                 smena_cancel
+             {% elseif check.status == 'show' %}
+
+                 {# чел начал смену и не закончил #}
+                 {% if check.who_add_item is defined and check.who_add_item == 'user' %}
+
+                     {% if check.error_added is defined and check.error_added == 'yes' %}
+                         {% set user_smena_status = 'add_error' %}
+                         smena_started_error                                 
+                     {% elseif check.start is defined and check.fin is not defined %}
+                         {% set user_smena_status = 'add' %}
+                         smena_started
+                     {% elseif check.start is defined and check.fin is defined %}
+                         {% set user_smena_status = 'add_ok' %}
+                         smena_started_ok
+                     {% endif %}
+
+                 {% else %}
+
+
+                     {% if check.pay_check == 'yes' %}
+                         pay_check
+                         {% if check.pay_check == 'yes' %}
+                             pay_check
+                         {% endif %}
+                     {% else %}
+                         smena_ok
+                     {% endif %}
+
+                 {% endif %}
+             {% endif %}
+
+             ">
+
+            {#{ pa(check) }#}
+
+            <nobr>
+
+                {% if check.who_add_item is defined and check.who_add_item == 'iiko' %}
+
+                    <abbr title="загружено с сервера ИИКО #{{  check.id }}" ><small style="float:left;">iiko</small></abbr>
+                    <br clear="all" />
+
+                {% elseif check.who_add_item is defined and check.who_add_item == 'admin' %}
+
+                    <abbr title="добавлено вручную #{{  check.id }}" ><small style="float:left;">вручную</small></abbr>
+                    <br clear="all" />
+
+                {% endif %}
+
+
+
+
+
+
+
+                {#{ pa(check) }#}
+                <div xstyle="display:inline-block;" class="point_div text-center" >
+
+                    {# если нет финиша #}
+                    {% if check.start is defined and check.fin is not defined %}
+                        {{ check.start|date("H:i") }} - ...
+
+                        {# если есть финиш #}
+                    {% else %}
+
+                        <abbr class="job_timer" >
+                            {{ check.start|date("H:i") }} - {{ check.fin|date("H:i") }}
+                            <br/>
+                        </abbr>
+
+                        <abbr class="job_hour" >
+                            <nobr>
+
+                                {% if check.hour_on_job_hand is defined  %}
+                                    {% set hours_on_job = check.hour_on_job_hand %}
+                                {% elseif check.hour_on_job is defined and check.hour_on_job > 0 %}
+                                    {% set hours_on_job = check.hour_on_job %}
+                                {% else %}
+                                    {% set hours_on_job = 0 %}
+                                {% endif %}
+
+
+
+
+                                {% if check.status == 'show' and check.payed is not defined %}
+                                    <i class="fa fa-minus ajax_hour_action" 
+
+                                       type_action="-" 
+                                       hour_id="{{ check.id }}" 
+                                       block="hour_{{ check.id }}" 
+                                       s="{{ creatSecret('hour_'~check.id) }}"
+
+                                       module="050.chekin_checkout"
+                                       
+                                       cash_delete1_1="hoursonjob"
+                                       cash_delete1_2name="date"
+                                       cash_delete1_2="{{ date }}"
+                                       cash_delete1_3name="sp"
+                                       cash_delete1_3="{{ sp_now }}"
+
+                                       sp="{{ sp_now }}"
+                                       date="{{ date }}"
+
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+
+                                       ></i>
+                                {% endif %}
+
+                                <span id="hour_{{ check.id }}" 
+
+                                      {# для динамичного показа суммы за смену + #}
+                                      class="job_hours" id_smena="{{ check.id }}" 
+                                      {# для динамичного показа суммы за смену - #}
+
+                                      xstyle="display: inline-block; width:40px; border:1px solid green;"
+
+                                      title="{{ check.start|date("d.m H:i") }} - {{ check.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ check.hour_on_job }}"
+                                      {% if check.hour_on_job_hand is defined %} style="font-weight: bold;" {% endif%} 
+                                      >{{ hours_on_job }}</span>
+
+                                {% if check.status == 'show' and check.payed is not defined %}
+
+                                    <i class="fa fa-plus ajax_hour_action" 
+                                       type_action="+" 
+                                       hour_id="{{ check.id }}" 
+                                       block="hour_{{ check.id }}" 
+                                       s="{{ creatSecret('hour_'~check.id) }}" 
+
+                                       module="050.chekin_checkout"
+                                       
+                                       cash_delete1_1="hoursonjob"
+                                       cash_delete1_2name="date"
+                                       cash_delete1_2="{{ date }}"
+                                       cash_delete1_3name="sp"
+                                       cash_delete1_3="{{ sp_now }}"
+
+                                       sp="{{ sp_now }}"
+                                       date="{{ date }}"
+
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+
+                                       ></i> 
+
+                                    <a href="#"  class="but_show_option" 
+                                       onclick="$('#drop2_{{ rand_d }},.drop2_{{ rand_d }}').toggle('slow');
+                                               return false;" 
+                                       >
+                                        <span class="fa fa-caret-down" ></span>
+                                    </a>
+                                {% endif %}
+
+                            </nobr>
+
+                            <br/>
+                        </abbr>
+
+                    {% endif %}
+
+
+                    {% if check.status == 'show' %}
+
+                        {% set summa_day = 0 %}
+
+                        <input 
+                            xtype="text" 
+                            type="hidden" 
+                            class="hours_kolvo" 
+                            value="{% if check.hour_on_job_hand is defined %}{{ check.hour_on_job_hand }}{% else %}{{ check.hour_on_job_calc }}{% endif %}" >
+
+                        <center>
+
+                            {% if data_on_workman_day['salary']['ocenka-hour-base'] is defined %}
+
+                                {% if ( now_dolgn.smoke is defined and now_dolgn.smoke == 'da' ) or ( now_job.smoke is defined and now_job.smoke == 'da' ) %}
+                                    {% set price_hour = data_on_workman_day['salary']['ocenka-hour-base']+data_on_workman_day['salary']['if_kurit'] %}
+                                {% else %}
+                                    {% set price_hour = data_on_workman_day['salary']['ocenka-hour-base'] %}
+                                {% endif %}
+
+                                <input 
+                                    type="hidden" 
+                                    class="price_hour_{{ date }}_{{ sp_now }}" 
+                                    value="{{ price_hour }}" 
+                                    >
+
+                                {{ price_hour }}р/ч
+
+                                {% set summa_day = hours_on_job * price_hour %}
+
+                            {% else %}
+
+                                <select name="ocenka" 
+                                        class="select_price_hour_now select_edit_item_dop price_hour_{{ date }}_{{ sp_now }}_select
+
+                                        {# для динамичного показа суммы за смену + #}
+                                        smena_price_{{ check.id }}
+                                        {# для динамичного показа суммы за смену - #}
+                                        " 
+
+                                        action="edit_dop_pole"
+                                        folder="{{ folder }}"
+                                        module="050.chekin_checkout"
+                                        dop_name="ocenka"
+                                        item_id="{{ check.id }}"
+                                        s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~check.id ) }}" 
+
+                                        {% if check.payed is defined %} disabled="disabled" {% endif %}
+                                        >
+                                    <option price="0" value="">Оценка</option>
+
+                                    salar
+                                    {{ pa(salar) }}
+
+                                    {%  set price_hour1_now = '' %}
+
+                                    {% for i in range(low=5, high=3, step=-2) %}    {#{ i }#}
+
+                                        {% set price_hour = 0 %}
+
+                                        {% if salar['ocenka-hour-'~i] is defined %}> 
+                                            {% if ( now_dolgn.smoke is defined and now_dolgn.smoke == 'da' ) or ( now_job.smoke is defined and now_job.smoke == 'da' ) %}
+                                                {% set price_hour = salar['ocenka-hour-'~i]+salar['if_kurit'] %}
+                                            {% else %}
+                                                {% set price_hour = salar['ocenka-hour-'~i] %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if price_hour > 0 %}
+                                            <option value="{{ i }}" 
+
+                                                    {# для динамичного показа суммы за смену + #}
+                                                    price="{{price_hour}}" 
+                                                    {# для динамичного показа суммы за смену - #}
+
+                                                    {% if check.ocenka is defined and check.ocenka == i %}
+                                                        selected="selected"
+
+                                                        {%  if price_hour1_now == ''%}
+                                                            {%  set price_hour1_now = price_hour %}
+                                                        {% endif %}
+
+                                                    {#% elseif check.ocenka_auto is defined and check.ocenka_auto == i and check.ocenka is not defined %#}
+                                                    {% elseif check.ocenka is not defined and check.ocenka_auto is defined and check.ocenka_auto == i %}
+
+                                                        {%  set price_hour_now = price_hour %}
+
+                                                        {%  if price_hour1_now == ''%}
+                                                            {%  set price_hour1_now = price_hour %}
+                                                        {% endif %}
+
+                                                        selected="selected"
+                                                    {% endif %} 
+
+                                                    xprice="{{price_hour}}" 
+                                                    >
+
+                                                {{ i }} 
+
+                                                {% if check.ocenka_auto is defined and check.ocenka_auto == i %}
+                                                    (А)
+                                                {% endif %} 
+
+                                                {#% if check.ocenka_auto is defined and check.ocenka_auto == i %}
+                                                    (Р)
+                                                {% endif %#} 
+
+                                                {% if price_hour > 0 %}
+                                                    > {{price_hour}} р/ч
+                                                {% endif %}
+
+                                                {# pr1 {{ price_hour1_now }} #}
+
+                                            </option>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                    {#
+                                    <option value="4" {% if check.ocenka is defined and check.ocenka == 4 %}selected="selected"{% endif %} >4 {% if salar['ocenka-hour-4'] is defined %}> {{ salar['ocenka-hour-4'] }}р/ч{% endif %}</option>
+                                    <option value="3" {% if check.ocenka is defined and check.ocenka == 3 %}selected="selected"{% endif %} >3 {% if salar['ocenka-hour-3'] is defined %}> {{ salar['ocenka-hour-3'] }}р/ч{% endif %}</option>
+                                    <option value="2" {% if check.ocenka is defined and check.ocenka == 2 %}selected="selected"{% endif %} >2 {% if salar['ocenka-hour-2'] is defined %}> {{ salar['ocenka-hour-2'] }}р/ч{% endif %}</option>
+                                    #}
+
+                                </select>
+
+                                {% if price_hour1_now != '' %}
+                                    {% set summa_day = hours_on_job * price_hour1_now %}
+                                {% endif %}
+
+                            {% endif %}
+
+
+                        </center>
+
+                    {% endif %}
+
+
+                    {# для динамичного показа суммы за смену 1911 + #}
+                    <div class="smena_summa smena_summa_{{ check.id }}" title="сумма за смену">
+
+                        {% if summa_day is defined and summa_day != 0 %}
+                            {{ summa_day }}
+                        {% else %}
+                            ...
+                        {% endif %}
+                    </div>
+
+                </div>
+
+
+                {% if user_smena_status == 'add' %}
+                {% else %}
+
+                    {% if check.status == 'hide' %}
+                        <span class="hide_down" >
+                            удалённая смена
+                        </span>
+
+                    {% elseif check.status == 'show' %}
+
+                        {% if check.pay_check == 'yes' %}
+
+                            <span class="hide_down" >
+                                отправлено в бух. ожидает оплаты
+                            </span>
+
+                            <a href="#" class="btn3 edit_items_dop_values drop2_{{ rand_d }}" 
+                               style='display:none;'
+                               {# действие после вопроса #}
+                               comit_answer="Отменить разрешение на оплату смены ?"
+
+                               {# замена доп параметра #}
+                               action="edit_dop_item"
+
+                               {# модуль итемов #}
+                               itemsmod="050.chekin_checkout"
+                               {# id итема #}
+                               item_id="{{ rand_d }}"
+                               {# название доп параметра #}
+                               dop_name="pay_check"
+                               {# новое значение параметра #}
+                               dop_new_value="no"
+
+                               {# секрет #}
+                               s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-no' ) }}" 
+
+                               {# скрыть ссылку после клика #}
+                               hidethis="da" 
+                               {# сделать видимым блок по id #}
+                               show_id="ares{{ rand_d }}" 
+                               {# id куда печатаем результат #}
+                               res_to_id="ares{{ rand_d }}" 
+                               {# сообщение печатаем если всё ок #}
+                               msg_to_success="Отменено"
+
+                               {# print_res_to_id="ares{{ rand_d }}" #}
+
+                               >Отозвать разрешение на оплату</a>
+
+
+                        {% else %}
+
+                            {% if 1 == 2 %}
+                                <a href="#" class="btn3 edit_items_dop_values" 
+
+                                   {# действие после вопроса #}
+                                   comit_answer="Отправляем на оплату ?"
+
+                                   {# замена доп параметра #}
+                                   action="edit_dop_item"
+
+                                   {# модуль итемов #}
+                                   itemsmod="050.chekin_checkout"
+                                   {# id итема #}
+                                   item_id="{{ rand_d }}"
+                                   {# название доп параметра #}
+                                   dop_name="pay_check"
+                                   {# новое значение параметра #}
+                                   dop_new_value="yes"
+
+                                   {# секрет #}
+                                   s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-yes' ) }}" 
+
+                                   {# скрыть ссылку после клика #}
+                                   hidethis="da" 
+                                   {# сделать видимым блок по id #}
+                                   show_id="ares{{ rand_d }}" 
+                                   {# id куда печатаем результат #}
+                                   res_to_id="ares{{ rand_d }}" 
+                                   {# сообщение печатаем если всё ок #}
+                                   msg_to_success="Отправили на оплату, спасибо"
+
+                                   {# print_res_to_id="ares{{ rand_d }}" #}
+
+                                   >Отправить на оплату 2</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {# { pa(check) } #}
+
+                    {% endif %}
+                {% endif %}
+
+                <span class="xhide_down" style="display:none;" id="drop2_{{ rand_d }}">
+
+                    {% if check.status == 'hide' %}
+
+                        {#
+                        <a href="#" class="actx act_smenax btn3 edit_items_dop_values" 
+    
+                           action="recover_smena" 
+                           go_answer="Хотите восстановить смену ?"
+                           id2="{{ rand_d }}" 
+                           s2="{{ creatSecret( rand_d ) }}" 
+                           resto="ares{{ rand_d }}" 
+                           show_id="ares{{ rand_d }}" 
+                           hidethis="da" 
+    
+                           >восстановить</a>
+                        #}
+
+                    {% elseif check.status == 'show' %}
+
+
+
+                        <a href="#" class="act act_smena btn3" 
+                           go_answer="Хотите удалить смену ?"
+                           action="delete_smena" id2="{{ check.id }}" s2="{{ creatSecret( check.id ) }}" resto="ares{{ check.id }}" show_id="ares{{ check.id }}" hidethis="da" >удалить смену</a>
+
+                        {% if 1 == 2 %}
+                            <a href="#" class="act act_smena btn3" 
+
+
+                               {# действие после вопроса #}
+                               comit_answer="Отправляем на оплату ?"
+
+                               {# замена доп параметра #}
+                               action="edit_dop_item"
+
+                               {# модуль итемов #}
+                               itemsmod="050.chekin_checkout"
+                               {# id итема #}
+                               item_id="{{ rand_d }}"
+                               {# название доп параметра #}
+                               dop_name="pay_check"
+                               {# новое значение параметра #}
+                               dop_new_value="yes"
+
+                               {# секрет #}
+                               s3="{{ creatSecret( '050.chekin_checkout-'~rand_d~'-pay_check-yes' ) }}" 
+
+                               {# скрыть ссылку после клика #}
+                               hidethis="da" 
+                               {# сделать видимым блок по id #}
+                               show_id="ares{{ rand_d }}" 
+                               {# id куда печатаем результат #}
+                               res_to_id="ares{{ rand_d }}" 
+                               {# сообщение печатаем если всё ок #}
+                               msg_to_success="Отправили на оплату, спасибо"
+
+                               >редактировать смену</a>
+                        {% endif %}
+                    {% endif %}
+
+                </span>
+
+                <div id="ares{{ rand_d }}" style="display:none;"></div>
+
+
+                {% if check.payed is defined %}
+
+                    {% set pay_all = 0 %}
+                    {% set pay_string = '' %}
+
+                    {% for k2,v2 in check.payed %}
+
+                        {% set pay_all = pay_all + v2.summa %}
+                        {% set pay_string = pay_string~' / '~v2.summa %}
+
+                    {% endfor %}
+
+                    {% if pay_all != 0 %}
+
+                        <abbr class="pole_oplacheno 
+
+                              {# для динамичного показа суммы за смену + #}
+                              smena_oplacheno_{{ check.id }}
+                              {# для динамичного показа суммы за смену - #}
+
+                              " 
+
+                              {# для динамичного показа суммы за смену + #}
+                              summ="{{ pay_all }}" 
+                              {# для динамичного показа суммы за смену - #}
+
+                              title="оплачено {{ pay_string }} /" ><i class="fa fa-money" ></i> {{ pay_all|number_format(0, '.', '`') }}&nbsp;₽</abbr>
+
+                    {% endif %}
+
+                {% endif %}
+
+                {# { pa(check) } #}
+
+            </nobr>
+        </div>
+    {% endif %}
+    {#
+    <abbr data-toggle="tooltip" data-placement="bottom" title="отработано часов: {{ v7.hours }} с {{ v7.start }} до {{ v7.fin }}" >
+        Отработано {{ v7.hours }} ч.
+    </abbr>
+    #}
+
+{% endspaceless %}

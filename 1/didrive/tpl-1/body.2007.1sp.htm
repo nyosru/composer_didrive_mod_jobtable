@@ -8,7 +8,7 @@
     {% endif %}
 
     {% set jobmans = jobdesc_ms__get_list_jobmans_job_on_sp_month( db, sp_now, date_start ) %}
-      pa(jobmans) {{ pa(jobmans,2) }} 
+     {# pa(jobmans) {{ pa(jobmans,2) }} #}
 
     {% if session['now_user_di']['soc_web_id'] == 5903492 %}
         <small><br/>jobmans {{ didrive_f__timer_stop(781) }}</small>
@@ -26,7 +26,7 @@
     {% endif %}
 
     {% set actions = jobdesc_ms__get_actions_jobmans_on_month( db, jobmans.data.send_on_job|keys , date_start ) %}
-    {{ pa(actions,2) }}
+    {#{{ pa(actions,2) }}#}
 
     {% if session['now_user_di']['soc_web_id'] == 5903492 %}
         <small><br/> actions {{ didrive_f__timer_stop(781) }}</small>

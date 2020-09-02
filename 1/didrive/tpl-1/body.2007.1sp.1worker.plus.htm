@@ -1,0 +1,29 @@
+{% spaceless %}
+
+    {#{{ pa(i) }}#}
+    {#{{ pa(auto_bonus) }}#}
+
+    <div class="xtext-center show_down_hiden plus {{ i.status }}" >
+
+        <a 
+
+            class='base_modal_go icon_removed_item'
+            data-toggle="modal" data-target="#di_modal"
+
+            modal_header='Отменить бонус ?'
+
+            ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+            xajax_vars='r_module=jobman_send_on_sp&remove[id]={{ i.id }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'
+            ajax_vars='r_module=072.plus&remove[id]={{ i.id }}'
+
+            reload_page_after_ok="da"
+            get_answer='Отменить бонус ?'
+
+            ><span class="fa fa-remove" ></span></a>
+
+        <b>+{{ i.summa|number_format(0, '.', '`') }}</b> &nbsp;
+        <small>{{ i.text }}</small>
+
+    </div>
+
+{% endspaceless %}

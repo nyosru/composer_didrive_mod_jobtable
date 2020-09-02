@@ -1,0 +1,82 @@
+{# смотрим статистику работы и добавляем строчку если нужно #}
+
+<div class="list-option-sp">
+
+    {% set r = random() %}
+
+    <button class="btn btn-info btn-xs show_job_tab" 
+
+            id2="{{ spoint.id }}" 
+            id_pril="{{ spoint.id }}" type="mini" 
+            string="5" 
+            s2="{{ creatSecret( spoint.id ) }}"
+
+            res_to="resa{{ r }}"
+            show_on_click="as{{ r }}"
+
+            >Параметры работы точки продаж</button>
+
+    <span id="as{{ r }}" style="display:none" >
+
+        {#
+                                        <span 
+                                            xclass="show_job_statistic" 
+                                            xid_pril="{{ spoint.id }}" 
+                                            xtype="mini" 
+                                            xstring="5" 
+                                            xs="{{ creatSecret( spoint.id ) }}" 
+                                            ><img src="/img/load.gif" alt="" border=0 />
+                                        </span>
+        #}
+
+
+        {#
+        {% set r = random() %}
+        <button class="btn btn-xs btn-success" onclick="$('#ta2b{{ r }}').togle('slow');"> <span class="fa fa-plus" ></span> Добавить запись</button>
+        #}
+
+        <form action="" method="POST" id="f{{ get.id }}" class="add_form_option_job">
+            <table class="table table-striped table-sm" id2="ta2b{{ r }}" id="resa{{ r }}" >
+                <thead>
+
+                    <tr>
+                        <th class="text-center" rowspan="2">Дата</th>
+                        <th class="text-center" rowspan="2">Выручка</th>
+                        <th class="text-center" colspan="2">Оценка работы</th>
+                        <th class="text-center" colspan="2">Время ожидания</th>
+                    </tr>
+
+                    <tr>
+                        <th class="text-center" >Авто</th>
+                        <th class="text-center" >Управляющего</th>
+                        <th class="text-center" >Норма</th>
+                        <th class="text-center" >По факту</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><input type="date" value="" name="f[date]" class="form-control" value=""></td>
+                        <td><input type="number" value="" name="f[vuruchka]"  class="form-control" ></td>
+                        <td><input 
+                                title="Значение расчитывается автоматически"
+                                type="number"  name="f[ocenka_auto]" min="1" step="1" max="5"  value="5" class="form-control border-info"></td>
+                        <td><input type="number"  name="f[ocenka_admin]" min="1" step="1" max="5"  value="5" class="form-control"></td>
+                        <td><input 
+                                title="Значение расчитывается в разделе 'Время ожидания норма'"
+                                type="number"  name="f[time_wait_norm]"  min="10" step="5" max="300" value="60" class="form-control border-info" 
+                                ></td>
+                        <td><input type="number"  name="f[time_wait]"  min="10" step="5" max="300" value="60" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="text-align: right;"><input type="submit" onclick="$('#f{{ get.id }}').submit();" value="Добавить" class="btn btn-success btn-xs" name="add_option_sp_job"></td>
+                    </tr>
+                </tfoot>
+            </table>                        
+        </form>
+
+    </span>
+</div>
+

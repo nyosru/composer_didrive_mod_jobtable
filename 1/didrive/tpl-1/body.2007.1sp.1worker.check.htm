@@ -15,7 +15,7 @@
         </div>
 
         {#{{ pa(i) }}#}
-
+        
     {% else %}
 
         <div class="text-center show_down_hiden smena1 smena_ok " >
@@ -32,6 +32,17 @@
                 get_answer='Удаляем смену ?'
 
                 ><span class="fa fa-remove" ></span></a>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -56,32 +67,24 @@
                 <div xstyle="display:inline-block;" class="point_div text-center" >
 
                     {# если нет финиша #}
-                    {#{% if i.start is defined and i.fin is empty %}#}
-                    {% if 1 == 2 and i.start is defined and i.fin is empty %}
+                    {#{% if i.start is defined and i.fin is not defined %}#}
+                    {% if i.start is defined and i.fin is empty %}
 
                         {{ i.start|date("H:i") }} - ...
+                        {#<br/>#}
+                        {# если есть финиш #}
 
                     {% else %}
 
-
-                        {% if i.fin is not defined or i.fin is empty %}
-                            {{ i.start|date("H:i") }} - ...
+                        <abbr class="job_timer" >
+                            {{ i.start|date("H:i") }} - {{ i.fin|date("H:i") }}
                             <br/>
-                        {% else %}
-                            <abbr class="job_timer" >
-                                {{ i.start|date("H:i") }} - {{ i.fin|date("H:i") }}
-                                <br/>
-                            </abbr>
-                        {% endif %}
-
+                        </abbr>
 
                         <abbr class="job_hour" >
                             <nobr>
 
                                 {% set hours_on_job = i.hour_on_job_hand ?? i.hour_on_job ?? 0 %}
-                                {% if hours_on_job == '' %}
-                                    {% set hours_on_job = 0 %}
-                                {% endif %}
 
                                 {% if 1 == 1 %} {# часы в смене #}
 
@@ -102,13 +105,6 @@
                                        sp="{{ sp_now }}"
                                        date="{{ date }}"
 
-                                       delete1mod="sp_ocenki_job_day"
-                                       delete1v1pole="date"
-                                       delete1v1val="{{ date }}"
-                                       delete1v2pole="sale_point"
-                                       delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"
-
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
 
                                        ></i>
@@ -121,13 +117,9 @@
 
                                           xstyle="display: inline-block; width:40px; border:1px solid green;"
 
-                                          {% if i.fin is not empty %}
-                                              title="{{ i.start|date("d.m H:i") }} - {{ i.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ i.hour_on_job }}"
-                                          {% endif %}
-
+                                          title="{{ i.start|date("d.m H:i") }} - {{ i.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ i.hour_on_job }}"
                                           {% if i.hour_on_job_hand != '' %} style="font-weight: bold;" {% endif%} 
-
-                                          >{{ hours_on_job ?? 0 }}</span>
+                                          >{{ hours_on_job }}</span>
 
 
                                     <i class="fa fa-plus ajax_hour_action" 
@@ -148,32 +140,23 @@
                                        sp="{{ sp_now }}"
                                        date="{{ date }}"
 
-                                       delete1mod="sp_ocenki_job_day"
-                                       delete1v1pole="date"
-                                       delete1v1val="{{ date }}"
-                                       delete1v2pole="sale_point"
-                                       delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"
-                                       
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
-                                       
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>'); "
                                        ></i> 
 
                                 {% endif %}
 
-                                {% if 1 == 2 %}
-                                    <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
-                                            return false;" >
-                                        <span class="fa fa-caret-down" ></span>
-                                    </a>
-                                {% endif %}
-
+{% if 1 == 2 %}
+                                <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
+                                        return false;" >
+                                    <span class="fa fa-caret-down" ></span>
+                                </a>
+{% endif %}
                             </nobr>
 
                             <br/>
 
                             {#{% if i.id == 160441 %}{{ pa(i) }}{% endif %}#}
-
+                            
                         {% endif %}
 
 
@@ -189,6 +172,8 @@
 
                             <center>
 
+                                
+                                
                                 {% set i2 = [] %}
                                 {% if i.position_d == 111186 %}
                                     {% set i2 = jobdesc_whoisSizeNowPay( db, sp_now, i.position_d, date ) %}
@@ -198,7 +183,8 @@
                                     {% set i = i|merge({'pay5': i2['ocenka-hour-5'] }) %}
                                     {% set i = i|merge({'pay3': i2['ocenka-hour-3'] }) %}
                                 {% endif %}
-
+                                
+                                
                                 {% if i.s_pay_base > 0 %} {# если фикс за час #}
 
                                     <input 
@@ -208,9 +194,11 @@
                                         >
 
                                     {{ i.s_pay_base }}р/ч
+
                                     {% set summa_day = hours_on_job * i.s_pay_base %}
 
                                 {% elseif i.pay_base > 0 %} {# если фикс за час #}
+
                                     <input 
                                         type="hidden" 
                                         class="price_hour_{{ date }}_{{ sp_now }}" 
@@ -218,14 +206,17 @@
                                         >
 
                                     {{ i.pay_base }}р/ч
+
                                     {% set summa_day = hours_on_job * i.pay_base %}
+
 
                                 {% else %} {# если не фикс за час #}
 
+
                                     <select name="ocenka" 
                                             class="base__select__send_data_ajax 
-
-                                            xselect_price_hour_now xselect_edit_item_dop02 price_hour_{{ date }}_{{ sp_now }}_select
+                                            
+                                                xselect_price_hour_now xselect_edit_item_dop02 price_hour_{{ date }}_{{ sp_now }}_select
 
                                             {# для динамичного показа суммы за смену + #}
                                             smena_price_{{ i.id }}
@@ -233,24 +224,24 @@
                                             " 
 
                                             ajax_go="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/smena-ocenka-edit.php"
-
+                                            
                                             {#action="edit_dop_pole"#}
                                             {#xfolder="{{ folder }}"#}
-
+                                            
                                             ajax_module="050.chekin_checkout"
                                             dop_name="ocenka"
                                             item_id="{{ i.id }}"
                                             s="{{ creatSecret( '050.chekin_checkout'~'ocenka'~i.id ) }}" 
 
                                             {#{% if i.payed is defined %} disabled="disabled" {% endif %}#}
-
+                                            
                                             id="price_{{ i.id }}"
-
+                                            
 
                                             {#onchange="$('.smena_summa_{{ i.id }}').html(  $( '#price_{{ i.id }} option:selected' ).attr('price')  );"#}
                                             {#onchange="$('.smena_summa_{{ i.id }}').html(   $('#hour_{{ i.id }}').html() );"#}
-                                            onchange="$('.smena_summa_{{ i.id }}').html($('#price_{{ i.id }} option:selected').attr('price') * $('#hour_{{ i.id }}').html());"
-
+                                            onchange="$('.smena_summa_{{ i.id }}').html(  $( '#price_{{ i.id }} option:selected' ).attr('price')  *  $('#hour_{{ i.id }}').html() );"
+                                            
                                             >
                                         <option price="0" value="">Оценка</option>
 
@@ -276,7 +267,7 @@
 
                                                         {# для динамичного показа суммы за смену + #}
                                                         price="{{price_hour}}"
-
+                                                        
                                                         {# для динамичного показа суммы за смену - #}
                                                         {% if now_ocenka == ii %} selected="selected" {% endif %}
 
@@ -447,7 +438,7 @@
 
                     </span>
                     <div id="ares{{ rand_d }}" style="display:none;"></div>
-
+                    
                     {% if i.payed is defined %}
 
                         {% set pay_all = 0 %}
@@ -479,9 +470,9 @@
                         {% endif %}
 
                     {% endif %}
-
+                    
                     {# { pa(check) } #}
-
+                    
                 {% endif %}
 
 
@@ -496,5 +487,5 @@
     {#{% if i.id == 128168 %} {{ pa(i) }} {% endif %}#}
     {#{% if i.id == 132197 %} {{ pa(i) }} {% endif %}#}
     {#{% if i.id == 138287 %} {{ pa(i) }} {% endif %}#}
-
+    
 {% endspaceless %}

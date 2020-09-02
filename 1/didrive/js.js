@@ -1252,7 +1252,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     // alert(i + ': ' + $(elem).text());
     // }
 
-    
+
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1332,7 +1332,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         return false;
     });
 
-/* версия 2007 */
+    /* версия 2007 */
     $('body').on('click', '.put_var_in_modal3', function (event) {
         $.each(this.attributes, function () {
             if (this.specified) {
@@ -1347,7 +1347,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
         });
     });
-    
+
 
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
@@ -1398,7 +1398,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-    
+
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
 // alert('2323');
@@ -3216,14 +3216,20 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var uri_query = '';
         $.each(this.attributes, function () {
             if (this.specified) {
-                //console.log(1, this.name, this.value);
-                uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
-                if (this.name == 'date') {
-                    in_date = this.value;
-                } else if (this.name == 'sp') {
-                    in_sp = this.value;
-                }
 
+                if ( this.name == 'class' 
+                        || this.name == 'onclick'
+                        || this.name == 'style'
+                        ) {
+                } else {
+                    //console.log(1, this.name, this.value);
+                    uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
+                    if (this.name == 'date') {
+                        in_date = this.value;
+                    } else if (this.name == 'sp') {
+                        in_sp = this.value;
+                    }
+                }
             }
         });
         $th = $(this);
@@ -3255,8 +3261,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $('span#' + $textblock_id).text($new_val);
         $.ajax({
 
-            xurl: "/vendor/didrive_mod/items/1/ajax.php",
-            xurl: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
+            // xxurl: "/vendor/didrive_mod/items/1/ajax.php",
+            // xurl: "/vendor/didrive_mod/items/1/micro-service/edit-dop-pole.php",
             url: "/vendor/didrive_mod/items/2/micro-service/edit-dop-pole.php",
             data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
             cache: false,
@@ -3289,10 +3295,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                 } else {
 
-                    ocenka_clear(in_sp, in_date);
+                    // ocenka_clear(in_sp, in_date);
+                    // $.debounce(1000, ocenka_clear(in_sp, in_date) );
+
                     $('span#' + $textblock_id).css('border-bottom', '2px solid green');
                     $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
-                    $('.smena_summa_'+$hour_id ).html(  $( '#price_'+ $hour_id +' option:selected' ).attr('price')  *  $new_val );
+                    $('.smena_summa_' + $hour_id).html($('#price_' + $hour_id + ' option:selected').attr('price') * $new_val);
 
                     // $.debounce( 1000, calcSummMoneySmena2 );
 //                    setTimeout( function () {
@@ -3312,7 +3320,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-        
+
 //        setTimeout( function () {
 //            calcSummMoneySmena2($textblock_id);
 //            }, 100);
@@ -3405,7 +3413,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-    
+
 //
 //    // новая версия 2007
 //    $('body').on('click', '.delete_smena', function (event) {

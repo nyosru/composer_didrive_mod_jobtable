@@ -1,0 +1,195 @@
+{% spaceless %}
+
+    <div class="trow" id="user_tr_{{ sp_now }}_{{ user5 }}" >
+
+        <div class="tcell stick-left bg-white">
+
+            {#{ pa(constant('\\Nyos\\Nyos::$menu')) }#}
+            {#{ pa(menu_all) }#}
+            {#{ pa(level_all) }}
+            {{ pa(now_level) }#}
+            {#{ pa(site__get_metki()) }#}
+
+
+            {# шестерёнка у сотрудника #}
+
+            {% if 1 == 1 %}
+
+                <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                    <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                </div>
+
+                <div class="dropdown-menu">
+
+                    {# универсальное модальное окошко используем #}
+                    <a
+                        href="#"
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal"
+
+                        modal_header='назначения сотрудника'
+                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                        ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'
+
+                        >
+                        список назначений сотрудника
+                    </a>
+
+                    {# универсальное модальное окошко используем #}
+                    <a
+                        href="#"
+                        class="dropdown-item btn-light base_modal_go"
+                        data-toggle="modal" data-target="#di_modal"
+
+                        modal_header='назначения сотрудника'
+                        ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                        {# ajax_vars='action=show_smens&date_start={{ date_start }}&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}' #}
+                        {# ajax_vars='{{  { 'action':'show_smens', 'date_start': date_start , 'view' : 'html' , 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}' #}
+                        ajax_vars='{{  { 'action':'ajax_in_smens_jm', 'date_start': date_start , 'view' : 'html' , 'jobman' : user_v['jobman'], 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+
+                        >
+                        смены в этом месяце
+                    </a>
+
+                </div>
+            {% endif %}
+
+            {#<div style="color:gray;">{{ dolgn.data[now_job.dolgnost]['head'] }}</div>#}
+            <div style="color:gray;">{{ user_v['dolgnost_name'] }}</div>
+
+            <nobr title="#{{ user_v['jobman'] }}">
+                {{ user_v['fio'] }}
+            </nobr>
+
+            {% if user_v['type_job'] is defined and user_v['type_job'] == 'spec' %}
+                <abbr class="alert-danger" style="padding:1px 5px;" title="был СПЕЦ назначен с другой точки">S</abbr>
+            {% endif %}
+
+        </div>
+
+        {#
+          pa(now_dolgn) }}
+        {{  pa(now_dolgn) }}
+          #}
+
+
+
+
+
+        {% set man = user_v['jobman'] %}
+
+        {# проход по датам по человеку #}
+        {% set last_jobday = 0 %}
+
+
+
+
+
+
+        {% set now_dolgn = '' %}
+
+        {#{ pa(getListJobsPeriodAll.data.norm.data[user_v['jobman']]) }#}
+        {% for k,v in getListJobsPeriodAll.data.norm.data[man] if now_dolgn == '' %}
+            {% set now_dolgn = v %}
+        {% endfor %}
+
+        {#{ pa(now_dolgn) }#}
+
+
+
+
+
+
+
+{% set no_job = false %}
+
+        {% for i in range(low=0, high=31, step=1) %}
+
+            {#% set now_spec_nazn_nn = 0 %}
+            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %#}
+
+            {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+            {% if date <= date_finish %}
+
+                {# если было новое назначение #}
+                {% if getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] is defined %}
+                    {% set now_dolgn = getListJobsPeriodAll.data.norm.data[user_v['jobman']][date] %}
+                {% endif %}
+
+                <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
+
+                    {#now_dolgn.date_finish#}
+                    {#{{  pa( now_dolgn ) }}#}
+
+                    {# новое назначение #}
+                    {% if now_dolgn.date == date %}
+                    {% set no_job = false %}
+                    {% endif %}
+                    
+                    
+                    {#% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %#}
+                    {% if 1 == 1 and no_job == false %}
+                    {% include dir_mod_now_mod_ditpl~'body.1sp.1worker.1day.htm' %}
+                    {% endif %}
+
+                    {# увольнение #}
+                    {% if now_dolgn.date_finish == date %}
+                    {% set no_job = true %}
+                    {% endif %}
+                    
+                </div>
+
+                {% if 1 == 2 %}
+
+                    {% set now_spec_nazn_nn = 0 %}
+                    {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+
+                    {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                        {# текущая дата #}
+                        {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                        {# текущий чел #}
+                        {#{ man }#}
+
+                        {% set now_job_cfg = jobdesc__getDayNaznachJobman( db, user5, date ) %}
+                        {#{ pa(now_job_cfg,2) }#}
+
+                        <div class="tcell c{{ user_v['jobman'] }}_{{sp_now}}_{{ date }}">
+
+                            {% if now_job_cfg.data.sale_point is defined and now_job_cfg.data.sale_point != sp_now %}
+
+                                {#{ pa(now_job_cfg) }#}
+                                {#{ pa(dolgn) }#}
+
+                                <div style="background-color: rgba(0,255,0,0.1); padding: 5px;" >
+                                    работает в {{ sps[now_job_cfg.data.sale_point]["head"] }} {{ dolgn['data'][now_job_cfg.data.dolgnost]['head'] }}
+                                </div>
+
+                            {% else %}
+
+                                {#% if date|date("U") < "now"|date_modify("+1 day")|date("U") %#}
+                                {% if date|date("U") < "now"|date("U") %}
+
+                                    {% include dir_mod_now_mod_ditpl~'body.1day1men.htm' %}
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+            {% endif %}
+
+        {% endfor %}
+
+
+
+
+    </div>
+
+{% endspaceless %}

@@ -1,0 +1,283 @@
+{% spaceless %}
+    <div class="trow" id="user_tr_{{ sp_now }}_{{ jobman_id }}" >
+        <div class="tcell stick-left bg-white">
+            <div class="stick-top-jobman" >
+
+                {# шестерёнка у сотрудника #}
+                {% if 1 == 1 %}
+
+                    <div style="float:right; display:inline-block;" class="option_img" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                        <i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' class="fa fa-cog"></i>
+                    </div>
+
+                    <div class="dropdown-menu">
+
+                        {# универсальное модальное окошко используем #}
+                        <a
+                            href="#"
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal"
+
+                            modal_header='назначения сотрудника'
+                            {#ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'#}
+                            {#ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'#}
+
+                            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/naznach_show.php'
+                            ajax_vars='user={{ jobman_id }}&s={{ creatSecret( jobman_id ) }}'
+
+                            >
+                            список назначений сотрудника
+                        </a>
+
+
+                        {# смены в этом месяце #}
+                        {% if 1 == 2 %}
+                            <a
+                                href="#"
+                                class="dropdown-item btn-light base_modal_go"
+                                data-toggle="modal" data-target="#di_modal"
+
+                                modal_header='назначения сотрудника'
+                                ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'
+                                ajax_vars='{{  { 'action':'ajax_in_smens_jm', 'date_start': date_start , 'view' : 'html' , 'jobman' : user_v['jobman'], 'user' : user_v['jobman'] , 's' : creatSecret( user_v['jobman'] ) }|url_encode }}'
+
+                                >
+                                смены в этом месяце
+                            </a>
+                        {% endif %}
+
+                    </div>
+                {% endif %}
+
+                {% set jobman = user_v[0]['jobman'] %}
+                {% set jobman_fio = user_v[0]['fio'] %}
+
+                <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
+                <div style="color:gray;">{{ user_v[0]['dolgnost_name'] }}</div>
+
+                {% if user_v[0]['type'] == 'spec' %}
+                {% else %}
+
+                    {# запуск должности только если она была ранее даты старта #}
+                    {% if user_v[0]['date']|date('U') <= date_start|date('U') %}
+                        {% set now_dolgn = user_v[0] %}
+                    {% else %}
+                        {% set now_dolgn = '' %}
+                    {% endif %}
+
+                {% endif %}
+
+                {#{{ pa( now_dolgn ) }}#}
+                {#{{ pa(user_v) }}#}
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+        {% set no_job = false %}
+
+
+
+
+
+        {% for i in range(low=0, high=31, step=1) %}
+
+            {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            {% if date <= date_finish %}
+
+                <div class="tcell c{{ user_id }}_{{sp_now}}_{{ date }}">
+
+                    {% set new_dolgn = '' %}
+
+                    {% for k3,i in user_v if i['date'] == date %}
+
+                        {#{% if user_id == 95252 %}{{ pa(i) }}{% endif %}#}
+                        {#{{ pa(now_dolgn) }}#}
+
+                        {% if i['type'] == 'spec' %}
+
+                            {#spec {{ pa(i) }}#}
+
+                        {% else %}
+
+                            {% if 1 == 2 and now_dolgn != i %}
+                                {#{% set i = now_dolgn %}#}
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+                            {% endif %}
+
+                            {#{% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}#}
+                            {#{{ pa(i) }}#}
+                            {% set now_dolgn = i %}
+                            {% set new_dolgn = 1 %}
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+
+
+                    {% set now_spec = '' %}
+
+                    {% if jobmans.data.spec[jobman_id] is defined %}
+
+                        {% for k3 , i in jobmans.data.spec[jobman_id] if i.date == date %}
+
+                            {#{% if jobman_id == 241 %} {{ pa(i) }} {% endif %}#}
+                            {#{% if jobman_id == 101362 %} {{ pa(i) }} {% endif %}#}
+
+                            {#{% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}#}
+                            {#22spec {{ pa(i) }}#}
+
+                            {% if i.sale_point == get.sp %}
+
+                                {% set now_spec = i %}
+
+                            {% else %}
+
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {# если работает на другой точке и нет спец назначения на эту #}
+                    {% if now_dolgn.sale_point is defined and now_dolgn.sale_point != get.sp and now_spec == '' %}
+
+                        {#norm {{ pa(now_dolgn) }}#}
+                        {#spec {{ pa(now_spec) }}#}
+
+                        {#+++ на другой точке#}
+                        <div class="on_hover_opacity05green" title="сегодня норм назначение" >
+
+                            <b>{{ sps[now_dolgn.sale_point]['head'] }}</b>
+                            {{ now_dolgn.dolgnost_name }}
+
+                        </div>
+
+                    {% else %}
+
+                        {#{% if jobman_id == 517 %} now_dolgn {{ pa(now_dolgn) }} now_spec {{ pa(now_spec) }} {% endif %}#}
+
+                        {% if now_dolgn != '' or ( now_spec.sale_point is defined and now_spec.sale_point == get.sp ) %}
+                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.day_option.htm' %}
+                        {% endif %}
+
+                        {% if now_dolgn != '' and new_dolgn != '' %}
+                            {% set i = now_dolgn %}
+
+                            {% for k3,i22 in user_v if i22['date'] == date %}
+                                {% if i['type'] == 'spec' %}
+                                {% else %}
+                                    {% if i22 != i %}
+                                        {% set i23 = i %}
+                                        {% set i = i22 %}
+                                        {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+                                        {% set i = i23 %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_dolgnost.htm' %}
+
+                        {% endif %}
+
+                        {% if now_spec != '' %}
+                            {#{{ pa(now_spec) }}#}
+                            {% set i = now_spec %}
+                            {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
+                        {% endif %}
+
+                        {% if now_dolgn != '' or now_spec != '' %}
+                            {#<Br/>122++#}
+
+                            {#{{ pa(now_dolgn) }}#}
+
+                            {% for p, i in actions.data.actions if i.jobman == jobman_id and i.sale_point == get.sp and i.date == date and i.type == 'metki' %}
+
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
+                                {#{{  pa(i) }}#}
+
+                            {% endfor %}
+
+                            {% set i2 = 0 %}
+                            {% set n1 = 1 %}
+                            {#{% set skip = [] %}#}
+
+                            {% set last_id = 0 %}
+
+                            {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and i.type == 'check' %}
+
+                                {% if i.spec_sp > 0 and i.spec_sp != get.sp and i.sale_point == '' %}
+
+                                    {#+++ на другой точке#}
+                                    <div class="text-center show_down_hiden smena1 smena_on_dr_sp" >
+                                        рабочая смена на {{ sps[i.spec_sp]['head'] }}
+                                    </div>
+
+                                {% elseif i.sale_point != '' and i.sale_point != sp_now %}
+
+                                    {#+++ на другой точке#}
+                                    <div class="text-center show_down_hiden smena1 smena_on_dr_sp" >
+                                        рабочая смена на {{ sps[i.sale_point]['head'] }}
+                                    </div>
+
+                                {% else %}
+
+
+                                    {% if last_id != i.id %}
+
+                                        {#<br/>141++ {{ p }} / {{ last_id }} / {{ i.id }}#}
+
+                                        {% set last_id = i.id %}
+
+                                        {% if i.sale_point == '' or i.sale_point == get.sp %}
+                                            {% set i2 = i %}
+                                        {% endif %}
+
+                                        {#{% set skip = skip|merge({ i['id'] }) %}#}
+
+                                        {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
+
+                                    {% endif %}
+
+                                    {#{{ pa(i,2) }}#}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if i2 != 0 %}
+
+                                {% set auto_bonus = jobdesc__calcAutoBonus( db, get.sp, i2 ) %}
+                                {#{{ pa(auto_bonus) }}#}
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.plus.auto.htm' %}
+                                {% set auto_bonus = [] %}
+
+                            {% endif %}
+
+                            {% for p, i in actions.data.actions if i.jobman == jobman_id and i.date == date and ( i.type == 'minus' or i.type == 'plus' or i.type == 'comment' ) %}
+                                {#<br/>162++#}
+                                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
+                            {% endfor %}
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+{% endspaceless %}
