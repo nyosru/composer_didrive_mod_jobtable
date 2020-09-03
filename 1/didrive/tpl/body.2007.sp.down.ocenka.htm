@@ -1,20 +1,27 @@
 {% spaceless %}
 
-    <div class="trow" 
-         data-aos="fade-right"
-         data-aos-anchor-placement="bottom-bottom" 
-         >
+    {% if server.HTTP_HOST == 'adomik.dev.uralweb.info' %}
+    {% set ocenka = true %}
+    {% else %}
+    {% set ocenka = false %}
+    {% endif %}
+    
+    <div class="trow" data-aos="fade-right"
+         data-aos-anchor-placement="bottom-bottom" >
         <div class="tcell stick-left bg-white" >
 
+            {% if ocenka == true %}
             <a href="#" 
                style="float:right;"
                onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) {
-                           console.log('123');
+                           console.log('клик по ссылке считать все оценки');
                            $(this).trigger('click');
                        });
                        return false;" >
                 <span class="fa fa-refresh" title="обновить оценки за месяц" ></span>
             </a>
+            {% endif %}
+            
             <b>Расчёт оценки дня</b>
 
             {# {% set ocenki_day = jobdesc__get_ocenki_days( db, sp_now, date_start, date_finish ) %} #}
@@ -37,7 +44,7 @@
         #}
 
 
-        {% for i in range(low=0, high=35, step=1) %}  
+        {% for i in range(low=0, high=35, step=1) if ocenka == true %}  
 
             {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
@@ -49,105 +56,24 @@
 
                     {% if date_finish|date("d.m.Y")|date("U") >= nd %}
 
-                        {% if itogi_day[now_date2]['ocenka'][0] %}
-                            
+                        {#{{ nd }} + {{ now_date2 }} + {{ now_date }}#}
+                        {#{{ pa( itogi_day[now_date2]['ocenka'][0]) }}#}
+
+                        {#{% if itogi_day[now_date2]['ocenka'][0] %}#}
+                        {% if 1 == 1 %}
+
                             {% set v = itogi_day[now_date2]['ocenka'][0] %}
+                            {# {{ pa(v) }} #}
 
                             {% if itogi_day[now_date2]['param'][0] is not defined %}
-                                <center style="color:gray" >заполните нормы&nbsp;дня</center>
-                                {% else %}
 
-                                <div class='text-center'>
-                                    <a href="#" class="jobdesc__calc_full_ocenka_day" style="display:block; float:right;"
+                                <center style="color:gray" >
+                                    заполните нормы&nbsp;дня
+                                </center>
+                                
+                            {% else %}
 
-                                       forajax_microservice="calculate_rating_day" 
-                                       forajax_action="calc_full_ocenka_day" 
-
-                                       forajax_id="{{ sp_now }}_{{ v.item_id }}" 
-                                       forajax_id2="{{ sp_now }}" 
-                                       forajax_s="{{ creatSecret(  sp_now ~ '_' ~ i ) }}" 
-                                       forajax_s2="{{ creatSecret(  sp_now ) }}" 
-
-                                       forajax_show_timer="da" 
-
-                                       forajax_sp="{{ sp_now }}" 
-
-                                       forajaxx_jobman="{{ man.id }}" 
-                                       forajaxx_date_start="{{ date_start }}"  
-                                       forajaxx_date_fin="{{ date_finish }}" 
-
-                                       forajax_date="{{ now_date2 }}" 
-                                       res_to_id="ocenka_{{ sp_now }}_{{ v.item_id }}"
-
-                                       xanswer="Грузим данные времени ожидания ?"
-
-                                       onclick="$('#ocenka_info_{{ sp_now }}_{{ v.item_id }}').hide('slow');"
-
-                                       title="расчитать оценку дня"
-
-                                       >
-                                        {# расчитать оценку #}
-                                        <span class="fa fa-refresh" ></span>
-                                    </a>
-
-                                    <div id="ocenka_{{ sp_now }}_{{ v.item_id }}" style="text-align:left; xmin-width: 250px;"></div>
-
-                                    {#
-                                    {% if oborots[now_date2]['oborot_server'] is defined %}
-                                        {{ oborots[now_date2]['oborot_server']|number_format(0, '.', '`') }} <sup><abbr title="Авто значение с сервера">А</abbr></sup>
-                                    {% elseif oborots[now_date2]['oborot_hand'] is defined %}
-                                        {{ oborots[now_date2]['oborot_hand']|number_format(0, '.', '`') }}  <sup><abbr title="значение руками">Р</abbr></sup>
-                                    {% else %}
-                                        нет данных <sup><a href="" title="добавить" onclick="$('#{{sp_now}}_{{nd}}').toggle('slow');
-                                                return false;">++</a></sup>
-            
-                                        <form action="" method="post" id="{{sp_now}}_{{nd}}" style="display:none;">
-                                            <input type="number" value="" min="0" max="900000" step="1" />
-                                            <button class="btn btn-xs btn-success" xtype="number" name="" value="" >добавить</button>
-                                        </form>
-            
-                                    {% endif %}
-                                    #}
-
-                                </div>
-
-                                <div id="a_price_{{ sp_now }}_{{ now_date2 }}" >
-
-                                    <div id="ocenka_info_{{ sp_now }}_{{ v.item_id }}" style="text-align:left;">
-                                        {% if v is defined %}
-
-                                            {#{{ pa(ocenki_day[sp_now][now_date2]) }}#}
-                                            {#{% set now_ocenka = ocenki_day[now_date2] %}#}
-                                            {% set now_ocenka = v %}
-
-                                            {#{ pa(now_ocenka) }#}
-
-                                            <div class="text-center">
-                                                <nobr>
-                                                    <div class="ocenka_show all{{ now_ocenka['ocenka'] }}" >
-                                                        Оценка дня: {{ now_ocenka['ocenka'] }}
-                                                    </div>
-                                                    <br/>
-                                                    <abbr title="Оценка по обороту" class="ocenka_show ob{{ now_ocenka['ocenka_oborot'] }}">{{ now_ocenka['ocenka_oborot'] }}</abbr>
-                                                    <abbr title="Оценка по времени ожидания" class="ocenka_show time{{ now_ocenka['ocenka_time'] }}">{{ now_ocenka['ocenka_time'] }}</abbr>
-                                                    <abbr title="На 1 руки" class="ocenka_show naruki{{ now_ocenka['ocenka_naruki'] }}">{{ now_ocenka['ocenka_naruki'] }}</abbr>
-                                                    {% if now_ocenka['ocenka_naruki_ot_oborota'] is defined %}
-                                                        <abbr title="Оценка по % от оборота на руки" 
-                                                              class="ocenka_show ob{{ now_ocenka['ocenka_naruki_ot_oborota'] }}">
-                                                            {{ now_ocenka['ocenka_naruki_ot_oborota'] }}
-                                                        </abbr>
-                                                    {% endif %}
-                                                </nobr>
-                                            </div>
-
-                                            {#{{  pa(now_ocenka) }}#}
-
-                                            {#{  pa(ocenki_day[now_date2]['txt']) }#}
-
-                                        {% endif %}
-                                    </div>
-
-                                </div>
+                                {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka_item.htm' %}
 
                             {% endif %}
 
@@ -156,7 +82,7 @@
                     </div>
 
                 {% endif %}
-                
+
             {% endif %}
 
         {% endfor %}

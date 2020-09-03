@@ -1462,6 +1462,23 @@ class JobDesc {
         die();
     }
 
+    /**
+     * 
+     * @param type $db
+     * @param array $jobmans
+     * @param string $date
+     */
+    public static function calcHoursDaysForOcenka( $db, string $date ) {
+        
+    }
+
+    /**
+     * 
+     * @param type $db
+     * @param array $jobmans
+     * @param string $date
+     * @return type
+     */
     public static function getActionsJobmansOnMonth($db, array $jobmans, string $date) {
 
         \f\timer_start(111);
