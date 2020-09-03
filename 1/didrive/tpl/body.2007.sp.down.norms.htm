@@ -20,7 +20,7 @@
             {% if date_finish|date('U') >= now_date|date('U') %}
 
                 {% if itogi_day[now_date]['param'] is defined %} 
-                    <div class="tcell" style="background-color:rgba(0,255,0,0.1);" > &nbsp; {{ pa(itogi_day[now_date]['param'],2) }}</div>
+                    <div class="tcell" style="background-color:rgba(0,255,0,0.1);" > &nbsp; </div>
                 {% else %}
                     <div class="tcell text-center" style="background-color: rgba(255,0,0,0.4);"  >
                         не&nbsp;заполнено

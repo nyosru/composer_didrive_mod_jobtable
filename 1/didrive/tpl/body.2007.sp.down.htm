@@ -41,12 +41,10 @@
         {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
         <div class="trow" >
             <div class="tcell stick-left bg-white" >
-                <b>Автооценка</b> {#в процессе подготовки до 17.08.2020#}
+                <b>Автооценка</b> в процессе подготовки до 17.08.2020
             </div>
         </div>
-        {% if 2 == 1 %}
-            {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka.htm' %}
-        {% endif %}
+        {#{% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka.htm' %}#}
         {% if timer_show == 'on' %} <br/>время ocenka - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
 
