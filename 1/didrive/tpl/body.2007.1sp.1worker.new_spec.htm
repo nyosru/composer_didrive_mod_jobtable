@@ -20,7 +20,13 @@
             {% endif %}
 
         <nobr>спец.назначение</nobr><Br/>
-        <u>{{ i.dolgnost_name }}</u> на <b>{{ sps[i.sale_point]['head'] }}</b>
+        <u>{{ i.dolgnost_name }}</u> 
+
+        {#{% if i.sale_point != get.sp %}#}
+            на <b>{{ sps[i.sale_point]['head'] }}</b>
+        {#{% else %}
+            на текущую ТП
+        {% endif %}#}
 
     </div>
 

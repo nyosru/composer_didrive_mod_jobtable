@@ -509,12 +509,15 @@ class JobDesc {
                 . ' , \'\' delivery '
                 . ' , \'\' oborot_hand '
                 . ' , \'\' oborot_server '
+                . ' , \'\' oborot '
                 . ' FROM `mod_sp_ocenki_job_day` od '
                 . ' WHERE '
                 . ' od.status = \'show\' '
                 . ' AND od.sale_point = :sp '
                 . ' AND od.date BETWEEN :date_start AND :date_finish '
+                
                 . ' UNION ALL '
+                
                 . ' SELECT '
                 // . ' od.* '
                 . ' p.id item_id '
@@ -540,12 +543,15 @@ class JobDesc {
                 . ' , \'\' delivery '
                 . ' , \'\' oborot_hand '
                 . ' , \'\' oborot_server '
+                . ' , \'\' oborot '
                 . ' FROM `mod_sale_point_parametr` p '
                 . ' WHERE '
                 . ' p.status = \'show\' '
                 . ' AND p.sale_point = :sp '
                 . ' AND p.date BETWEEN :date_start AND :date_finish '
+                
                 . ' UNION ALL '
+                
                 . ' SELECT '
                 . ' t.id item_id '
                 . ' , t.date '
@@ -570,12 +576,15 @@ class JobDesc {
                 . ' , t.delivery '
                 . ' , \'\' oborot_hand '
                 . ' , \'\' oborot_server '
+                . ' , \'\' oborot '
                 . 'FROM mod_074_time_expectations_list t '
                 . ' WHERE '
                 . ' t.status = \'show\' '
                 . ' AND t.sale_point = :sp '
                 . ' AND t.date BETWEEN :date_start AND :date_finish '
+                
                 . ' UNION ALL '
+                
                 . ' SELECT '
                 . ' oo.id item_id '
                 . ' , oo.date '
@@ -600,6 +609,10 @@ class JobDesc {
                 . ' , \'\' delivery '
                 . ' , oo.oborot_hand '
                 . ' , oo.oborot_server '
+                . ' , CASE
+                        WHEN oo.oborot_hand > 0 THEN oo.oborot_hand
+                        WHEN oo.oborot_server > 0 THEN oo.oborot_server
+                    END oborot '
                 . ' FROM mod_sale_point_oborot oo '
                 . ' WHERE '
                 . ' oo.status = \'show\' '
@@ -618,6 +631,7 @@ class JobDesc {
         while ($r = $ff->fetch()) {
             $return__date_type_n_ar[$r['date']][$r['item_type']][] = $r;
         }
+        
         return $return__date_type_n_ar;
     }
 
@@ -1700,7 +1714,6 @@ class JobDesc {
                 . ' AND sale_point = on_sp.sale_point '
                 . ' AND date <= s.date '
                 . ' AND status = \'show\' '
-
 //                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
 //                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                 . ' AND ( '

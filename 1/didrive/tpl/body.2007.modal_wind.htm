@@ -81,8 +81,8 @@
                                 <label for="recipient-name" class="form-control-label">Должность:</label>
 
                                 {#% set dolgnost_on_add = items__readItems(db,'061.dolgnost') %#}
-                                {% set dolgnost_on_add = items__get(db,'061.dolgnost') %}
-                                {#{ pa(dolgnost_on_add) }#}
+                                {% set dolgnost_on_add = items__get(db,'061.dolgnost','show','id_id') %}
+                                {#{{ pa(dolgnost_on_add) }}#}
                                 <select class="form-control" name="dolgn" id="add_person__user" required="requiered" >
                                     <option value="">Выберите</option>
                                     {% for id, da in dolgnost_on_add %}
@@ -397,8 +397,8 @@
                                 <label for="recipient-name" class="form-control-label">Должность:</label>
 
                                 {#% set dolgnost_on_add = items__readItems(db,'061.dolgnost') %#}
-                                {% set dolgnost_on_add = items__get(db,'061.dolgnost') %}
-                                {#{ pa(dolgnost_on_add) }#}
+                                {% set dolgnost_on_add = items__get(db,'061.dolgnost','show','id_id') %}
+                                {#{{ pa(dolgnost_on_add) }}#}
 
                                 <select class="form-control" name="dolgn" id="add_person1__dolgn" required="requiered" >
                                     <option value="">Выберите</option>

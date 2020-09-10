@@ -29,7 +29,7 @@ $twig->addFunction($function);
  * new version 200624
  */
 $function = new Twig_SimpleFunction('jobdesc_ms__get_itogi_day_on_month', function ( $db, $sp, $date ) {
-
+    
     return \Nyos\mod\JobDesc::getItogiDayOnMonth($db, $sp, $date);
 });
 $twig->addFunction($function);
@@ -113,9 +113,12 @@ $function = new Twig_SimpleFunction('jobdesc_ms__get_actions_jobmans_on_month', 
 
     if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
         \f\timer_start(78);
+    
     $r = \Nyos\mod\JobDesc::getActionsJobmansOnMonth($db, $jobmans, $date);
+    
     if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
         \f\pa(' ' . \f\timer_stop(78));
+    
     return $r;
     // return \Nyos\mod\JobDesc::getJobmansJobingToSpMonth($db, $sp , $date );
 });

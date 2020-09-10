@@ -50,14 +50,6 @@
 
 
 
-
-
-
-
-
-
-
-
                 {# metki #}
                 {% if 1 == 1 %}
 
@@ -67,7 +59,7 @@
 
                         <a href="" 
 
-                           xclass="put_var_in_modal btn btn-sm btn-light" 
+                           {#xclass="put_var_in_modal btn btn-sm btn-light" #}
                            class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
 
                            {#
@@ -240,45 +232,71 @@
                     </a>
                 {% endif %}
 
-
-
+                {# добавить увольнение #}
                 <a href="#"
 
-                   class="set_end_now_jobs dropdown-item btn-light"
+                   {% if 1 == 2 %}
+                       class="set_end_now_jobs dropdown-item btn-light"
 
-                   need_answer="Последний день работы (увольняем) сотрудника в данной должности ?"
+                       need_answer="Последний день работы (увольняем) сотрудника в данной должности ?"
 
-                   {#xwork_id="{{ now_dolgn.id }}{{ i }}"#}
-                   {#xwm_s="{{ creatSecret( now_dolgn.id ~ i ) }}"#}
+                       {#xwork_id="{{ now_dolgn.id }}{{ i }}"#}
+                       {#xwm_s="{{ creatSecret( now_dolgn.id ~ i ) }}"#}
 
-                   work_id="{{ now_dolgn.id }}"
-                   wm_s="{{ creatSecret( now_dolgn.id ) }}"
+                       work_id="{{ now_dolgn.id }}"
+                       wm_s="{{ creatSecret( now_dolgn.id ) }}"
 
-                   date_finish="{{ date }}"
-                   res_to="res{{ sp_now }}{{ jobman }}{{ date }}remove_job"
+                       date_finish="{{ date }}"
+                       res_to="res{{ sp_now }}{{ jobman }}{{ date }}remove_job"
 
-                   {#                                                         
-                    jobman="{{ jobman }}"
-                    salepoint="{{ sp_now }}"
-    
-                    id_set ="{{ now_dolgn.id }}"
-    
-                    toform_sp="{{ sp_now }}"
-                    toform_sp_name="{{ sps[sp_now]['head'] }}"
-    
-                    toform_jobman="{{ jobman }}"
-                    toform_jobman_name="{{ mans[man]['head'] }}"
-    
-                    date="{{ date }}"
-                    print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus"
-    
-                    {% set ss = sp_now ~ pv.id %}
-                    id2="{{ ss }}"
-                    s2="{{ creatSecret( ss ) }}"
-    
-                    data-target2="#add_plus_for_jobman"
-                    #}
-                   style="padding:5px;"
+                       {#                                                         
+                        jobman="{{ jobman }}"
+                        salepoint="{{ sp_now }}"
+        
+                        id_set ="{{ now_dolgn.id }}"
+        
+                        toform_sp="{{ sp_now }}"
+                        toform_sp_name="{{ sps[sp_now]['head'] }}"
+        
+                        toform_jobman="{{ jobman }}"
+                        toform_jobman_name="{{ mans[man]['head'] }}"
+        
+                        date="{{ date }}"
+                        print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus"
+        
+                        {% set ss = sp_now ~ pv.id %}
+                        id2="{{ ss }}"
+                        s2="{{ creatSecret( ss ) }}"
+        
+                        data-target2="#add_plus_for_jobman"
+                        #}
+                       style="padding:5px;"
+                   {% endif %}
+
+                   class="base__send_to_ajax dropdown-item btn-light" 
+                   {#xstyle="float:right;" #}
+
+                   href_to_ajax="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/set-dismissal.php" 
+
+                   {# hidethis="da" #}
+                   {# xanswer="удалить комментарий ?" #}
+
+                   {#action="remove_item" #}
+                   aj_id="{{ now_dolgn.id }}" 
+                   date="{{ date }}" 
+                   s="{{ creatSecret( now_dolgn.id ~ date ) }}" 
+
+                   res_to_id="com{{ now_dolgn.id ~ date }}" 
+                   {#after_click_showid="com{{ now_dolgn.id ~ date }}" #}
+                   {#msg_to_success="Увольнение зафиксировано"#}
+
+                   return="skip"
+
+                   {#onclick="$('.dropdown-menu').hide();"#}
+                   {# onclick="$().dropdown('toggle');" #}
+
+                   {#data-toggle="dropdown"#}
+
                    ><span class="fa fa-window-close" ></span> уволен c завтрашнего дня<br/>
                     <small>сегодня последний день в этой должности</small></a>
 
@@ -293,6 +311,7 @@
         <div id="res{{ sp_now }}{{ jobman }}{{ date }}{{ rr }}plus" xstyle="display:none;"></div>
 
         <div id="res{{ sp_now }}{{ jobman }}{{ date }}remove_job" ></div>    
+        <div id="com{{ now_dolgn.id ~ date }}" ></div>    
 
     {% endif %}
 

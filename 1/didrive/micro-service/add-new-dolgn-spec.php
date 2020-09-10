@@ -8,7 +8,7 @@ try {
     if (empty($_REQUEST['user']))
         throw new \Exception('нет пользователя');
 
-    if (empty($_REQUEST['dolgn']))
+    if (!isset($_REQUEST['dolgn']))
         throw new \Exception('нет должности');
 
     if (isset($skip_start) && $skip_start === true) {
@@ -24,7 +24,6 @@ try {
         'sale_point' => $_POST['sp'] ?? $_REQUEST['sp'],
         'dolgnost' => $_REQUEST['dolgn'],
         'date' => $_REQUEST['date'],
-        
 //        'start' => date('Y-m-d H:i', $start_time),
 //        'fin' => date('Y-m-d H:i', $fin_time),
 //        // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
@@ -35,28 +34,38 @@ try {
 //        'ocenka' => $_REQUEST['ocenka']
     );
 
-    //\f\pa($indb);
-    \Nyos\mod\items::$type_module = 2;
-    \Nyos\mod\items::add($db, '050.job_in_sp', $indb);
+    \f\db\db_edit2($db, 'mod_'.\f\translit(\Nyos\mod\JobDesc::$mod_spec_jobday,'uri2'), [
+        'jobman' => $indb['jobman'],
+        'sale_point' => $indb['sale_point'],
+        'date' => $indb['date']
+        ], ['status' => 'delete']);
 
-    \f\end2( 'добавлено' );
-    
+    //\f\pa($indb);
+    \Nyos\mod\items::$type_module = 3;
+    // \Nyos\mod\items::add($db, '050.job_in_sp', $indb);
+    \Nyos\mod\items::add($db, \Nyos\mod\JobDesc::$mod_spec_jobday, $indb);
+
+//    \Nyos\mod\items::$search['id'] == $_REQUEST['dolgn'];
+//    $ee = \Nyos\mod\items::get( $db, \Nyos\mod\JobDesc::$mod_dolgn );
+    //\f\end2( 'добавлено' , true, $ee );
+    \f\end2('добавлено');
+
     // $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=jobman_send_on_sp&show_res=no' );
     die();
-    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no' );
-        
-    
-    
-    
-    
-    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd' );
+    $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no');
+
+
+
+
+
+    $ee = file_get_contents('http://' . $_SERVER['HTTP_HOST'] . '/i.didrive.php?level=000.job&refresh_db=sd');
 
     \f\end2('<div class="warn" style="padding:5px;" >'
             . '<nobr><b>смена добавлена</b>'
             . '<br/>с ' . date('d.m.y H:i', $start_time)
             . '<br/>до ' . date('d.m.y H:i', $fin_time)
             . '<br/>часов на работе ' . $indb['hour_on_job']
-            . '<hr>'. $ee . '<hr>'
+            . '<hr>' . $ee . '<hr>'
             . '</nobr>'
             . '</div>', true);
 } catch (Exception $exc) {

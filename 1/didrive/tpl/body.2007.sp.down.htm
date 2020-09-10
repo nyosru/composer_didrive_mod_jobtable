@@ -12,6 +12,7 @@
     {% if timer_show == 'on' %} {{ didrive_f__timer_start(5) }}     {% endif %}
     {% set itogi_day = jobdesc_ms__get_itogi_day_on_month( db, get.sp , date_start ) %}    
     {#{{ pa(itogi_day,2) }}#}
+    {#{{ pa(itogi_day) }}#}
     {% if timer_show == 'on' %} <br/>время itogi_days - {{ didrive_f__timer_stop(5) }} {% endif %}
 
     {# нормы на день #}
