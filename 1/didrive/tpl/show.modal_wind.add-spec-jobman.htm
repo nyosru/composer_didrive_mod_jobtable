@@ -1,0 +1,139 @@
+{% spaceless %}
+
+    {#{{ pa(get) }}#}
+
+    <form class="put_workman_on_sp" method="post" action="" >
+
+        <input type="hidden" id="add_spec_person__id" name="id" value="00" >
+        <input type="hidden" id="add_spec_person__s" name="s" value="00" >
+
+        <div class="modal-body">
+
+            <div class="form-group">
+
+                <label for="recipient-name" class="form-control-label">Точка продаж:</label> 
+                <b id="add_person1day__sp_name" >{{ get.sp_name }}</b>
+
+                {#<input type="hidden" id="add_spec__sp" name="sale_point" value="{{ get.sp }}" >#}
+                <input type="hidden" id="add_spec__sp" name="sp" value="{{ get.sp }}" >
+                <input type="hidden" id="add_spec__sp_s" name="sp_s" value="{{ get.sp_s }}" >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="recipient-name" class="form-control-label">Сотрудник:</label>
+
+                <span style="display: block; border-left: 3px solid gray; padding-left: 15px;" >
+                    
+                    {# add_person__workman #}
+
+                    <input type="text" class="form-control" id="filtr_specfio" placeholder="Фильтр: введите часть фамилии и выберите в списке ниже" />
+
+                    {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %#}
+                    {% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
+                    {#{{ pa(jobmans_on_add) }}#}
+
+                    <select class="form-control select_addspec" name="user" id="add_person1day__user" required="requiered" >
+                        <option value="">выберите сотрудника</option>
+                        {% for u, u_da in jobmans_on_add %}
+                            {# <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option> #}
+                            <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" {# dolgn="{{ u_da.dolgnost }}" #} >[{{ u_da.sp }}] {{ u_da.fio }} {{ u_da.bd ?? '' }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label for="recipient-name" class="form-control-label">Курит ? &nbsp; <input type="checkbox" name="smoke" value="da" > да, курит
+                </label>
+            </div>
+
+            <div class="form-group">
+
+                <label for="recipient-name" class="form-control-label">Должность:</label>
+
+                {% set dolgnost_on_add = items__get(db,'061.dolgnost','show','head') %}
+                {#{{ pa(dolgnost_on_add) }}#}
+
+                <select class="form-control" name="dolgn" id="add_person1__dolgn" required="requiered" >
+                    <option value="">Выберите</option>
+                    {% for id, da in dolgnost_on_add %}
+                        <option value="{{ da.id }}">{{ da.head }}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
+
+            <div class="form-group">
+                <label for="add_person1__date" class="form-control-label">Дата назначения:</label>
+                <input type="date" class="form-control" id="addspec_person1__date" name="date" 
+                       value="{{ get.date }}" placeholder="укажите" required="requiered" 
+                       readonly="readonly"
+                       >
+            </div>
+
+            {#
+            <div class="form-group">
+                <label for="message-text" class="form-control-label">Message:</label>
+                <textarea class="form-control" id="message-text"></textarea>
+            </div>
+            #}
+
+        </div>
+
+        <div class="modal-footer">
+            {#
+            <button type="button" class="btn btn-xs btn-light" data-dismiss="modal">Close</button>
+            #}
+            <button type="submit" name="add_profi" value="yes" class="btn btn-success">Назначить</button>
+            <input type="hidden" name="type2" value="spec_naznach" />
+        </div>
+
+    </form>
+
+    <script>
+
+        //jQuery extension method:
+        jQuery.fn.filterByText = function (textbox) {
+            return this.each(function () {
+                var select = this;
+                var options = [];
+
+                $(select).find('option').each(function () {
+                    options.push({
+                        value: $(this).val(),
+                        text: $(this).text()
+                    });
+                });
+
+                $(select).data('options', options);
+
+                $(textbox).bind('change keyup', function () {
+                    var options = $(select).empty().data('options');
+                    var search = $.trim($(this).val());
+                    var regex = new RegExp(search, "gi");
+
+                    $.each(options, function (i) {
+                        var option = options[i];
+                        if (option.text.match(regex) !== null) {
+                            $(select).append(
+                                    $("<option>").text(option.text).val(option.value)
+                                    );
+                        }
+                    });
+                });
+            });
+        };
+
+        // You could use it like this:
+
+        $(function () {
+            $("select.select_filtered").filterByText($("input#filtr_fio"));
+            $("select.select_addspec").filterByText($("input#filtr_specfio"));
+        });
+
+    </script>
+
+{% endspaceless %}

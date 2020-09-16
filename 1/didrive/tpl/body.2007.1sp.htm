@@ -10,18 +10,20 @@
     {% set jobmans = jobdesc_ms__get_list_jobmans_job_on_sp_month( db, sp_now, date_start ) %}
 
     {% if session['now_user_di']['soc_web_id'] == 5903492 %}
-        <small><br/>jobmans {{ didrive_f__timer_stop(781) }}</small>
+        <small>
+            <br/>
+            jobmans {{ didrive_f__timer_stop(781) }}
+        </small>
         pa(jobmans) {{ pa(jobmans,2) }} 
     {% endif %}
 
     {#{{ pa(jobmans) }}#}
-    {#     pa(jobmans.data.send_on_job,2) 
-        {{ pa(jobmans.data.send_on_job,2) }}
-         pa(jobmans.data.spec,2) 
-        {{ pa(jobmans.data.spec,2) }}
+    {#     
+    pa(jobmans.data.send_on_job,2) 
+    {{ pa(jobmans.data.send_on_job,2) }}
+    pa(jobmans.data.spec,2) 
+    {{ pa(jobmans.data.spec,2) }}
     #}
-
-
 
     {% if session['now_user_di']['soc_web_id'] == 5903492 %}
         {{ didrive_f__timer_start(781) }}

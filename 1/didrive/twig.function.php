@@ -912,13 +912,31 @@ $function = new Twig_SimpleFunction('jobdesc__getJobmans', function ( $db ) {
 
     try {
 
-        $sql = 'SELECT id, head, birthday , iiko_name FROM mod_070_jobman ORDER BY head ASC;';
+        $sql = 'SELECT 
+            id, 
+            CASE  
+                WHEN head = 1 THEN CONCAT( `lastName` , \' \', `firstName`  , \' \', `middleName`  ) 
+                WHEN head != \'\' THEN head
+                ELSE CONCAT( `lastName` , \' \', `firstName` , \' \', `middleName` ) 
+            END as `head`  ,
+            
+            birthday, 
+            iiko_name 
+            
+            FROM mod_070_jobman 
+            WHERE status = \'show\'
+            '
+            // .' GROUP BY iiko_id '
+            .' ORDER BY lastName ASC;';       
+        
         $ff = $db->prepare($sql);
         $ff->execute();
         $ss = $ff->fetchAll();
+        
     } catch (\PDOException $exc) {
         // echo $exc->getTraceAsString();
-        \f\pa($exc);
+        // \f\pa($exc);
+        \f\pa($exc->getMessage());
     }
 
     if (isset($_SESSION['show_timer_47']) && $_SESSION['show_timer_47'] === true)
@@ -1000,6 +1018,7 @@ $twig->addFunction($function);
 
 /**
  * достаём список сотрудников кто уже работает на точках
+ * v2007
  */
 $function = new Twig_SimpleFunction('jobdesc__get_all_jobmans', function ( $db ) {
 
@@ -1010,19 +1029,19 @@ $function = new Twig_SimpleFunction('jobdesc__get_all_jobmans', function ( $db )
 
     return \Nyos\mod\JobDesc::getListJobmans($db);
 
-    $return = \Nyos\mod\JobDesc::getListJobmans($db);
-    /*
-      //foreach ($ee as $k => $v) {
-      //        while ($v = $ff->fetch()) {
-      //
-      //        }
-      usort($return, "\\f\\sort_ar_head");
-     */
-
-    if (isset($show_timer) && $show_timer === true)
-        echo '<br/>ss ' . \f\timer_stop(12);
-
-    return $return;
+//    $return = \Nyos\mod\JobDesc::getListJobmans($db);
+//    /*
+//      //foreach ($ee as $k => $v) {
+//      //        while ($v = $ff->fetch()) {
+//      //
+//      //        }
+//      usort($return, "\\f\\sort_ar_head");
+//     */
+//
+//    if (isset($show_timer) && $show_timer === true)
+//        echo '<br/>ss ' . \f\timer_stop(12);
+//
+//    return $return;
 });
 $twig->addFunction($function);
 

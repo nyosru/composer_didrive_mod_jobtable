@@ -3189,120 +3189,129 @@ class JobDesc {
 
     /**
      * получаем список всех работников что работали на точках
+     * v2007
      * @param type $db
      * @return type
      */
     public static function getListJobmans($db) {
 
-        // echo '<br/>' . __FILE__ . ' #' . __LINE__;
-//        if (strpos($_SERVER['HTTP_HOST'], 'dev') != false)
-//            $timer_on = true;
+//            $ff1 = ' SELECT '
+////            . ' i_user.id id '
+////            . ' , '
+//                    . ' i_user.id user_id '
+////            . ' ,i_user.head '
+//                    . ' , CONCAT( id_user_fam.value, \' \', id_user_name.value, \' \', id_user_soname.value  ) fio  '
+//                    . ' ,id_user_bdate.value_date bd '
+//                    . ' ,id_jobon_sp.value sp_id '
+//                    . ' ,i_sp.head sp '
+//                    . ' FROM '
+//                    . ' `mitems` i_user '
+////
+//                    . ' INNER JOIN `mitems-dops` id_jobon ON '
+//                    . ' id_jobon.`name` = \'jobman\' '
+//                    . ' AND id_jobon.value = i_user.id '
+//                    . ' AND id_jobon.status IS NULL '
+////
+//                    . ' INNER JOIN `mitems` i_jobon ON '
+//                    . ' i_jobon.id = id_jobon.id_item '
+//                    . ' AND i_jobon.module = :mod_job_on '
+//                    . ' AND i_jobon.status = \'show\' '
 //
-//        if (isset($timer_on) && $timer_on === true)
-//            \f\timer_start(7);
+////
+//                    . ' INNER JOIN `mitems-dops` id_jobon_sp ON '
+//                    . ' id_jobon_sp.`name` = \'sale_point\' '
+//                    . ' AND id_jobon_sp.id_item = i_jobon.id '
+//                    . ' AND id_jobon_sp.status IS NULL '
+////
+//                    . ' INNER JOIN `mitems` i_sp ON '
+//                    . ' i_sp.id = id_jobon_sp.value '
+//                    . ' AND i_sp.module = :mod_sp '
+//                    . ' AND i_sp.status = :status '
+////
+//                    . ' INNER JOIN `mitems-dops` id_user_bdate ON '
+//                    . ' id_user_bdate.`name` = \'bdate\' '
+//                    . ' AND id_user_bdate.id_item = i_user.id '
+//                    . ' AND id_user_bdate.status IS NULL '
+////
+//                    . ' INNER JOIN `mitems-dops` id_user_name ON '
+//                    . ' id_user_name.`name` = \'firstName\' '
+//                    . ' AND id_user_name.id_item = i_user.id '
+//                    . ' AND id_user_name.status IS NULL '
+////
+//                    . ' INNER JOIN `mitems-dops` id_user_soname ON '
+//                    . ' id_user_soname.`name` = \'middleName\' '
+//                    . ' AND id_user_soname.id_item = i_user.id '
+//                    . ' AND id_user_soname.status IS NULL '
+////
+//                    . ' INNER JOIN `mitems-dops` id_user_fam ON '
+//                    . ' id_user_fam.`name` = \'lastName\' '
+//                    . ' AND id_user_fam.id_item = i_user.id '
+//                    . ' AND id_user_fam.status IS NULL '
+//
+////
+////            . ' INNER JOIN `mitems-dops` md_user_name ON '
+////            . ' md_user_name.`module` = :mod_user '
+////            . ' AND mi_user.id = md_user.id_item '
+////
+////            . ' INNER JOIN `mitems` mi_jobon ON '
+////            . ' mi_jobon.`module` = :mod_job_on '
+////            . ' AND mi_jobon.id = md_user.id_item '
+////            . ' AND mi_jobon.status = :status '
+////
+//                    . ' WHERE '
+//                    . ' i_user.status = :status '
+//                    . ' AND i_user.`module` = :mod_user '
+//                    . ' GROUP BY i_user.id '
+//                    . ' ORDER BY id_user_fam.value ASC'
+//
+//// . ' LIMIT 10 '
+//
+//            ;
 
-        $cash_var = 'getListJobmans__list_jobmans';
-        // $cash_time = 60 * 60 * 6;
-// \f\timer_start(123);
+            $sql = 'SELECT 
+                
+                    jm.id,
+                    CASE  
+                        WHEN jm.head = 1 THEN CONCAT( jm.`lastName` , \' \', jm.`firstName`  , \' \', jm.`middleName`  ) 
+                        WHEN jm.head != \'\' THEN jm.head
+                        ELSE CONCAT( jm.`lastName` , \' \', jm.`firstName` , \' \', jm.`middleName` ) 
+                    END as `fio`  ,
+                    jm.birthday bd,
+                    sp.head sp,
+                    sp.id sp_id
 
-        $return = false;
+                FROM 
+                    mod_070_jobman jm
+                
+                INNER JOIN 
+                    mod_050_job_in_sp on_sp 
+                ON 
+                    on_sp.jobman = jm.id AND on_sp.status = \'show\'
 
-        if (!empty($cash_var))
-            $return = \f\Cash::getVar($cash_var);
+                LEFT JOIN 
+                    mod_sale_point sp
+                ON 
+                    on_sp.sale_point = sp.id AND sp.status = \'show\'
 
-        if ($return !== false) {
+                WHERE jm.status = \'show\'
+                GROUP BY jm.id
+                ORDER BY jm.lastName 
+                ';
             
-        } else {
-
-            $ff1 = ' SELECT '
-//            . ' i_user.id id '
-//            . ' , '
-                    . ' i_user.id user_id '
-//            . ' ,i_user.head '
-                    . ' , CONCAT( id_user_fam.value, \' \', id_user_name.value, \' \', id_user_soname.value  ) fio  '
-                    . ' ,id_user_bdate.value_date bd '
-                    . ' ,id_jobon_sp.value sp_id '
-                    . ' ,i_sp.head sp '
-                    . ' FROM '
-                    . ' `mitems` i_user '
-//
-                    . ' INNER JOIN `mitems-dops` id_jobon ON '
-                    . ' id_jobon.`name` = \'jobman\' '
-                    . ' AND id_jobon.value = i_user.id '
-                    . ' AND id_jobon.status IS NULL '
-//
-                    . ' INNER JOIN `mitems` i_jobon ON '
-                    . ' i_jobon.id = id_jobon.id_item '
-                    . ' AND i_jobon.module = :mod_job_on '
-                    . ' AND i_jobon.status = \'show\' '
-
-//
-                    . ' INNER JOIN `mitems-dops` id_jobon_sp ON '
-                    . ' id_jobon_sp.`name` = \'sale_point\' '
-                    . ' AND id_jobon_sp.id_item = i_jobon.id '
-                    . ' AND id_jobon_sp.status IS NULL '
-//
-                    . ' INNER JOIN `mitems` i_sp ON '
-                    . ' i_sp.id = id_jobon_sp.value '
-                    . ' AND i_sp.module = :mod_sp '
-                    . ' AND i_sp.status = :status '
-//
-                    . ' INNER JOIN `mitems-dops` id_user_bdate ON '
-                    . ' id_user_bdate.`name` = \'bdate\' '
-                    . ' AND id_user_bdate.id_item = i_user.id '
-                    . ' AND id_user_bdate.status IS NULL '
-//
-                    . ' INNER JOIN `mitems-dops` id_user_name ON '
-                    . ' id_user_name.`name` = \'firstName\' '
-                    . ' AND id_user_name.id_item = i_user.id '
-                    . ' AND id_user_name.status IS NULL '
-//
-                    . ' INNER JOIN `mitems-dops` id_user_soname ON '
-                    . ' id_user_soname.`name` = \'middleName\' '
-                    . ' AND id_user_soname.id_item = i_user.id '
-                    . ' AND id_user_soname.status IS NULL '
-//
-                    . ' INNER JOIN `mitems-dops` id_user_fam ON '
-                    . ' id_user_fam.`name` = \'lastName\' '
-                    . ' AND id_user_fam.id_item = i_user.id '
-                    . ' AND id_user_fam.status IS NULL '
-
-//
-//            . ' INNER JOIN `mitems-dops` md_user_name ON '
-//            . ' md_user_name.`module` = :mod_user '
-//            . ' AND mi_user.id = md_user.id_item '
-//
-//            . ' INNER JOIN `mitems` mi_jobon ON '
-//            . ' mi_jobon.`module` = :mod_job_on '
-//            . ' AND mi_jobon.id = md_user.id_item '
-//            . ' AND mi_jobon.status = :status '
-//
-                    . ' WHERE '
-                    . ' i_user.status = :status '
-                    . ' AND i_user.`module` = :mod_user '
-                    . ' GROUP BY i_user.id '
-                    . ' ORDER BY id_user_fam.value ASC'
-
-// . ' LIMIT 10 '
-
-            ;
-
             $sql_vars = [];
-            $sql_vars[':status'] = 'show';
-            $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
-            $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
-            $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
+            // $sql_vars[':status'] = 'show';
+            // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
+            // $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
+            // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
 // \f\pa($ff1);
 
-            $ff = $db->prepare($ff1);
+            $ff = $db->prepare($sql);
             $ff->execute($sql_vars);
 
 // $return = [];
+            return $ff->fetchAll();
             $return = $ff->fetchAll();
 
-            if (!empty($cash_var))
-                \f\Cash::setVar($cash_var, $return, ( $cash_time ?? 0));
-        }
 
 //        if (isset($show_timer) && $show_timer === true)
 //            echo '<br/>' . __FUNCTION__

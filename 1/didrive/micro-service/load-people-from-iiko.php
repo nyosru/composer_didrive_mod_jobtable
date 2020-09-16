@@ -17,24 +17,51 @@ if (!empty($_GET['no_load_cash']))
 
 \Nyos\api\Iiko::getConfigDbIiko();
 $new = \Nyos\api\Iiko::loadIikoPeople();
+
 //\f\pa($new['data'], 2, '', 'new результат загрузки '.sizeof($new['data']));
 
 $now = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_jobman);
+
 // \f\pa($now, 2, '', 'old текущие записи '.sizeof($now) );
 // сравниваем старое и новое
 $diff = \Nyos\api\Iiko::diffLoadData($new['data'], $now);
 // \f\pa($diff, 2, '', '$res_diff');
 
 $new_add = [];
+$new_name = '';
 foreach ($diff['data']['new_items'] as $k => $v) {
-    $new_add[] = $v;
+
+    $v1 = [];
+
+    foreach ($v as $k0 => $v0) {
+
+        if (empty($v0))
+            continue;
+
+        if ($k0 == 'id') {
+            $v1['iiko_id'] = $v0;
+        } elseif ($k0 == 'name') {
+            $v1['iiko_name'] = $v0;
+        } elseif ($k0 == 'birthday') {
+            $v1[$k0] = substr($v0, 0, 10);
+        } else {
+            $v1[$k0] = $v0;
+        }
+    }
+
+    $new_add[] = $v1;
+    //\f\pa($v['name']);
+    // \f\pa($v1);
+    $new_name .= $v['lastName'] . ' ';
 }
 
 // \f\pa($new_add);
 
-if (!empty($new_add))
+if (!empty($new_add)) {
+    //   echo '<br/>'.__LINE__;
     $new = \Nyos\mod\items::adds($db, \Nyos\mod\JobDesc::$mod_jobman, $new_add);
-// \f\pa($new);
+    // \f\pa($new);
+}
 
 $edited = 0;
 
@@ -57,7 +84,7 @@ if (!empty($diff['data']['new_dop_data'])) {
 
         $e = \f\timer_stop(789, 'ar');
         // \f\pa($e);
-        if( $e['sec'] > 5 )
+        if ($e['sec'] > 5)
             break;
     }
 }
@@ -65,16 +92,17 @@ if (!empty($diff['data']['new_dop_data'])) {
 // \f\pa($diff['data']['new_dop_data']);
 // $msg = 'Загрузили данные с айки по пользователям ( ' . sizeof($re) . ' записей )';
 $msg = 'Загрузили данные с айки по пользователям'
-        . PHP_EOL . 'записей ' . sizeof($new['data'] ?? [])
-        . PHP_EOL . 'новых сотрудников  ' . sizeof($new['data']['kolvo'] ?? [])
-        . PHP_EOL . 'нужно обновить: ' . sizeof($diff['data']['new_dop_data']) . ' = обновлено: ' . $edited
+        . PHP_EOL . 'записей ' . sizeof($now)
+        . PHP_EOL . 'новых сотрудников  ' . (!empty($new_add) ? sizeof($new_add) : 0 )
+        . ' ' . $new_name
+        . PHP_EOL . 'нужно обновить: ' . (!empty($diff['data']['new_dop_data']) ? sizeof($diff['data']['new_dop_data']) : 0 ) . ' = обновлено: ' . $edited
 ;
 
 \Nyos\Msg::sendTelegramm($msg, null, 2);
 
 \f\end2($msg, true, [
     'loaded' => sizeof($new['data'] ?? [] ),
-    'new' => sizeof($new['data']['kolvo'] ?? [] ),
+    'new' => sizeof( $new_add ),
     'need_edit' => sizeof($diff['data']['new_dop_data']),
     'edited' => $edited
 ]);
