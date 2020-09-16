@@ -95,7 +95,7 @@ $msg = 'Загрузили данные с айки по пользовател�
         . PHP_EOL . 'записей ' . sizeof($now)
         . PHP_EOL . 'новых сотрудников  ' . (!empty($new_add) ? sizeof($new_add) : 0 )
         . ' ' . $new_name
-        . PHP_EOL . 'нужно обновить: ' . (!empty($diff['data']['new_dop_data']) ? sizeof($diff['data']['new_dop_data']) : 0 ) . ' = обновлено: ' . $edited
+        . PHP_EOL . 'нужно обновить: ' . ( !empty($diff['data']['new_dop_data']) ? sizeof($diff['data']['new_dop_data'])-2 : 0 ) . ' = обновлено: ' . ( $edited - 2 )
 ;
 
 \Nyos\Msg::sendTelegramm($msg, null, 2);
