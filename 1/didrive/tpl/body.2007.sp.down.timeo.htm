@@ -6,7 +6,8 @@
 
         {% for i in range(low=0, high=32, step=1) %}  
             {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
-            {% if date_finish|date('U') >= now_date|date('U') %}
+            {#{% if date_finish|date('U') >= now_date|date('U') %}#}
+            {% if now_date > date_start|date('U') and now_date|date('U') <= date_finish|date('U') and now_date|date('U') <= "now"|date_modify("-1 day")|date('U') %}
                 {#{% for v in itogi_day if v.item_type == 'timeo' and v.date == now_date %}#}
                     
                 {% if itogi_day[now_date]['timeo'][0] %}
@@ -21,6 +22,7 @@
                     <div class="tcell text-center" >
                         {{ v.cold }} / {{ v.delivery }}
                     </div>
+
                 {% endif %}
                 
                 {#{% endfor %}#}

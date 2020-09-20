@@ -17,7 +17,7 @@
 
             {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
 
-            {% if now_date > date_start|date('U') and now_date|date('U') <= date_finish|date('U') %}
+            {% if now_date > date_start|date('U') and now_date|date('U') <= date_finish|date('U') and now_date|date('U') <= "now"|date_modify("-1 day")|date('U') %}
 
                 {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.oborot.item.htm' %} 
 

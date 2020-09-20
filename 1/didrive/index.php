@@ -11,13 +11,12 @@ $vv['in_body_end'][] = '<link rel="stylesheet" href="/vendor/didrive_mod/jobdesc
 
 // \f\pa($_SESSION);
 
-if ( 1 == 2 && isset($_SESSION['newtype']) && $_SESSION['newtype'] == 2007 ) {
+if (1 == 2 && isset($_SESSION['newtype']) && $_SESSION['newtype'] == 2007) {
 // if (isset($_SESSION['newtype']) && ( $_SESSION['newtype'] == 1 || $_SESSION['newtype'] == 2007 ) ) {
-    
-$vv['in_body_end'][] = '<div style="background-color: rgba(255,255,255,0.5); position: fixed; bottom: 100px; right: 50px; width: 350px;" >vue</div>';
-$vv['in_body_end'][] = '<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>';
-$vv['in_body_end'][] = 
-    '<script>
+
+    $vv['in_body_end'][] = '<div style="background-color: rgba(255,255,255,0.5); position: fixed; bottom: 100px; right: 50px; width: 350px;" >vue</div>';
+    $vv['in_body_end'][] = '<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>';
+    $vv['in_body_end'][] = '<script>
         
     import ShowBonus from \'/vendor/didrive_mod/jobdesc/1/didrive/vue/src/show-bonus\';
 
@@ -30,9 +29,9 @@ $vv['in_body_end'][] =
 
     });
     </script>';
-    
-    
-}elseif (isset($_SESSION['newtype']) && ( $_SESSION['newtype'] == 1 ) ) {
+}
+//
+elseif (isset($_SESSION['newtype']) && ( $_SESSION['newtype'] == 1 )) {
 
     if (empty($vv['dihead']))
         $vv['dihead'] = '';
@@ -50,9 +49,9 @@ $vv['in_body_end'][] =
 
     foreach ($dirs_for_scan as $d => $dir_local) {
 
-        echo '<br/>#'.__LINE__.' '.__DIR__;
+        echo '<br/>#' . __LINE__ . ' ' . __DIR__;
         echo $d;
-        
+
         if (is_dir($d)) {
 
             $list_f = scandir($d);
@@ -80,19 +79,27 @@ $vv['in_body_end'][] =
 }
 
 
+//\f\pa(\Nyos\Nyos::$menu);
+
+$vv['jobdesc_metki'] = [];
+for ($i = 1; $i <= 10; $i++) {
+    
+    if (isset(\Nyos\Nyos::$menu['072.metki']['type2']['item' . $i]) && isset(\Nyos\Nyos::$menu['072.metki']['type2']['item' . $i . 'val'])) {
+        $vv['jobdesc_metki'][\Nyos\Nyos::$menu['072.metki']['type2']['item' . $i . 'val']] = \Nyos\Nyos::$menu['072.metki']['type2']['item' . $i];
+    }
+    
+}
 
 
 
-
-
-if( 1 == 2 ){
+if (1 == 2) {
 //\f\pa($_POST);
-echo '<br/>';
-echo '<br/>';
-echo '<br/>';
-echo '<br/>';
-echo '<br/>';
-echo '<div style="padding: 0px 150px ;" >';
+    echo '<br/>';
+    echo '<br/>';
+    echo '<br/>';
+    echo '<br/>';
+    echo '<br/>';
+    echo '<div style="padding: 0px 150px ;" >';
 ////
 ////$e = \Nyos\mod\JobBuh::calcDayBudget($db, 1, '2020-07-02');
 ////
@@ -103,12 +110,11 @@ echo '<div style="padding: 0px 150px ;" >';
 //\f\pa(array_keys($ee['data']['job_on_sp'][$_REQUEST['sp']]));
 //// \f\pa(array_keys($ee['data']['where_job__workman_date']));
 //
-
 //$e = \Nyos\mod\JobDesc::calcDayBudget($db, $_REQUEST['sp'], ( $_REQUEST['date'] ?? date('Y-m-d') ) , [] );
 //$e = \Nyos\mod\JobDesc::whoWhereCoocking($db, $_REQUEST['sp'], ( $_REQUEST['date'] ?? date('Y-m-d') ) );
 //\f\pa($e);
 
-echo '</div>';
+    echo '</div>';
 }
 
 //\f\pa($_SESSION);
@@ -164,7 +170,6 @@ $vv['tpl_body'] = \f\like_tpl('body', dir_site_module_nowlev_tpldidr, dir_mods_m
 //        });
 //    
 //    </script>';
-
 // $vv['in_body_end'][] = '<script src="' . DS . 'vendor' . DS . 'didrive' . DS . 'base' . DS . 'js.lib' . DS . 'jquery.debounce-1.0.5.js"></script>';
 $vv['in_body_end'][] = '<script defer="defer" src="' . DS . 'vendor' . DS . 'didrive' . DS . 'base' . DS . 'js.lib' . DS . 'jquery.ba-throttle-debounce.min.js"></script>';
 

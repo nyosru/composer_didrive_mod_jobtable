@@ -36,92 +36,96 @@
 
         <div class="btn-group" style="text-align:right;display:block;xfloat:right;" >
 
-            <div class="option_img" 
-                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                 ><i 
-                    xonclick='
-                    $(".c{{ jobman }}_{{sp_now}}_{{ date }} .put_var_in_modal").toggle("slow");
-                    //$(".dopmenu{{ jobman }}_{{sp_now}}_{{ date }}").toggle("slow");
-                    return false;' 
-                    class="fa fa-cog"
-                    ></i></div>
+            <div class="option_img dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"                 
+                 ><i class="fa fa-cog" ></i></div>
 
-            <div class="dropdown-menu">
-
-
+            <div class="dropdown-menu" >
 
                 {# metki #}
                 {% if 1 == 1 %}
 
                     {#{{ pa(metkis) }}#}
-
                     {% for k,v in metkis %}
 
-                        <a href="" 
+                        {% if 1 == 2 %}
+                            <a href="" 
 
-                           {#xclass="put_var_in_modal btn btn-sm btn-light" #}
-                           class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
+                               {#xclass="put_var_in_modal btn btn-sm btn-light" #}
+                               class="xput_var_in_modal2 dropdown-item btn-light base_modal_go"
 
-                           {#
-                           data-toggle2="modal" 
-                           data-target2="#add_jobday_for_jobman" 
-    
-                           jobman="{{ jobman }}"
-                           salepoint="{{ sp_now }}"
-    
-                           toform_sp="{{ sp_now }}"
-                           toform_sp_name="{{ sps[sp_now]['head'] }}"
-    
-                           toform_jobman="{{ jobman }}"
-                           toform_jobman_name="{{ mans[man]['head'] }}"
-    
-                           date="{{ date }}"
-                           print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}"
-    
-                           {% set ss = sp_now ~ man %}
-                           id2="{{ ss }}"
-                           s2="{{ creatSecret( ss ) }}"
-                            #}
+                               {#
+                               data-toggle2="modal" 
+                               data-target2="#add_jobday_for_jobman" 
+        
+                               jobman="{{ jobman }}"
+                               salepoint="{{ sp_now }}"
+        
+                               toform_sp="{{ sp_now }}"
+                               toform_sp_name="{{ sps[sp_now]['head'] }}"
+        
+                               toform_jobman="{{ jobman }}"
+                               toform_jobman_name="{{ mans[man]['head'] }}"
+        
+                               date="{{ date }}"
+                               print_res_to_id="res{{ sp_now }}{{ jobman }}{{ date }}"
+        
+                               {% set ss = sp_now ~ man %}
+                               id2="{{ ss }}"
+                               s2="{{ creatSecret( ss ) }}"
+                                #}
 
-                           data-toggle="modal" data-target="#di_modal" 
+                               data-toggle="modal" data-target="#di_modal" 
 
-                           modal_header='Добавляем метку'
-                           ajax_link='/vendor/didrive_mod/items/2/ajax.php'
-                           ajax_vars='action=add_new&id={{ jobman~k~date }}&s={{ creatSecret( jobman~k~date) }}&add_module=072.metki&add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{  jobman }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                               modal_header='Добавляем метку'
+                               ajax_link='/vendor/didrive_mod/items/2/ajax.php'
+                               ajax_vars='action=add_new&id={{ jobman~k~date }}&s={{ creatSecret( jobman~k~date) }}&add_module=072.metki&add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{  jobman }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'
 
-                           reload_page_after_ok="da"
+                               reload_page_after_ok="da"
 
-                           style="padding:5px;"
+                               style="padding:5px;"
 
-                           ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
+                               ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
+                                {% endif %}
 
-                        <a href="#"
+                        <button
 
                            class="base__send_to_ajax dropdown-item btn-light" 
-                           {#xstyle="float:right;" #}
+                           style="padding:5px;"
 
-                           href_to_ajax="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/set-dismissal.php" 
+                           href_to_ajax="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/add-metka.php" 
 
-                           {# hidethis="da" #}
-                           {# xanswer="удалить комментарий ?" #}
-
-                           {#action="remove_item" #}
-                           aj_id="{{ now_dolgn.id }}" 
+                           sale_point="{{ sp_now }}"
+                           jobman="{{ jobman }}"
                            date="{{ date }}" 
-                           s="{{ creatSecret( now_dolgn.id ~ date ) }}" 
+                           metka="{{ k }}"
+
+                           s="{{ creatSecret( sp_now ~ jobman ~ date ~ k ) }}" 
+
+                           metka_name="{{ v }}"
 
                            res_to_id="com{{ now_dolgn.id ~ date }}" 
-                           {#after_click_showid="com{{ now_dolgn.id ~ date }}" #}
-                           {#msg_to_success="Увольнение зафиксировано"#}
 
                            return="skip"
-
+                           hide_dropdown="da"
+                           
+                           {#after_result_hide_dropdown="dropdown_{{ jobman }}_{{sp_now}}_{{ date }}"#}
+                           {#onclick="$('#show_menu_{{ jobman }}_{{sp_now}}_{{ date }}').toggle('slow');"#}
+                           {#onclick="$().dropdown('toggle');"#}
+                           {#xstyle="float:right;" #}
+                           {# hidethis="da" #}
+                           {# xanswer="удалить комментарий ?" #}
+                           {#action="remove_item" #}
+                           {#aj_id="{{ now_dolgn.id }}" #}
+                           {# id={{ jobman~k~date }}&s={{ creatSecret( jobman~k~date) }}&add_module=072.metki&
+                           add[type2]={{ k }}&add[head]={{ v }}&add[jobman]={{  jobman }}&add[sale_point]={{ sp_now }}&add[date]={{ date }}{% if session.now_user_di.id is defined %}&add[creatman]={{ session.now_user_di.id }}{% endif %}&remove_cash[]=metki&remove_cash[]={{ date }}'#}
+                           {#after_click_showid="com{{ now_dolgn.id ~ date }}" #}
+                           {#msg_to_success="Увольнение зафиксировано"#}
+                           {#result_ok_click_to_id="show_menu_{{ jobman }}_{{sp_now}}_{{ date }}"#}
                            {#onclick="$('.dropdown-menu').hide();"#}
                            {# onclick="$().dropdown('toggle');" #}
-
                            {#data-toggle="dropdown"#}
 
-                           ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></a>
+                           ><nobr><span class="fa fa-plus" ></span> метку <span class="jobdesc_metka" >{{ v }}</span> {#{ k }#}</nobr></button>
 
 
                     {% endfor %}
@@ -261,7 +265,7 @@
                     </a>
                 {% endif %}
 
-                {# добавить увольнение #}
+                {# добавить увольнение ++ #}
                 <a href="#"
 
                    class="base__send_to_ajax dropdown-item btn-light" 

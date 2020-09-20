@@ -1,25 +1,30 @@
 {% spaceless %}
     <div class="jobdesc_metka hide_in_sup hover_show_sup" >
+        
         <a href="#"
            class='base_modal_go'
 
            data-toggle="modal" data-target="#di_modal"
            modal_header='Удалить метку'
 
-           xajax_link='/vendor/didrive_mod/items/1/ajax.php'
-           xajax_link='/vendor/didrive_mod/items/2/ajax.php'
-           ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+           ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
 
-           xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
-           xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki&remove[type2]={{ i.var }}&remove[date]={{ date }}&remove[jobman]={{ jobman }}&remove_cash[]=metki&remove_cash[]={{ date }}'
-           ajax_vars='id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki&remove[type2]={{ i.var }}&remove[date]={{ date }}&remove[jobman]={{ jobman }}'
+           {#xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'#}
+           {#xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki&remove[type2]={{ i.var }}&remove[date]={{ date }}&remove[jobman]={{ jobman }}&remove_cash[]=metki&remove_cash[]={{ date }}'#}
+           ajax_vars='delete_id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki'
 
            reload_page_after_ok="da"
            get_answer='Удаляем метку ?'
 
            ><span class="fa fa-remove on_hover_opacity05green" style="float:right;" ></span></a>
+           
         <span class="fa fa-eercast" ></span> 
-        {{ i.text }}
-        {#{{ pa(i) }}#}
+        
+        {% if jobdesc_metki[i.var] is defined %}
+            {{ jobdesc_metki[i.var] }}
+        {% else %}
+            {{ i.var }}
+        {% endif %}
+        
     </div>
 {% endspaceless %}

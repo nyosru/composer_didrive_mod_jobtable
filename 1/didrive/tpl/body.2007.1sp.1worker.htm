@@ -196,6 +196,8 @@
                             {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.new_spec.htm' %}
                         {% endif %}
 
+                        {#{{ pa(jobdesc_metki) }}#}
+                        
                         {% if now_dolgn != '' or now_spec != '' %}
                             {#<Br/>122++#}
 
@@ -204,7 +206,8 @@
                             {% for p, i in actions.data.actions if i.jobman == jobman_id and i.sale_point == get.sp and i.date == date and i.type == 'metki' %}
 
                                 {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.'~i.type~'.htm' %}
-                                {#{{  pa(i) }}#}
+                                {#{{  pa(i,2) }}#}
+                                {#{{  pa(a_menu['072.metki'],2) }}#}
 
                             {% endfor %}
 
