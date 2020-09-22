@@ -508,6 +508,7 @@ class JobDesc {
                 . ' , \'\' hot '
                 . ' , \'\' delivery '
                 . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server_hand '
                 . ' , \'\' oborot_server '
                 . ' , \'\' oborot '
                 . ' FROM `mod_sp_ocenki_job_day` od '
@@ -542,6 +543,7 @@ class JobDesc {
                 . ' , \'\' hot '
                 . ' , \'\' delivery '
                 . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server_hand '
                 . ' , \'\' oborot_server '
                 . ' , \'\' oborot '
                 . ' FROM `mod_sale_point_parametr` p '
@@ -575,6 +577,7 @@ class JobDesc {
                 . ' , t.hot '
                 . ' , t.delivery '
                 . ' , \'\' oborot_hand '
+                . ' , \'\' oborot_server_hand '
                 . ' , \'\' oborot_server '
                 . ' , \'\' oborot '
                 . 'FROM mod_074_time_expectations_list t '
@@ -608,11 +611,14 @@ class JobDesc {
                 . ' , \'\' hot '
                 . ' , \'\' delivery '
                 . ' , oo.oborot_hand '
+                . ' , oo.oborot_server_hand '
                 . ' , oo.oborot_server '
                 . ' , CASE
                         WHEN oo.oborot_hand > 0 THEN oo.oborot_hand
+                        WHEN oo.oborot_server_hand > 0 THEN oo.oborot_server_hand
                         WHEN oo.oborot_server > 0 THEN oo.oborot_server
                     END oborot '
+                
                 . ' FROM mod_sale_point_oborot oo '
                 . ' WHERE '
                 . ' oo.status = \'show\' '

@@ -6,8 +6,10 @@
         {#{{ pa(v) }}#}
 
         <abbr title="Авто значение с сервера" {% if v.oborot_hand > 0 %} style="color:gray;" {% endif %} >
-            {% if v.oborot_server > 0 %}
-                {{ v.oborot_server|number_format(0, '.', '`') }}
+            {% if v.oborot_server_hand > 0 %}
+                {{ v.oborot_server_hand|number_format(0, '.', '`') }} <sup {% if v.oborot_server > 0 %}title="авто сервер {{ v.oborot_server|number_format(0, '.', '`') }}"{% endif %} >sh</sup>
+            {% elseif v.oborot_server > 0 %}
+                {{ v.oborot_server|number_format(0, '.', '`') }} <sup>s</sup>
             {% else %}
                 -
             {% endif %}
