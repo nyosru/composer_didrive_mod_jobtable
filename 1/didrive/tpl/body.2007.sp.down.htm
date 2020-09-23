@@ -1,6 +1,6 @@
 {% spaceless %}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(577) }} {% endif %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(577) }} {% endif %}
 
     {% if 1 == 2 %}
         {% set timer_show = 'on' %}
@@ -17,18 +17,18 @@
 
 
     {# нормы на день #}
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(17) }} {% endif %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(17) }} {% endif %}
     {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.norms.htm' %}
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %} <small>{{ didrive_f__timer_stop(17) }}</small> {% endif %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %} <small>{{ didrive_f__timer_stop(17) }}</small> {% endif %}
 
 
 
     {# оборот #}
     {% if 1 == 1 %}
-        {% if session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(17) }} {% endif %}
+        {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %} {{ didrive_f__timer_start(17) }} {% endif %}
         {#<div class="trow" ><div class="tcell stick-left bg-white" ><b>Оборот</b> в процессе подготовки до 17.08.2020</div></div>#}
         {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.oborot.htm' %} 
-        {% if session['now_user_di']['soc_web_id'] == 5903492 %} <small>{{ didrive_f__timer_stop(17) }}</small> {% endif %}
+        {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %} <small>{{ didrive_f__timer_stop(17) }}</small> {% endif %}
     {% endif %}
 
     {# время ожидания #}
@@ -55,7 +55,7 @@
         {% if timer_show == 'on' %} <br/>время ocenka - {{ didrive_f__timer_stop(5) }} {% endif %}
     {% endif %}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         bottom {{ didrive_f__timer_stop(577) }}
     {% endif %}
 

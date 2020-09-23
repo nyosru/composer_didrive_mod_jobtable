@@ -1,15 +1,15 @@
 {% spaceless %}
-
+    
     {% set spoint = sps[sp_now] %}
     {#{ pa(spoint) }#}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         {{ didrive_f__timer_start(781) }}
     {% endif %}
 
     {% set jobmans = jobdesc_ms__get_list_jobmans_job_on_sp_month( db, sp_now, date_start ) %}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         <small>
             <br/>
             jobmans {{ didrive_f__timer_stop(781) }}
@@ -25,14 +25,14 @@
     {{ pa(jobmans.data.spec,2) }}
     #}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         {{ didrive_f__timer_start(781) }}
     {% endif %}
 
     {% set actions = jobdesc_ms__get_actions_jobmans_on_month( db, jobmans.data.send_on_job|keys , date_start ) %}
     {#{{ pa(actions,2) }}#}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         <small>
             <br/> actions {{ didrive_f__timer_stop(781) }}
         </small>
@@ -40,7 +40,7 @@
 
 
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         {{ didrive_f__timer_start(781) }}
     {% endif %}
 
@@ -49,7 +49,7 @@
         position_pay {{  pa(position_pay,2) }}
     {% endif %}
 
-    {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
         <small><br/> position_pay {{ didrive_f__timer_stop(781) }}</small>
         {% endif %}
 
@@ -73,7 +73,7 @@
                 #}                    {#{{  pa(jobmans.data.spec[jobman_id][date]) }}#}
                 {#{{  pa(session) }}#}
 
-                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
                     {{ didrive_f__timer_start(781) }}
 
                     {#{% for jobman_id1, user_v1 in jobmans.data.send_on_job if user_v1.jobman == user_v.jobman %}
@@ -85,7 +85,7 @@
 
                 {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.htm' %}
 
-                {% if session['now_user_di']['soc_web_id'] == 5903492 %}
+                {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
                     <small>{{ didrive_f__timer_stop(781) }}</small>
                 {% endif %}
 
