@@ -5,7 +5,7 @@
     {#{{ jobman }}#}
     <div class="show_1comment" >
         
-        <a href="#" 
+        {#<a href="#" 
            
            class="act act_smena btn3" 
            style="float:right;"
@@ -23,6 +23,25 @@
            resto="ares{{ i.id }}" show_id="ares{{ i.id }}" 
            delete_cash_start_date="{{ date }}"
            hidethis="da" 
+           
+           ><i class="fa fa-times"></i></a>#}
+        <a href="#" 
+           
+           style="float:right;"
+           
+           class='btn3 base_modal_go'
+
+           data-toggle="modal" data-target="#di_modal"
+           modal_header='Удалить комментарий'
+
+           ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+
+           {#xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'#}
+           {#xajax_vars='action=remove_item&id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.metki&remove[type2]={{ i.var }}&remove[date]={{ date }}&remove[jobman]={{ jobman }}&remove_cash[]=metki&remove_cash[]={{ date }}'#}
+           ajax_vars='delete_id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=073.comments'
+
+           reload_page_after_ok="da"
+           get_answer='Удаляем комментарий ?'
            
            ><i class="fa fa-times"></i></a>
             {{ i.text }}

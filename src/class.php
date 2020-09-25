@@ -516,9 +516,7 @@ class JobDesc {
                 . ' od.status = \'show\' '
                 . ' AND od.sale_point = :sp '
                 . ' AND od.date BETWEEN :date_start AND :date_finish '
-                
                 . ' UNION ALL '
-                
                 . ' SELECT '
                 // . ' od.* '
                 . ' p.id item_id '
@@ -551,9 +549,7 @@ class JobDesc {
                 . ' p.status = \'show\' '
                 . ' AND p.sale_point = :sp '
                 . ' AND p.date BETWEEN :date_start AND :date_finish '
-                
                 . ' UNION ALL '
-                
                 . ' SELECT '
                 . ' t.id item_id '
                 . ' , t.date '
@@ -585,9 +581,7 @@ class JobDesc {
                 . ' t.status = \'show\' '
                 . ' AND t.sale_point = :sp '
                 . ' AND t.date BETWEEN :date_start AND :date_finish '
-                
                 . ' UNION ALL '
-                
                 . ' SELECT '
                 . ' oo.id item_id '
                 . ' , oo.date '
@@ -618,7 +612,6 @@ class JobDesc {
                         WHEN oo.oborot_server_hand > 0 THEN oo.oborot_server_hand
                         WHEN oo.oborot_server > 0 THEN oo.oborot_server
                     END oborot '
-                
                 . ' FROM mod_sale_point_oborot oo '
                 . ' WHERE '
                 . ' oo.status = \'show\' '
@@ -637,7 +630,7 @@ class JobDesc {
         while ($r = $ff->fetch()) {
             $return__date_type_n_ar[$r['date']][$r['item_type']][] = $r;
         }
-        
+
         return $return__date_type_n_ar;
     }
 
@@ -702,7 +695,7 @@ class JobDesc {
 
             if (empty($data['oborot_day'])) {
                 $bonus_text = '#' . __LINE__ . ' оборот дня не определён ';
-            } 
+            }
             //
             elseif (!empty($data['oborot_day'])) {
 
@@ -710,7 +703,7 @@ class JobDesc {
 
                 $bonus = ceil($data['oborot_day'] / 100 * $data['pay_bonus_proc_from_oborot']);
                 $bonus_text = $data['pay_bonus_proc_from_oborot'] . '% от ' . number_format($data['oborot_day'], 0, '', '`');
-            } 
+            }
         }
         // фиксированная оценка дня
         elseif (!empty($ocenka)) {
@@ -1488,7 +1481,7 @@ class JobDesc {
      * @param array $jobmans
      * @param string $date
      */
-    public static function calcHoursDaysForOcenka( $db, string $date ) {
+    public static function calcHoursDaysForOcenka($db, string $date) {
         
     }
 
@@ -1628,9 +1621,14 @@ class JobDesc {
                 . ' , oborot_d.id oborot_day_id '
                 . ' , oborot_d.date oborot_day_date '
                 . ' , oborot_d.oborot_hand oborot_day_hand '
-                . ' , oborot_d.oborot_server oborot_day_server '
+                // . ' , oborot_d.oborot_server oborot_day_server '
+                . ' , ( CASE 
+                    WHEN oborot_d.oborot_server_hand > 0 THEN oborot_d.oborot_server_hand
+                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
+                    ELSE NULL END ) as oborot_day_server '
                 . ' , ( CASE 
                     WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
+                    WHEN oborot_d.oborot_server_hand > 0 THEN oborot_d.oborot_server_hand
                     WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                     ELSE NULL END ) as oborot_day '
 //                    . ' , '
@@ -3196,127 +3194,61 @@ class JobDesc {
     /**
      * получаем список всех работников что работали на точках
      * v2007
+     * ( список для назначения, список для спец. назначения )
      * @param type $db
+     * @param type $list
+     * all - все
+     * spec - работающие на точках (для спец назначения)
+     * @param дата $date
+     * пока отключил, нужно подключить для выбора списка сотрудников что в этот день работали для спец назначения
      * @return type
      */
-    public static function getListJobmans($db) {
+    public static function getListJobmans($db, $list = 'all', $date = null ) {
 
-//            $ff1 = ' SELECT '
-////            . ' i_user.id id '
-////            . ' , '
-//                    . ' i_user.id user_id '
-////            . ' ,i_user.head '
-//                    . ' , CONCAT( id_user_fam.value, \' \', id_user_name.value, \' \', id_user_soname.value  ) fio  '
-//                    . ' ,id_user_bdate.value_date bd '
-//                    . ' ,id_jobon_sp.value sp_id '
-//                    . ' ,i_sp.head sp '
-//                    . ' FROM '
-//                    . ' `mitems` i_user '
-////
-//                    . ' INNER JOIN `mitems-dops` id_jobon ON '
-//                    . ' id_jobon.`name` = \'jobman\' '
-//                    . ' AND id_jobon.value = i_user.id '
-//                    . ' AND id_jobon.status IS NULL '
-////
-//                    . ' INNER JOIN `mitems` i_jobon ON '
-//                    . ' i_jobon.id = id_jobon.id_item '
-//                    . ' AND i_jobon.module = :mod_job_on '
-//                    . ' AND i_jobon.status = \'show\' '
-//
-////
-//                    . ' INNER JOIN `mitems-dops` id_jobon_sp ON '
-//                    . ' id_jobon_sp.`name` = \'sale_point\' '
-//                    . ' AND id_jobon_sp.id_item = i_jobon.id '
-//                    . ' AND id_jobon_sp.status IS NULL '
-////
-//                    . ' INNER JOIN `mitems` i_sp ON '
-//                    . ' i_sp.id = id_jobon_sp.value '
-//                    . ' AND i_sp.module = :mod_sp '
-//                    . ' AND i_sp.status = :status '
-////
-//                    . ' INNER JOIN `mitems-dops` id_user_bdate ON '
-//                    . ' id_user_bdate.`name` = \'bdate\' '
-//                    . ' AND id_user_bdate.id_item = i_user.id '
-//                    . ' AND id_user_bdate.status IS NULL '
-////
-//                    . ' INNER JOIN `mitems-dops` id_user_name ON '
-//                    . ' id_user_name.`name` = \'firstName\' '
-//                    . ' AND id_user_name.id_item = i_user.id '
-//                    . ' AND id_user_name.status IS NULL '
-////
-//                    . ' INNER JOIN `mitems-dops` id_user_soname ON '
-//                    . ' id_user_soname.`name` = \'middleName\' '
-//                    . ' AND id_user_soname.id_item = i_user.id '
-//                    . ' AND id_user_soname.status IS NULL '
-////
-//                    . ' INNER JOIN `mitems-dops` id_user_fam ON '
-//                    . ' id_user_fam.`name` = \'lastName\' '
-//                    . ' AND id_user_fam.id_item = i_user.id '
-//                    . ' AND id_user_fam.status IS NULL '
-//
-////
-////            . ' INNER JOIN `mitems-dops` md_user_name ON '
-////            . ' md_user_name.`module` = :mod_user '
-////            . ' AND mi_user.id = md_user.id_item '
-////
-////            . ' INNER JOIN `mitems` mi_jobon ON '
-////            . ' mi_jobon.`module` = :mod_job_on '
-////            . ' AND mi_jobon.id = md_user.id_item '
-////            . ' AND mi_jobon.status = :status '
-////
-//                    . ' WHERE '
-//                    . ' i_user.status = :status '
-//                    . ' AND i_user.`module` = :mod_user '
-//                    . ' GROUP BY i_user.id '
-//                    . ' ORDER BY id_user_fam.value ASC'
-//
-//// . ' LIMIT 10 '
-//
-//            ;
-
-            $sql = 'SELECT 
+        $sql = 'SELECT 
                 
                     jm.id,
                     CASE  
-                        WHEN jm.head = 1 THEN CONCAT( jm.`lastName` , \' \', jm.`firstName`  , \' \', jm.`middleName`  ) 
-                        WHEN jm.head != \'\' THEN jm.head
-                        ELSE CONCAT( jm.`lastName` , \' \', jm.`firstName` , \' \', jm.`middleName` ) 
+                        WHEN jm.head = 1 THEN CONCAT( jm.`lastName` , \' \', jm.`firstName`  , \' \', jm.`middleName`  ) '
+                        // .' WHEN jm.head != \'\' THEN jm.head '
+                        .' ELSE CONCAT( jm.`lastName` , \' \', jm.`firstName` , \' \', jm.`middleName` ) 
                     END as `fio`  ,
+                    jm.iiko_name,
                     jm.birthday bd,
-                    sp.head sp,
-                    sp.id sp_id
+                    sp.id sp_id,
+                    sp.head sp
 
-                FROM 
-                    mod_070_jobman jm
+                FROM mod_070_jobman jm
                 
-                INNER JOIN 
-                    mod_050_job_in_sp on_sp 
-                ON 
-                    on_sp.jobman = jm.id AND on_sp.status = \'show\'
+                ' . ( $list == 'spec' ? ' INNER ' : ' LEFT ' ) . ' JOIN mod_jobman_send_on_sp on_sp ON 
+                    on_sp.jobman = jm.id 
+                    AND on_sp.status = :status '
+                    // .( !empty($date) ? ' AND on_sp.date <= :date AND ( on_sp.date_finish IS NULL OR on_sp.date_finish >= :date ) ' : '' )
 
-                LEFT JOIN 
-                    mod_sale_point sp
-                ON 
-                    on_sp.sale_point = sp.id AND sp.status = \'show\'
+                .' LEFT JOIN mod_sale_point sp ON 
+                    on_sp.sale_point = sp.id AND sp.status = :status
 
-                WHERE jm.status = \'show\'
+                WHERE jm.status = :status
                 GROUP BY jm.id
                 ORDER BY jm.lastName 
                 ';
-            
-            $sql_vars = [];
-            // $sql_vars[':status'] = 'show';
-            // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
-            // $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
-            // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
+
+        $sql_vars = [ ':status' => 'show' ];
+        // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
+        // $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
+        // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
+        // $sql_vars[':date'] = date('Y-m-d', strtotime($date) );
 // \f\pa($ff1);
 
-            $ff = $db->prepare($sql);
-            $ff->execute($sql_vars);
+        // \f\pa($sql);
+        
+        $ff = $db->prepare($sql);
+        $ff->execute($sql_vars);
 
 // $return = [];
-            return $ff->fetchAll();
-            $return = $ff->fetchAll();
+        return $ff->fetchAll();
+        // return \f\end3('окей', true, $return);;
+        // $return = $ff->fetchAll();
 
 
 //        if (isset($show_timer) && $show_timer === true)
@@ -3324,7 +3256,7 @@ class JobDesc {
 //            . '<br/>' . __FILE__ . ' #' . __LINE__
 //            . '<br/>' . \f\timer_stop(7);
 // \f\pa($return);
-        return $return;
+//        return $return;
 
 //        return \f\end3('окей', true, $return);
 //        return \f\end3('окей', true, $return);

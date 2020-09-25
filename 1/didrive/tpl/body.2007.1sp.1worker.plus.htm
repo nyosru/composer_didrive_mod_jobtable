@@ -8,7 +8,7 @@
         <a 
 
             class='base_modal_go icon_removed_item'
-            data-toggle="modal" data-target="#di_modal"
+            {#data-toggle="modal" data-target="#di_modal"
 
             modal_header='Отменить бонус ?'
 
@@ -17,7 +17,16 @@
             ajax_vars='r_module=072.plus&remove[id]={{ i.id }}'
 
             reload_page_after_ok="da"
-            get_answer='Отменить бонус ?'
+            get_answer='Отменить бонус ?'#}
+
+            data-toggle="modal" data-target="#di_modal"
+            modal_header='Удалить бонус'
+
+            ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+            ajax_vars='delete_id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.plus'
+
+            reload_page_after_ok="da"
+            get_answer='Удаляем бонус ?'
 
             ><span class="fa fa-remove" ></span></a>
 

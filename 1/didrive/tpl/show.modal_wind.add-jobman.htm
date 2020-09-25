@@ -22,23 +22,35 @@
                 <label for="recipient-name" class="form-control-label">Сотрудник:</label>
 
                 <span style="display: block; border-left: 3px solid gray; padding-left: 15px;" >
-                    
-                    {#фильтр списка<br/>#}
-
-                    <input type="text" class="form-control" id="filtr_fio" placeholder="Фильтр: введите часть фамилии и выберите в списке ниже" >
 
                     {# новая версия 200429 #}
 
-                    {% set mans = jobdesc__getJobmans( db )  %}
+                    {% set jobmans_on_add = jobdesc__get_all_jobmans(db,'all') %}
+
+                    {#{% set mans = jobdesc__getJobmans( db )  %}#}
                     {#{{ pa(mans,2) }}#}
+
+                    {#фильтр списка<br/>#}
+
+                    <input type="text" class="form-control" id="filtr_fio" placeholder="Фильтр: введите часть фамилии и выберите в списке ниже ( {{ jobmans_on_add|length }} сотр ) " >
+
 
                     <select class="form-control select_filtered" name="user" id="add_person__user" required="requiered" 
                             data-live-search="true"
                             >
                         <option value="">выберите сотрудника</option>
-                        {% for u, u_da in mans %}
+                        {#{% for u, u_da in mans %}
                             <option value="{{ u_da.id }}">{{ u_da.head }} \ {{ u_da.birthday }} \ iiko: {{ u_da.iiko_name }}</option>
+                        {% endfor %}#}
+                        {% for u, u_da in jobmans_on_add %}
+                            {# <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option> #}
+                            <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" {# dolgn="{{ u_da.dolgnost }}" #} 
+                                >{% if u_da.sp is defined and u_da.sp > 0 %}[{{ u_da.sp }}] {% endif %}
+                                {{ u_da.fio }} {{ u_da.bd ?? '' }} 
+                                \ iiko: {{ u_da.iiko_name }}
+                            </option>
                         {% endfor %}
+
                     </select>
                 </span>
                 {#?? u_da.fio#}

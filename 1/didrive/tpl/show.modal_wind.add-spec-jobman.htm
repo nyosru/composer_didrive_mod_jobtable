@@ -11,8 +11,7 @@
 
             <div class="form-group">
 
-                <label for="recipient-name" class="form-control-label">Точка продаж:</label> 
-                <b id="add_person1day__sp_name" >{{ get.sp_name }}</b>
+                <label for="recipient-name" class="form-control-label">Точка продаж: </label>&nbsp;<b id="add_person1day__sp_name" >{{ get.sp_name }}</b>
 
                 {#<input type="hidden" id="add_spec__sp" name="sale_point" value="{{ get.sp }}" >#}
                 <input type="hidden" id="add_spec__sp" name="sp" value="{{ get.sp }}" >
@@ -25,23 +24,31 @@
                 <label for="recipient-name" class="form-control-label">Сотрудник:</label>
 
                 <span style="display: block; border-left: 3px solid gray; padding-left: 15px;" >
-                    
+
                     {# add_person__workman #}
 
-                    <input type="text" class="form-control" id="filtr_specfio" placeholder="Фильтр: введите часть фамилии и выберите в списке ниже" />
+                    {#{{ pa(get) }}#}
 
-                    {#% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %#}
-                    {% set jobmans_on_add = jobdesc__get_all_jobmans(db) %}
-                    {#{{ pa(jobmans_on_add) }}#}
+                    {#{% set jobmans_on_add = jobdesc__get_list_for_specnaznach_jobmans(db) %}#}
+                    {#{{ pa(jobmans_on_add,2) }}#}
+                    {% set jobmans_on_add = jobdesc__get_all_jobmans(db, 'spec', get.date ) %}
+                    {#{{ jobmans_on_add|length }}#}
+                    {#{{ pa(jobmans_on_add,2) }}#}
+
+                    <input type="text" class="form-control" id="filtr_specfio" placeholder="Фильтр: введите часть фамилии и выберите в списке ниже ( {{ jobmans_on_add|length }} сотр ) " />
 
                     <select class="form-control select_addspec" name="user" id="add_person1day__user" required="requiered" >
                         <option value="">выберите сотрудника</option>
                         {% for u, u_da in jobmans_on_add %}
                             {# <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" dolgn="{{ u_da.dolgnost }}" >[{{ u_da.sp }}] {{ u_da.head }} ({{ u_da.dolgnost }})</option> #}
-                            <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" {# dolgn="{{ u_da.dolgnost }}" #} >[{{ u_da.sp }}] {{ u_da.fio }} {{ u_da.bd ?? '' }}</option>
+                            <option value="{{ u_da.id }}" sp="{{ u_da.sp_id }}" {# dolgn="{{ u_da.dolgnost }}" #} 
+                                    >{% if u_da.sp_id > 0 %}[{{ u_da.sp }}] {% endif %}
+                                {{ u_da.fio }} {{ u_da.bd ?? '' }} 
+                                \ iiko: {{ u_da.iiko_name }}
+                            </option>
                         {% endfor %}
                     </select>
-                    
+
                 </span>
             </div>
 

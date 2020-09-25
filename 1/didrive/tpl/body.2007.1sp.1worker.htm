@@ -85,14 +85,14 @@
 
             {% set date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
             {% if date <= date_finish %}
-            {#{% if 1 == 1 %}#}
+                {#{% if 1 == 1 %}#}
 
                 <div class="tcell c{{ user_id }}_{{sp_now}}_{{ date }}">
 
                     {% set new_dolgn = '' %}
 
                     {#{{ pa(user_v,2) }}#}
-                    
+
                     {% for k3,i in user_v if i['date'] == date %}
 
                         {#{% if user_id == 95252 %}{{ pa(i) }}{% endif %}#}
@@ -119,7 +119,7 @@
                     {% endfor %}
 
 
-                    
+
                     {#{{ pa(now_dolgn) }}#}
 
 
@@ -197,10 +197,9 @@
                         {% endif %}
 
                         {#{{ pa(jobdesc_metki) }}#}
-                        
+
                         {% if now_dolgn != '' or now_spec != '' %}
                             {#<Br/>122++#}
-
                             {#{{ pa(now_dolgn) }}#}
 
                             {% for p, i in actions.data.actions if i.jobman == jobman_id and i.sale_point == get.sp and i.date == date and i.type == 'metki' %}
@@ -275,8 +274,29 @@
                     {% endif %}
 
                     {% if date == now_dolgn.date_finish %}
-                        <div class="alert alert-warning" >конец назначения (крайний день в должности)</div>
+                        <div class="alert alert-warning" >
+                            <a 
+
+                                class='base_modal_go icon_removed_item'
+                                data-toggle="modal" 
+                                data-target="#di_modal"
+                                modal_header='Отменить увольнение'
+                                
+                                ajax_link='/vendor/didrive_mod/items/3/micro-service/items__new_edit3.php'
+                                ajax_vars='aj_table=mod_jobman_send_on_sp&value=&var_edit=date_finish&var1=id&var1v={{ now_dolgn.id }}&aj_id={{ now_dolgn.id }}&s={{ creatSecret( aj_table ~ now_dolgn.id ) }}'
+                                
+                                reload_page_after_ok="da"
+                                get_answer='Отменить увольнение ?'
+
+                                ><span class="fa fa-remove" ></span></a>
+
+                            конец назначения (крайний день в должности)
+                        </div>
+                                
+                        {#{{ pa(now_dolgn) }}#}
+                                
                         {% set now_dolgn = '' %}
+                        
                     {% endif %}
 
                 </div>

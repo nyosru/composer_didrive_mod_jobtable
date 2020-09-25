@@ -268,29 +268,37 @@
                 {# добавить увольнение ++ #}
                 <a href="#"
 
+                   
+                   {% if 1 == 2 %}
                    class="base__send_to_ajax dropdown-item btn-light" 
                    {#xstyle="float:right;" #}
-
                    href_to_ajax="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/set-dismissal.php" 
-
                    {# hidethis="da" #}
                    {# xanswer="удалить комментарий ?" #}
-
                    {#action="remove_item" #}
                    aj_id="{{ now_dolgn.id }}" 
                    date="{{ date }}" 
                    s="{{ creatSecret( now_dolgn.id ~ date ) }}" 
-
                    res_to_id="com{{ now_dolgn.id ~ date }}" 
                    {#after_click_showid="com{{ now_dolgn.id ~ date }}" #}
                    {#msg_to_success="Увольнение зафиксировано"#}
-
                    return="skip"
-
                    {#onclick="$('.dropdown-menu').hide();"#}
                    {# onclick="$().dropdown('toggle');" #}
-
                    {#data-toggle="dropdown"#}
+                   {% endif %}
+
+
+                    class='base_modal_go dropdown-item btn-light xicon_removed_item'
+                    data-toggle="modal" 
+                    data-target="#di_modal"
+                    modal_header='Фиксируем увольнение'
+
+                    ajax_link='/vendor/didrive_mod/items/3/micro-service/items__new_edit3.php'
+                    ajax_vars='aj_table=mod_jobman_send_on_sp&value={{ date }}&var_edit=date_finish&var1=id&var1v={{ now_dolgn.id }}&aj_id={{ now_dolgn.id }}&s={{ creatSecret( aj_table ~ now_dolgn.id ) }}'
+
+                    reload_page_after_ok="da"
+                    get_answer='Фиксируем увольнение ?'
 
                    ><span class="fa fa-window-close" ></span> уволен c завтрашнего дня<br/>
                     <small>сегодня последний день в этой должности</small></a>

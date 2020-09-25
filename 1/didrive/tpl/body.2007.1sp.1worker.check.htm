@@ -26,7 +26,7 @@
                 data-toggle="modal" 
                 data-target="#di_modal"
                 modal_header='Удалить смену'
-                ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
                 ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
                 reload_page_after_ok="da"
                 get_answer='Удаляем смену ?'
@@ -57,11 +57,10 @@
 
                     {# если нет финиша #}
                     {#{% if i.start is defined and i.fin is empty %}#}
-                    {% if 1 == 2 and i.start is defined and i.fin is empty %}
-
-                        {{ i.start|date("H:i") }} - ...
-
-                    {% else %}
+                    {#{% if 1 == 2 and i.start is defined and i.fin is empty %}#}
+                        {#{{ i.start|date("H:i") }} - ...#}
+                    {# если есть финиш #}
+                    {#{% else %}#}
 
 
                         {% if i.fin is not defined or i.fin is empty %}
@@ -92,22 +91,31 @@
                                        block="hour_{{ i.id }}" 
                                        s="{{ creatSecret('hour_'~i.id) }}"
 
-                                       cash_delete1_1="hoursonjob"
+                                       module="050.chekin_checkout"
+                                       
+                                       delete1v1pole="id"
+                                       delete1v1val="{{ i.id }}"
+                                       delete1s="{{ creatSecret( i.id ) }}"
+                                       
+                                       pole_edit="hours_on_job"
+                                       
+                                       {#cash_delete1_1="hoursonjob"
                                        cash_delete1_2name="date"
                                        cash_delete1_2="{{ date }}"
                                        cash_delete1_3name="sp"
-                                       cash_delete1_3="{{ sp_now }}"
+                                       cash_delete1_3="{{ sp_now }}"#}
 
-                                       module="050.chekin_checkout"
-                                       sp="{{ sp_now }}"
-                                       date="{{ date }}"
+                                       {#sp="{{ sp_now }}"#}
+                                       {#date="{{ date }}"#}
 
-                                       delete1mod="sp_ocenki_job_day"
+                                       {#new_value="{{ hours_on_job }}"#}
+                                       
+                                       {#delete1mod="sp_ocenki_job_day"
                                        delete1v1pole="date"
                                        delete1v1val="{{ date }}"
                                        delete1v2pole="sale_point"
                                        delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"
+                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
 
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
 
@@ -132,14 +140,14 @@
 
                                     <i class="fa fa-plus ajax_hour_action" 
 
-                                       module="050.chekin_checkout"
+                                       {#module="050.chekin_checkout"#}
                                        hour_id="{{ i.id }}" 
                                        block="hour_{{ i.id }}" 
                                        s="{{ creatSecret('hour_'~i.id) }}" 
 
                                        type_action="+" 
 
-                                       cash_delete1_1="hoursonjob"
+                                       {#cash_delete1_1="hoursonjob"
                                        cash_delete1_2name="date"
                                        cash_delete1_2="{{ date }}"
                                        cash_delete1_3name="sp"
@@ -153,7 +161,16 @@
                                        delete1v1val="{{ date }}"
                                        delete1v2pole="sale_point"
                                        delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"
+                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
+
+                                       module="050.chekin_checkout"
+                                       
+                                       delete1v1pole="id"
+                                       delete1v1val="{{ i.id }}"
+                                       delete1s="{{ creatSecret( i.id ) }}"
+                                       
+                                       pole_edit="hours_on_job"
+
                                        
                                        onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
                                        
@@ -174,7 +191,6 @@
 
                             {#{% if i.id == 160441 %}{{ pa(i) }}{% endif %}#}
 
-                        {% endif %}
 
 
                         {% if i.status == 'show' %}

@@ -9,18 +9,19 @@
                 class='base_modal_go icon_remove'
                 data-toggle="modal" data-target="#di_modal"
 
-                modal_header='Отменить назначение ?'
+                modal_header='Отменить спец. назначение ?'
 
-                ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
                 {#ajax_vars='r_module=050.job_in_sp&remove[dolgnost]={{ i.dolgnost }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'#}
                 ajax_vars='r_module=050.job_in_sp&remove[id]={{ i.id }}'
 
                 reload_page_after_ok="da"
-                get_answer='Отменить назначение ?'
+                get_answer='Отменить спец. назначение ?'
 
                 ><span class="fa fa-remove" ></span></a>
             {% endif %}
-
+            
+            
         <nobr>спец.назначение</nobr><Br/>
         <u>{{ i.dolgnost_name }}</u> 
 

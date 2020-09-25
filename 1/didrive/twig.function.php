@@ -1019,29 +1019,14 @@ $twig->addFunction($function);
 /**
  * достаём список сотрудников кто уже работает на точках
  * v2007
+ * ( список для назначения, список для спец. назначения )
  */
-$function = new Twig_SimpleFunction('jobdesc__get_all_jobmans', function ( $db ) {
+$function = new Twig_SimpleFunction('jobdesc__get_all_jobmans', function ( $db, $list = 'all', $date = null ) {
 
-//    $show_timer = true;
-//
-//    if (isset($show_timer) && $show_timer === true)
 //        \f\timer_start(12);
-
-    return \Nyos\mod\JobDesc::getListJobmans($db);
-
-//    $return = \Nyos\mod\JobDesc::getListJobmans($db);
-//    /*
-//      //foreach ($ee as $k => $v) {
-//      //        while ($v = $ff->fetch()) {
-//      //
-//      //        }
-//      usort($return, "\\f\\sort_ar_head");
-//     */
-//
-//    if (isset($show_timer) && $show_timer === true)
 //        echo '<br/>ss ' . \f\timer_stop(12);
-//
-//    return $return;
+    return \Nyos\mod\JobDesc::getListJobmans($db, $list, $date );
+
 });
 $twig->addFunction($function);
 
