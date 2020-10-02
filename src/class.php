@@ -1481,8 +1481,48 @@ class JobDesc {
      * @param array $jobmans
      * @param string $date
      */
-    public static function calcHoursDaysForOcenka($db, string $date) {
-        
+    public static function calcHoursDaysForOcenka($db, string $date, string $sp, array $jobmans, array $actions) {
+        // ($db, $return['date'], $return['sp'], array_keys($jobmans['data']['jobmans']), $actions);
+
+        $return = ['hours' => 0, 'summa_if5' => 0, 'date' => $date, 'sp' => $sp, 'jms' => $jobmans, 'act' => $actions];
+
+        foreach ($actions as $k => $v) {
+            if (!empty($v['type']) && $v['type'] == 'check') {
+
+                if ($v['sale_point'] == $sp) {
+
+                    // echo '<br/>считаем 1 назнач в смене';
+                    $return['hours'] += $v['hour_on_job'];
+
+                    if ($v['spec_sp'] == $sp && !empty($v['s_pay5'])) {
+                        $r = $v['s_pay5'] * $v['hour_on_job'];
+                    } else {
+                        $r = $v['pay5'] * $v['hour_on_job'];
+                    }
+                    // echo '<br/>rr1 ' . $v['id'] . ' ' . $r;
+                    $return['summa_if5'] += $r;
+                    
+                } elseif ($v['spec_sp'] == $sp) {
+                    // echo '<br/>считаем 2 спец';
+                    $return['hours'] += $v['hour_on_job'];
+                    $r = $v['s_pay5'] * $v['hour_on_job'];
+                    $return['summa_if5'] += $v['s_pay5'] * $v['hour_on_job'];
+                    // echo '<br/>rr2 ' . $v['id'] . ' ' . $r;
+                } elseif ($v['position_sp'] == $sp) {
+                    // echo '<br/>считаем 3 должность';
+                    $return['hours'] += $v['hour_on_job'];
+                    $r = $v['pay5'] * $v['hour_on_job'];
+                    $return['summa_if5'] += $v['pay5'] * $v['hour_on_job'];
+                    // echo '<br/>rr3 ' . $v['id'] . ' ' . $r;
+                }
+//                else{
+//                    echo '<br/>не считаем';
+//                }
+                // \f\pa($v,2,'','check');
+            }
+        }
+
+        return $return;
     }
 
     /**
@@ -1492,7 +1532,7 @@ class JobDesc {
      * @param string $date
      * @return type
      */
-    public static function getActionsJobmansOnMonth($db, array $jobmans, string $date) {
+    public static function getActionsJobmansOnMonth($db, array $jobmans, string $date, $get_one_day = false, $sp = null) {
 
         \f\timer_start(111);
 
@@ -1503,15 +1543,36 @@ class JobDesc {
         $jms = ' ( jobman = \'' . implode('\' OR jobman = \'', $jobmans) . '\' ) ';
         $jms_c = ' ( c.jobman = \'' . implode('\' OR c.jobman = \'', $jobmans) . '\' ) ';
 
-        $in_sql = [
-            // ':jobmans' => '\''.implode( '\', \'', $jobmans ).'\'' ,
-            ':date_start' => date('Y-m-01', strtotime($date))
-            , ':datet_start' => date('Y-m-01 05:00:00', strtotime($date))
-        ];
-        // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
-        $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
-        $in_sql[':datet_finish'] = date('Y-m-d 05:00:00', strtotime($in_sql[':date_start'] . ' +1 month'));
+        // если тащим один день
+        if ($get_one_day === true) {
+
+            $in_sql = [
+                // ':jobmans' => '\''.implode( '\', \'', $jobmans ).'\'' ,
+                ':date_start' => date('Y-m-d', strtotime($date))
+                , ':datet_start' => date('Y-m-d 05:00:00', strtotime($date))
+            ];
+            // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+            $in_sql[':date_finish'] = $in_sql[':date_start'];
+            $in_sql[':datet_finish'] = date('Y-m-d 05:00:00', strtotime($in_sql[':date_start'] . ' +1 day'));
+        }
+        // если тащим целый месяц
+        else {
+
+            $in_sql = [
+                // ':jobmans' => '\''.implode( '\', \'', $jobmans ).'\'' ,
+                ':date_start' => date('Y-m-01', strtotime($date))
+                , ':datet_start' => date('Y-m-01 05:00:00', strtotime($date))
+            ];
+            // $in_sql[':date_start0'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' -6 month '));
+            $in_sql[':date_finish'] = date('Y-m-d', strtotime($in_sql[':date_start'] . ' +1 month -1 day'));
+            $in_sql[':datet_finish'] = date('Y-m-d 05:00:00', strtotime($in_sql[':date_start'] . ' +1 month'));
+        }
+
+        if (!empty($sp))
+            $in_sql[':sp'] = $sp;
+
         $return['sql_in'] = $in_sql;
+
 
         $sql = PHP_EOL
                 . 'SELECT 
@@ -1531,7 +1592,7 @@ class JobDesc {
                 . ' , \'\' as `ocenka_auto` '
                 . ' , \'\' as `ocenka` '
                 . ' , \'\' as `hour_on_job` '
-                . ' , \'\' as `hour_on_job_hand` '
+//                . ' , \'\' as `hour_on_job_hand` '
                 . ' , \'\' as position_id '
                 . ' , \'\' as position_date '
                 . ' , \'\' as position_date_finish '
@@ -1572,6 +1633,15 @@ class JobDesc {
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
                 . ' , \'\' spec_oborot_day '
                 . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
                 . ' FROM 
                     `mod_072_metki` `mm` '
                 . ' WHERE '
@@ -1597,8 +1667,13 @@ class JobDesc {
                 . ' , c.who_add_item '
                 . ' , c.ocenka_auto '
                 . ' , c.ocenka '
-                . ' , c.hour_on_job '
-                . ' , c.hour_on_job_hand '
+
+//                . ' , c.hour_on_job '
+//                . ' , c.hour_on_job_hand '
+                . ' , ( CASE 
+                    WHEN c.hour_on_job_hand > 0 THEN c.hour_on_job_hand
+                    WHEN c.hour_on_job > 0 THEN c.hour_on_job
+                    ELSE NULL END ) as `hour_on_job` '
                 . ' , on_sp.id position_id '
                 . ' , on_sp.date position_date '
                 . ' , on_sp.date_finish position_date_finish '
@@ -1631,7 +1706,6 @@ class JobDesc {
                     WHEN oborot_d.oborot_server_hand > 0 THEN oborot_d.oborot_server_hand
                     WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                     ELSE NULL END ) as oborot_day '
-//                    . ' , '
                 . ' , s.id spec_id '
                 . ' , s.date spec_date '
                 . ' , s.dolgnost spec_d '
@@ -1667,6 +1741,15 @@ class JobDesc {
                                 FLOOR( oborot_spec.oborot_server / 100 * s_pay.`bonus_proc_from_oborot` )
 
                         ELSE NULL END ) as  spec_bonus  '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
                 . ' FROM `mod_050_chekin_checkout` `c` '
                 . ' LEFT JOIN mod_jobman_send_on_sp on_sp ON on_sp.id = ( SELECT id FROM mod_jobman_send_on_sp WHERE '
                 . ' jobman = c.jobman '
@@ -1758,7 +1841,7 @@ class JobDesc {
                 . ' , \'\' as `ocenka_auto` '
                 . ' , \'\' as `ocenka` '
                 . ' , \'\' as `hour_on_job` '
-                . ' , \'\' as `hour_on_job_hand` '
+//                . ' , \'\' as `hour_on_job_hand` '
                 . ' , \'\' as position_id '
                 . ' , \'\' as position_date '
                 . ' , \'\' as position_date_finish '
@@ -1799,6 +1882,15 @@ class JobDesc {
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
                 . ' , \'\' spec_oborot_day '
                 . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
                 . ' FROM 
 
                     `mod_072_vzuscaniya` `mi`
@@ -1826,7 +1918,7 @@ class JobDesc {
                 . ' , \'\' as `ocenka_auto` '
                 . ' , \'\' as `ocenka` '
                 . ' , \'\' as `hour_on_job` '
-                . ' , \'\' as `hour_on_job_hand` '
+//                . ' , \'\' as `hour_on_job_hand` '
                 . ' , \'\' as position_id '
                 . ' , \'\' as position_date '
                 . ' , \'\' as position_date_finish '
@@ -1867,6 +1959,15 @@ class JobDesc {
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
                 . ' , \'\' spec_oborot_day '
                 . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
                 . ' FROM `mod_072_plus` `m`
                 WHERE '
                 . $jms
@@ -1894,7 +1995,7 @@ class JobDesc {
                 . ' , \'\' as `ocenka_auto` '
                 . ' , \'\' as `ocenka` '
                 . ' , \'\' as `hour_on_job` '
-                . ' , \'\' as `hour_on_job_hand` '
+//                . ' , \'\' as `hour_on_job_hand` '
                 . ' , \'\' as position_id '
                 . ' , \'\' as position_date '
                 . ' , \'\' as position_date_finish '
@@ -1935,6 +2036,15 @@ class JobDesc {
                 . ' , \'\' s_pay_pay_from_day_oborot_bolee '
                 . ' , \'\' spec_oborot_day '
                 . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
                 . ' FROM `mod_073_comments` '
                 . ' WHERE '
                 . $jms
@@ -1942,6 +2052,241 @@ class JobDesc {
                 . ' `date_to` BETWEEN :date_start AND :date_finish '
                 . ' AND '
                 . ' `status` = \'show\' '
+//                
+                . PHP_EOL . ' UNION ALL '
+//
+                . PHP_EOL . 'SELECT 
+                    `id`,
+                    `status`,
+                    \'\' `jobman`,
+                    `sale_point`,
+                    date `date`,
+                    \'\' `summa`,
+                    \'\' `var`,
+                    \'\' `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'oborot\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+//                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , id oborot_day_id '
+                . ' , date oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , ( CASE 
+                        WHEN oborot_hand > 0 THEN oborot_hand
+                        WHEN oborot_server_hand > 0 THEN oborot_server_hand
+                        WHEN oborot_server > 0 THEN oborot_server
+                        ELSE NULL END ) as oborot_day '
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
+                . ' FROM `mod_sale_point_oborot` '
+                . ' WHERE '
+                . ' `date` BETWEEN :date_start AND :date_finish '
+                . (!empty($sp) ? ' AND `sale_point` = :sp ' : '' )
+                . ' AND '
+                . ' `status` = \'show\' '
+
+//                
+                . PHP_EOL . ' UNION ALL '
+//
+                . PHP_EOL . 'SELECT 
+                    `id`,
+                    `status`,
+                    \'\' `jobman`,
+                    `sale_point`,
+                    `date`,
+                    \'\' `summa`,
+                    \'\' `var`,
+                    \'\' `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'norms\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+//                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , id oborot_day_id '
+                . ' , date oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
+                . ' , vuruchka 	'
+                . ' , time_wait_norm_cold '
+                . ' , time_wait_norm_hot '
+                . ' , time_wait_norm_delivery '
+                . ' , procent_oplata_truda_on_oborota '
+                . ' , kolvo_hour_in1smena '
+                . ' , vuruchka_on_1_hand '
+                . ' , \'\' cold '
+                . ' , \'\' delivery '
+                . ' FROM `mod_sale_point_parametr` '
+                . ' WHERE '
+                . ' `date` BETWEEN :date_start AND :date_finish '
+                . (!empty($sp) ? ' AND `sale_point` = :sp ' : '' )
+                . ' AND '
+                . ' `status` = \'show\' '
+
+//                
+                . PHP_EOL . ' UNION ALL '
+//
+                . PHP_EOL . 'SELECT 
+                    `id`,
+                    `status`,
+                    \'\' `jobman`,
+                    `sale_point`,
+                    `date`,
+                    \'\' `summa`,
+                    \'\' `var`,
+                    \'\' `text`,
+                    \'\' as `auto_bonus_zp`,
+                    \'timeo\' as `type` '
+                . ' , \'\' as `start` '
+                . ' , \'\' as `fin` '
+                . ' , \'\' as `who_add_item` '
+                . ' , \'\' as `ocenka_auto` '
+                . ' , \'\' as `ocenka` '
+                . ' , \'\' as `hour_on_job` '
+//                . ' , \'\' as `hour_on_job_hand` '
+                . ' , \'\' as position_id '
+                . ' , \'\' as position_date '
+                . ' , \'\' as position_date_finish '
+                . ' , \'\' as position_d '
+                . ' , \'\' as position_sp '
+                . ' , \'\' as position_calc_auto '
+                . ' , \'\' pay_id '
+                . ' , \'\' pay_date '
+                . ' , \'\' pay5 '
+                . ' , \'\' pay3 '
+                . ' , \'\' pay_if_kurit '
+                . ' , \'\' pay_base '
+                . ' , \'\' `pay_premiya-5` '
+                . ' , \'\' `pay_premiya-3` '
+                . ' , \'\' pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' pay_bonus_proc_from_oborot '
+                . ' , \'\' pay_pay_from_day_oborot_bolee '
+                . ' , \'\' oborot_day_id '
+                . ' , \'\' oborot_day_date '
+                . ' , \'\' oborot_day_hand '
+                . ' , \'\' oborot_day_server '
+                . ' , \'\' oborot_day '
+                . ' , \'\' spec_id '
+                . ' , \'\' spec_date '
+                . ' , \'\' spec_d '
+                . ' , \'\' spec_sp '
+                . ' , \'\' s_pay_id '
+                . ' , \'\' s_pay_d '
+                . ' , \'\' s_pay_date '
+                . ' , \'\' s_pay5 '
+                . ' , \'\' s_pay3 '
+                . ' , \'\' s_pay_if_kurit '
+                . ' , \'\' s_pay_base '
+                . ' , \'\' `s_pay_premiya-5` '
+                . ' , \'\' `s_pay_premiya-3` '
+                . ' , \'\' s_pay_oborot_sp_last_monht_bolee '
+                . ' , \'\' s_pay_bonus_proc_from_oborot '
+                . ' , \'\' s_pay_pay_from_day_oborot_bolee '
+                . ' , \'\' spec_oborot_day '
+                . ' , \'\' spec_bonus '
+                . ' , \'\' vuruchka 	'
+                . ' , \'\' time_wait_norm_cold '
+                . ' , \'\' time_wait_norm_hot '
+                . ' , \'\' time_wait_norm_delivery '
+                . ' , \'\' procent_oplata_truda_on_oborota '
+                . ' , \'\' kolvo_hour_in1smena '
+                . ' , \'\' vuruchka_on_1_hand '
+                . ' , cold '
+                . ' , delivery '
+                . ' FROM `mod_074_time_expectations_list` '
+                . ' WHERE '
+                . ' `date` BETWEEN :date_start AND :date_finish '
+                . (!empty($sp) ? ' AND `sale_point` = :sp ' : '' )
+                . ' AND '
+                . ' `status` = \'show\' '
+
         ;
         //\f\pa($sql);
         $ff = $db->prepare($sql);
@@ -3203,15 +3548,15 @@ class JobDesc {
      * пока отключил, нужно подключить для выбора списка сотрудников что в этот день работали для спец назначения
      * @return type
      */
-    public static function getListJobmans($db, $list = 'all', $date = null ) {
+    public static function getListJobmans($db, $list = 'all', $date = null) {
 
         $sql = 'SELECT 
                 
                     jm.id,
                     CASE  
                         WHEN jm.head = 1 THEN CONCAT( jm.`lastName` , \' \', jm.`firstName`  , \' \', jm.`middleName`  ) '
-                        // .' WHEN jm.head != \'\' THEN jm.head '
-                        .' ELSE CONCAT( jm.`lastName` , \' \', jm.`firstName` , \' \', jm.`middleName` ) 
+                // .' WHEN jm.head != \'\' THEN jm.head '
+                . ' ELSE CONCAT( jm.`lastName` , \' \', jm.`firstName` , \' \', jm.`middleName` ) 
                     END as `fio`  ,
                     jm.iiko_name,
                     jm.birthday bd,
@@ -3223,9 +3568,8 @@ class JobDesc {
                 ' . ( $list == 'spec' ? ' INNER ' : ' LEFT ' ) . ' JOIN mod_jobman_send_on_sp on_sp ON 
                     on_sp.jobman = jm.id 
                     AND on_sp.status = :status '
-                    // .( !empty($date) ? ' AND on_sp.date <= :date AND ( on_sp.date_finish IS NULL OR on_sp.date_finish >= :date ) ' : '' )
-
-                .' LEFT JOIN mod_sale_point sp ON 
+                // .( !empty($date) ? ' AND on_sp.date <= :date AND ( on_sp.date_finish IS NULL OR on_sp.date_finish >= :date ) ' : '' )
+                . ' LEFT JOIN mod_sale_point sp ON 
                     on_sp.sale_point = sp.id AND sp.status = :status
 
                 WHERE jm.status = :status
@@ -3233,15 +3577,14 @@ class JobDesc {
                 ORDER BY jm.lastName 
                 ';
 
-        $sql_vars = [ ':status' => 'show' ];
+        $sql_vars = [':status' => 'show'];
         // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
         // $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
         // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
         // $sql_vars[':date'] = date('Y-m-d', strtotime($date) );
 // \f\pa($ff1);
-
         // \f\pa($sql);
-        
+
         $ff = $db->prepare($sql);
         $ff->execute($sql_vars);
 
@@ -3249,15 +3592,12 @@ class JobDesc {
         return $ff->fetchAll();
         // return \f\end3('окей', true, $return);;
         // $return = $ff->fetchAll();
-
-
 //        if (isset($show_timer) && $show_timer === true)
 //            echo '<br/>' . __FUNCTION__
 //            . '<br/>' . __FILE__ . ' #' . __LINE__
 //            . '<br/>' . \f\timer_stop(7);
 // \f\pa($return);
 //        return $return;
-
 //        return \f\end3('окей', true, $return);
 //        return \f\end3('окей', true, $return);
     }

@@ -35,29 +35,121 @@ try {
         'summa_na_ruki' => 0,
         // рекомендуемая оценка управляющего
         // если 0 то нет оценки
-        'ocenka' => 0,
+        'ocenka' => 5,
         'ocenka_naruki' => 0,
+        'ocenka_timeo' => 0,
+        // оценка за процент от оборота
+        'ocenka_proc_ot_oborot' => 0,
         'checks_for_new_ocenka' => [],
         'date' => date('Y-m-d', strtotime($_REQUEST['date'])),
-        'sp' => $_REQUEST['sp']
+        'sale_point' => $_REQUEST['sp'],
+        'sp' => $_REQUEST['sp'],
+        'oborot' => 0,
+        'norms' => [],
+        'timeo' => [],
+            // 'oborot_in_one_hand' => 0
     );
 
     $jobmans = \Nyos\mod\JobDesc::getJobmansJobingToSpMonth($db, $return['sp'], $return['date']);
-    \f\pa($jobmans, 2);
+    // \f\pa($jobmans, 2);
 
-    $actions = \Nyos\mod\JobDesc::getActionsJobmansOnMonth($db, array_keys($jobmans['data']['jobmans']), $return['date']);
-    \f\pa($actions, 2, '', '$actions');
-
+    $actions = \Nyos\mod\JobDesc::getActionsJobmansOnMonth($db, array_keys($jobmans['data']['jobmans']), $return['date'], true, $return['sp']);
+    // \f\pa($actions, 2, '', '$actions');
 // считаем сколько часов отработано
+    $hours = \Nyos\mod\JobDesc::calcHoursDaysForOcenka($db, $return['date'], $return['sp'], array_keys($jobmans['data']['jobmans']), $actions['data']['actions']);
+    // \f\pa($hours, 2, '', 'колво hours');
+    $return['hour_day'] = $return['hours'] = $hours['hours'];
 
-    $hours = \Nyos\mod\JobDesc::calcHoursDaysForOcenka($db, $return['date'], $return['sp'], array_keys($jobmans['data']['jobmans']), $actions);
-    \f\pa($e, 2);
+    foreach ($actions['data']['actions'] as $k => $v) {
+        if (isset($v['date']) && $v['date'] == $return['date']) {
+            if (isset($v['type']) && $v['type'] == 'oborot') {
+                $return['oborot'] = $v['oborot_day'];
+            } elseif (isset($v['type']) && $v['type'] == 'norms') {
+                $return['norms'] = [
+                    'time_wait_norm_cold' => $v['time_wait_norm_cold'] ?? '',
+                    // 'time_wait_norm_hot' => $v['time_wait_norm_hot'] ?? '' ,
+                    'time_wait_norm_delivery' => $v['time_wait_norm_delivery'] ?? '',
+                    'procent_oplata_truda_on_oborota' => $v['procent_oplata_truda_on_oborota'] ?? '',
+                    'kolvo_hour_in1smena' => $v['kolvo_hour_in1smena'] ?? '',
+                    'vuruchka_on_1_hand' => $v['vuruchka_on_1_hand'] ?? ''
+                ];
+            } elseif (isset($v['type']) && $v['type'] == 'timeo') {
+                $return['timeo'] = [
+                    'cold' => $v['cold'] ?? '',
+                    'delivery' => $v['delivery'] ?? '',
+                ];
+                $return['time_cold'] = $v['cold'] ?? '';
+                $return['time_delivery'] = $v['delivery'] ?? '';
+            }
+        }
+    }
+
+    // считаем норму на 1 руки
+    $return['smen_in_day'] = round($return['hours'] / $return['norms']['kolvo_hour_in1smena'], 1);
+
+    // считаем выручку в 1 руки
+    $return['summa_na_ruki'] = ceil($return['oborot'] / $return['smen_in_day']);
+
+    $return['summa_zp_if5'] = $hours['summa_if5'] ?? '';
+
+    if ( $return['summa_na_ruki'] >= $return['norms']['vuruchka_on_1_hand']) {
+        $return['ocenka_naruki_ot_oborota'] = $return['ocenka_naruki'] = 5;
+    } else {
+        $return['ocenka_naruki_ot_oborota'] = $return['ocenka'] = $return['ocenka_naruki'] = 3;
+    }
+
+    $return['txt'] .= '<Br/><b>сумма на зп, если оценка 5</b>'
+            . '<Br/>посчитали сколько отработано смен <nobr>' . $return['hours'] . '/' . $return['norms']['kolvo_hour_in1smena'] . ' = ' . $return['smen_in_day'].'</nobr>'
+            . '<Br/>сумма на 1 руки ЗП ' . $return['summa_na_ruki']
+            . ' (норматив ' . $return['norms']['vuruchka_on_1_hand'] . ') '
+            . '<Br/>оценка: ' . $return['ocenka_naruki'] . '<Br/>';
+
+    if ($return['timeo']['cold'] <= $return['norms']['time_wait_norm_cold'] && $return['timeo']['delivery'] <= $return['norms']['time_wait_norm_delivery']) {
+        $return['ocenka_time'] = 5;
+    } else {
+        $return['ocenka'] = $return['ocenka_time'] = 3;
+    }
+    $return['txt'] .= '<Br/><b>сравниваем время ожидания</b>'
+            . '<Br/>'
+            . $return['timeo']['cold'] . '/' . $return['timeo']['delivery']
+            . ' <nobr>(норматив ' . $return['norms']['time_wait_norm_cold'] . '/' . $return['norms']['time_wait_norm_delivery'] . ')</nobr> '
+            . '<Br/>оценка: ' . $return['ocenka_time'] . '<Br/>';
+
+
+
+    $return['proc_zp_ot_oborota_if5'] = $return['if5_proc_oborot'] = round($hours['summa_if5'] / ($return['oborot'] / 100), 1);
+
+    if ($return['if5_proc_oborot'] < $return['norms']['procent_oplata_truda_on_oborota']) {
+        $return['ocenka_proc_ot_oborot'] = 5;
+    } else {
+        $return['ocenka'] = $return['ocenka_proc_ot_oborot'] = 3;
+    }
+
+    $return['txt'] .= '<Br/><b>сравниваем % от оборота на ЗП</b>'
+            . '<Br/>текущее значение ' . $return['if5_proc_oborot']
+            . ' <nobr>(на зп ' . $hours['summa_if5'] . ' из ТО ' . $return['oborot'] . ')</nobr> '
+            . '<Br/><nobr>норматив ' . $return['norms']['procent_oplata_truda_on_oborota'] . '</nobr> '
+            . '<Br/>оценка: ' . $return['ocenka_proc_ot_oborot']
+    ;
+
+    $return['txt'] .= '<div style="background-color:yellow; padding:2px 5px; text-align:center;"><nobr><b>Новая итоговая оценка: ' . $return['ocenka'] . '</b></nobr></div>';
+
+    // \f\pa($return);
+
+    $s2 = $db->prepare('DELETE FROM `mod_sp_ocenki_job_day` WHERE `sale_point` = :sp AND `date` = :date ;');
+    $s2->execute([':sp' => $return['sale_point'], ':date' => $return['date']]);
+
+    $return2 = $return;
+    unset($return2['txt']);
+    
+    $e = \Nyos\mod\items::add($db, 'sp_ocenki_job_day', $return2);
+    // \f\pa($e);
 
     $r = ob_get_contents();
     ob_end_clean();
 
+    \f\end2($r . $return['txt'], true, $return);
 
-    \f\end2('ok' . $r, true, $return);
 } catch (\Exception $ex) {
 
     ob_start('ob_gzhandler');
@@ -70,6 +162,36 @@ try {
 
     \f\end2('ok' . $r, false);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //
 //// считаем автооценку дня и пишем

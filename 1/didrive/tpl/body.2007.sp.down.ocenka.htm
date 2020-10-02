@@ -1,16 +1,16 @@
 {% spaceless %}
 
-    {% if server.HTTP_HOST == 'adomik.dev.uralweb.info' %}
+    {#{% if server.HTTP_HOST == 'adomik.dev.uralweb.info' %}
         {% set ocenka = true %}
-    {% else %}
+    {% else %}#}
         {% set ocenka = false %}
-    {% endif %}
+    {#{% endif %}#}
 
     <div class="trow" data-aos="fade-right"
          data-aos-anchor-placement="bottom-bottom" >
         <div class="tcell stick-left bg-white" >
 
-            {% if ocenka == true %}
+            {#{% if ocenka == true %}
                 <a href="#" 
                    style="float:right;"
                    onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) {
@@ -20,7 +20,7 @@
                        return false;" >
                     <span class="fa fa-refresh" title="обновить оценки за месяц" ></span>
                 </a>
-            {% endif %}
+            {% endif %}#}
 
             <b>Расчёт оценки дня</b>
 
