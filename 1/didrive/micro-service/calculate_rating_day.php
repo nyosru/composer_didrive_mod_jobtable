@@ -59,7 +59,8 @@ try {
     $hours = \Nyos\mod\JobDesc::calcHoursDaysForOcenka($db, $return['date'], $return['sp'], array_keys($jobmans['data']['jobmans']), $actions['data']['actions']);
     // \f\pa($hours, 2, '', 'колво hours');
     $return['hour_day'] = $return['hours'] = $hours['hours'];
-
+    $return['checks'] = $hours['calc_checks'];
+    
     foreach ($actions['data']['actions'] as $k => $v) {
         if (isset($v['date']) && $v['date'] == $return['date']) {
             if (isset($v['type']) && $v['type'] == 'oborot') {
@@ -115,8 +116,6 @@ try {
             . ' <nobr>(норматив ' . $return['norms']['time_wait_norm_cold'] . '/' . $return['norms']['time_wait_norm_delivery'] . ')</nobr> '
             . '<Br/>оценка: ' . $return['ocenka_time'] . '<Br/>';
 
-
-
     $return['proc_zp_ot_oborota_if5'] = $return['if5_proc_oborot'] = round($hours['summa_if5'] / ($return['oborot'] / 100), 1);
 
     if ($return['if5_proc_oborot'] < $return['norms']['procent_oplata_truda_on_oborota']) {
@@ -132,7 +131,8 @@ try {
             . '<Br/>оценка: ' . $return['ocenka_proc_ot_oborot']
     ;
 
-    $return['txt'] .= '<div style="background-color:yellow; padding:2px 5px; text-align:center;"><nobr><b>Новая итоговая оценка: ' . $return['ocenka'] . '</b></nobr></div>';
+    $return['txt'] .= '<div style="background-color:yellow; padding:2px 5px; text-align:center;"><nobr><b>Новая итоговая оценка: ' . $return['ocenka'] . '</b></nobr></div>'
+            . 'обновите страницу для обновиления оценки смен в графике';
 
     // \f\pa($return);
 
@@ -145,6 +145,18 @@ try {
     $e = \Nyos\mod\items::add($db, 'sp_ocenki_job_day', $return2);
     // \f\pa($e);
 
+    
+    
+            
+        $sql = 'UPDATE `mod_050_chekin_checkout` SET `ocenka_auto` = :ocenka WHERE `id` = \''. implode( '\' OR `id` = \'' , $return['checks'] ).'\' ;';
+        //\f\pa($sql);
+        $ff = $db->prepare($sql);
+        $ff->execute( [ ':ocenka' => $return['ocenka'] ] );
+        // echo implode( ', ' , $return['checks'] );
+
+
+    
+    
     $r = ob_get_contents();
     ob_end_clean();
 
