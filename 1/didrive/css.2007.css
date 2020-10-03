@@ -8,3 +8,8 @@
 .icon_removed_item{ float:right; padding:2px; cursor: pointer; }
 .icon_removed_item span{ color: rgba(0,0,0,0.3); }
 .icon_removed_item:HOVER span{ color: rgba(255,0,0,0.7); }
+
+.margin-bottom-1{ margin-bottom:1px; }
+.bg-dark-01{ background-color: rgba(0,0,0,0.1) }
+.block-w80,
+.w80{ display: block; min-width: 80px; }

@@ -7,7 +7,7 @@
        class="base__send_to_ajax" 
        style="float:right;" 
 
-       href_to_ajax="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/calculate_rating_day.php" 
+       href_to_ajax="/vendor/didrive_mod/jobdesc_dayocenka/micro-service/calculate_rating_day.php" 
 
        {#xhidethis="da" #}
        {#xanswer="удалить комментарий ?" #}
@@ -23,7 +23,7 @@
        after_click_showid="com{{ nd }}" 
        {#xmsg_to_success="Комментарий удалён" #}
 
-       onclick="$('#a_price_{{ sp_now }}_{{ now_date2 }}').html('...');"
+       onclick="$('#a_price_{{ sp_now }}_{{ now_date2 }}').html('...'); $('.check_ocenka_{{ now_date2 }}').html('авто оценка обновлена, обновите страницу'); $('.check_ocenka_{{ now_date2 }}').show('slow');"
        
        >
         {# расчитать оценку #}

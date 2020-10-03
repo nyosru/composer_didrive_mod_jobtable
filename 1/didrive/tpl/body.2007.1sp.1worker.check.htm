@@ -238,6 +238,8 @@
 
                                 {% else %} {# если не фикс за час #}
 
+                                    <div class="check_ocenka_{{ date }}" style="display:none; background-color:rgba(255,255,0,0.7); padding: 0 5px;" ></div>
+                                    
                                     <select name="ocenka" 
                                             class="base__select__send_data_ajax 
 
@@ -330,6 +332,7 @@
                                                                             {% set summa_day = hours_on_job * price_hour1_now %}
                                                                         {% endif %}
                                     #}
+                                    
                                 {% endif %}
 
 
