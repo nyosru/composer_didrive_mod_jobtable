@@ -27,10 +27,16 @@
                 data-target="#di_modal"
                 modal_header='Удалить смену'
                 ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
-                ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'
+                {#ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[start]={{ i.start }}'#}
+                ajax_vars='r_module=050.chekin_checkout&remove[jobman]={{ i.jobman }}&remove[id]={{ i.id }}'
                 reload_page_after_ok="da"
                 get_answer='Удаляем смену ?'
 
+                onclick="$('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново');"
+
+                ajax2_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+                ajax2_vars='r_module=sp_ocenki_job_day&remove[sale_point]={{ sp_now }}&remove[date]={{ date }}'
+                                       
                 ><span class="fa fa-remove" ></span></a>
 
 
@@ -99,6 +105,9 @@
                                        
                                        pole_edit="hours_on_job"
                                        
+                                       sp="{{ sp_now }}"
+                                       date="{{ date }}"
+                                       
                                        {#cash_delete1_1="hoursonjob"
                                        cash_delete1_2name="date"
                                        cash_delete1_2="{{ date }}"
@@ -117,7 +126,7 @@
                                        delete1v2val="{{ sp_now }}"
                                        delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
 
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');    $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново'); "
 
                                        ></i>
 
@@ -146,7 +155,10 @@
                                        s="{{ creatSecret('hour_'~i.id) }}" 
 
                                        type_action="+" 
-
+                                       
+                                       sp="{{ sp_now }}"
+                                       date="{{ date }}"
+                                       
                                        {#cash_delete1_1="hoursonjob"
                                        cash_delete1_2name="date"
                                        cash_delete1_2="{{ date }}"
@@ -172,7 +184,7 @@
                                        pole_edit="hours_on_job"
 
                                        
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');"
+                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>'); $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново'); "
                                        
                                        ></i> 
 
