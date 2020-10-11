@@ -485,16 +485,24 @@ class JobDesc {
         $sql_vars[':date_finish'] = date('Y-m-d', strtotime($sql_vars[':date_start'] . ' +1 month -1 day'));
 
         $sql = 'SELECT '
+                
                 // . ' od.* '
                 . ' od.id item_id '
                 . ' , od.date '
                 . ' , od.sale_point '
                 . ' , \'ocenka\' `item_type` '
+                
                 . ' , od.ocenka_time '
                 . ' , od.ocenka_oborot '
                 . ' , od.ocenka_naruki '
                 . ' , od.ocenka '
                 . ' , od.hour_day '
+                . ' , od.hours_all '
+                //
+                . ' , od.summa_zp_if5 '
+                . ' , od.money_naruki_ot_oborota '
+                . ' , od.proc_zp_ot_oborota_if5 '
+                //
                 . ' , od.ocenka_naruki_ot_oborota '
                 . ' , od.money_naruki_ot_oborota '
                 . ' , \'\' vuruchka '
@@ -516,18 +524,27 @@ class JobDesc {
                 . ' od.status = \'show\' '
                 . ' AND od.sale_point = :sp '
                 . ' AND od.date BETWEEN :date_start AND :date_finish '
+                //
                 . ' UNION ALL '
+                //
                 . ' SELECT '
                 // . ' od.* '
                 . ' p.id item_id '
                 . ' , p.date '
                 . ' , p.sale_point '
                 . ' , \'param\' `item_type` '
+                //
                 . ' , \'\' ocenka_time '
                 . ' , \'\' ocenka_oborot '
                 . ' , \'\' ocenka_naruki '
                 . ' , \'\' ocenka '
                 . ' , \'\' hour_day '
+                . ' , \'\' hours_all '
+                //
+                . ' , \'\' summa_zp_if5 '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , \'\' proc_zp_ot_oborota_if5 '
+                //
                 . ' , \'\' ocenka_naruki_ot_oborota '
                 . ' , \'\' money_naruki_ot_oborota '
                 . ' , p.vuruchka '
@@ -549,17 +566,26 @@ class JobDesc {
                 . ' p.status = \'show\' '
                 . ' AND p.sale_point = :sp '
                 . ' AND p.date BETWEEN :date_start AND :date_finish '
+                //
                 . ' UNION ALL '
+                //
                 . ' SELECT '
                 . ' t.id item_id '
                 . ' , t.date '
                 . ' , t.sale_point '
                 . ' , \'timeo\' `item_type` '
+                //
                 . ' , \'\' ocenka_time '
                 . ' , \'\' ocenka_oborot '
                 . ' , \'\' ocenka_naruki '
                 . ' , \'\' ocenka '
                 . ' , \'\' hour_day '
+                . ' , \'\' hours_all '
+                //
+                . ' , \'\' summa_zp_if5 '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , \'\' proc_zp_ot_oborota_if5 '
+                //
                 . ' , \'\' ocenka_naruki_ot_oborota '
                 . ' , \'\' money_naruki_ot_oborota '
                 . ' , \'\' vuruchka '
@@ -581,17 +607,26 @@ class JobDesc {
                 . ' t.status = \'show\' '
                 . ' AND t.sale_point = :sp '
                 . ' AND t.date BETWEEN :date_start AND :date_finish '
+                //
                 . ' UNION ALL '
+                //
                 . ' SELECT '
                 . ' oo.id item_id '
                 . ' , oo.date '
                 . ' , oo.sale_point '
                 . ' , \'oborot\' `item_type` '
+                //
                 . ' , \'\' ocenka_time '
                 . ' , \'\' ocenka_oborot '
                 . ' , \'\' ocenka_naruki '
                 . ' , \'\' ocenka '
                 . ' , \'\' hour_day '
+                . ' , \'\' hours_all '
+
+                . ' , \'\' summa_zp_if5 '
+                . ' , \'\' money_naruki_ot_oborota '
+                . ' , \'\' proc_zp_ot_oborota_if5 '
+                
                 . ' , \'\' ocenka_naruki_ot_oborota '
                 . ' , \'\' money_naruki_ot_oborota '
                 . ' , \'\' vuruchka '
@@ -1309,6 +1344,7 @@ class JobDesc {
                 spec.`sale_point` ,
                 spec.`dolgnost` ,
                 `d`.`head` dolgnost_name,
+                `d`.`calc_auto` position_calc_auto,
                 \'spec\' as `type` '
                     . ' , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
@@ -1344,6 +1380,7 @@ class JobDesc {
                         `on`.`sale_point` ,
                         `on`.`dolgnost` ,
                         `d`.`head` dolgnost_name,
+                        `d`.`calc_auto` position_calc_auto,
                         \'norm\' as `type`
                         , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
@@ -1369,7 +1406,9 @@ class JobDesc {
                     . ' `on`.`date` <= :date_finish '
                     . ' AND '
                     . ' `on`.status = \'show\' '
+                    
                     . '  UNION ALL '
+                    
                     . ' ( 
                         SELECT 
                         `on`.`id` ,
@@ -1378,7 +1417,9 @@ class JobDesc {
                         `on`.`jobman` ,
                         `on`.`sale_point` ,
                         `on`.`dolgnost` ,
-                        `d`.`head` dolgnost_name,
+                        `d`.`head` dolgnost_name ,
+                        `d`.`calc_auto` position_calc_auto ,
+                        
                         \'norm\' as `type`
                         , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
@@ -1617,9 +1658,11 @@ class JobDesc {
                 . ' , \'\' oborot_day_hand '
                 . ' , \'\' oborot_day_server '
                 . ' , \'\' oborot_day '
+                
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
-                . ' , \'\' spec_d '
+                . ' , \'\' spec_d '                
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -1650,7 +1693,9 @@ class JobDesc {
                 . $jms
                 . ' AND `mm`.`date` BETWEEN :date_start AND :date_finish '
                 . ' AND `mm`.`status` = \'show\' '
+                
                 . PHP_EOL . ' UNION ALL '
+                
                 . PHP_EOL
                 . 'SELECT 
                     c.`id` ,
@@ -1710,8 +1755,11 @@ class JobDesc {
                     ELSE NULL END ) as oborot_day '
                 . ' , s.id spec_id '
                 . ' , s.date spec_date '
+                
                 . ' , s.dolgnost spec_d '
+                . ' , s_posi.calc_auto spec_position_auto '
                 . ' , s.sale_point spec_sp '
+                
                 . ' , s_pay.id s_pay_id '
                 . ' , s_pay.dolgnost s_pay_d '
                 . ' , s_pay.date s_pay_date '
@@ -1724,25 +1772,25 @@ class JobDesc {
                 . ' , s_pay.`oborot_sp_last_monht_bolee` s_pay_oborot_sp_last_monht_bolee '
                 . ' , s_pay.`bonus_proc_from_oborot` s_pay_bonus_proc_from_oborot '
                 . ' , s_pay.`pay_from_day_oborot_bolee` s_pay_pay_from_day_oborot_bolee '
+                
                 . ' , ( CASE 
                         WHEN oborot_spec.oborot_hand > 0 THEN oborot_spec.oborot_hand
                         WHEN oborot_spec.oborot_server > 0 THEN oborot_spec.oborot_server
                         ELSE NULL END ) as spec_oborot_day '
+                
                 . ' , ( CASE 
-                    
                         WHEN 
                                 oborot_spec.oborot_hand > 0 
                                 AND s_pay.`bonus_proc_from_oborot` > 0
                             THEN 
                                 FLOOR( oborot_spec.oborot_hand / 100 * s_pay.`bonus_proc_from_oborot` )
-                                
                         WHEN 
                                 oborot_spec.oborot_server > 0 
                                 AND s_pay.`bonus_proc_from_oborot` > 0
                             THEN 
                                 FLOOR( oborot_spec.oborot_server / 100 * s_pay.`bonus_proc_from_oborot` )
-
                         ELSE NULL END ) as  spec_bonus  '
+                
                 . ' , \'\' vuruchka 	'
                 . ' , \'\' time_wait_norm_cold '
                 . ' , \'\' time_wait_norm_hot '
@@ -1752,51 +1800,57 @@ class JobDesc {
                 . ' , \'\' vuruchka_on_1_hand '
                 . ' , \'\' cold '
                 . ' , \'\' delivery '
+                
                 . ' FROM `mod_050_chekin_checkout` `c` '
+                
                 . ' LEFT JOIN mod_jobman_send_on_sp on_sp ON on_sp.id = ( SELECT id FROM mod_jobman_send_on_sp WHERE '
-                . ' jobman = c.jobman '
-                // . ' AND sale_point = c.sale_point '
-                . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
-                . ' AND status = \'show\' '
-                . ' ORDER BY date DESC '
-                . ' LIMIT 1 ) '
+                    . ' jobman = c.jobman '
+                    // . ' AND sale_point = c.sale_point '
+                    . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                    . ' AND status = \'show\' '
+                    . ' ORDER BY date DESC '
+                    . ' LIMIT 1 ) '
                 . ' LEFT JOIN mod_sale_point_oborot oborot_d ON '
-                . ' oborot_d.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
-                . ' AND oborot_d.sale_point = on_sp.sale_point '
-                . ' AND oborot_d.status = \'show\' '
+                    . ' oborot_d.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                    . ' AND oborot_d.sale_point = on_sp.sale_point '
+                    . ' AND oborot_d.status = \'show\' '
                 . ' LEFT JOIN mod_061_dolgnost dol ON dol.id = on_sp.dolgnost '
                 . ' LEFT JOIN mod_071_set_oplata pay ON '
-                . ' pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
-                // .' jobman = c.jobman '
-                . ' dolgnost = on_sp.dolgnost '
-                . ' AND sale_point = on_sp.sale_point '
-                . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
-                . ' AND status = \'show\' '
+                    . ' pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
+                    // .' jobman = c.jobman '
+                    . ' dolgnost = on_sp.dolgnost '
+                    . ' AND sale_point = on_sp.sale_point '
+                    . ' AND date <= DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
+                    . ' AND status = \'show\' '
 
-                //                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
-                //                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
-                . ' AND ( 
-                                ( '
-                . ' oborot_d.oborot_hand > 0 '
-                . ' AND '
-                . ' oborot_d.oborot_hand >= pay_from_day_oborot_bolee '
-                . ' ) OR ( '
-                . ' oborot_d.oborot_hand IS NULL '
-                . ' AND '
-                . ' oborot_d.oborot_server > 0 '
-                . ' AND '
-                . ' pay.pay_from_day_oborot_bolee <= oborot_d.oborot_server '
-                . ' ) '
-                . ' OR 
-                                pay_from_day_oborot_bolee IS NULL '
-                . ' ) '
-                . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
-                . ' LIMIT 1 ) '
+                    //                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
+                    //                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
+                    . ' AND ( 
+                            ( '
+                        . ' oborot_d.oborot_hand > 0 '
+                        . ' AND oborot_d.oborot_hand >= pay_from_day_oborot_bolee '
+                        . ' ) OR ( '
+                        . ' oborot_d.oborot_hand IS NULL '
+                        . ' AND oborot_d.oborot_server > 0 '
+                        . ' AND pay.pay_from_day_oborot_bolee <= oborot_d.oborot_server '
+                        . ' ) '
+                        . ' OR 
+                            pay_from_day_oborot_bolee IS NULL '
+                        . ' ) '
+                    . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
+                    . ' LIMIT 1 ) '
+                
                 . ' LEFT JOIN mod_050_job_in_sp s ON 
                         s.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) )
                         AND s.jobman = c.jobman
                         AND s.status = \'show\'
                         '
+                
+                . ' LEFT JOIN mod_061_dolgnost s_posi ON 
+                        s.dolgnost = s_posi.id
+                        AND s_posi.status = \'show\'
+                        '
+                
                 . ' LEFT JOIN mod_071_set_oplata s_pay ON s_pay.id = ( SELECT id FROM mod_071_set_oplata WHERE '
                 // .' jobman = c.jobman '
                 . ' dolgnost = s.dolgnost '
@@ -1805,18 +1859,20 @@ class JobDesc {
                 . ' AND status = \'show\' '
 //                    WHEN oborot_d.oborot_hand > 0 THEN oborot_d.oborot_hand
 //                    WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
-                . ' AND ( '
-                . ' ( oborot_d.oborot_hand > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_hand ) ) '
-                . ' OR ( oborot_d.oborot_hand IS NULL AND oborot_d.oborot_server > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_server ) ) '
-                . ' OR pay_from_day_oborot_bolee IS NULL '
-                . ' ) '
-                . ' ORDER BY date DESC, pay_from_day_oborot_bolee DESC  '
-                . ' LIMIT 1 ) '
-                . ' LEFT JOIN mod_sale_point_oborot oborot_spec ON '
-                . ' s.sale_point > 0 '
-                . ' AND oborot_spec.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) '
-                . ' AND oborot_spec.sale_point = s.sale_point '
-                . ' AND oborot_spec.status = \'show\' '
+                . ' AND ( 
+                            ( oborot_d.oborot_hand > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_hand ) ) 
+                            OR ( oborot_d.oborot_hand IS NULL AND oborot_d.oborot_server > 0 AND ( pay_from_day_oborot_bolee <= oborot_d.oborot_server ) ) 
+                            OR pay_from_day_oborot_bolee IS NULL 
+                        ) 
+                        ORDER BY date DESC, pay_from_day_oborot_bolee DESC  
+                        LIMIT 1 ) '
+                
+                . ' LEFT JOIN mod_sale_point_oborot oborot_spec ON 
+                        s.sale_point > 0 
+                        AND oborot_spec.date = DATE( ( c.start - INTERVAL 300 MINUTE  ) ) 
+                        AND oborot_spec.sale_point = s.sale_point 
+                        AND oborot_spec.status = \'show\' '
+                
                 . ' WHERE '
                 . $jms_c
                 . ' AND c.`start` BETWEEN :datet_start AND :datet_finish '
@@ -1825,6 +1881,7 @@ class JobDesc {
 
                 //.' GROUP BY c.id '
                 . PHP_EOL . ' UNION ALL '
+                
                 . PHP_EOL
                 . ' SELECT 
                     `mi`.`id`,
@@ -1869,6 +1926,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -1902,7 +1960,9 @@ class JobDesc {
                 . ' `mi`.`date_now` BETWEEN :date_start AND :date_finish '
                 . ' AND '
                 . ' mi.`status` = \'show\' '
-                . PHP_EOL . ' UNION '
+                
+                . PHP_EOL . ' UNION ALL'
+                
                 . ' SELECT 
                     `m`.`id`,
                     `m`.`status`,
@@ -1946,6 +2006,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -1977,6 +2038,7 @@ class JobDesc {
                 . ' `m`.`date_now` BETWEEN :date_start AND :date_finish '
                 . ' AND '
                 . ' m.`status` = \'show\' '
+                
                 . PHP_EOL . ' UNION ALL '
 //
 ////
@@ -2023,6 +2085,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -2104,6 +2167,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -2181,6 +2245,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -2258,6 +2323,7 @@ class JobDesc {
                 . ' , \'\' spec_id '
                 . ' , \'\' spec_date '
                 . ' , \'\' spec_d '
+                . ' , \'\' spec_position_auto '
                 . ' , \'\' spec_sp '
                 . ' , \'\' s_pay_id '
                 . ' , \'\' s_pay_d '
@@ -2294,7 +2360,6 @@ class JobDesc {
         $ff = $db->prepare($sql);
         $ff->execute($in_sql);
         $return['actions'] = $ff->fetchAll();
-
 
         if (isset($_REQUEST['show_info'])) {
             foreach ($return as $k => $v) {

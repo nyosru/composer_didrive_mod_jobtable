@@ -53,8 +53,15 @@
                 {% set jobman_fio = user_v[0]['fio'] %}
 
                 <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
-                <div style="color:gray;">{{ user_v[0]['dolgnost_name'] }}</div>
+                <div style="color:gray;">
+                    {{ user_v[0]['dolgnost_name'] }}
+                    
+                    {% if user_v[0]['position_calc_auto'] is not empty %}<sup><abbr title="считаем эту должность при расчёте оценки дня, входит в Фонд оплаты труда">ФОТ</abbr></sup>{% endif %}
 
+                </div>
+                {#{{  pa(user_v[0]) }}#}
+
+                
                 {% if user_v[0]['type'] == 'spec' %}
                 {% else %}
 

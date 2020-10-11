@@ -5,7 +5,7 @@
     {% endif %}
 
     {#{{ pa(session) }}#}    
-    {#{{ pa(i) }}#}
+    {#{{ pa(i,2) }}#}
 
     {% if i.sale_point != '' and i.sale_point != sp_now %}
 
@@ -36,7 +36,7 @@
 
                 ajax2_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
                 ajax2_vars='r_module=sp_ocenki_job_day&remove[sale_point]={{ sp_now }}&remove[date]={{ date }}'
-                                       
+
                 ><span class="fa fa-remove" ></span></a>
 
 
@@ -44,15 +44,19 @@
             {% if i.who_add_item is defined and i.who_add_item == 'iiko' %}
 
                 <abbr title="загружено с сервера ИИКО #{{  i.id }}" ><small style="float:left;">iiko</small></abbr>
-                <br clear="all" />
+                {#{% if i.fot is not empty %}фот{% else %}<strike>фот</strike>{% endif %}#}
 
             {% elseif i.who_add_item is defined and i.who_add_item == 'admin' %}
 
                 <abbr title="добавлено вручную #{{  i.id }}" ><small style="float:left;">вручную</small></abbr>
-                <br clear="all" />
+                {#{% if i.fot is not empty %}фот{% else %}<strike>фот</strike>{% endif %}#}
 
             {% endif %}
 
+
+
+
+            <br clear="all" />
             {#{ pa(check) }#}
 
 
@@ -64,144 +68,144 @@
                     {# если нет финиша #}
                     {#{% if i.start is defined and i.fin is empty %}#}
                     {#{% if 1 == 2 and i.start is defined and i.fin is empty %}#}
-                        {#{{ i.start|date("H:i") }} - ...#}
+                    {#{{ i.start|date("H:i") }} - ...#}
                     {# если есть финиш #}
                     {#{% else %}#}
 
 
-                        {% if i.fin is not defined or i.fin is empty %}
-                            {{ i.start|date("H:i") }} - ...
+                    {% if i.fin is not defined or i.fin is empty %}
+                        {{ i.start|date("H:i") }} - ...
+                        <br/>
+                    {% else %}
+                        <abbr class="job_timer" >
+                            {{ i.start|date("H:i") }} - {{ i.fin|date("H:i") }}
                             <br/>
-                        {% else %}
-                            <abbr class="job_timer" >
-                                {{ i.start|date("H:i") }} - {{ i.fin|date("H:i") }}
-                                <br/>
-                            </abbr>
-                        {% endif %}
+                        </abbr>
+                    {% endif %}
 
 
-                        <abbr class="job_hour" >
-                            <nobr>
+                    <abbr class="job_hour" >
+                        <nobr>
 
-                                {% set hours_on_job = i.hour_on_job_hand ?? i.hour_on_job ?? 0 %}
-                                {% if hours_on_job == '' %}
-                                    {% set hours_on_job = 0 %}
-                                {% endif %}
+                            {% set hours_on_job = i.hour_on_job_hand ?? i.hour_on_job ?? 0 %}
+                            {% if hours_on_job == '' %}
+                                {% set hours_on_job = 0 %}
+                            {% endif %}
 
-                                {% if 1 == 1 %} {# часы в смене #}
+                            {% if 1 == 1 %} {# часы в смене #}
 
-                                    <i class="fa fa-minus ajax_hour_action" 
+                                <i class="fa fa-minus ajax_hour_action" 
 
-                                       type_action="-" 
-                                       hour_id="{{ i.id }}" 
-                                       block="hour_{{ i.id }}" 
-                                       s="{{ creatSecret('hour_'~i.id) }}"
+                                   type_action="-" 
+                                   hour_id="{{ i.id }}" 
+                                   block="hour_{{ i.id }}" 
+                                   s="{{ creatSecret('hour_'~i.id) }}"
 
-                                       module="050.chekin_checkout"
-                                       
-                                       delete1v1pole="id"
-                                       delete1v1val="{{ i.id }}"
-                                       delete1s="{{ creatSecret( i.id ) }}"
-                                       
-                                       pole_edit="hours_on_job"
-                                       
-                                       sp="{{ sp_now }}"
-                                       date="{{ date }}"
-                                       
-                                       {#cash_delete1_1="hoursonjob"
-                                       cash_delete1_2name="date"
-                                       cash_delete1_2="{{ date }}"
-                                       cash_delete1_3name="sp"
-                                       cash_delete1_3="{{ sp_now }}"#}
+                                   module="050.chekin_checkout"
 
-                                       {#sp="{{ sp_now }}"#}
-                                       {#date="{{ date }}"#}
+                                   delete1v1pole="id"
+                                   delete1v1val="{{ i.id }}"
+                                   delete1s="{{ creatSecret( i.id ) }}"
 
-                                       {#new_value="{{ hours_on_job }}"#}
-                                       
-                                       {#delete1mod="sp_ocenki_job_day"
-                                       delete1v1pole="date"
-                                       delete1v1val="{{ date }}"
-                                       delete1v2pole="sale_point"
-                                       delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
+                                   pole_edit="hours_on_job"
 
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');    $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново'); "
+                                   sp="{{ sp_now }}"
+                                   date="{{ date }}"
 
-                                       ></i>
+                                   {#cash_delete1_1="hoursonjob"
+                                   cash_delete1_2name="date"
+                                   cash_delete1_2="{{ date }}"
+                                   cash_delete1_3name="sp"
+                                   cash_delete1_3="{{ sp_now }}"#}
 
-                                    <span id="hour_{{ i.id }}" 
+                                   {#sp="{{ sp_now }}"#}
+                                   {#date="{{ date }}"#}
 
-                                          {# для динамичного показа суммы за смену + #}
-                                          class="job_hours" id_smena="{{ i.id }}" 
-                                          {# для динамичного показа суммы за смену - #}
+                                   {#new_value="{{ hours_on_job }}"#}
 
-                                          xstyle="display: inline-block; width:40px; border:1px solid green;"
+                                   {#delete1mod="sp_ocenki_job_day"
+                                   delete1v1pole="date"
+                                   delete1v1val="{{ date }}"
+                                   delete1v2pole="sale_point"
+                                   delete1v2val="{{ sp_now }}"
+                                   delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
 
-                                          {% if i.fin is not empty %}
-                                              title="{{ i.start|date("d.m H:i") }} - {{ i.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ i.hour_on_job }}"
-                                          {% endif %}
+                                   onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>');    $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново');"
 
-                                          {% if i.hour_on_job_hand != '' %} style="font-weight: bold;" {% endif%} 
+                                   ></i>
 
-                                          >{{ hours_on_job ?? 0 }}</span>
+                                <span id="hour_{{ i.id }}" 
+
+                                      {# для динамичного показа суммы за смену + #}
+                                      class="job_hours" id_smena="{{ i.id }}" 
+                                      {# для динамичного показа суммы за смену - #}
+
+                                      xstyle="display: inline-block; width:40px; border:1px solid green;"
+
+                                      {% if i.fin is not empty %}
+                                          title="{{ i.start|date("d.m H:i") }} - {{ i.fin|date("d.m H:i") }} отработано часов (авторасчет):{{ i.hour_on_job }}"
+                                      {% endif %}
+
+                                      {% if i.hour_on_job_hand != '' %} style="font-weight: bold;" {% endif%} 
+
+                                      >{{ hours_on_job ?? 0 }}</span>
 
 
-                                    <i class="fa fa-plus ajax_hour_action" 
+                                <i class="fa fa-plus ajax_hour_action" 
 
-                                       {#module="050.chekin_checkout"#}
-                                       hour_id="{{ i.id }}" 
-                                       block="hour_{{ i.id }}" 
-                                       s="{{ creatSecret('hour_'~i.id) }}" 
+                                   {#module="050.chekin_checkout"#}
+                                   hour_id="{{ i.id }}" 
+                                   block="hour_{{ i.id }}" 
+                                   s="{{ creatSecret('hour_'~i.id) }}" 
 
-                                       type_action="+" 
-                                       
-                                       sp="{{ sp_now }}"
-                                       date="{{ date }}"
-                                       
-                                       {#cash_delete1_1="hoursonjob"
-                                       cash_delete1_2name="date"
-                                       cash_delete1_2="{{ date }}"
-                                       cash_delete1_3name="sp"
-                                       cash_delete1_3="{{ sp_now }}"
+                                   type_action="+" 
 
-                                       sp="{{ sp_now }}"
-                                       date="{{ date }}"
+                                   sp="{{ sp_now }}"
+                                   date="{{ date }}"
 
-                                       delete1mod="sp_ocenki_job_day"
-                                       delete1v1pole="date"
-                                       delete1v1val="{{ date }}"
-                                       delete1v2pole="sale_point"
-                                       delete1v2val="{{ sp_now }}"
-                                       delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
+                                   {#cash_delete1_1="hoursonjob"
+                                   cash_delete1_2name="date"
+                                   cash_delete1_2="{{ date }}"
+                                   cash_delete1_3name="sp"
+                                   cash_delete1_3="{{ sp_now }}"
 
-                                       module="050.chekin_checkout"
-                                       
-                                       delete1v1pole="id"
-                                       delete1v1val="{{ i.id }}"
-                                       delete1s="{{ creatSecret( i.id ) }}"
-                                       
-                                       pole_edit="hours_on_job"
+                                   sp="{{ sp_now }}"
+                                   date="{{ date }}"
 
-                                       
-                                       onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>'); $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново'); "
-                                       
-                                       ></i> 
+                                   delete1mod="sp_ocenki_job_day"
+                                   delete1v1pole="date"
+                                   delete1v1val="{{ date }}"
+                                   delete1v2pole="sale_point"
+                                   delete1v2val="{{ sp_now }}"
+                                   delete1s="{{ creatSecret( date ~ sp_now ) }}"#}
 
-                                {% endif %}
+                                   module="050.chekin_checkout"
 
-                                {% if 1 == 2 %}
-                                    <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
-                                            return false;" >
-                                        <span class="fa fa-caret-down" ></span>
-                                    </a>
-                                {% endif %}
+                                   delete1v1pole="id"
+                                   delete1v1val="{{ i.id }}"
+                                   delete1s="{{ creatSecret( i.id ) }}"
 
-                            </nobr>
+                                   pole_edit="hours_on_job"
 
-                            <br/>
 
-                            {#{% if i.id == 160441 %}{{ pa(i) }}{% endif %}#}
+                                   onclick="$('#hoursday_{{ date }}').html('<div class=\'bg-warning\' style=\'padding:5px;\' >Значение изменено</div>'); $('#a_price_{{ sp_now }}_{{ date }}').html('Оценка будет расчитана заново');"
+
+                                   ></i> 
+
+                            {% endif %}
+
+                            {% if 1 == 2 %}
+                                <a href="#"  class="but_show_option" onclick="$('#drop2_{{ i.id }}').toggle('slow');
+                                        return false;" >
+                                    <span class="fa fa-caret-down" ></span>
+                                </a>
+                            {% endif %}
+
+                        </nobr>
+
+                        <br/>
+
+                        {#{% if i.id == 160441 %}{{ pa(i) }}{% endif %}#}
 
 
 
@@ -251,7 +255,7 @@
                                 {% else %} {# если не фикс за час #}
 
                                     <div class="check_ocenka_{{ date }}" style="display:none; background-color:rgba(255,255,0,0.7); padding: 0 5px;" ></div>
-                                    
+
                                     <select name="ocenka" 
                                             class="base__select__send_data_ajax 
 
@@ -344,7 +348,7 @@
                                                                             {% set summa_day = hours_on_job * price_hour1_now %}
                                                                         {% endif %}
                                     #}
-                                    
+
                                 {% endif %}
 
 

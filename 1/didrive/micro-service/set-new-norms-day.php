@@ -62,12 +62,15 @@ try {
                 $delete['date'][] = $now;
                 $in_data[] = [ 'date' => $now ];
 
-            } else if( !empty($_REQUEST['copyto']) && in_array($nowdn, $_REQUEST['copyto'])) {
+            } 
+            
+            else if( !empty($_REQUEST['copyto']) && in_array($nowdn, $_REQUEST['copyto'])) {
 
                 $delete['date'][] = $now;
                 $in_data[] = [ 'date' => $now ];
                 // echo '+'.$now;
             }
+            
 //            else{
 //                echo '-'.$now;
 //            }
@@ -76,6 +79,9 @@ try {
 
     // \f\pa($delete);
 
+    \Nyos\mod\JOBDESC_DAYOCENKA::deleteOcenka($db, $delete['sale_point'], $delete['date'] );
+    
+    
     \Nyos\mod\items::deleteItemForDops($db, \Nyos\mod\JobDesc::$mod_norms_day, $delete);
 
     // foreach( )

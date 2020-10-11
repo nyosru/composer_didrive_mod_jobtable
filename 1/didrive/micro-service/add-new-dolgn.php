@@ -37,7 +37,7 @@ try {
     );
 
     //\f\pa($indb);
-    \Nyos\mod\items::$type_module = 2;
+    \Nyos\mod\items::$type_module = 3;
     \Nyos\mod\items::add($db, 'jobman_send_on_sp', $indb);
 
     \f\end2( 'добавлено' );
