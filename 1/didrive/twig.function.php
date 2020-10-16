@@ -34,6 +34,25 @@ $function = new Twig_SimpleFunction('jobdesc_ms__get_itogi_day_on_month', functi
 });
 $twig->addFunction($function);
 
+
+
+$function = new Twig_SimpleFunction('jobdesc__getActionsJobmansOnMonth', function ( $db, $jobmans, $date ) {
+    
+    $return__jm_sp = [];
+    $ee = \Nyos\mod\JobDesc::getActionsJobmansOnMonth($db, $jobmans, $date);
+    
+    
+    if( !empty($ee['data']['actions']) )
+    foreach( $ee['data']['actions'] as $k => $v ){
+    // $return__jm_sp[]
+        // \f\pa($v['type'],'','','vv');
+        echo ' '.$v['type'];
+    }
+    
+    return $return__jm_sp;
+});
+$twig->addFunction($function);
+
 /**
  * тащим список людей кто в указанный период был на работе в этой точке
  * new version 200624

@@ -3616,7 +3616,6 @@ class JobDesc {
      * @return type
      */
     public static function getListJobmans($db, $list = 'all', $date = null) {
-
         $sql = 'SELECT 
                 
                     jm.id,
@@ -3644,29 +3643,11 @@ class JobDesc {
                 ORDER BY jm.lastName 
                 ';
 
-        $sql_vars = [':status' => 'show'];
-        // $sql_vars[':mod_user'] = \Nyos\mod\JobDesc::$mod_jobman;
-        // $sql_vars[':mod_job_on'] = \Nyos\mod\JobDesc::$mod_man_job_on_sp;
-        // $sql_vars[':mod_sp'] = \Nyos\mod\JobDesc::$mod_sale_point;
-        // $sql_vars[':date'] = date('Y-m-d', strtotime($date) );
-// \f\pa($ff1);
-        // \f\pa($sql);
-
         $ff = $db->prepare($sql);
+        $sql_vars = [':status' => 'show'];
         $ff->execute($sql_vars);
-
-// $return = [];
         return $ff->fetchAll();
-        // return \f\end3('окей', true, $return);;
-        // $return = $ff->fetchAll();
-//        if (isset($show_timer) && $show_timer === true)
-//            echo '<br/>' . __FUNCTION__
-//            . '<br/>' . __FILE__ . ' #' . __LINE__
-//            . '<br/>' . \f\timer_stop(7);
-// \f\pa($return);
-//        return $return;
-//        return \f\end3('окей', true, $return);
-//        return \f\end3('окей', true, $return);
+        
     }
 
     /**
@@ -3851,6 +3832,7 @@ class JobDesc {
     }
 
     /**
+     * старая (не 2007)
      * формируем список кто где работает во временной промежуток
      * @param type $db
      * @param type $date_start
@@ -6631,6 +6613,7 @@ class JobDesc {
 // \f\pa($return[$dt],2,'','$return[$dt]');
 
         return $return;
+        
     }
 
     /**

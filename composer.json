@@ -2,7 +2,7 @@
     "name": "didrive_mod/jobdesc",
     "description": "Реестр работ связка модулей отделы + работники + выход на работу",
 
-    "version": "2.15.1",
+    "version": "2.15.2",
 
     "keywords": [
         "didrive", "module", "nyos", "uralweb.info"
@@ -19,6 +19,7 @@
 
     "homepage": "https://uralweb.info/php/#classes",
     "license": "MIT",
+    
     "require": {
         "php": ">=7.3.0"
         ,
@@ -33,8 +34,8 @@
         "didrive_mod/jobdesc_oborot": ">=0.0.3"
         ,
         "didrive_mod/jobdesc_dayocenka": ">=1.5.0"
-    }
-    ,
+    },
+    
     "autoload": {
         "files": [  "src/class.php" ]
     }
