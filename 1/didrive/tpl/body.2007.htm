@@ -147,7 +147,7 @@
 
                                 {% for year in range(low=2019, high=2030, step=1) if iy <= now_year %}
 
-                                    {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 3 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
+                                    {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 9 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
 
                                         {% if i < 10 %}
                                             {% set i2 = '0'~i %}
