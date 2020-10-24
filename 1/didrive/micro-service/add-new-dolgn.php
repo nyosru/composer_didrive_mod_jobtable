@@ -40,26 +40,30 @@ try {
     \Nyos\mod\items::$type_module = 3;
     \Nyos\mod\items::add($db, 'jobman_send_on_sp', $indb);
 
-    \f\end2( 'добавлено' );
+    $uri = 'https://'.$_SERVER['HTTP_HOST'].'/vendor/didrive_mod/iiko_checks/1/didrive/micro-service/get-new-smen-from-iiko.php?scan_day=40&user='.$_REQUEST['user'].'&xshow=1&1nosave=da';
+    $ee = file_get_contents( $uri );
     
-    // $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=jobman_send_on_sp&show_res=no' );
-    die();
-    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no' );
-        
+    \f\end2( 'добавлено', true, [ 'refresh_smens' => $ee ] );
     
+//    // $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=jobman_send_on_sp&show_res=no' );
+//    die();
+//    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no' );
+//        
+//    
+//    
+//    
+//    
+//    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd' );
+//
+//    \f\end2('<div class="warn" style="padding:5px;" >'
+//            . '<nobr><b>смена добавлена</b>'
+//            . '<br/>с ' . date('d.m.y H:i', $start_time)
+//            . '<br/>до ' . date('d.m.y H:i', $fin_time)
+//            . '<br/>часов на работе ' . $indb['hour_on_job']
+//            . '<hr>'. $ee . '<hr>'
+//            . '</nobr>'
+//            . '</div>', true);
     
-    
-    
-    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd' );
-
-    \f\end2('<div class="warn" style="padding:5px;" >'
-            . '<nobr><b>смена добавлена</b>'
-            . '<br/>с ' . date('d.m.y H:i', $start_time)
-            . '<br/>до ' . date('d.m.y H:i', $fin_time)
-            . '<br/>часов на работе ' . $indb['hour_on_job']
-            . '<hr>'. $ee . '<hr>'
-            . '</nobr>'
-            . '</div>', true);
 } catch (Exception $exc) {
 
     echo '<pre>';
