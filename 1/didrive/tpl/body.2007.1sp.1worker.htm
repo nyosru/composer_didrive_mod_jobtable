@@ -13,6 +13,7 @@
                     <div class="dropdown-menu">
 
                         {# универсальное модальное окошко используем #}
+                        {# показ списка назначениё сотрудника #}
                         <a
                             href="#"
                             class="dropdown-item btn-light base_modal_go"
@@ -27,6 +28,29 @@
 
                             >
                             список назначений сотрудника
+                        </a>
+
+                        {# универсальное модальное окошко используем #}
+                        {# подгрузка смен сотрудника #}
+                        <a
+                            href="#"
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal"
+
+                            modal_header='грузим смены что были'
+                            {#ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'#}
+                            {#ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'#}
+
+                            {#ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/naznach_show.php'#}
+                            ajax_link='/vendor/didrive_mod/iiko_checks/1/didrive/micro-service/get-new-smen-from-iiko.php'
+                            {#ajax_vars='user={{ jobman_id }}&s={{ creatSecret( jobman_id ) }}'#}
+                            ajax_vars='scan_day=30&user={{ jobman_id }}&xshow=1&1nosave=da&s={{ creatSecret( jobman_id ) }}&clear_ocenki[sp]={{ get.sp }}&clear_ocenki[date_start]={{ date_start }}'
+
+                            reload_page_after_ok="da"
+                            
+                            >
+                            подгрузка смен сотрудника
+                            <br/><small>запускайте 1 раз если ещё нет ни одной смены в графике</small>
                         </a>
 
 
