@@ -18,14 +18,13 @@ try {
         $skip_start = false;
     }
 
-    
+
     $indb = array(
         'head' => 1,
         'jobman' => $_REQUEST['user'],
         'sale_point' => $_POST['sp'] ?? $_REQUEST['sp'],
         'dolgnost' => $_REQUEST['dolgn'],
         'date' => $_REQUEST['date'],
-        
 //        'start' => date('Y-m-d H:i', $start_time),
 //        'fin' => date('Y-m-d H:i', $fin_time),
 //        // 'hour_on_job' => \Nyos\mod\IikoChecks::calculateHoursInRange( date('Y-m-d H:i', $start_time), date('Y-m-d H:i', $fin_time)),
@@ -40,11 +39,15 @@ try {
     \Nyos\mod\items::$type_module = 3;
     \Nyos\mod\items::add($db, 'jobman_send_on_sp', $indb);
 
-    $uri = 'https://'.$_SERVER['HTTP_HOST'].'/vendor/didrive_mod/iiko_checks/1/didrive/micro-service/get-new-smen-from-iiko.php?scan_day=40&user='.$_REQUEST['user'].'&xshow=1&1nosave=da';
-    $ee = file_get_contents( $uri );
-    
-    \f\end2( 'добавлено', true, [ 'refresh_smens' => $ee ] );
-    
+    $uri = 'https://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/iiko_checks/1/didrive/micro-service/get-new-smen-from-iiko.php?scan_day=40'
+            .'&user=' . $_REQUEST['user'] 
+            . '&xshow=1&1nosave=da'
+            . '&clear_ocenki[sp]=' . $indb['sale_point'] 
+            . '&clear_ocenki[date_start]=' . $_REQUEST['date'];
+    $ee = file_get_contents($uri);
+
+    \f\end2('добавлено', true, ['refresh_smens' => $ee]);
+
 //    // $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=jobman_send_on_sp&show_res=no' );
 //    die();
 //    $ee = file_get_contents( 'http://'.$_SERVER['HTTP_HOST'].'/i.didrive.php?level=000.job&refresh_db=sd&only=050.chekin_checkout&show_res=no' );
@@ -63,7 +66,6 @@ try {
 //            . '<hr>'. $ee . '<hr>'
 //            . '</nobr>'
 //            . '</div>', true);
-    
 } catch (Exception $exc) {
 
     echo '<pre>';
