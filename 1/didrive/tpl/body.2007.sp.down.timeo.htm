@@ -20,12 +20,14 @@
                     {% endif %}
                     
                     <div class="tcell text-center" >
-                        {{ v.cold }} / {{ v.delivery }}
+                        {{ v.cold }}&nbsp;/&nbsp;{{ v.delivery_a }}&nbsp;/&nbsp;{{ v.delivery_b }}
+                        {#<Br/> {{ v.cold }} / {{ v.delivery }}#}
                     </div>
 
                 {% endif %}
                 
                 {#{% endfor %}#}
+
             {% endif %}
         {% endfor %}
 
@@ -35,6 +37,8 @@
 
         <div class="tcell stick-left bg-white"   >
             холодный цех<br/>
+            доставка А<br/>
+            доставка Б<br/>
             горячий цех<br/>
             доставка
         </div>
@@ -48,6 +52,8 @@
 
                     <div class="tcell text-center" >
                         {{ v.cold }} 
+                        <br/>{{ v.delivery_a }}
+                        <br/>{{ v.delivery_b }}
                         <br/>{{ v.hot }}
                         <br/>{{ v.delivery }}
                     </div>

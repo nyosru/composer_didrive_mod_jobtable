@@ -80,13 +80,13 @@
                 <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
                 <div style="color:gray;">
                     {{ user_v[0]['dolgnost_name'] }}
-                    
+
                     {% if user_v[0]['position_calc_auto'] is not empty %}<sup><abbr title="считаем эту должность при расчёте оценки дня, входит в Фонд оплаты труда">ФОТ</abbr></sup>{% endif %}
 
                 </div>
                 {#{{  pa(user_v[0]) }}#}
 
-                
+
                 {% if user_v[0]['type'] == 'spec' %}
                 {% else %}
 
@@ -313,10 +313,10 @@
                                 data-toggle="modal" 
                                 data-target="#di_modal"
                                 modal_header='Отменить увольнение'
-                                
+
                                 ajax_link='/vendor/didrive_mod/items/3/micro-service/items__new_edit3.php'
                                 ajax_vars='aj_table=mod_jobman_send_on_sp&value=&var_edit=date_finish&var1=id&var1v={{ now_dolgn.id }}&aj_id={{ now_dolgn.id }}&s={{ creatSecret( aj_table ~ now_dolgn.id ) }}'
-                                
+
                                 reload_page_after_ok="da"
                                 get_answer='Отменить увольнение ?'
 
@@ -324,11 +324,11 @@
 
                             конец назначения (крайний день в должности)
                         </div>
-                                
+
                         {#{{ pa(now_dolgn) }}#}
-                                
+
                         {% set now_dolgn = '' %}
-                        
+
                     {% endif %}
 
                 </div>
