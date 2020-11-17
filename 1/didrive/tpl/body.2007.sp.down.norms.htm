@@ -39,10 +39,10 @@
             <table style="line-height: 28px;" >
                 <tr>
                     <td class="bg-dark-01">
-                        <nobr>
-                            выручка на 1 руки
-                        </nobr>
-                    </td>
+                <nobr>
+                    выручка на 1 руки
+                </nobr>
+                </td>
                 </tr>
                 <tr><td>
                 <nobr>
@@ -54,11 +54,25 @@
                 </nobr>
                 </td>
                 </tr>
-                <tr>
-                    <td  class="bg-dark-01" >
-                <nobr>время ожидания доставка</nobr>
-                </td>
-                </tr>
+                 {#{{ date_start }} #}
+                {% if date_start < '2020-11-01' %}
+                    <tr>
+                        <td  class="bg-dark-01" >
+                    <nobr>время ожидания доставка</nobr>
+                    </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td  class="bg-dark-01" >
+                    <nobr>время ожидания доставка А</nobr>
+                    </td>
+                    </tr>
+                    <tr>
+                        <td  class="bg-dark-01" >
+                    <nobr>время ожидания доставка Б</nobr>
+                    </td>
+                    </tr>
+                {% endif %}
                 <tr>
                     <td>
                 <nobr>% в ЗП от оборота</nobr>
@@ -80,6 +94,7 @@
                 <div class="tcell" style="padding:0;line-height: 22px; vertical-align:top;" >
 
                     {#{{ now_date }}#}
+                    {#{% if now_date < '2020-11-03' %}{% endif %}#}
                     {#{{ pa( itogi_day[now_date]['param'][0] ?? [] ) }}#}
 
                     <form action="/vendor/didrive_mod/jobdesc/1/didrive/micro-service/set-new-norms-day.php" method="POST" 
@@ -121,7 +136,7 @@
                                        value="{{ itogi_day[now_date]['param'][0]['vuruchka_on_1_hand'] ?? '' }}" 
                                        required="required"
                                        >
-                                
+
                                 <div class="input-group-append">
                                     <span class="input-group-text bg-dark-01 w80" 
                                           {% if itogi_day[now_date]['ocenka'][0]['vuruchka_on_1_hand'] is defined 
@@ -130,7 +145,7 @@
                                           %}style="color:red;" {% endif %}
                                           >{{ itogi_day[now_date]['ocenka'][0]['vuruchka_on_1_hand'] ?? '' }}</span>
                                 </div>
-                                
+
                             </div>
                         </nobr>
 
@@ -150,40 +165,100 @@
                                 <div class="input-group-append">
                                     <span 
                                         class="input-group-text w80" 
-                                        
-                                        {% if  itogi_day[now_date]['ocenka'][0]['cold'] > 0 and itogi_day[now_date]['param'][0]['time_wait_norm_cold'] > 0
-                                            and itogi_day[now_date]['param'][0]['time_wait_norm_cold'] < itogi_day[now_date]['ocenka'][0]['cold'] 
-                                          %} style="color:red;" {% endif %}
 
-                                        >{{ itogi_day[now_date]['ocenka'][0]['cold'] ?? '' }}</span>
+                                        {% if  itogi_day[now_date]['timeo'][0]['cold'] > 0 and itogi_day[now_date]['param'][0]['time_wait_norm_cold'] > 0
+                                            and itogi_day[now_date]['timeo'][0]['time_wait_norm_cold'] < itogi_day[now_date]['ocenka'][0]['cold'] 
+                                        %} style="color:red;" {% endif %}
+
+                                        >{{ itogi_day[now_date]['timeo'][0]['cold'] ?? '' }}</span>
                                 </div>
                             </div>
                         </nobr>
 
 
-                        <nobr>
-                            <div class="input-group input-group-sm xmb-3 xmargin-bottom-1">
-                                <input class="form-control on_change_show_block" 
-                                       xplaceholder="Recipient's username" 
-                                       xaria-label="Recipient's username" 
-                                       xaria-describedby="basic-addon2"
-                                       on_change_show_block="#form{{sp_now}}{{ now_date }}"
-                                       type="number" min="1" max="200" step="1"
-                                       name="in[time_wait_norm_delivery]"
-                                       value="{{ itogi_day[now_date]['param'][0]['time_wait_norm_delivery'] ?? '' }}"
-                                       >
-                                <div class="input-group-append">
-                                    <span 
-                                        class="input-group-text bg-dark-01 w80" 
-                                        
-                                        {% if itogi_day[now_date]['ocenka'][0]['delivery'] is defined and itogi_day[now_date]['param'][0]['time_wait_norm_delivery']
+
+
+                        {% if now_date < '2020-11-01' %}
+
+                            <nobr>
+                                <div class="input-group input-group-sm xmb-3 xmargin-bottom-1">
+                                    <input class="form-control on_change_show_block" 
+                                           xplaceholder="Recipient's username" 
+                                           xaria-label="Recipient's username" 
+                                           xaria-describedby="basic-addon2"
+                                           on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                           type="number" min="1" max="200" step="1"
+                                           name="in[time_wait_norm_delivery]"
+                                           value="{{ itogi_day[now_date]['param'][0]['time_wait_norm_delivery'] ?? '' }}"
+                                           >
+                                    <div class="input-group-append">
+                                        <span 
+                                            class="input-group-text bg-dark-01 w80" 
+
+                                            {% if itogi_day[now_date]['ocenka'][0]['delivery'] is defined and itogi_day[now_date]['param'][0]['time_wait_norm_delivery']
                                             and itogi_day[now_date]['ocenka'][0]['delivery'] > itogi_day[now_date]['param'][0]['time_wait_norm_delivery']
-                                          %}style="color:red;" {% endif %}
+                                            %}style="color:red;" {% endif %}
 
-                                          >{{ itogi_day[now_date]['ocenka'][0]['delivery'] ?? '' }}</span>
+                                            >{{ itogi_day[now_date]['ocenka'][0]['delivery'] ?? '' }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </nobr>
+                            </nobr>
+
+                        {% else %}
+
+                            <nobr>
+                                <div class="input-group input-group-sm xmb-3 xmargin-bottom-1">
+                                    <input class="form-control on_change_show_block" 
+                                           xplaceholder="Recipient's username" 
+                                           xaria-label="Recipient's username" 
+                                           xaria-describedby="basic-addon2"
+                                           on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                           type="number" min="1" max="200" step="1"
+                                           name="in[time_wait_norm_delivery_a]"
+                                           value="{{ itogi_day[now_date]['param'][0]['time_wait_norm_delivery_a'] ?? '' }}"
+                                           >
+                                    <div class="input-group-append">
+                                        <span 
+                                            class="input-group-text bg-dark-01 w80" 
+
+                                            {% if itogi_day[now_date]['timeo'][0]['delivery_a'] is defined and itogi_day[now_date]['param'][0]['time_wait_norm_delivery_a'] is defined 
+                                            and itogi_day[now_date]['timeo'][0]['delivery_a'] > itogi_day[now_date]['param'][0]['time_wait_norm_delivery_a']
+                                            %}style="color:red;" {% endif %}
+
+                                            >{{ itogi_day[now_date]['timeo'][0]['delivery_a'] ?? '' }}</span>
+                                    </div>
+                                </div>
+                            </nobr>
+
+
+
+                            <nobr>
+                                <div class="input-group input-group-sm xmb-3 xmargin-bottom-1">
+                                    <input class="form-control on_change_show_block" 
+                                           on_change_show_block="#form{{sp_now}}{{ now_date }}"
+                                           type="number" min="1" max="200" step="1"
+                                           name="in[time_wait_norm_delivery_b]"
+                                           value="{{ itogi_day[now_date]['param'][0]['time_wait_norm_delivery_b'] ?? '' }}"
+                                           >
+                                    <div class="input-group-append">
+                                        <span 
+                                            class="input-group-text bg-dark-01 w80" 
+
+                                            {% if itogi_day[now_date]['timeo'][0]['delivery_b'] is not empty and itogi_day[now_date]['param'][0]['time_wait_norm_delivery_b'] is not empty
+                                            and itogi_day[now_date]['timeo'][0]['delivery_b'] > itogi_day[now_date]['param'][0]['time_wait_norm_delivery_b']
+                                            %}style="color:red;" {% endif %}
+
+                                            >{{ itogi_day[now_date]['timeo'][0]['delivery_b'] ?? '' }}</span>
+                                    </div>
+                                </div>
+                            </nobr>
+
+                        {% endif %}
+
+
+
+
+
 
 
 
@@ -202,12 +277,12 @@
                                        >
                                 <div class="input-group-append">
                                     <span class="input-group-text w80" 
-                                        
-                                        {% if itogi_day[now_date]['ocenka'][0]['procent_oplata_truda_on_oborota'] > 0 and itogi_day[now_date]['param'][0]['procent_oplata_truda_on_oborota'] > 0
-                                            and itogi_day[now_date]['ocenka'][0]['procent_oplata_truda_on_oborota'] > itogi_day[now_date]['param'][0]['procent_oplata_truda_on_oborota']
+
+                                          {% if itogi_day[now_date]['ocenka'][0]['proc_zp_ot_oborota_if5'] > 0 and itogi_day[now_date]['param'][0]['procent_oplata_truda_on_oborota'] > 0
+                                            and itogi_day[now_date]['ocenka'][0]['proc_zp_ot_oborota_if5'] > itogi_day[now_date]['param'][0]['procent_oplata_truda_on_oborota']
                                           %}style="color:red;" {% endif %}
 
-                                          >{{ itogi_day[now_date]['ocenka'][0]['procent_oplata_truda_on_oborota'] ?? '' }}</span>
+                                          >{{ itogi_day[now_date]['ocenka'][0]['proc_zp_ot_oborota_if5'] ?? '' }}</span>
                                 </div>
                             </div>
                         </nobr>
@@ -230,7 +305,7 @@
                                        >
                                 <div class="input-group-append">
                                     {% if itogi_day[now_date]['ocenka'][0]['hour_day'] is defined and itogi_day[now_date]['param'][0]['kolvo_hour_in1smena'] is defined %}
-                                    <span class="input-group-text bg-dark-01 block-w80" >{{ itogi_day[now_date]['ocenka'][0]['hour_day'] ?? '' }}/{{ itogi_day[now_date]['param'][0]['kolvo_hour_in1smena'] ?? '' }}={{ (itogi_day[now_date]['ocenka'][0]['hour_day']/itogi_day[now_date]['param'][0]['kolvo_hour_in1smena'])|round(1) }}</span>
+                                        <span class="input-group-text bg-dark-01 block-w80" >{{ itogi_day[now_date]['ocenka'][0]['hour_day'] ?? '' }}/{{ itogi_day[now_date]['param'][0]['kolvo_hour_in1smena'] ?? '' }}={{ (itogi_day[now_date]['ocenka'][0]['hour_day']/itogi_day[now_date]['param'][0]['kolvo_hour_in1smena'])|round(1) }}</span>
                                     {% endif %}
                                 </div>
                             </div>
