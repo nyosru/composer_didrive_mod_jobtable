@@ -1735,6 +1735,22 @@ class JobDesc {
                 . ' AND `mm`.`status` = \'show\' '
                 
                 . PHP_EOL . ' UNION ALL '
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 
                 . PHP_EOL
                 . 'SELECT 
@@ -1793,7 +1809,11 @@ class JobDesc {
                     WHEN oborot_d.oborot_server_hand > 0 THEN oborot_d.oborot_server_hand
                     WHEN oborot_d.oborot_server > 0 THEN oborot_d.oborot_server
                     ELSE NULL END ) as oborot_day '
-                . ' , s.id spec_id '
+                
+                . ' , ( CASE 
+                    WHEN c.`sale_point` > 0 AND on_sp.sale_point > 0 AND c.`sale_point` = on_sp.sale_point THEN NULL
+                    ELSE s.id END ) as `spec_id` '
+                
                 . ' , s.date spec_date '
                 
                 . ' , s.dolgnost spec_d '
