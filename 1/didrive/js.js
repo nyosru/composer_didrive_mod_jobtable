@@ -25,7 +25,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 $b = 0;
                 $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
                 $b1.empty().hide();
-
                 $.each($j['bonus']['data'], function (n, ar) {
 
                     // console.log('1', ar);
@@ -40,18 +39,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     $hh = creat_html_bonus(ar);
                     $b.append($hh);
-
                     //$b.show('slow');
 
                 });
-
                 $b1.show('slow');
-
-
-
                 $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
                 $b1.hide().empty();
-
                 $.each($j['minus']['data'], function (n, ar) {
 
                     $hh = creat_html_minus(ar);
@@ -62,17 +55,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $b.show('slow');
 
                 });
-
                 $b1.show('slow');
-
                 $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
                 $b1.hide().empty();
-
                 $.each($j['comment']['data'], function (n, ar) {
 
                     $hh = creat_html_comment(ar, $j['comment']['cfg']);
                     $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
-
 //                        ret = '<div style="text-align:left;" ><small>';
 //                        $.each(ar, function (k2, a2) {
 //                            ret += '<br/>' + k2 + ': ' + a2;
@@ -83,10 +72,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $b.html($hh);
                     $b.append($hh);
                 });
-
                 $b1.show('slow');
-
-
 //                add_new_dolg_in_graph($j);
 //
 //                $.each($j['checks'], function (date, value) {
@@ -317,7 +303,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         dolgn_from = $('#add_person1day__user option:selected').attr('dolgn');
         sp_from = $('#add_person1day__user option:selected').attr('sp');
-
         $.ajax({
 
             xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
@@ -383,9 +368,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     function delete_workman_from_sp($sp, $workman, $wm_s, $res_to) {
 
-        // console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -434,11 +419,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function set_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        // console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-        // return false;
+// console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+// return false;
 
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -488,11 +473,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function cancel_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        // console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-        // return false;
+// console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+// return false;
 
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -541,7 +526,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                alert("Остановлено на " + i + "-м пункте списка.");
 //                return false;
 //            } else {
-            // console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
+// console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
 //            }
 
         });
@@ -675,7 +660,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
 //
                 else {
-                    // console.log('пропускаем');
+// console.log('пропускаем');
                 }
             }
 
@@ -684,13 +669,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     $('body').on('change', '.select_edit_item_dop2', function () {
 
-        // console.log(2);
+// console.log(2);
         setTimeout(function () {
             calculateSummAllGraph();
         }, 100);
         // console.log(3);
     });
-
     /* если изменили стоимость часа у человека, затираем данные и высчитываем суммы */
     $('body').on('change', 'select.select_edit_item_dop', function () {
 
@@ -797,7 +781,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-
     /**
      * назначение сотрудника на точку продаж
      */
@@ -808,7 +791,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         put_workman_on_sp(this);
         return false;
     });
-
     /**
      * удаление сотрудника с точки продаж (старая версия)
      */
@@ -817,7 +799,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('delete_workman_from_sp');
+// console.log('delete_workman_from_sp');
         $answer = '';
         $wm_s = '';
         $.each(this.attributes, function () {
@@ -843,7 +825,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $res = delete_workman_from_sp($sp, $work_id, $wm_s, $date_end);
     });
-
     /**
      * кликнули (уволен с завтрашнего дня)
      * обозначаем конец текущего периода работы
@@ -853,7 +834,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('set_end_now_jobs');
+// console.log('set_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
@@ -885,7 +866,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $res = set_end_now_jobs($work_id, $wm_s, $date_end);
         return false;
     });
-
     /**
      * кликнули (уволен с завтрашнего дня)
      * обозначаем конец текущего периода работы
@@ -895,7 +875,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('cancel_end_now_jobs');
+// console.log('cancel_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
@@ -927,7 +907,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $res = cancel_end_now_jobs($work_id, $wm_s, $date_end);
         return false;
     });
-
     $(document).on('click', '.act_smena', function (event) {
 
 // alert('2323');
@@ -1049,7 +1028,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-
     $('body').on('click', '.send_ajax_values', function (event) {
 
 // alert('2323');
@@ -1171,7 +1149,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1250,7 +1227,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-
     /* версия 2007 */
     $('body').on('click', '.put_var_in_modal3', function (event) {
         $.each(this.attributes, function () {
@@ -1266,15 +1242,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
         });
     });
-
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                // console.log(this.name, this.value);
-                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+// console.log(this.name, this.value);
+// $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 
                 if (this.name == 'data-target2') {
                     var $id_modal = this.value;
@@ -1282,7 +1257,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $(this.value).modal('toggle');
                     // $id_modal.modal('toggle');
                 } else {
-                    // console.log(2, this.value);
+// console.log(2, this.value);
                     if ($("input").is("#" + this.name)) {
                         $("input#" + this.name).val(this.value);
                     }
@@ -1291,14 +1266,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
         if ($(this).prop('data-target2').length()) {
-            // console.log($(this).prop('data-target2'));
+// console.log($(this).prop('data-target2'));
         }
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                // console.log(this.name, this.value);
+// console.log(this.name, this.value);
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -1316,7 +1291,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-
     $('body').on('click', '.22put_var_in_modal', function (event) {
 
 // alert('2323');
@@ -1479,7 +1453,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-
     $('body').on('click', '.jobdesc__calc_full_ocenka_day', function (event) {
 
         var resto = '';
@@ -1491,9 +1464,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var resto = 0;
         var resto1 = 0;
         var showid = 0;
-
         var microservice = 0;
-
         $.each(this.attributes, function () {
 
             if (this.specified) {
@@ -1501,7 +1472,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 if (this.name == 'forajax_microservice') {
 
                     microservice = '/vendor/didrive_mod/jobdesc/1/didrive/micro-service/' + this.value + '.php';
-
                 } else {
 
                     if (this.name.indexOf("forajax_") != -1) {
@@ -1538,7 +1508,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.ajax({
 
             url: (microservice != 0 ? microservice : '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'),
-
             data: "t=1" + $uri_query,
             cache: false,
             dataType: "json",
@@ -1768,7 +1737,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //$(this).html("тут список");
         var $th = $(this);
     });
-    
 // вставляем перменные времени ожидания
     if (1 == 1) {
         /**
@@ -1790,7 +1758,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 if (!!sp) {
 // console.log('timeo 1 ajax', date, sp);
                     if (!!date) {
-                        // console.log('все переменные есть', date, sp, n);
+// console.log('все переменные есть', date, sp, n);
                         vars = vars + '&d[' + n + '][date]=' + date + '&d[' + n + '][sp]=' + sp;
                         // vars.push([date, sp]);
 
@@ -2022,8 +1990,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // this.attributes is not a plain object, but an array
 // of attribute nodes, which contain both the name and value
                 if (this.specified) {
-                    // console.log(this.name, this.value);
-                    // пропускаем аттр
+// console.log(this.name, this.value);
+// пропускаем аттр
                     if (this.name == 'class' || this.name == 'href') {
                     }
 // обрабатываем аттр
@@ -2814,7 +2782,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
                     add_new_dolg_in_graph($j);
-
                     $.each($j['checks'], function (date, value) {
                         // console.log('1', date, value);
                         $.each(value, function (k1, ar) {
@@ -2822,9 +2789,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                             // console.log('1day', date, ar);
 
                             $hh = creat_html_1smena(ar);
-
                             $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
-
 //                            var $b = $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens');
 //                            $b.hide();
 //                            $b.html($hh);
@@ -2858,12 +2823,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     $('body').on('submit', '.add_form', function (event) {
 
-        // console.log('добавляем минус');
+// console.log('добавляем минус');
 
         event.preventDefault();
         // создание массива объектов из данных формы        
         var data1 = $(this).serializeArray();
-
         // console.log( 'добавляем минус', data1 );
 
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
@@ -2889,16 +2853,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             type: 'POST',
             // xurl: "/sites/yadom_admin/module/000.index/ajax.php",
             url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-
             dataType: 'json',
             data: data1,
-
             // сoбытиe дo oтпрaвки
             beforeSend: function ($data) {
                 // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
                 // $this.css({"border": "2px solid orange"});
             },
-
             // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
             success: function ($data) {
 
@@ -2944,18 +2905,17 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-
-/**
- * удаление оценки дня
- * @param {type} sp
- * @param {type} date
- * @returns {undefined}
- */
-    function delete_ocenka(sp,date) {
+    /**
+     * удаление оценки дня
+     * @param {type} sp
+     * @param {type} date
+     * @returns {undefined}
+     */
+    function delete_ocenka(sp, date) {
 
         $.ajax({
             url: "/vendor/didrive_mod/items/3/micro-service/delete-items.php",
-            data: "r_module=sp_ocenki_job_day&remove[sale_point]=" + sp +"&remove[date]=" + date,
+            data: "r_module=sp_ocenki_job_day&remove[sale_point]=" + sp + "&remove[date]=" + date,
             cache: false,
             dataType: "json",
             type: "post",
@@ -2964,7 +2924,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 return $j.status;
             }
         });
-        
     }
 
 // новая версия 2007
@@ -2977,7 +2936,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.each(this.attributes, function () {
             if (this.specified) {
 
-                if ( this.name == 'class' 
+                if (this.name == 'class'
                         || this.name == 'onclick'
                         || this.name == 'style'
                         ) {
@@ -3019,9 +2978,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
 
         $('span#' + $textblock_id).text($new_val);
-
-        delete_ocenka( in_sp , in_date );
-        
+        delete_ocenka(in_sp, in_date);
         // изменение часов в чеке
         $.ajax({
             url: "/vendor/didrive_mod/items/3/micro-service/edit-dop-pole.php",
@@ -3033,7 +2990,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             beforeSend: function () {
 
                 $('span#' + $textblock_id).css('border-bottom', '2px solid orange').css('font-weight', 'bold');
-
             }
             ,
             success: function ($j) {
@@ -3053,7 +3009,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $('span#' + $textblock_id).css('border-bottom', '2px solid green');
                     $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
                     $('.smena_summa_' + $hour_id).html($('#price_' + $hour_id + ' option:selected').attr('price') * $new_val);
-
                     // $.debounce( 1000, calcSummMoneySmena2 );
 //                    setTimeout( function () {
 //                        //calculateSummAllGraph();
@@ -3072,14 +3027,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
             }
 
         });
-
 //        setTimeout( function () {
 //            calcSummMoneySmena2($textblock_id);
 //            }, 100);
 
         return false;
     });
-
 // новая версия 2007
     $('body').on('submit', '#add_new_smena', function (event) {
 
@@ -3160,5 +3113,82 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
+// получаем данные по доставке
+    function get_delivery(date,jobmans) {
 
+        //alert(date);
+        $.ajax({
+
+            type: 'POST',
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/get_delivery_info.php",
+            dataType: 'json',
+            data: 'date=' + date + '&jobmans='+jobmans,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($d) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($d['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    //$($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+
+                    $.each($d['infos'], function ( k , v ) {
+                        
+//                        if (this.style.color !== "blue") {
+//                        this.style.color = "blue";
+//                        } else {
+//                        this.style.color = "";
+//                        }
+                        // console.log(index, value);
+                        $('#delivery_'+v.jobman+'_'+v.d ).html(' <div class="alert alert-warning" ><b title="чеков" style="padding: 3px 5px; background-color: yellow;color: black;" >'+v.uniqorderid+ '</b> ' + v.dishdiscountsumint + 'р</div>');
+                        
+                    });
+
+                    //        $('#delivery_{{ jobman_id }}_ date ).html(' < div class = "warn good" > ' + $data['html'] + ' < /div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    //$($print_res_to).append($data['html']);
+                }
+
+                //$($modal_id).modal('hide');
+                //$('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                //alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+    }
+
+    var start_date = $('#jobdesc_start_date').html();
+    jobmans = '';
+    $('abbr.jobman_id').each(function (index, value) { 
+    jobmans = jobmans + ',' + $(this).attr('jobman_id'); 
+    });
+    get_delivery(start_date,jobmans);
 });

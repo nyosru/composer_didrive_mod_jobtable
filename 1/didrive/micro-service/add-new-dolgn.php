@@ -19,13 +19,6 @@ try {
     }
 
 
-
-    \Nyos\mod\items::deleteItemForDops($db, \Nyos\mod\JobDesc::$mod_man_job_on_sp, [
-        'jobman' => $_REQUEST['user'],
-        'sale_point' => $_POST['sp'] ?? $_REQUEST['sp'],
-        'date' => $_REQUEST['date']
-    ]);
-
     $indb = array(
         'head' => 1,
         'jobman' => $_REQUEST['user'],
@@ -47,9 +40,9 @@ try {
     \Nyos\mod\items::add($db, 'jobman_send_on_sp', $indb);
 
     $uri = 'https://' . $_SERVER['HTTP_HOST'] . '/vendor/didrive_mod/iiko_checks/1/didrive/micro-service/get-new-smen-from-iiko.php?scan_day=40'
-            . '&user=' . $_REQUEST['user']
+            .'&user=' . $_REQUEST['user'] 
             . '&xshow=1&1nosave=da'
-            . '&clear_ocenki[sp]=' . $indb['sale_point']
+            . '&clear_ocenki[sp]=' . $indb['sale_point'] 
             . '&clear_ocenki[date_start]=' . $_REQUEST['date'];
     $ee = file_get_contents($uri);
 

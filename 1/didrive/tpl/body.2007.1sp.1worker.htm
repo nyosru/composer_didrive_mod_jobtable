@@ -77,7 +77,7 @@
                 {% set jobman = user_v[0]['jobman'] %}
                 {% set jobman_fio = user_v[0]['fio'] %}
 
-                <abbr title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
+                <abbr class="jobman_id" jobman_id="{{ jobman }}" title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
                 <div style="color:gray;">
                     {{ user_v[0]['dolgnost_name'] }}
 
@@ -331,6 +331,9 @@
 
                     {% endif %}
 
+                    {#delivery_{{ jobman_id }}_{{ date }}#}
+                    <div id="delivery_{{ jobman_id }}_{{ date }}" ></div>
+                    
                 </div>
 
             {% endif %}
