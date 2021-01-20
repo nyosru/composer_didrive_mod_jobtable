@@ -1389,6 +1389,7 @@ class JobDesc {
                 `d`.`calc_auto` position_calc_auto,
                 \'spec\' as `type` '
                     . ' , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                        .' , jm.iiko_name '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
 //                .' , pay.id pay_id
 //                , pay.date pay_date
@@ -1413,7 +1414,9 @@ class JobDesc {
 //                    . ' spec.date <= :date_finish '
                     . ' AND '
                     . ' spec.status = \'show\' '
+                    
                     . '  UNION ALL '
+                    
                     . ' SELECT 
                         `on`.`id` ,
                         `on`.`date` , 
@@ -1425,6 +1428,7 @@ class JobDesc {
                         `d`.`calc_auto` position_calc_auto,
                         \'norm\' as `type`
                         , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                        .' , jm.iiko_name '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
 //                .' ', pay.id pay_id
 //                , pay.date pay_date
@@ -1464,6 +1468,7 @@ class JobDesc {
                         
                         \'norm\' as `type`
                         , CONCAT( jm.lastName, \' \', jm.firstName, \' \', jm.middleName  ) as fio '
+                        .' , jm.iiko_name '
                     // /* , CONCAT( jm.firstName, \' \', jm.lastName ) as `if` */
 //                .' ', pay.id pay_id
 //                , pay.date pay_date

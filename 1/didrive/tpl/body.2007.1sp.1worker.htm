@@ -77,10 +77,11 @@
                 {% set jobman = user_v[0]['jobman'] %}
                 {% set jobman_fio = user_v[0]['fio'] %}
 
-                <abbr class="jobman_id" jobman_id="{{ jobman }}" title="#{{ jobman }}">{{ user_v[0]['fio'] }}</abbr>
+                <abbr class="jobman_id" jobman_id="{{ jobman }}" title="#{{ jobman }}">{% if user_v[0]['fio'] is not empty %}{{ user_v[0]['fio'] }}{% else %}{{ user_v[0]['iiko_name'] }}{% endif %}</abbr>
+                {#{{ pa(user_v[0]) }}#}
+                
                 <div style="color:gray;">
                     {{ user_v[0]['dolgnost_name'] }}
-
                     {% if user_v[0]['position_calc_auto'] is not empty %}<sup><abbr title="считаем эту должность при расчёте оценки дня, входит в Фонд оплаты труда">ФОТ</abbr></sup>{% endif %}
 
                 </div>
