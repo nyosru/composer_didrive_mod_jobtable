@@ -12,8 +12,8 @@ div.ttable div.tcell{ display: table-cell; }
 .ttable.cell-border .tcell{ border: 1px solid rgba(0,0,0,0.1); }
 
 .stick-top{
-    xposition: static; 
-    xposition: sticky; 
+    /*xposition: static;*/ 
+    /*xposition: sticky;*/ 
     top:90px;
     position: -webkit-sticky;
     position: -moz-sticky;
@@ -36,8 +36,8 @@ div.ttable div.tcell{ display: table-cell; }
 }
 
 .stick-left{
-    xposition: static; 
-    xposition: sticky; 
+    /*xposition: static;*/ 
+    /*xposition: sticky;*/ 
     left:120px;
     position: -webkit-sticky;
     position: -moz-sticky;
@@ -49,10 +49,11 @@ div.ttable div.tcell{ display: table-cell; }
 
 
 .stick-left-up{
-    xposition: static; 
-    xposition: sticky; 
+    /*xposition: static;*/ 
+    /*xposition: sticky;*/ 
     left:120px;
-    top: 121px;
+    /*top: 121px;*/
+    top: 90px;
     position: -webkit-sticky;
     position: -moz-sticky;
     position: -ms-sticky;
@@ -97,21 +98,21 @@ xdiv:HOVER > .put_var_in_modal{ display:block; }
 div.smena_cancel,
 .list_otrezki div.smena_cancel{
     border-left: 3px solid rgba(0,0,0,0.5);
-    xbackground-color: rgba(0,0,0,0.5);
+    /*xbackground-color: rgba(0,0,0,0.5);*/
     background: linear-gradient(to left, white, rgba(0,0,0,0.2));
 }
 
 div.smena_ok,
 .list_otrezki div.smena_ok{
     border-left: 3px solid #999900;
-    xbackground-color: rgba(255,255,0,0.5);
+    /*xbackground-color: rgba(255,255,0,0.5);*/
     background: linear-gradient(to left, white, greenyellow);
 }
 
 
 .smena_on_dr_sp{    
     border-left: 3px solid #0000ff;
-    xbackground-color: rgba(255,255,0,0.5);
+    /*xbackground-color: rgba(255,255,0,0.5);*/
     background: linear-gradient(to left, white, lightblue);
     padding: 3px 5px 3px 0;
 }
@@ -120,21 +121,21 @@ div.smena_ok,
 div.smena_started,
 .list_otrezki div.smena_started{
     border-left: 3px dotted #00cc00;
-    xbackground-color: rgba(255,255,0,0.5);
+    /*xbackground-color: rgba(255,255,0,0.5);*/
     background: linear-gradient(to left, white, yellow);
 }
 
 div.smena_started_error,
 .list_otrezki div.smena_started_error{
     border-left: 3px dotted aliceblue;
-    xbackground-color: rgba(255,255,0,0.5);
+    /*xbackground-color: rgba(255,255,0,0.5);*/
     background: linear-gradient(to right, yellow, gray);
 }
 
 div.smena_started_ok,
 .list_otrezki div.smena_started_ok{
     border-left: 3px dotted green;
-    xbackground-color: rgba(255,255,0,0.5);
+    /*xbackground-color: rgba(255,255,0,0.5);*/
     background: linear-gradient(to left, greenyellow, yellow);
 }
 
@@ -190,7 +191,7 @@ div.smena_started_ok,
     padding: 3px 5px;
     margin: 3px 0;
 
-    xbackground-color: #ffd58e;
+    /*xbackground-color: #ffd58e;*/
     text-align: center;
 }
 
