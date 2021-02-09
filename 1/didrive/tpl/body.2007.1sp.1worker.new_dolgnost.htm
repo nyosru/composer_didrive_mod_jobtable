@@ -1,0 +1,106 @@
+{% spaceless %}
+
+    {% if 1 == 2 %}
+        {#{{ pa(new_d) }}#}
+        {#    {% if i.sale_point != '' and i.sale_point != sp_now %}#}
+        {% if 1 == 2 %}
+            <a 
+                {% if 1 == 2 %}
+                    class="send_ajax"
+                    href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php" 
+                    action="cancel_smena"
+                    {# param #}
+                    ajax_id="{{ i.id }}"
+                    ajax_s="{{ creatSecret(i.id) }}" 
+
+                    {# raw param #}
+                    answer="Хотите отменить это назначение ?"
+
+                    res_to="delete_naznach_res{{ i.id }}"
+                    result_ok_show_to ="delete_naznach_ok_res{{ i.id }}"
+                    xresult_ok_to ="delete_naznach_ok_res{{ i.id }}"
+                    result_error_show_to ="delete_naznach_error_res{{ i.id }}"
+                    xresult_error_to ="delete_naznach_error_res{{ i.id }}"
+
+                    hide_block_id_when_ok = "block_new_dolgn{{ i.id }}"
+                    xhide_block_class_when_ok = ""
+                {% endif %}
+
+                {% if 1 == 2 %}
+                    class='base_modal_go'
+                    data-toggle="modal" data-target="#di_modal"
+
+                    modal_header='Отменить назначение ?'
+                    xajax_link='/vendor/didrive_mod/items/1/ajax.php'
+                    xajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+                    xxajax_vars='id={{ v.id }}&s={{ creatSecret( v.id ) }}&remove_cash[]=metki&remove_cash[]={{ date }}'
+
+                    ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                    ajax_vars='r_module=jobman_send_on_sp&remove[jobman]={{ i.jobman }}&remove[date]={{ i.start }}'
+
+                    reload_page_after_ok="da"
+                    get_answer='Отменить назначение ?'
+                {% endif %}
+
+                class='base_modal_go'
+
+                data-toggle="modal" data-target="#di_modal"
+                modal_header='Отменить увольнение'
+
+                ajax_link='/vendor/didrive_mod/items/3/micro-service/items__new_edit3.php'
+                ajax_vars='delete_id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.plus'
+
+                reload_page_after_ok="da"
+                get_answer='Отменить увольнение ?'
+
+                ><span class="fa fa-times" ></span></a>
+            {% endif %}
+        <span id="delete_naznach_error_res{{ i.id }}" ></span>
+    {% endif %}
+
+    {#+++ на другой точке#}
+    <div class="text-center alert alert-success position" >
+
+        {% if i.sale_point is defined and i.sale_point == get.sp %}
+            <a 
+                {#
+                class='base_modal_go icon_remove'
+                data-toggle="modal" data-target="#di_modal"
+
+                modal_header='Отменить назначение ?'
+
+                ajax_link='/vendor/didrive_mod/items/2/micro-service/delete-items.php'
+                {#ajax_vars='r_module=jobman_send_on_sp&remove[dolgnost]={{ i.dolgnost }}&remove[sale_point]={{ i.sale_point }}&remove[jobman]={{ i.jobman }}&remove[date]={{ i.date }}'
+                ajax_vars='r_module=jobman_send_on_sp&remove[id]={{ i.id }}&remove[jobman]={{ i.jobman }}'
+
+                reload_page_after_ok="da"
+                get_answer='Отменить назначение #{{ i.id }}?'
+                #}
+
+                class='base_modal_go icon_remove'
+
+                data-toggle="modal" 
+                data-target="#di_modal"
+                modal_header='Отменить назначение'
+
+                ajax_link='/vendor/didrive_mod/items/3/micro-service/delete-items.php'
+                {#ajax_vars='delete_id={{ i.id }}&s={{ creatSecret( i.id ) }}&r_module=072.plus'#}
+                ajax_vars='r_module=jobman_send_on_sp&remove[id]={{ i.id }}'
+                get_answer='Отменить назначение ?'
+                reload_page_after_ok="da"
+                
+                ><span class="fa fa-remove" ></span>
+            </a>
+        {% endif %}
+
+        новое назначение<Br/>
+        <b>{{ sps[i.sale_point]['head'] }}</b>
+        {{ i.dolgnost_name }}
+
+        <span id="block_new_dolgn{{ i.id }}" ></span>
+
+    </div>
+
+    {#{{  pa(i) }}#}
+
+{% endspaceless %}

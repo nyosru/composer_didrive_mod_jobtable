@@ -1,0 +1,102 @@
+{% spaceless %}
+    
+    {% set spoint = sps[sp_now] %}
+    {#{ pa(spoint) }#}
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        {{ didrive_f__timer_start(781) }}
+    {% endif %}
+
+    {% set jobmans = jobdesc_ms__get_list_jobmans_job_on_sp_month( db, sp_now, date_start ) %}
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        <small>
+            <br/>
+            jobmans {{ didrive_f__timer_stop(781) }}
+        </small>
+        pa(jobmans) {{ pa(jobmans,2) }} 
+    {% endif %}
+
+    {#{{ pa(jobmans) }}#}
+    {#     
+    pa(jobmans.data.send_on_job,2) 
+    {{ pa(jobmans.data.send_on_job,2) }}
+    pa(jobmans.data.spec,2) 
+    {{ pa(jobmans.data.spec,2) }}
+    #}
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        {{ didrive_f__timer_start(781) }}
+    {% endif %}
+
+    {% set actions = jobdesc_ms__get_actions_jobmans_on_month( db, jobmans.data.send_on_job|keys , date_start ) %}
+    {#{{ pa(actions,2) }}#}
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        <small>
+            <br/> actions {{ didrive_f__timer_stop(781) }}
+        </small>
+    {% endif %}
+
+
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        {{ didrive_f__timer_start(781) }}
+    {% endif %}
+
+    {% if 1 == 2 %}
+        {% set position_pay = jobdesc_get_size_pay_position_month( db, sp_now, now_dolgn['dolgnost'], date_start ) %}
+        position_pay {{  pa(position_pay,2) }}
+    {% endif %}
+
+    {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+        <small><br/> position_pay {{ didrive_f__timer_stop(781) }}</small>
+        {% endif %}
+
+
+    {#pa(dolgn.sort,2) {{ pa(dolgn.sort,2) }}#}
+    {#pa(jobmans.data.send_on_job,2) {{ pa(jobmans.data.send_on_job,2) }}#}
+
+
+    {% include dir_mod_now_mod_ditpl~'body.2007.1sp.up_line.htm' %}
+
+    {% if get.hide_body is not defined %}
+
+        {% set hour_summ = [] %}
+
+        {%  for kk1, sort1 in dolgn.sort %}
+
+            {% for jobman_id, user_v in jobmans.data.send_on_job if user_v[0]['dolgnost'] == sort1.id %}
+
+                {#                      pa(jobmans.data.spec
+                                    {{  pa(jobmans.data.spec) }}
+                #}                    {#{{  pa(jobmans.data.spec[jobman_id][date]) }}#}
+                {#{{  pa(session) }}#}
+
+                {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+                    {{ didrive_f__timer_start(781) }}
+
+                    {#{% for jobman_id1, user_v1 in jobmans.data.send_on_job if user_v1.jobman == user_v.jobman %}
+                        {{ pa(user_v1) }}
+                    {% endfor %}#}
+
+
+                {% endif %}
+
+                {% include dir_mod_now_mod_ditpl~'body.2007.1sp.1worker.htm' %}
+
+                {% if ( status is defined and status == true ) and session['now_user_di']['soc_web_id'] == 5903492 %}
+                    <small>{{ didrive_f__timer_stop(781) }}</small>
+                {% endif %}
+
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endif %}
+
+    {# итого за день строчки #}
+
+    {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.htm' %}
+
+{% endspaceless %}

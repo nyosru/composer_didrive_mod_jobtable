@@ -1,6 +1,5 @@
 $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
 
-
     function run_load__aj_get_minus_plus_coment() {
 
         var ert = [];
@@ -26,7 +25,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 $b = 0;
                 $b1 = $('div.graph_cell_1sp_man_day div.in_bonus');
                 $b1.empty().hide();
-
                 $.each($j['bonus']['data'], function (n, ar) {
 
                     // console.log('1', ar);
@@ -41,18 +39,12 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
                     $hh = creat_html_bonus(ar);
                     $b.append($hh);
-
                     //$b.show('slow');
 
                 });
-
                 $b1.show('slow');
-
-
-
                 $b1 = $('div.graph_cell_1sp_man_day div.in_minus');
                 $b1.hide().empty();
-
                 $.each($j['minus']['data'], function (n, ar) {
 
                     $hh = creat_html_minus(ar);
@@ -63,17 +55,13 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $b.show('slow');
 
                 });
-
                 $b1.show('slow');
-
                 $b1 = $('div.graph_cell_1sp_man_day div.in_comments');
                 $b1.hide().empty();
-
                 $.each($j['comment']['data'], function (n, ar) {
 
                     $hh = creat_html_comment(ar, $j['comment']['cfg']);
                     $b = $('#sp_man_day_d' + ar['date_to'] + '_sp' + ar['sale_point'] + '_u' + ar['jobman'] + ' div.in_comments');
-
 //                        ret = '<div style="text-align:left;" ><small>';
 //                        $.each(ar, function (k2, a2) {
 //                            ret += '<br/>' + k2 + ': ' + a2;
@@ -84,10 +72,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     // $b.html($hh);
                     $b.append($hh);
                 });
-
                 $b1.show('slow');
-
-
 //                add_new_dolg_in_graph($j);
 //
 //                $.each($j['checks'], function (date, value) {
@@ -216,18 +201,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-
-
-
-// console.log('123')
-
-// window.nyos = [ 'dolgn' , 123 ];
-
-//    $.cache[98]['wer'] = 123;
-//    alert($.cache[98]['wer']);
-
-
-
     function ocenka_clear($sp, $date, $clear_to_now = '') {
 
 
@@ -332,8 +305,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         sp_from = $('#add_person1day__user option:selected').attr('sp');
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            data: "action=put_workman_on_sp&" + data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/add-new-smena.php",
+            xdata: "action=put_workman_on_sp&" + data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
+            data: data + '&sp_from=' + sp_from + '&dolgnost_from=' + dolgn_from,
             cache: false,
             dataType: "json",
             type: "post",
@@ -393,9 +368,9 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
     function delete_workman_from_sp($sp, $workman, $wm_s, $res_to) {
 
-        // console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// console.log('delete_workman_from_sp( ' + $sp + ', ' + $workman + ', ' + $wm_s + ' )');
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -444,11 +419,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function set_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        // console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-        // return false;
+// console.log('set_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+// return false;
 
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -498,11 +473,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
      */
     function cancel_end_now_jobs($work_id, $wm_s, $date_end) {
 
-        // console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
-        // return false;
+// console.log('cancel_end_now_jobs( ' + $work_id + ', ' + $wm_s + ', ' + $date_end + ' )');
+// return false;
 
-        // var data = $($th).serialize();
-        // console.log('111 '+data);
+// var data = $($th).serialize();
+// console.log('111 '+data);
 
         $.ajax({
 
@@ -543,22 +518,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-// перебор div
-//function hidePosts(){ 
-//  var hideText = "текст";
-//  var posts = document.querySelectorAll("._post.post");
-//  for (var i = 0; i<posts.length; i++) {
-//    var post = posts[i].querySelector(".wall_post_text");
-//    if (post.innerText.indexOf(hideText) != -1 )
-//    {
-//      posts[i].style.display = "none";
-//    }
-//  }
-//}
-
-// alert('123');
-
-
     function calculate_summ_day($sp, $date) {
 
         $('.price_hour_' + $date + '_' + $sp).each(function (i, elem) {
@@ -567,13 +526,11 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 //                alert("Остановлено на " + i + "-м пункте списка.");
 //                return false;
 //            } else {
-            // console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
+// console.log(i + ': ' + $(elem).text() + ': ' + $(elem).value());
 //            }
 
         });
     }
-
-// onload="calculate_summ_day( {{ sp_now }}, {{ date }} );" 
 
     /*
      * считаем все суммы всех точек
@@ -650,8 +607,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
     }
 
-// calculateSummAllGraph();
-
     /**
      * вычисляем сумму денег за день 1911
      * @param {type} id
@@ -705,135 +660,16 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 }
 //
                 else {
-                    // console.log('пропускаем');
+// console.log('пропускаем');
                 }
             }
 
         });
     }
 
-// считаем сумму каждой смены
-//    setTimeout(function () {
-//        calcSummMoneySmena();
-//    }, 2000);
-
-
-// кликаем по кнопам плюс минус час
-
-// $('body').on('click', '.ajax_hour_action', $.debounce(300, jobdesc__plus_minus_hour) );
-
-    $('body').on('click', '.ajax_hour_action', function () {
-
-        var in_date = '';
-        var in_sp = '';
-//        clearTdSummAllGraph();
-        var uri_query = '';
-        $.each(this.attributes, function () {
-            if (this.specified) {
-                //console.log(1, this.name, this.value);
-                uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
-                if (this.name == 'date') {
-                    in_date = this.value;
-                } else if (this.name == 'sp') {
-                    in_sp = this.value;
-                }
-
-            }
-        });
-        $th = $(this);
-        $znak = $th.attr('type_action'); // - || +
-        // console.log($znak); // - || +
-
-        $hour_id = $th.attr('hour_id'); // - || +
-        // console.log($hour_id); // - || +
-
-        $textblock_id = $th.attr('block');
-        // console.log($textblock_id);
-
-        $s = $th.attr('s');
-        // console.log($textblock_id);
-
-        $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
-        if ($cifra > 20)
-            $cifra = 20;
-        // console.log($('span#' + $textblock_id).text());
-        // console.log($cifra);
-        if ($znak == '-') {
-            var $new_val = +$cifra - +0.5;
-        }
-//
-        else if ($znak == '+') {
-            var $new_val = +$cifra + +0.5;
-        }
-
-        $('span#' + $textblock_id).text($new_val);
-        $.ajax({
-
-            url: "/vendor/didrive_mod/items/1/ajax.php",
-            data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
-            cache: false,
-            dataType: "json",
-            type: "post",
-            async: false,
-            beforeSend: function () {
-
-                $('span#' + $textblock_id).css('border-bottom', '2px solid orange');
-                $('span#' + $textblock_id).css('font-weight', 'bold');
-                //if (typeof $div_hide !== 'undefined') {
-                //$('#' + $div_hide).hide();
-                //}
-
-                // $("#ok_but_stat").html('<img src="/img/load.gif" alt="" border=0 />');
-                //                $("#ok_but_stat").show('slow');
-                //                $("#ok_but").hide();
-
-
-            }
-            ,
-            success: function ($j) {
-
-                // alert($j.status);
-
-                if ($j.status == 'error') {
-
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
-                    // $('span#' + $textblock_id).css('color', 'darkred');
-
-                } else {
-
-                    ocenka_clear(in_sp, in_date);
-                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
-                    // $('span#' + $textblock_id).css('color', 'darkgreen');
-
-                    // console.log($new_val);
-                    // console.log( 1, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
-                    // console.log( 2, $('span#' + $textblock_id).closest('.www').find('.now_price_hour').attr('kolvo_hour'));
-
-                    // $.debounce( 1000, calcSummMoneySmena2 );
-                    calcSummMoneySmena2($textblock_id);
-//                    setTimeout( function () {
-//                        //calculateSummAllGraph();
-//
-//                        console.log('$textblock_id', $textblock_id);
-//                        // alert($textblock_id);
-//
-//                        calcSummMoneySmena($textblock_id);
-//
-//                    }, 100);
-//                    //$(document).one( calculateSummAllGraph );
-
-                }
-
-
-            }
-
-        });
-        return false;
-    });
     $('body').on('change', '.select_edit_item_dop2', function () {
 
-        // console.log(2);
+// console.log(2);
         setTimeout(function () {
             calculateSummAllGraph();
         }, 100);
@@ -945,10 +781,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
     /**
      * назначение сотрудника на точку продаж
      */
@@ -959,10 +791,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         put_workman_on_sp(this);
         return false;
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
     /**
      * удаление сотрудника с точки продаж (старая версия)
      */
@@ -971,7 +799,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('delete_workman_from_sp');
+// console.log('delete_workman_from_sp');
         $answer = '';
         $wm_s = '';
         $.each(this.attributes, function () {
@@ -997,11 +825,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $res = delete_workman_from_sp($sp, $work_id, $wm_s, $date_end);
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
-
     /**
      * кликнули (уволен с завтрашнего дня)
      * обозначаем конец текущего периода работы
@@ -1011,7 +834,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('set_end_now_jobs');
+// console.log('set_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
@@ -1043,10 +866,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $res = set_end_now_jobs($work_id, $wm_s, $date_end);
         return false;
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
     /**
      * кликнули (уволен с завтрашнего дня)
      * обозначаем конец текущего периода работы
@@ -1056,7 +875,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // event.preventDefault();
 // put_workman_on_sp($sp, $workman, $dolgnost, $date_start);
 // put_workman_on_sp( this );
-        // console.log('cancel_end_now_jobs');
+// console.log('cancel_end_now_jobs');
         $need_answer = '';
         $wm_s = '';
         $date_end = '';
@@ -1088,12 +907,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $res = cancel_end_now_jobs($work_id, $wm_s, $date_end);
         return false;
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
-
-    //$('body').on('click', '.act_smena', function (event) {
     $(document).on('click', '.act_smena', function (event) {
 
 // alert('2323');
@@ -1215,11 +1028,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
-
     $('body').on('click', '.send_ajax_values', function (event) {
 
 // alert('2323');
@@ -1341,88 +1149,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
-    $('body').on('submit', '#add_new_smena', function (event) {
-
-        event.preventDefault();
-        // создание массива объектов из данных формы
-        var data1 = $(this).serializeArray();
-        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
-        // console.log('Входящие данные');
-        $.each(data1, function () {
-
-            // console.log(this.name + '=' + this.value);
-            if (this.name == 'print_res_to_id') {
-                $print_res_to = $('#' + this.value);
-            }
-
-            if (this.name == 'data-target2') {
-                $modal_id = this.value;
-            }
-
-        });
-        // alert('123');
-        // return false;
-
-        $.ajax({
-
-            type: 'POST',
-            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            dataType: 'json',
-            data: data1,
-            // сoбытиe дo oтпрaвки
-            beforeSend: function ($data) {
-                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
-                // $this.css({"border": "2px solid orange"});
-            },
-            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
-            success: function ($data) {
-
-                //alert('123');
-
-                // eсли oбрaбoтчик вeрнул oшибку
-                if ($data['status'] == 'error')
-                {
-                    // alert($data['error']); // пoкaжeм eё тeкст
-                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid red"});
-
-                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
-                }
-                // eсли всe прoшлo oк
-                else
-                {
-                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
-                    // $this.css({"border": "2px solid green"});
-
-                    $($print_res_to).append($data['html']);
-                }
-
-                //$($modal_id).modal('hide');
-                $('.modal').modal('hide');
-            }
-            ,
-            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
-            error: function (xhr, ajaxOptions, thrownError) {
-                // пoкaжeм oтвeт сeрвeрa
-                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
-            }
-
-            // сoбытиe пoслe любoгo исхoдa
-            // ,complete: function ($data) {
-            // в любoм случae включим кнoпку oбрaтнo
-            // $form.find('input[type="submit"]').prop('disabled', false);
-            // }
-
-        }); // ajax-
-
-
-        return false;
-    });
     $('body').on('submit', '#goto_other_sp', function (event) {
 
         event.preventDefault();
@@ -1501,15 +1227,29 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
-
+    /* версия 2007 */
+    $('body').on('click', '.put_var_in_modal3', function (event) {
+        $.each(this.attributes, function () {
+            if (this.specified) {
+                if (this.name == 'data-target2') {
+                    var $id_modal = this.value;
+                    $(this.value).modal('toggle');
+                } else {
+                    if ($("input").is("." + this.name)) {
+                        $("input." + this.name).val(this.value);
+                    }
+                }
+            }
+        });
+    });
     $('body').on('click', '.put_var_in_modal2', function (event) {
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                // console.log(this.name, this.value);
-                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
+// console.log(this.name, this.value);
+// $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 
                 if (this.name == 'data-target2') {
                     var $id_modal = this.value;
@@ -1517,7 +1257,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                     $(this.value).modal('toggle');
                     // $id_modal.modal('toggle');
                 } else {
-                    // console.log(2, this.value);
+// console.log(2, this.value);
                     if ($("input").is("#" + this.name)) {
                         $("input#" + this.name).val(this.value);
                     }
@@ -1526,63 +1266,14 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         });
         return false;
         if ($(this).prop('data-target2').length()) {
-            // console.log($(this).prop('data-target2'));
+// console.log($(this).prop('data-target2'));
         }
 
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                // console.log(this.name, this.value);
-//                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-//
-//                if (this.name == 'res_to') {
-//                    $vars['resto'] = '#' + this.value + ' tbody';
-//                    console.log($vars['resto']);
-//                    // alert($res_to);
-//                }
-//
-//                if (this.name == 'show_on_click') {
-//                    $('#' + this.value).show('slow');
-//                }
-
-            }
-
-        });
-        return false;
-    });
-    $('body').on('click', '.delete_smena', function (event) {
-
-        $.each(this.attributes, function () {
-
-            if (this.specified) {
-
-                // console.log(this.name, this.value);
-                // $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
-
-                if (this.name == 'data-target2') {
-                    var $id_modal = this.value;
-                    // console.log(this.value);
-                    $(this.value).modal('toggle');
-                    // $id_modal.modal('toggle');
-                } else {
-                    // console.log(2, this.value);
-                    if ($("input").is("#" + this.name)) {
-                        $("input#" + this.name).val(this.value);
-                    }
-                }
-            }
-        });
-        return false;
-        if ($(this).prop('data-target2').length()) {
-            // console.log($(this).prop('data-target2'));
-        }
-
-        $.each(this.attributes, function () {
-
-            if (this.specified) {
-
-                // console.log(this.name, this.value);
+// console.log(this.name, this.value);
 //                $uri_query = $uri_query + '&' + this.name + '=' + this.value.replace(' ', '..')
 //
 //                if (this.name == 'res_to') {
@@ -1762,12 +1453,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         //return false;
 
     });
-    // else {
-    // alert(i + ': ' + $(elem).text());
-    // }
-
-// alert('123');
-
     $('body').on('click', '.jobdesc__calc_full_ocenka_day', function (event) {
 
         var resto = '';
@@ -1779,28 +1464,35 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var resto = 0;
         var resto1 = 0;
         var showid = 0;
+        var microservice = 0;
         $.each(this.attributes, function () {
 
             if (this.specified) {
 
-                if (this.name.indexOf("forajax_") != -1) {
-                    $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
-                    // console.log(this.name, this.value);
-                }
+                if (this.name == 'forajax_microservice') {
 
-                if (this.name == 'hidethis') {
-                    hidethis = 1;
-                }
+                    microservice = '/vendor/didrive_mod/jobdesc/1/didrive/micro-service/' + this.value + '.php';
+                } else {
 
-                if (this.name == 'show_id') {
-                    showid = '#' + this.value;
-                } else if (this.name == 'res_to_id') {
-                    resto = '#' + this.value;
-                    resto1 = this.value + '111';
-                } else if (this.name == 'answer') {
-                    answer = this.value;
-                }
+                    if (this.name.indexOf("forajax_") != -1) {
+                        $uri_query = $uri_query + '&' + this.name.replace('forajax_', '') + '=' + this.value;
+                        // console.log(this.name, this.value);
+                    }
 
+                    if (this.name == 'hidethis') {
+                        hidethis = 1;
+                    }
+
+                    if (this.name == 'show_id') {
+                        showid = '#' + this.value;
+                    } else if (this.name == 'res_to_id') {
+                        resto = '#' + this.value;
+                        resto1 = this.value + '111';
+                    } else if (this.name == 'answer') {
+                        answer = this.value;
+                    }
+
+                }
             }
 
         });
@@ -1815,7 +1507,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         var $th = $(this);
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: (microservice != 0 ? microservice : '/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'),
             data: "t=1" + $uri_query,
             cache: false,
             dataType: "json",
@@ -1927,8 +1619,10 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         $.ajax({
 
-            url: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
-            data: "action=bonus_record_month&date=" + date + "&sp=" + sp,
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/bonus_record_month.php",
+            xdata: "action=bonus_record_month&date=" + date + "&sp=" + sp,
+            data: "date=" + date + "&sp=" + sp,
             cache: false,
             dataType: "json",
             type: "post",
@@ -2064,7 +1758,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                 if (!!sp) {
 // console.log('timeo 1 ajax', date, sp);
                     if (!!date) {
-                        // console.log('все переменные есть', date, sp, n);
+// console.log('все переменные есть', date, sp, n);
                         vars = vars + '&d[' + n + '][date]=' + date + '&d[' + n + '][sp]=' + sp;
                         // vars.push([date, sp]);
 
@@ -2296,8 +1990,8 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 // this.attributes is not a plain object, but an array
 // of attribute nodes, which contain both the name and value
                 if (this.specified) {
-                    // console.log(this.name, this.value);
-                    // пропускаем аттр
+// console.log(this.name, this.value);
+// пропускаем аттр
                     if (this.name == 'class' || this.name == 'href') {
                     }
 // обрабатываем аттр
@@ -3088,7 +2782,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
 
                     add_new_dolg_in_graph($j);
-
                     $.each($j['checks'], function (date, value) {
                         // console.log('1', date, value);
                         $.each(value, function (k1, ar) {
@@ -3096,9 +2789,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
                             // console.log('1day', date, ar);
 
                             $hh = creat_html_1smena(ar);
-
                             $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens').html($hh);
-
 //                            var $b = $('#sp_man_day_d' + date + '_sp' + ar['sp'] + '_u' + ar['jobman'] + ' div.smens');
 //                            $b.hide();
 //                            $b.html($hh);
@@ -3116,165 +2807,6 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         }
     }
 
-    if (1 == 2) {
-// добавляем минусы плюсы бонусы
-        if (2 == 1) {
-
-            function creat_html_bonus(ar) {
-
-                ret = '<div class="'
-                        // +'xtext-center '
-                        + 'show_down_hiden plus show">'
-
-                        + '<a '
-                        + ' href="#" '
-
-                        + ' class="base__send_to_ajax hide_down" '
-                        + ' style="float:right;" '
-
-                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
-
-                        + ' hidethis="da" '
-                        + ' answer="удалить ?" '
-
-                        + ' action="remove_item" '
-                        + ' aj_id="' + ar['id'] + '" '
-                        + ' aj_s="' + ar['s'] + '" '
-
-                        + ' res_to_id="plus' + ar['id'] + '" '
-                        + ' after_click_showid="plus' + ar['id'] + '" '
-                        + ' msg_to_success="бонус удалён" '
-
-                        + '><i class="fa fa-times"></i></a>'
-
-                        + '<b>+'
-                        + ar['summa']
-                        + '</b> &nbsp;'
-                        + '<small>'
-                        + ar['text']
-                        + '</small>'
-//                    + '<span class="hide_down">'
-//                    + '<a href="#" class="btn3 edit_items_dop_values drop2_ btn btn-xs btn-light" '
-//                    + 'xstyle="display:none;" '
-//                    + 'comit_answer="Отменить премию ?" action="edit_dop_item" '
-//                    + 'itemsmod="072.plus" item_id="97789" '
-//                    + 'new_status="hide" s3="dea83abff19ec1d0cc3fd72253cf5809" hidethis="da" '
-//                    + 'show_id="ares97789" res_to_id="ares97789" '
-//                    + 'msg_to_success="Отменено">Отменить премию</a></span>'
-//                    + '<div id="ares97789" style="display:none;"></div>'
-                        + '<div id="plus' + ar['id'] + '" style="display:none;"></div>';
-                +'</div>';
-                return ret;
-            }
-
-            function creat_html_minus(ar) {
-
-                var ret = '<div class="xtext-center show_down_hiden minus show">'
-
-
-                        + '<a '
-                        + ' href="#" '
-
-                        + ' class="base__send_to_ajax hide_down" '
-                        + ' style="float:right;" '
-
-                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
-
-                        + ' hidethis="da" '
-                        + ' answer="удалить ?" '
-
-                        + ' action="remove_item" '
-                        + ' aj_id="' + ar['id'] + '" '
-                        + ' aj_s="' + ar['s'] + '" '
-
-                        + ' res_to_id="minus' + ar['id'] + '" '
-                        + ' after_click_showid="minus' + ar['id'] + '" '
-                        // + ' msg_to_success="Комментарий удалён" '
-
-                        + '><i class="fa fa-times"></i></a>'
-
-                        + '<b>'
-                        + '-' + ar['summa']
-                        + '</b> &nbsp; '
-                        + '<small>'
-                        + ar['text']
-                        + '</small>'
-//                    + '<span class="hide_down">'
-//                    + '<a href="#" '
-//                    + ' class="btn3 edit_items_dop_values drop2_ btn btn-xs btn-light" '
-//                    // + 'xstyle="display:none;" comit_answer="Отменить взыскание ?" '
-//                    + ' action="edit_dop_item" itemsmod="072.vzuscaniya" item_id="99244" '
-//                    + ' new_status="hide" s3="f50e87feccec1fb4f19d886948fb979e" '
-//                    + ' hidethis="da" show_id="ares99244" res_to_id="ares99244" '
-//                    + ' msg_to_success="Отменено">Отменить взыскание</a>'
-//                    + '</span>'
-//                    + '<div id="ares99244" style="display:none;"></div>'
-
-                        + '<div id="minus' + ar['id'] + '" style="display:none;"></div>';
-
-                +'</div>';
-                return ret;
-            }
-
-            function creat_html_comment(ar, cfg) {
-
-                var ret = '<div class="show_1comment">'
-
-                        + '<a '
-                        + ' href="#" '
-
-                        + ' class="base__send_to_ajax" '
-                        + ' style="float:right;" '
-
-                        + ' href_to_ajax="/vendor/didrive_mod/items/1/ajax.php" '
-
-                        + ' hidethis="da" '
-                        + ' answer="удалить комментарий ?" '
-
-                        + ' action="remove_item" '
-                        + ' aj_id="' + ar['id'] + '" '
-                        + ' aj_s="' + ar['s'] + '" '
-
-                        + ' res_to_id="com' + ar['id'] + '" '
-                        + ' after_click_showid="com' + ar['id'] + '" '
-                        + ' msg_to_success="Комментарий удалён" '
-
-                        + '><i class="fa fa-times"></i></a>'
-
-                        + ar['comment']
-
-                        + '<div id="com' + ar['id'] + '" style="display:none;"></div>';
-                +'</div>'
-                return ret;
-            }
-
-        }
-
-        if (1 == 2) {
-
-// если есть этот блок то грузим всю аякс
-            var $e = $('#run_load_data').attr('start');
-            if ($e == 'da') {
-                // alert('123');
-                creat__oborot_show_vars();
-                creat__ajax_in_smens();
-                run_load__aj_get_minus_plus_coment();
-            }
-
-
-//// запуск загрузки времени ожидания
-//    var $e1 = $('#run_load_timeo').attr('start');
-//    if ($e1 == 'da') {
-////        alert('123');
-////        creat__oborot_show_vars();
-//        creat__timeo();
-////        run_load__aj_get_minus_plus_coment();
-//    }
-
-        }
-    }
-
-
 // запуск загрузки времени ожидания
     var $e1 = $('#run_load_timeo').attr('start');
     if ($e1 == 'da') {
@@ -3285,17 +2817,17 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
     }
 
     /**
-     * добавляем взыскание
+     * добавляем взыскание / комментарий / бонус
+     * 2007 версия
      */
 
-    $('body').on('submit', '#add_minus', function (event) {
+    $('body').on('submit', '.add_form', function (event) {
 
-        // console.log('добавляем минус');
+// console.log('добавляем минус');
 
         event.preventDefault();
         // создание массива объектов из данных формы        
         var data1 = $(this).serializeArray();
-
         // console.log( 'добавляем минус', data1 );
 
         // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
@@ -3303,6 +2835,7 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
         $.each(data1, function () {
 
             // console.log(this.name + '=' + this.value);
+
             if (this.name == 'print_res_to_id') {
                 $print_res_to = $('#' + this.value);
             }
@@ -3372,14 +2905,290 @@ $(document).ready(function () { // вся мaгия пoслe зaгрузки с�
 
         return false;
     });
+    /**
+     * удаление оценки дня
+     * @param {type} sp
+     * @param {type} date
+     * @returns {undefined}
+     */
+    function delete_ocenka(sp, date) {
 
+        $.ajax({
+            url: "/vendor/didrive_mod/items/3/micro-service/delete-items.php",
+            data: "r_module=sp_ocenki_job_day&remove[sale_point]=" + sp + "&remove[date]=" + date,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            async: false,
+            success: function ($j) {
+                return $j.status;
+            }
+        });
+    }
+
+// новая версия 2007
+    $('body').on('click', '.ajax_hour_action', function () {
+
+        var in_date = '';
+        var in_sp = '';
+//        clearTdSummAllGraph();
+        var uri_query = '';
+        $.each(this.attributes, function () {
+            if (this.specified) {
+
+                if (this.name == 'class'
+                        || this.name == 'onclick'
+                        || this.name == 'style'
+                        ) {
+                } else {
+                    //console.log(1, this.name, this.value);
+                    uri_query = uri_query + '&ajax_' + this.name + '=' + this.value;
+                    if (this.name == 'date') {
+                        in_date = this.value;
+                    } else if (this.name == 'sp') {
+                        in_sp = this.value;
+                    }
+                }
+            }
+        });
+        $th = $(this);
+        $znak = $th.attr('type_action'); // - || +
+        // console.log($znak); // - || +
+
+        $hour_id = $th.attr('hour_id'); // - || +
+        // console.log($hour_id); // - || +
+
+        $textblock_id = $th.attr('block');
+        // console.log($textblock_id);
+
+        $s = $th.attr('s');
+        // console.log($textblock_id);
+
+        $cifra = Number(parseFloat($('span#' + $textblock_id).text())).toFixed(1);
+        if ($cifra > 20)
+            $cifra = 20;
+        // console.log($('span#' + $textblock_id).text());
+        // console.log($cifra);
+        if ($znak == '-') {
+            var $new_val = +$cifra - +0.5;
+        }
+//
+        else if ($znak == '+') {
+            var $new_val = +$cifra + +0.5;
+        }
+
+        $('span#' + $textblock_id).text($new_val);
+        delete_ocenka(in_sp, in_date);
+        // изменение часов в чеке
+        $.ajax({
+            url: "/vendor/didrive_mod/items/3/micro-service/edit-dop-pole.php",
+            data: uri_query + "&action=edit_dop_pole&item_id=" + $hour_id + "&dop_name=hour_on_job_hand&new_val=" + $new_val + "&id=" + $textblock_id + "&s=" + $s,
+            cache: false,
+            dataType: "json",
+            type: "post",
+            async: false,
+            beforeSend: function () {
+
+                $('span#' + $textblock_id).css('border-bottom', '2px solid orange').css('font-weight', 'bold');
+            }
+            ,
+            success: function ($j) {
+
+                // alert($j.status);
+
+                if ($j.status == 'error') {
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid red');
+                    // $('span#' + $textblock_id).css('color', 'darkred');
+
+                } else {
+
+                    // ocenka_clear(in_sp, in_date);
+                    // $.debounce(1000, ocenka_clear(in_sp, in_date) );
+
+                    $('span#' + $textblock_id).css('border-bottom', '2px solid green');
+                    $('span#' + $textblock_id).closest('.smena1').find('.hours_kolvo').val($new_val);
+                    $('.smena_summa_' + $hour_id).html($('#price_' + $hour_id + ' option:selected').attr('price') * $new_val);
+                    // $.debounce( 1000, calcSummMoneySmena2 );
+//                    setTimeout( function () {
+//                        //calculateSummAllGraph();
+//
+//                        console.log('$textblock_id', $textblock_id);
+//                        // alert($textblock_id);
+//
+//                        calcSummMoneySmena($textblock_id);
+//
+//                    }, 100);
+//                    //$(document).one( calculateSummAllGraph );
+
+                }
+
+
+            }
+
+        });
+//        setTimeout( function () {
+//            calcSummMoneySmena2($textblock_id);
+//            }, 100);
+
+        return false;
+    });
+// новая версия 2007
+    $('body').on('submit', '#add_new_smena', function (event) {
+
+        event.preventDefault();
+        // создание массива объектов из данных формы
+        var data1 = $(this).serializeArray();
+        // переберём каждое значение массива и выведем его в формате имяЭлемента=значение в консоль
+        // console.log('Входящие данные');
+        $.each(data1, function () {
+
+            // console.log(this.name + '=' + this.value);
+            if (this.name == 'print_res_to_id') {
+                $print_res_to = $('#' + this.value);
+            }
+
+            if (this.name == 'data-target2') {
+                $modal_id = this.value;
+            }
+
+        });
+        // alert('123');
+        // return false;
+
+        $.ajax({
+
+            type: 'POST',
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/add-new-smena.php",
+            dataType: 'json',
+            data: data1,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($data) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($data['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    $($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+                    // $div_res.html('<div class="warn good">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    $($print_res_to).append($data['html']);
+                }
+
+                //$($modal_id).modal('hide');
+                $('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+
+
+        return false;
+    });
+// получаем данные по доставке
+    function get_delivery(date,jobmans) {
+
+        //alert(date);
+        $.ajax({
+
+            type: 'POST',
+            xurl: "/sites/yadom_admin/module/000.index/ajax.php",
+            xurl: "/vendor/didrive_mod/jobdesc/1/didrive/ajax.php",
+            url: "/vendor/didrive_mod/jobdesc/1/didrive/micro-service/get_delivery_info.php",
+            dataType: 'json',
+            data: 'date=' + date + '&jobmans='+jobmans,
+            // сoбытиe дo oтпрaвки
+            beforeSend: function ($data) {
+                // $div_res.html('<img src="/img/load.gif" alt="" border="" />');
+                // $this.css({"border": "2px solid orange"});
+            },
+            // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+            success: function ($d) {
+
+                //alert('123');
+
+                // eсли oбрaбoтчик вeрнул oшибку
+                if ($d['status'] == 'error')
+                {
+                    // alert($data['error']); // пoкaжeм eё тeкст
+                    // $div_res.html('<div class="warn warn">' + $data['html'] + '</div>');
+                    // $this.css({"border": "2px solid red"});
+
+                    //$($print_res_to).append('<div>произошла ошибка: ' + $data['html'] + '</div>');
+                }
+                // eсли всe прoшлo oк
+                else
+                {
+
+                    $.each($d['infos'], function ( k , v ) {
+                        
+//                        if (this.style.color !== "blue") {
+//                        this.style.color = "blue";
+//                        } else {
+//                        this.style.color = "";
+//                        }
+                        // console.log(index, value);
+                        $('#delivery_'+v.jobman+'_'+v.d ).html(' <div class="alert alert-warning" ><b title="чеков" style="padding: 3px 5px; background-color: yellow;color: black;" >'+v.uniqorderid+ '</b> ' + v.dishdiscountsumint + 'р</div>');
+                        
+                    });
+
+                    //        $('#delivery_{{ jobman_id }}_ date ).html(' < div class = "warn good" > ' + $data['html'] + ' < /div>');
+                    // $this.css({"border": "2px solid green"});
+
+                    //$($print_res_to).append($data['html']);
+                }
+
+                //$($modal_id).modal('hide');
+                //$('.modal').modal('hide');
+            }
+            ,
+            // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+            error: function (xhr, ajaxOptions, thrownError) {
+                // пoкaжeм oтвeт сeрвeрa
+                //alert(xhr.status + ' ' + thrownError); // и тeкст oшибки
+            }
+
+            // сoбытиe пoслe любoгo исхoдa
+            // ,complete: function ($data) {
+            // в любoм случae включим кнoпку oбрaтнo
+            // $form.find('input[type="submit"]').prop('disabled', false);
+            // }
+
+        }); // ajax-
+    }
+
+    var start_date = $('#jobdesc_start_date').html();
+    jobmans = '';
+    $('abbr.jobman_id').each(function (index, value) { 
+    jobmans = jobmans + ',' + $(this).attr('jobman_id'); 
+    });
+    get_delivery(start_date,jobmans);
 });
-
-
-// $(document).ready(function () { // вся мaгия пoслe зaгрузки стрaницы
-//    nd = didrive__get_cash();
-//    console.log('9999999999', nd );
-//    
-//    nd = didrive__get_cash();
-//    console.log('9999999999', nd );
-// });

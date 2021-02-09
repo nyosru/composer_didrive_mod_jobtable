@@ -1,0 +1,76 @@
+<div class="modal fade add_values" id="add_minus_for_jobman" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить взыскание</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="" method="post" class="add_form">
+
+                <div class="modal-body">
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Кто</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_jobman_name" value="">
+                            <input type="hidden" id="toform_jobman" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="a1" class="col-sm-2 col-form-label">Точка продаж</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control -plaintext" id="toform_sp_name" value="">
+                            {# <input type="hidden" id="toform_sp" value=""> #}
+                            <input type="hidden" id="toform_sp" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Когда</label>
+                        <div class="col-sm-10">
+                            <input type="date" readonly class="form-control" name="date" id="date" value="" xstyle="width: 120px; display: inline-block;" >
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="staticEmail" class="col-sm-2 col-form-label">Сумма взыскания</label>
+                        <div class="col-sm-10">
+                            <input type="number" max="0" min="-100000" step="1" class="form-control -plaintext" name="summa" xid="start_time" value="" required="" style="width: 120px;  display: inline-block;" >
+                            <br/>
+                            <small>сумма взыскания: например -100р</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Причина взыскания</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="text" ></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    {#
+                  <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Закрыть</button>
+                  #}
+
+                    <button type="submit" class="btn btn-sm btn-primary">Добавить</button>
+                    <input type="hidden" name="action" id="action" value="add_new_minus" >
+                    <input type="hidden" name="id2" id="id2" value="" >
+                    <input type="hidden" name="s2" id="s2" value="" >
+                    <input type="hidden" name="print_res_to_id" id="print_res_to_id" value="" >
+                    <input type="hidden" name="data-target2" id="data-target2" value="" >
+                    <input type="hidden" name="jobman" id="jobman" value="" >
+                    <input type="hidden" name="salepoint" id="salepoint" value="" >
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

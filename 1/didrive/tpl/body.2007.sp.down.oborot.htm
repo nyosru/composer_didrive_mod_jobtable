@@ -1,0 +1,30 @@
+{% spaceless %}
+
+    <style> .td_inf_{{sp_now}}obr{ xdisplay:none; } </style>
+
+    <div class="trow" 
+         xdata-aos="fade-up"
+         xdata-aos-anchor-placement="bottom-bottom" 
+         >
+
+        <div class="tcell stick-left bg-white" >
+            <b>Оборот</b>
+            {#<abbr title="суммарный оборот за месяц" style="color: gray; float:right;" >{{ (oborots.summa/1000)|number_format(0,'','`') }}тр</abbr>#}
+            {#{{ pa(itogi_day) }}#}
+        </div>
+
+        {% for i in range(low=0, high=35, step=1) %}  
+
+            {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+
+            {% if now_date > date_start|date('U') and now_date|date('U') <= date_finish|date('U') and now_date|date('U') <= "now"|date_modify("-1 day")|date('U') %}
+
+                {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.oborot.item.htm' %} 
+
+            {% endif %}
+            
+        {% endfor %}
+
+    </div>
+
+{% endspaceless %}

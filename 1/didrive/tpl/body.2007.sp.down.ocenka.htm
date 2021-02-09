@@ -1,0 +1,92 @@
+{% spaceless %}
+
+    {#{% if server.HTTP_HOST == 'adomik.dev.uralweb.info' %}
+        {% set ocenka = true %}
+    {% else %}#}
+        {% set ocenka = false %}
+    {#{% endif %}#}
+
+    <div class="trow" data-aos="fade-right"
+         data-aos-anchor-placement="bottom-bottom" >
+        <div class="tcell stick-left bg-white" >
+
+            {#{% if ocenka == true %}
+                <a href="#" 
+                   style="float:right;"
+                   onclick="$('a.jobdesc__calc_full_ocenka_day').each(function (i, elem) {
+                           console.log('клик по ссылке считать все оценки');
+                           $(this).trigger('click');
+                       });
+                       return false;" >
+                    <span class="fa fa-refresh" title="обновить оценки за месяц" ></span>
+                </a>
+            {% endif %}#}
+
+            <b>Расчёт оценки дня</b>
+
+            {# {% set ocenki_day = jobdesc__get_ocenki_days( db, sp_now, date_start, date_finish ) %} #}
+            {#{{ pa(ocenki_day) }}#}
+
+        </div>
+
+
+
+        {#        {% for i in range(low=0, high=32, step=1) %}  
+                    {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+                    {% if date_finish|date('U') >= now_date|date('U') %}
+                        {% for v in itogi_day if v.item_type == 'ocenka' and v.date == now_date %}
+                            <div class="tcell text-center" >
+                                {{ pa(v) }} 
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+        #}
+
+
+        {#{% for i in range(low=0, high=35, step=1) if ocenka == true %}#}
+        {% for i in range(low=0, high=35, step=1) %}  
+
+            {% set now_date2 = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}            
+            {#{% if now_date2|date("Y-m-d") < "now"|date("Y-m-d") and now_date2|date("Y-m-d") <= date_finish|date("Y-m-d") %}#}
+            {% if now_date2 > date_start|date('U') and now_date2|date('U') <= date_finish|date('U') and now_date2|date('U') <= "now"|date_modify("-1 day")|date('U') %}
+
+                <div class="tcell tr{{sp_now}}ras" >
+
+                    {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                        {#{{ nd }} + {{ now_date2 }} + {{ now_date }}#}
+                        {#{{ pa( itogi_day[now_date2]['ocenka'][0]) }}#}
+
+                        {#{% if itogi_day[now_date2]['ocenka'][0] %}#}
+                        {% if 1 == 1 %}
+
+                            {% set v = itogi_day[now_date2]['ocenka'][0] %}
+                            {# {{ pa(v) }} #}
+
+                            {% if itogi_day[now_date2]['param'][0] is not defined %}
+
+                                <center style="color:gray" >
+                                    заполните нормы&nbsp;дня
+                                </center>
+
+                            {% else %}
+
+                                {% include dir_mod_now_mod_ditpl~'body.2007.sp.down.ocenka_item.htm' %}
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+{% endspaceless %}

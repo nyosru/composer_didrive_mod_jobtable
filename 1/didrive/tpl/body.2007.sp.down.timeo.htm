@@ -1,0 +1,83 @@
+{% spaceless %}
+
+    <div class="trow" onclick="$('#tr{{sp_now}}times').toggle('slow');
+            return false;" style="cursor:pointer;">
+
+        <div class="tcell stick-left bg-white" >Время ожидания</div>
+
+        {% for i in range(low=0, high=32, step=1) %}  
+            {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            {#{% if date_finish|date('U') >= now_date|date('U') %}#}
+            {% if now_date > date_start|date('U') and now_date|date('U') <= date_finish|date('U') and now_date|date('U') <= "now"|date_modify("-1 day")|date('U') %}
+                {#{% for v in itogi_day if v.item_type == 'timeo' and v.date == now_date %}#}
+
+                {% if itogi_day[now_date]['timeo'][0] %}
+
+                    {% set v = itogi_day[now_date]['timeo'][0] %}
+                    {#{{ pa(v) }}#}
+
+                    {% if itogi_day[now_date]['timeo'][1] %}
+                        <small>есть 2-е значение, обратитесь в поддержку #{{ itogi_day[now_date]['param'][1]['item_id'] }}</small>
+                    {% endif %}
+
+                    <div class="tcell text-center" >
+
+                        {{ v.cold }}&nbsp;/&nbsp;
+                        {% if date_start < '2020-11-01' %}
+                            {{ v.delivery }}
+                        {% else %}
+                            {{ v.delivery_a }}&nbsp;/&nbsp;{{ v.delivery_b }}
+                        {% endif %}
+                        {#<Br/> {{ v.cold }} / {{ v.delivery }}#}
+                    </div>
+
+                {% endif %}
+
+                {#{% endfor %}#}
+
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+    <div id="tr{{sp_now}}times" class="trow" style="display:none;">
+
+        <div class="tcell stick-left bg-white"   >
+            холодный цех<br/>
+            {% if date_start < '2020-11-01' %}
+                доставка<br/>
+            {% else %}
+                доставка А<br/>
+                доставка Б<br/>
+            {% endif %}
+            {#горячий цех<br/>#}
+            {#доставка#}
+        </div>
+
+        {% for i in range(low=0, high=32, step=1) %}  
+            {% set now_date = date_start|date_modify("+"~i~" day")|date("Y-m-d") %}
+            {% if date_finish|date('U') >= now_date|date('U') %}
+                {#{% for v in itogi_day if v.item_type == 'timeo' and v.date == now_date %}#}
+                {% if itogi_day[now_date]['timeo'][0] %}
+                    {% set v = itogi_day[now_date]['timeo'][0] %}
+
+                    <div class="tcell text-center" >
+                        {{ v.cold }} 
+                        {% if date_start < '2020-11-01' %}
+                            <br/>{{ v.delivery }}
+                        {% else %}
+                            <br/>{{ v.delivery_a }}
+                            <br/>{{ v.delivery_b }}
+                        {% endif %}
+                        <br/>{{ v.hot }}
+                        <br/>{{ v.delivery }}
+                    </div>
+
+                {% endif %}
+                {#{% endfor %}#}
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+{% endspaceless %}

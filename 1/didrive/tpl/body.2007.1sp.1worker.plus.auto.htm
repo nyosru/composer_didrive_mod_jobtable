@@ -1,0 +1,12 @@
+{% spaceless %}
+    
+    {#{{ pa(auto_bonus) }}#}
+    {% if auto_bonus.status is defined and auto_bonus.status == 'ok' %}
+    <div class="xtext-center show_down_hiden plus {{ i.status }}" >
+        <small>бонус к зп</small><br/>
+        <b>+{{ auto_bonus.data.bonus|number_format(0, '.', '`') }}</b> &nbsp; 
+        <small>{{ auto_bonus.data.text }}</small>
+    </div>
+    {% endif %}
+        
+{% endspaceless %}

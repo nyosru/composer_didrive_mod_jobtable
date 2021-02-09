@@ -1,12 +1,13 @@
 {
     "name": "didrive_mod/jobdesc",
     "description": "Реестр работ связка модулей отделы + работники + выход на работу",
-    
-    "version": "1.11.2",
-    
+
+    "version": "2.27.0",
+
     "keywords": [
         "didrive", "module", "nyos", "uralweb.info"
     ],
+
     "authors": [
         {
         "name": "Sergey Baklanov",
@@ -15,27 +16,27 @@
         "role": "Developer"
         }
     ],
-    
+
     "homepage": "https://uralweb.info/php/#classes",
     "license": "MIT",
+    
     "require": {
-        
-        "php": ">=7.1.0"
+        "php": ">=7.3.0"
         ,
         "twig/twig": ">=2.10.0"
         ,
-        "didrive/base": ">=0.0.10"
+        "didrive/base": ">=1.2.3"
         ,
         "didrive/f": ">=1.0.11"
         ,
         "didrive_mod/items": ">=1.2.3"
-        
-    }
-    ,
-    "autoload": {
-        "files": [ 
-            "class.php"
-        ]
-    }
+        ,
+        "didrive_mod/jobdesc_oborot": ">=0.0.3"
+        ,
+        "didrive_mod/jobdesc_dayocenka" : ">= 1.6.0"
+    },
     
+    "autoload": {
+        "files": [  "src/class.php" ]
+    }
 }

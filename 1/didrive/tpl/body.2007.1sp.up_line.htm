@@ -1,0 +1,212 @@
+{% spaceless %}
+
+    <div class="trow alert-warning"  >
+        <div class="tcell alert-warning stick-left-up" >
+            <div class="btn-group" style="float:right;" >
+
+                <div style="float:right; display:inline-block;" 
+                     class="option_img" 
+                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                     ><i xonclick='$(".sp_{{ sp_now }} .show_2div").toggle("slow"); return false;' 
+                    class="fa fa-cog"></i></div>
+
+                <div class="dropdown-menu">
+
+                    {# модальные окошки, само окошко в самом низу #}
+
+                    {% if 1 == 2 %}
+
+                        <a href="#" 
+                           class="dropdown-item btn-light"
+                           data-toggle="modal" data-target="#addPesonalOnSp" onclick="
+                                   $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                   $('#add_person__sp').val('{{ sp_now }}');
+                                   $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                                   return false;
+                           " >назначить сотрудника на точку продаж
+                            <br/><small>первое назначение</small></a>
+
+                        <a href="#" 
+                           class="dropdown-item btn-light"
+                           data-toggle="modal" data-target="#movePesonalOnSp" onclick="
+                                   $('#move_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                   $('#move_person__sp').val('{{ sp_now }}');
+                                   $('#move_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                           " >назначить сотрудника на данную точку</a>
+                    {% endif %}
+
+                    {# назначить сотрудника на должность #}
+                    {% if 1 == 1 %}
+
+                        {# старый вариант, новый вариант ниже #}
+                        {% if 1 == 3 %}
+                            <a href="#" 
+                               class="dropdown-item btn-light"
+                               data-toggle="modal" data-target="#addPesonalOnSp2" onclick="
+                                       $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                       $('#add_person__sp').val('{{ sp_now }}');
+                                       $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');
+                               " >назначить сотрудника</a>
+                        {% endif %}
+
+                        <a
+                            href="#"
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal"
+
+                            modal_header='Назначить сотрудника'
+                            {#ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'#}
+                            {#ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'#}
+
+                            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/show-add-jobman.php'
+                            ajax_vars='sp_name={{ sps[get.sp]['head'] }}&sp={{ get.sp }}&sps_s={{ creatSecret(get.sp) }}&user={{ jobman_id }}&s={{ creatSecret( jobman_id ) }}'
+
+                            >
+                            назначить сотрудника
+                        </a>
+
+                    {% endif %}
+
+                    {% if 1 == 2 %}
+                        <a href="#" 
+                           class="dropdown-item btn-light jobdesc__record__auto_bonus_zp__m"
+
+                           sp="{{ sp_now }}"
+                           date="{{ date_start }}"
+
+                           res_to_id="res_new_autoocenka_{{ sp_now }}"
+                           xanswer="Все бонусы к зп будут удалены и начислены по новой. Делаю ?"
+
+                           {#
+                            xdata-toggle="modal" 
+                            xdata-target="#addPesonalOnSp2" 
+                            xonclick="
+                                    $('#add_person__sp_name').val('{{ sps[sp_now]['head'] }}');
+                                    $('#add_person__sp').val('{{ sp_now }}');
+                                    $('#add_person__sp_s').val('{{ creatSecret(sp_now) }}');                                               
+                            " 
+    
+                                xclass="user_{{ sp_now }}_{{ man.id }} get_checks"
+                                xclass="delete_workman_from_sp btn btn-xs btn-light"
+    
+                                xforajax_action="load_checks_for_1jobman"
+                                xforajax_s="{{ creatSecret('load_checks_for_1jobman') }}"
+                                xforajax_show_timer="da"
+    
+    
+                                xworkman="{{ man.id }}"
+                                xwm_s="{{ creatSecret(man.id) }}"
+                           #}
+
+                           >начислить бонусы к ЗП за месяц
+                            <br/>
+                            <small>страница будет обновлена</small>
+                        </a>
+                    {% endif %}
+                    <div id="res_new_autoocenka_{{ sp_now }}" ></div>                                       
+
+                    {#
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Separated link</a>
+                    #}
+
+                </div>
+            </div>
+
+            <b class='hide_in_sup hover_show_sup'>
+                {{ sps[sp_now]['head'] }}
+                <sup>#{{ sp_now }}</sup>
+                <span class="order_to_calc_hours" id="order_to_calc_hours_{{ sp_now }}" ></span>
+            </b>
+
+        </div>
+
+        {% for i in range(low=0, high=35, step=1) %}  
+
+            {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
+
+            {% if date_finish|date("d.m.Y")|date("U") >= nd %}
+
+                <div class="tcell alert-warning stick-top" >
+
+                    <span {% if nd|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
+                        {{ nd|date("d.m") }}
+
+                        {% if nd|date("N") == 1 %}Пн
+                        {% elseif nd|date("N") == 2 %}Вт
+                        {% elseif nd|date("N") == 3 %}Ср
+                        {% elseif nd|date("N") == 4 %}Чт
+                        {% elseif nd|date("N") == 5 %}Пт
+                        {% elseif nd|date("N") == 6 %}Сб
+                        {% elseif nd|date("N") == 7 %}Вс
+                        {% endif %}
+
+                    </span>
+
+                    {% if 1 == 2 %}
+                        <div class="option_img" >
+                            <i onclick='$(".sp_day_{{nd}}_{{ sp_now }}_{{ date }}").toggle("slow");
+                                return false;' class="fa fa-cog"></i>
+                        </div>
+
+                        <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
+
+                            <a href="#" 
+                               xtype="button" class="btn btn-light xbtn-xs" 
+                               data-toggle="modal" data-target="#setSpecNaznach" 
+
+                               onclick="
+                                   $('#add_person1day__sp_name').html('{{ sps[sp_now]['head'] }}');
+                                   $('#add_spec__sp').val('{{ sp_now }}');
+                                   $('#add_spec__sp_s').val('{{ creatSecret(sp_now) }}');
+
+                                   $('#add_spec_person__id').val('{{ sp_now }}');
+                                   $('#add_spec_person__s').val('{{ creatSecret(sp_now) }}');
+
+                                   $('#addspec_person1__date').val('{{ nd|date("Y-m-d") }}');
+
+                                   $('#add_person1day__sp_s').val('spec_naznach');
+
+                                   $('#add_person1day__user option').show();
+                                   $('#add_person1day__user option[sp={{ sp_now }}]').hide();
+                               "
+                               ><span class="fa fa-plus" ></span>&nbsp;<b>спец.назначение</b><br/>
+                                назначить сотрудника (1&nbsp;день)<br/>
+                                с&nbsp;другой точки продаж
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <div style="float:right; display:inline-block;" 
+                         class="option_img" 
+                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                         ><i class="fa fa-cog"></i></div>
+
+                    <div class="dropdown-menu">
+                        <a
+                            href="#"
+                            class="dropdown-item btn-light base_modal_go"
+                            data-toggle="modal" data-target="#di_modal"
+
+                            modal_header='Спец. назначение сотрудника (1 день)'
+                            {#ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/ajax.php'#}
+                            {#ajax_vars='action=show_naznach&view=html&user={{ user_v['jobman'] }}&s={{ creatSecret( user_v['jobman'] ) }}'#}
+
+                            ajax_link='/vendor/didrive_mod/jobdesc/1/didrive/micro-service/show-add-spec-jobman.php'
+                            ajax_vars='sp_name={{ sps[get.sp]['head'] }}&sp={{ get.sp }}&sps_s={{ creatSecret(get.sp) }}&date={{ nd|date("Y-m-d") }}'
+
+                            >
+                            + спец. назначение
+                        </a>                           
+                    </div>
+
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    </div>
+
+{% endspaceless %}

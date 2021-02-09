@@ -163,9 +163,6 @@ else {
 
 
 
-$ajax2 = true;
-require_once './ajax.2007.php';
-$ajax2 = false;
 
 // vue тащим разные функции
 if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'startFunctionClass') {
@@ -557,6 +554,12 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'ajax_in_smens') {
 
     \f\end2($r, true);
 }
+
+
+
+
+
+
 
 
 
@@ -2714,9 +2717,11 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_norms') {
 
 
 
-//********** перенесле в микросервисы **********//
+
+// пишем бонусы по зарплате за месяц по 1 точке
+// добавляем вычисление процентов от оборота в день
 elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
-    
+
     if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
 
         if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
@@ -2788,204 +2793,123 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month
         }
         echo '<br clear="all" /><iframe src="demo_iframe.htm" name="iframe_a"></iframe>';
         die();
-    }    
-    
-    $skip_start = true;
-    require_once './micro-service/bonus_record_month.php';
-    
-    \f\end2('ok');
-}
+    }
 
-// пишем бонусы по зарплате за месяц по 1 точке
-// добавляем вычисление процентов от оборота в день
-//elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'bonus_record_month') {
+    if (empty($_REQUEST['date']))
+        \f\end2('нет даты', false);
 
-//    if (isset($_REQUEST['list_tp']) && $_REQUEST['list_tp'] == 'da') {
-//        if (isset($_REQUEST['list_tp']) && $_REQUEST['clear_all'] == 'da') {
-//            echo '<h3>удаляем все автобонусы</h3>';
-//
-//            $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
-//            $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
-//
-//            \f\Cash::deleteKeyPoFilter([\Nyos\mod\JobDesc::$mod_bonus]);
-//
-//            \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
-//            \Nyos\mod\items::$between_date['date_now'] = [$date_start, $date_finish];
-//            // \Nyos\mod\items::$return_items_header = true;
-//            $items = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
-//            \f\pa($items, 2);
-//            $ids = implode(', ', array_keys($items));
-//            \f\pa($ids);
-//
-//            $sql = 'UPDATE `mitems` mi '
-//                    . ' SET `mi`.`status` = \'delete\' '
-//                    . ' WHERE mi.`module` = :module AND mi.`id` IN (' . $ids . ') '
-//                    . ' ;';
-//            // \f\pa($sql);
+    if (!empty($_REQUEST['sp']) && is_numeric($_REQUEST['sp'])) {
+        
+    } else {
+        \f\end2('не определена точка продаж', false);
+    }
+
+    \f\timer_start(3);
+
+    $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
+    $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
+
+// ставим переменную чтобы дальше не удалять по дням
+//    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
+
+    try {
+
+//echo '<br/>'.__FILE__.' '.__LINE__;
+//        $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
+// die($ww);
+
+        $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, 'all', $date_start);
+        // \f\pa($smens7, 2, '', '$smens7');
+
+        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
+        $metki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_metki);
+
 //            $ff = $db->prepare($sql);
-//            // \f\pa($var_in_sql);
-//            $ff->execute([':module' => \Nyos\mod\JobDesc::$mod_bonus]);
+//            $vars = [];
+//            $vars[':user'] = $user;
+//            $vars[':date_start'] = $date_start;
+//            $vars[':date_finish'] = $date_finish;
+//            $ff->execute($vars);
+//            $res = $ff->fetchAll();
+
+        $add_bonuses = [];
+
+        foreach ($smens7['data'] as $k => $v) {
+
+            if (!empty($v['spec1_sp'])) {
+                $now_sp = $v['spec1_sp'];
+            } elseif (!empty($v['job_sp'])) {
+                $now_sp = $v['job_sp'];
+            } else {
+                continue;
+            }
+
+            if( !empty($_REQUEST['sp']) && $_REQUEST['sp'] != $now_sp )
+                continue;
+            
+            // echo '. '; flush();
+            
+            $e = \Nyos\mod\JobDesc::setupAutoBonus($db, $now_sp, $v['jobman'], $v['date'], $v['money'], $v);
+            //\f\pa($e);
+
+            if ($e['status'] == 'ok')
+                $add_bonuses[] = $e['data'];
+
+//            $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
 //
-//            echo '<br/>' . __FILE__ . ' #' . __LINE__;
+//            if (!empty($v['money']['premiya-' . $ocenka])) {
+//                $add_bonuses[] = [
+//                    'auto_bonus_zp' => 'da',
+//                    'jobman' => $v['jobman'],
+//                    'sale_point' => $now_sp,
+//                    'date_now' => $v['date'],
+//                    'summa' => $v['money']['premiya-' . $ocenka],
+//                    'text' => 'бонус к зп'
+//                ];
+//            } elseif (!empty($v['money']['bonus_proc_from_oborot'])) {
 //
-//            die('удалено ' . sizeof($items));
-//
-//
-////                    \Nyos\mod\items::$between_date['date_now'] = 'da';
-////                    \Nyos\mod\items::$search['auto_bonus_zp'] = 'da';
-////                    \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_bonus);
-//
-//
-//            for ($n = 0; $n <= 32; $n++) {
-//
-//                $date_now = date('Y-m-d', strtotime($date_start . ' +' . $n . ' day'));
-//
-//                if (substr($date_now, 5, 2) == substr($date_start, 5, 2)) {
-////                // if ( $date_now <= $date_finish ) {
-////                    
-//////                break;
-//////                }
-////                echo '<br/>+';                    
-//                    echo '<br/>' . $date_now . ' ' . $date_finish . ' - ' . substr($date_now, 5, 2) . ' ' . substr($date_start, 5, 2);
-////                }
-////                
-////                
-//                    // UPDATE `mitems` SET `status` = 'delete' WHERE `mitems`.`id` = 9;
-//                    \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, ['date_now' => $date_now, 'auto_bonus_zp' => 'da']);
-//                }
+//                $add_bonuses[] = [
+//                    'auto_bonus_zp' => 'da',
+//                    'jobman' => $v['jobman'],
+//                    'sale_point' => $now_sp,
+//                    'date_now' => $v['date'],
+//                    'summa' => $v['money']['premiya-' . $ocenka],
+//                    'text' => 'бонус к зп'
+//                ];
 //            }
-//
-//            // \Nyos\mod\items::deleteFromDops($db, \Nyos\mod\JobDesc::$mod_bonus, [ 'date_now' => date('Y-m-d',strtotime($_REQUEST['date']) ), 'auto_bonus_zp' => 'da' ] );
-//        }
-//
-//        $sps = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_sale_point);
-//
-//        echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
-//        . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=234">refresh</a>';
-//
-//        foreach ($sps as $k => $v) {
-//            echo '<a target="iframe_a" style="display:inline-block; border: 1px solid gray;padding:10px; float:left;" '
-//            . 'href="/vendor/didrive_mod/jobdesc/1/didrive/ajax.php?action=bonus_record_month&date=2020-06-01&sp=' . $v['id'] . '">' . $v['id'] . '</a>';
-//        }
-//        echo '<br clear="all" /><iframe src="demo_iframe.htm" name="iframe_a"></iframe>';
-//        die();
-//    }
-//
-//    if (empty($_REQUEST['date']))
-//        \f\end2('нет даты', false);
-//
-//    if (!empty($_REQUEST['sp']) && is_numeric($_REQUEST['sp'])) {
-//        
-//    } else {
-//        \f\end2('не определена точка продаж', false);
-//    }
-//
-//    \f\timer_start(3);
-//
-//    $date_start = date('Y-m-01', strtotime($_REQUEST['date']));
-//    $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
-//
-//// ставим переменную чтобы дальше не удалять по дням
-////    \Nyos\mod\JobDesc::$no_delete_autobonus_1day = true;
-//
-//    try {
-//
-////echo '<br/>'.__FILE__.' '.__LINE__;
-////        $ww = \Nyos\mod\JobDesc::creatAutoBonusMonth($db, $_REQUEST['sp'], $date_start);
-//// die($ww);
-//
-//        $smens7 = \Nyos\mod\JobDesc::newGetSmensFullMonth($db, 'all', $date_start);
-//        // \f\pa($smens7, 2, '', '$smens7');
-//
-//        \Nyos\mod\items::$between_date['date'] = [$date_start, $date_finish];
-//        $metki = \Nyos\mod\items::get($db, \Nyos\mod\JobDesc::$mod_metki);
-//
-////            $ff = $db->prepare($sql);
-////            $vars = [];
-////            $vars[':user'] = $user;
-////            $vars[':date_start'] = $date_start;
-////            $vars[':date_finish'] = $date_finish;
-////            $ff->execute($vars);
-////            $res = $ff->fetchAll();
-//
-//        $add_bonuses = [];
-//
-//        foreach ($smens7['data'] as $k => $v) {
-//
-//            if (!empty($v['spec1_sp'])) {
-//                $now_sp = $v['spec1_sp'];
-//            } elseif (!empty($v['job_sp'])) {
-//                $now_sp = $v['job_sp'];
-//            } else {
-//                continue;
-//            }
-//
-//            if( !empty($_REQUEST['sp']) && $_REQUEST['sp'] != $now_sp )
-//                continue;
-//            
-//            // echo '. '; flush();
-//            
-//            $e = \Nyos\mod\JobDesc::setupAutoBonus($db, $now_sp, $v['jobman'], $v['date'], $v['money'], $v);
-//            //\f\pa($e);
-//
-//            if ($e['status'] == 'ok')
-//                $add_bonuses[] = $e['data'];
-//
-////            $ocenka = $v['ocenka'] ?? $v['ocenka_auto'] ?? null;
-////
-////            if (!empty($v['money']['premiya-' . $ocenka])) {
-////                $add_bonuses[] = [
-////                    'auto_bonus_zp' => 'da',
-////                    'jobman' => $v['jobman'],
-////                    'sale_point' => $now_sp,
-////                    'date_now' => $v['date'],
-////                    'summa' => $v['money']['premiya-' . $ocenka],
-////                    'text' => 'бонус к зп'
-////                ];
-////            } elseif (!empty($v['money']['bonus_proc_from_oborot'])) {
-////
-////                $add_bonuses[] = [
-////                    'auto_bonus_zp' => 'da',
-////                    'jobman' => $v['jobman'],
-////                    'sale_point' => $now_sp,
-////                    'date_now' => $v['date'],
-////                    'summa' => $v['money']['premiya-' . $ocenka],
-////                    'text' => 'бонус к зп'
-////                ];
-////            }
-//        }
-//
-//        // \f\pa($add_bonuses);
-//        \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
-//        
-//        // \f\pa(sizeof($add_bonuses));
-//        
-//    } catch (Exception $ex) {
-//
-//        echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
-//        . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
-//        . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
-//        . PHP_EOL . $ex->getTraceAsString()
-//        . '</pre>';
-//
-//        if (class_exists('\nyos\Msg'))
-//            \nyos\Msg::sendTelegramm($text, null, 1);
-//    }
-//
-//// \f\end2('end in ajax', true, $ww);
-//
-//    $e = [
-//        'datas' => $ww['data']['adds'] ?? [],
-//        'timer' => \f\timer_stop(3),
-//        'kolvo' => sizeof($add_bonuses) ?? 0,
-//        // 'w' => $ww
-//    ];
-//
-////\f\pa($e,2);
-////    exit;
-//
-//    \f\end2('ok', true, $e);
-//}
+        }
+
+        // \f\pa($add_bonuses);
+        \Nyos\mod\items::addNewSimples($db, \Nyos\mod\JobDesc::$mod_bonus, $add_bonuses);
+        
+        // \f\pa(sizeof($add_bonuses));
+        
+    } catch (Exception $ex) {
+
+        echo $text = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+        . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+        . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+        . PHP_EOL . $ex->getTraceAsString()
+        . '</pre>';
+
+        if (class_exists('\nyos\Msg'))
+            \nyos\Msg::sendTelegramm($text, null, 1);
+    }
+
+// \f\end2('end in ajax', true, $ww);
+
+    $e = [
+        'datas' => $ww['data']['adds'] ?? [],
+        'timer' => \f\timer_stop(3),
+        'kolvo' => sizeof($add_bonuses) ?? 0,
+        // 'w' => $ww
+    ];
+
+//\f\pa($e,2);
+//    exit;
+
+    \f\end2('ok', true, $e);
+}
 
 
 /**
@@ -4127,20 +4051,10 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'cancel_smena') {
 
 // \f\pa($_REQUEST);
 
-        $txt2 = '';
-        
-        try {
-        $ff = $db->prepare('UPDATE `mod_jobman_send_on_sp` SET `status` = \'delete\' WHERE `id` = :id ');
-        $ff->execute(array(':id' => $_REQUEST['id']));
-        } catch (\PDOException $exc) {
-            $txt2 = $exc->getMessage();
-            // $exc->getTraceAsString();
-        }
-        
         $ff = $db->prepare('UPDATE `mitems` SET `status` = \'delete\' WHERE `id` = :id ');
         $ff->execute(array(':id' => $_REQUEST['id']));
 
-        \f\end2('назначение отменено (sql2 error '.$txt2 .')', true);
+        \f\end2('назначение отменено', true);
     }
 //
     catch (\Exception $ex) {
@@ -4382,6 +4296,7 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
         $d['dolgnost'] = $_REQUEST['dolgn'];
         $d['date'] = date('Y-m-d', strtotime($_REQUEST['date']));
 
+
         \f\Cash::deleteKeyPoFilter([date('Y-m-01', strtotime($_REQUEST['date']))]);
 
         if (!empty($_REQUEST['smoke']))
@@ -4396,11 +4311,8 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'put_workman_on_sp'
                 $d['dolgnost_from'] = $_REQUEST['dolgnost_from'];
 
             \Nyos\mod\items::addNewSimple($db, '050.job_in_sp', $d);
-            
         } else {
-            
             \Nyos\mod\items::addNewSimple($db, 'jobman_send_on_sp', $d);
-            
         }
 
         \f\Cash::deleteKeyPoFilter(['getListJobsPeriod']);
@@ -4485,22 +4397,22 @@ elseif (isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_ocenka') {
     \f\end2('удалено', true);
 }
 
-// перенёс в 2007
-//elseif (isset($_POST['action']) && ($_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
 //
-//// удаляем запись кеша главного массива данных
-//    if (!empty($_REQUEST['delete_cash_start_date'])) {
-//        $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . date('Y-m-01', strtotime($_REQUEST['delete_cash_start_date']))]);
-//// \f\pa($e);
-//    }
-//
-//// require_once DR . '/all/ajax.start.php';
-//
-//    $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
-//    $ff->execute(array(':id' => (int) $_POST['id2']));
-//
-//    \f\end2('удалено');
-//}
+elseif (isset($_POST['action']) && ($_POST['action'] == 'delete_smena' || $_POST['action'] == 'delete_comment')) {
+
+// удаляем запись кеша главного массива данных
+    if (!empty($_REQUEST['delete_cash_start_date'])) {
+        $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . date('Y-m-01', strtotime($_REQUEST['delete_cash_start_date']))]);
+// \f\pa($e);
+    }
+
+// require_once DR . '/all/ajax.start.php';
+
+    $ff = $db->prepare('UPDATE `mitems` SET `status` = \'hide\' WHERE `id` = :id ');
+    $ff->execute(array(':id' => (int) $_POST['id2']));
+
+    \f\end2('удалено');
+}
 //
 elseif (isset($_POST['action']) && $_POST['action'] == 'recover_smena') {
 
@@ -4569,7 +4481,6 @@ elseif (
                     . '</div>', true);
         }
 // добавление смены руками
-        // перенёс в микросервисы
         elseif ($_POST['action'] == 'add_new_smena') {
 
 //            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
@@ -4609,35 +4520,32 @@ elseif (
             \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['050.chekin_checkout'], $indb);
 
             \f\end2('<div>'
-                . '<nobr><b class="warn" >смена добавлена</b>'
-                . '<br/>'
-                . date('d.m.y H:i', $start_time)
-                . ' - ' . date('d.m.y H:i', $fin_time)
-                . '<br/>'
-                . $indb['hour_on_job']
-                . '</nobr>'
-                . '</div>', true);
+                    . '<nobr><b class="warn" >смена добавлена</b>'
+                    . '<br/>'
+                    . date('d.m.y H:i', $start_time)
+                    . ' - ' . date('d.m.y H:i', $fin_time)
+                    . '<br/>'
+                    . $indb['hour_on_job']
+                    . '</nobr>'
+                    . '</div>', true);
         }
 
-        // перенес в 2007
-//// добавляем комментарий к дню работника
-//        elseif ($_POST['action'] == 'add_comment') {
-//
-//// удаляем запись кеша главного массива данных
-//            if (!empty($_REQUEST['delete_cash_start_date']))
-//                $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
-//// \f\pa($e);
-//
-//            // $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
-//            \Nyos\mod\items::$type_module = 2;
-//            $e = \Nyos\mod\items::add($db, '073.comments', $_REQUEST);
-//
-//            \f\end2('<div class="warn" style="padding:5px;" >'
-//                    . '<div style="padding:5px; margin-bottom: 5px; background-color: rgba(0,0,0,0.1);" >добавили комментарий</div>'
-////. '<br/>'
-//                    . $_REQUEST['comment']
-//                    . '</div>', true);
-//        }
+// добавляем комментарий к дню работника
+        elseif ($_POST['action'] == 'add_comment') {
+
+// удаляем запись кеша главного массива данных
+            if (!empty($_REQUEST['delete_cash_start_date']))
+                $e = \f\Cash::deleteKeyPoFilter(['all', 'jobdesc', 'date' . $_REQUEST['delete_cash_start_date']]);
+// \f\pa($e);
+
+            $e = \Nyos\mod\items::addNewSimple($db, '073.comments', $_REQUEST);
+
+            \f\end2('<div class="warn" style="padding:5px;" >'
+                    . '<div style="padding:5px; margin-bottom: 5px; background-color: rgba(0,0,0,0.1);" >добавили комментарий</div>'
+//. '<br/>'
+                    . $_REQUEST['comment']
+                    . '</div>', true);
+        }
 //
         elseif ($_POST['action'] == 'confirm_smena') {
 
@@ -4697,6 +4605,146 @@ elseif (
     }
 }
 
+//
+elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_minus') {
+// action=add_new_smena
+
+    try {
+
+//        require_once DR . '/all/ajax.start.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+
+        \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.vzuscaniya'], array(
+// 'head' => rand(100, 100000),
+            'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
+            'jobman' => $_REQUEST['jobman'],
+            'sale_point' => $_REQUEST['salepoint'],
+            'summa' => $_REQUEST['summa'],
+            'text' => $_REQUEST['text']
+        ));
+
+
+//        if (date('Y-m-d', $start_time) == date('Y-m-d', $fin_time)) {
+//            $dd = true;
+//        } else {
+//            $dd = false;
+//        }
+//        $r = ob_get_contents();
+//        ob_end_clean();
+
+
+        \f\end2('<div>'
+                . '<nobr><b class="warn" >взыскание добавлено</b>'
+                . '<br/>'
+                . $_REQUEST['summa']
+                . '<br/>'
+                . '<small>' . $_REQUEST['text'] . '</small>'
+//                . (
+//                $dd === true ?
+//                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
+//                )
+// .'окей '.$b
+//                . '</br>'
+//                . $b
+//                . '</br>'
+//                . $r
+                . '</nobr>'
+                . '</div>', true);
+    } catch (\Exception $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    } catch (\PDOException $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    }
+}
+//
+elseif (isset($_POST['action']) && $_POST['action'] == 'add_new_plus') {
+// action=add_new_smena
+
+    try {
+
+//require_once DR . '/all/ajax.start.php';
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'))
+//            require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+//
+//        if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php'))
+//            require ($_SERVER['DOCUMENT_ROOT'] . '/vendor/didrive_mod/items/class.php');
+
+        \Nyos\mod\items::addNew($db, $vv['folder'], \Nyos\nyos::$menu['072.plus'], array(
+// 'head' => rand(100, 100000),
+            'date_now' => date('Y-m-d', strtotime($_REQUEST['date'])),
+            'jobman' => $_REQUEST['jobman'],
+            'sale_point' => $_REQUEST['salepoint'],
+            'summa' => $_REQUEST['summa'],
+            'text' => $_REQUEST['text']
+        ));
+
+
+//        if (date('Y-m-d', $start_time) == date('Y-m-d', $fin_time)) {
+//            $dd = true;
+//        } else {
+//            $dd = false;
+//        }
+//        $r = ob_get_contents();
+//        ob_end_clean();
+
+
+        \f\end2('<div>'
+                . '<nobr><b class="warn" >премия добавлена'
+                . '<br/>'
+                . $_REQUEST['summa']
+                . '<br/>'
+                . '<small>' . $_REQUEST['text'] . '</small>'
+                . '</b>'
+//                . (
+//                $dd === true ?
+//                        '<br/>с ' . date('H:i', $start_time) . ' - ' . date('H:i', $fin_time) : '<br/>с ' . date('Y-m-d H:i:s', $start_time) . '<br/>по ' . date('Y-m-d H:i:s', $fin_time)
+//                )
+// .'окей '.$b
+//                . '</br>'
+//                . $b
+//                . '</br>'
+//                . $r
+                . '</nobr>'
+                . '</div>', true);
+    } catch (\Exception $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    } catch (\PDOException $ex) {
+
+        $e = '<pre>--- ' . __FILE__ . ' ' . __LINE__ . '-------'
+                . PHP_EOL . $ex->getMessage() . ' #' . $ex->getCode()
+                . PHP_EOL . $ex->getFile() . ' #' . $ex->getLine()
+                . PHP_EOL . $ex->getTraceAsString()
+                . '</pre>';
+
+        \f\end2($e, true);
+    }
+}
 ///
 elseif (isset($_POST['action']) && $_POST['action'] == 'show_info_strings') {
 
