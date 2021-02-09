@@ -129,21 +129,36 @@
             {% set nd = date_start|date_modify("+"~i~" day")|date("U") %}
 
             {% if date_finish|date("d.m.Y")|date("U") >= nd %}
-                
-                <div class="tcell alert-warning" >
+
+                <div class="tcell alert-warning stick-top" >
+
+                    <span {% if nd|date("N") > 5 %} style="background-color:rgba(255,0,0,0.1);" {% endif%} >
+                        {{ nd|date("d.m") }}
+
+                        {% if nd|date("N") == 1 %}Пн
+                        {% elseif nd|date("N") == 2 %}Вт
+                        {% elseif nd|date("N") == 3 %}Ср
+                        {% elseif nd|date("N") == 4 %}Чт
+                        {% elseif nd|date("N") == 5 %}Пт
+                        {% elseif nd|date("N") == 6 %}Сб
+                        {% elseif nd|date("N") == 7 %}Вс
+                        {% endif %}
+
+                    </span>
 
                     {% if 1 == 2 %}
-                    <div class="option_img" >
-                        <i onclick='$(".sp_day_{{nd}}_{{ sp_now }}_{{ date }}").toggle("slow"); return false;' class="fa fa-cog"></i>
-                    </div>
+                        <div class="option_img" >
+                            <i onclick='$(".sp_day_{{nd}}_{{ sp_now }}_{{ date }}").toggle("slow");
+                                return false;' class="fa fa-cog"></i>
+                        </div>
 
-                    <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
+                        <div class="sp_day_{{nd}}_{{ sp_now }}_{{ date }}" style="display:none;" >
 
-                        <a href="#" 
-                           xtype="button" class="btn btn-light xbtn-xs" 
-                           data-toggle="modal" data-target="#setSpecNaznach" 
+                            <a href="#" 
+                               xtype="button" class="btn btn-light xbtn-xs" 
+                               data-toggle="modal" data-target="#setSpecNaznach" 
 
-                           onclick="
+                               onclick="
                                    $('#add_person1day__sp_name').html('{{ sps[sp_now]['head'] }}');
                                    $('#add_spec__sp').val('{{ sp_now }}');
                                    $('#add_spec__sp_s').val('{{ creatSecret(sp_now) }}');
@@ -157,12 +172,12 @@
 
                                    $('#add_person1day__user option').show();
                                    $('#add_person1day__user option[sp={{ sp_now }}]').hide();
-                           "
-                           ><span class="fa fa-plus" ></span>&nbsp;<b>спец.назначение</b><br/>
-                            назначить сотрудника (1&nbsp;день)<br/>
-                            с&nbsp;другой точки продаж
-                        </a>
-                    </div>
+                               "
+                               ><span class="fa fa-plus" ></span>&nbsp;<b>спец.назначение</b><br/>
+                                назначить сотрудника (1&nbsp;день)<br/>
+                                с&nbsp;другой точки продаж
+                            </a>
+                        </div>
                     {% endif %}
 
                     <div style="float:right; display:inline-block;" 
@@ -187,7 +202,7 @@
                             + спец. назначение
                         </a>                           
                     </div>
-                            
+
                 </div>
             {% endif %}
 

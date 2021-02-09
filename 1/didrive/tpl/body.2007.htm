@@ -218,7 +218,7 @@
 
             <div class="bg-warning" style="padding:10px;" >Выберите точку продаж</div>
 
-            {# если показываем точку продаж #}
+        {# если показываем точку продаж #}
         {% elseif sps[sp_now] is defined %}
 
             <script src="/js/numberformat.js" ></script>
@@ -245,7 +245,9 @@
                 <div class="ttable cell-padding5 list_otrezki2 cell-border">
 
                     {# верхняя строка с датами #}
+                    {% if 1 == 2 %}
                     {% include dir_mod_now_mod_ditpl~'body.up_line.htm' %}
+                    {% endif %}
 
                     {#{ pa(sp_now) }#}
                     {% include dir_mod_now_mod_ditpl~'body.2007.1sp.htm' %}
